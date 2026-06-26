@@ -152,13 +152,12 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Sem título.base",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Sumário de Sem título"
+              "title": "Sumário"
             }
           },
           {
