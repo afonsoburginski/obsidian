@@ -1,5 +1,5 @@
 {
-  "folder": "Daily",
+  "folder": "Reports",
   "format": "YYYY-MM-DD",
-  "template": "Templates/Daily"
+  "template": "Reports/Report diario"
 }

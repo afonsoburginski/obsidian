@@ -1,52 +1,38 @@
 ---
 tags:
   - home
-cssclasses:
-  - dashboard
 ---
 
 # Home
 
-Painel central do vault. Deixe esta nota fixada (Bookmark > pin) para abrir aqui sempre.
+Vault focado em: **sprint**, **report diario**, **documentacao de Kubernetes** e **streaming de cameras**.
 
 ## Acesso rapido
 
-- [[Attlas - Sprint 21]] - to-do da sprint atual
-- [[2026-06-26]] - daily de hoje
-- [[LEIA - Excalidraw e Canvas]] - como desenhar diagramas
+- [[Attlas - Sprint 22]] - to-do da sprint atual
+- [[2026-06-26|Report de hoje]]
+- [[00 - Indice|Kubernetes / Infra - indice]]
+- [[Docs/Streaming/00 - Indice|Streaming de cameras - indice]]
 
-## Pastas
+## Estrutura
 
 | Pasta | Para que serve |
 | --- | --- |
-| `Inbox` | Captura rapida. Tudo novo cai aqui, depois voce move pra pasta certa. |
-| `To-dos` | Listas de tarefas (sprints, pessoais). Usa checkbox `- [ ]`. |
-| `Docs` | Documentacao, estudos, anotacoes longas e estruturadas. |
-| `Notas` | Anotacoes soltas do dia a dia, ideias, links. |
-| `Diagramas` | Esbocos Excalidraw e Canvas. |
-| `Daily` | Uma nota por dia (diario / log). |
-| `Templates` | Modelos reaproveitaveis de nota. |
+| `Sprint` | To-do da sprint, organizado por frente, com checkbox `- [ ]`. |
+| `Reports` | Report diario (um por dia) + o modelo `Report diario`. Estrutura fixa: em andamento / iniciadas ontem / revisadas. Cola no Slack. |
+| `Docs/Kubernetes` | Documentacao de infra/K8s puxada do repo (visao geral, dimensionamento, producao, CI/CD, helm, terraform, KEDA). |
+| `Docs/Streaming` | Pipeline de video das cameras puxado do ms-cameras (HLS, WebRTC/WHEP, mediamtx, ffmpeg) + diagnostico do travamento no WebRTC. |
 
-## To-dos abertos (todo o vault)
+## To-dos abertos da sprint
 
-Esta consulta lista automaticamente todo checkbox nao concluido. Requer o plugin **Tasks** (ver [[#Plugins a instalar]]). Sem ele, ignore o bloco abaixo.
+Requer o plugin **Tasks** (voce ja instalou).
 
 ```tasks
 not done
-group by filename
-sort by priority
+path includes Sprint
+group by heading
 ```
 
-## Plugins a instalar
+## Como gerar o report do dia
 
-O Obsidian esconde a loja de plugins. Caminho:
-
-1. `Ctrl + ,` (Settings) > **Community plugins**.
-2. Clique em **Turn on community plugins** (desliga o restricted mode).
-3. **Browse** e instale, um a um:
-   - **Excalidraw** (autor: zsviczian) - desenho de diagramas dentro do Obsidian.
-   - **Tasks** (autor: Martin Schenck / Clare Macrae) - consultas de checkbox como a de cima.
-   - **Kanban** (autor: mgmeyers) - opcional, board arrastavel pra to-dos.
-4. Depois de instalar, em cada plugin clique em **Enable**.
-
-> Dica: o Sync nativo ja esta ligado nos core plugins, entao se voce logar com a conta Obsidian o vault sincroniza entre dispositivos (resolve o "tudo local").
+Comando **Daily notes: Open today's note** (ja configurado pra cair em `Reports/` com o template). Depois preencha os PRs com `gh pr view` / reviews.

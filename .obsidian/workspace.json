@@ -4,17 +4,21 @@
     "type": "split",
     "children": [
       {
-        "id": "26ca2d02b73fa39e",
+        "id": "86a513865a69b76f",
         "type": "tabs",
         "children": [
           {
-            "id": "57c2f781de099f62",
+            "id": "833a32f75a555a7a",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "markdown",
+              "state": {
+                "file": "Docs/Kubernetes/arquitetura.md",
+                "mode": "preview",
+                "source": false
+              },
               "icon": "lucide-file",
-              "title": "Nova aba"
+              "title": "arquitetura"
             }
           }
         ]
@@ -74,7 +78,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 360.51103591918945,
+    "collapsed": true
   },
   "right": {
     "id": "7f39f37a7b274764",
@@ -152,12 +157,13 @@
             "state": {
               "type": "outline",
               "state": {
+                "file": "Reports/2026-06-26.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Sumário"
+              "title": "Sumário de 2026-06-26"
             }
           },
           {
@@ -175,7 +181,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 772.5
+    "width": 497.5
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -190,17 +196,45 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "eb00cdf02b16c0b3",
+  "active": "833a32f75a555a7a",
   "lastOpenFiles": [
+    "Docs/Kubernetes/Arquitetura.excalidraw.md",
+    "Docs/Kubernetes/Provisionar cluster - Terraform RKE2.md",
+    "Docs/Kubernetes/Regras de escala - ScaledObjects.md",
+    "Docs/Sprint 21 - Backend Cameras.excalidraw.md",
+    "Docs/Kubernetes/Bootstrap - KEDA e autoescala.md",
+    "Docs/Kubernetes/03-PRODUCAO.md",
+    "Docs/Kubernetes/02-DIMENSIONAMENTO.md",
+    "Docs/Kubernetes/01-VISAO-GERAL.md",
+    "Docs/Kubernetes/00 - Indice.md",
+    "Sprint/Attlas - Sprint 22.md",
+    "Reports/2026-06-30.md",
+    "Reports/Report diario.md",
+    "Reports/2026-06-26.md",
+    "Sprint/Attlas - Sprint 22.md.tmp.568458.21561053d353",
+    "Sprint/Attlas - Sprint 22.md.tmp.568458.c28285bc1a27",
+    "Sprint/Sprint 22 - Status PRs e cascateamento.md",
+    "Sprint/Sprint 22 - Status PRs e cascateamento.md.tmp.568458.ede920eb9ed4",
+    "Sprint/Attlas - Sprint 22.md.tmp.568458.b408b3a2fbff",
+    "Reports/2026-06-29.md",
+    "Sprint/Sprint 22 - Status PRs e cascateamento.md.tmp.325833.a8e31a76ed85",
+    "Sprint/Sprint 22 - Status PRs e cascateamento.md.tmp.325833.47ef4ddade45",
+    "Sprint/Attlas - Sprint 22.md.tmp.11125.73ff854b0307",
+    "Sprint/Attlas - Sprint 22.md.tmp.11125.6643187c2587",
+    "Sprint/Attlas - Sprint 22.md.tmp.11125.33750dce1d2a",
+    "Sprint/Attlas - Sprint 22.md.tmp.14166.2b7d28cd6bcc",
+    "Docs/Infra/CI runners - disco cheio (runbook e prevencao).md",
     "README.md",
-    "Inbox/_Sobre Inbox.md",
-    "Diagramas/LEIA - Excalidraw e Canvas.md",
-    "Docs/_Sobre Docs.md",
-    "Notas/_Sobre Notas.md",
+    "Home.md",
+    "Docs/Streaming/Streaming - HLS x WebRTC.excalidraw.md",
+    "Docs/Kubernetes/arquitetura.md",
+    "Docs/Streaming/Streaming.excalidraw.md",
+    "Docs/Streaming/01-Arquitetura-streaming.md",
+    "Docs/Streaming/04-Diagnostico-travamento-WebRTC.md",
+    "Docs/Streaming/03-WebRTC-WHEP.md",
+    "Docs/Streaming/02-HLS.md",
+    "Excalidraw/Drawing 2026-06-26 15.15.18.excalidraw.md",
     "Sem título 2.canvas",
-    "Sem título 1.base",
-    "2026-06-26.md",
-    "Sem título.base",
     "Sem título 1.canvas",
     "Sem título.canvas"
   ]

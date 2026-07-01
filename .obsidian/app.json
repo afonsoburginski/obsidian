@@ -1,6 +1,5 @@
 {
-  "newFileLocation": "folder",
-  "newFileFolderPath": "Inbox",
-  "attachmentFolderPath": "Diagramas/anexos",
+  "newFileLocation": "current",
+  "attachmentFolderPath": "anexos",
   "alwaysUpdateLinks": true
 }
