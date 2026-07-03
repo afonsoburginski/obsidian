@@ -15,7 +15,7 @@ gancho: "[[SOFTWARE-1923 - Bitrate histórico + TTFF]]"
 
 # Plano — Banda por câmera: bitrate configurado (ONVIF/VAPIX) 24/7 + real oportunístico
 
-> Decisão de arquitetura (03/07) para medir banda por câmera **sem puxar vídeo 24/7**, escalável a milhares de câmeras. Substitui/ancora a coleta de bitrate hoje acoplada ao streaming. **Executado como Parte B da [[SOFTWARE-2003 - Encerramento robusto de sessões de stream (reaper + lease)]]** (junto com o fix do ciclo de vida das sessões, Parte A). Relacionado: [[Incidente - vazamento de sessões de stream (banda das câmeras)]], [[SOFTWARE-1923 - Bitrate histórico + TTFF]], [[Video Wall - Banda e alertas]], [[00 - Saúde e monitoramento]].
+> Decisão de arquitetura (03/07) para medir banda por câmera **sem puxar vídeo 24/7**, escalável a milhares de câmeras. Substitui/ancora a coleta de bitrate hoje acoplada ao streaming. **Executado como Parte B da [[SOFTWARE-2003 - Ciclo de vida de sessões de streaming e telemetria de banda por câmera]]** (junto com o fix do ciclo de vida das sessões, Parte A). Relacionado: [[Incidente - vazamento de sessões de stream (banda das câmeras)]], [[SOFTWARE-1923 - Bitrate histórico + TTFF]], [[Video Wall - Banda e alertas]], [[00 - Saúde e monitoramento]].
 
 ## 1. Problema
 
@@ -61,7 +61,7 @@ Stream ativo (só quando alguém assiste)
 ```
 
 - A leitura do **configurado** pega carona na conexão que o health worker já mantém → sem nova conexão por câmera. Cache com refresh de baixa frequência (raramente muda).
-- O **real** segue como está no sampler, mas **depende** do fix de ciclo de vida ([[SOFTWARE-2003 - Encerramento robusto de sessões de stream (reaper + lease)]]) para não haver relays 24/7.
+- O **real** segue como está no sampler, mas **depende** do fix de ciclo de vida ([[SOFTWARE-2003 - Ciclo de vida de sessões de streaming e telemetria de banda por câmera]]) para não haver relays 24/7.
 
 ## 5. Passo a passo do planejamento
 
@@ -70,7 +70,7 @@ Stream ativo (só quando alguém assiste)
 3. **Coleta no healthcheck** — em `health/workers/camera-health.worker.ts` (ou um pequeno serviço chamado pelo `camera-health-bootstrap.service.ts`): ao conectar e depois em refresh periódico (env `CAMERA_BITRATE_REFRESH_HOURS`, default 6h), resolver a banda provisionada (ONVIF → VAPIX) e persistir. Best-effort (falha não derruba o heartbeat).
 4. **Persistência** — migration Prisma em `database/schema/stream/camera_stream_profile.prisma`: manter `bitrateKbps` (agora = provisionado device-truth) e adicionar `bitrateSource` (`ONVIF`|`VAPIX`|`SDP`|`MANUAL`), `rateControlMode` (`MBR`|`ABR`|`VBR`|null) e `bitrateUpdatedAt`. Repo de update dedicado (upsert por `(cameraId, role)`), sem tocar no fluxo de CRUD.
 5. **Banda do Video Wall** — `dashboard/bandwidth/bandwidth-monitoring.service.ts`: já soma `profile.bitrateKbps`; passa a somar o valor **device-truth** (agora fresco) e expõe `bitrateSource`/`updatedAt` para o front distinguir "provisionado" de "medido". (Remove o callout de "estático" do [[Video Wall - Banda e alertas]].)
-6. **Bitrate real (oportunístico)** — sem mudança no `availability-window-sampler.service.ts` além de deixar explícito no contrato que `avgBitrateMbps` = **real** (só com stream) e a banda provisionada é campo separado. Pré-requisito operacional: [[SOFTWARE-2003 - Encerramento robusto de sessões de stream (reaper + lease)]].
+6. **Bitrate real (oportunístico)** — sem mudança no `availability-window-sampler.service.ts` além de deixar explícito no contrato que `avgBitrateMbps` = **real** (só com stream) e a banda provisionada é campo separado. Pré-requisito operacional: [[SOFTWARE-2003 - Ciclo de vida de sessões de streaming e telemetria de banda por câmera]].
 7. **Contratos** (`libs/contracts`) — adicionar `provisionedBitrateKbps` + `bitrateSource` ao payload de banda / health metrics; `avgBitrateMbps` continua sendo o real. `errorCode` novo se a leitura ONVIF falhar de forma dura (senão best-effort → null).
 8. **Testes + gate** — unit do parser VAPIX e do mapeamento ONVIF; do refresh (cache + best-effort); do bandwidth service usando device-truth. Rodar suíte completa do `ms-cameras` (`nx test/lint/build`), 0 lint.
 

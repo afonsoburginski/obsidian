@@ -40,7 +40,7 @@ Socket.IO sem adapter compartilhado: cada réplica tem as salas na própria mem�
 Cada réplica hoje monitoraria TODAS as câmeras (WS Axis / ONVIF PullPoint + ping). Com N réplicas = N x probes batendo em cada câmera. Precisa de ownership/particionamento: cada câmera monitorada por uma única réplica.
 
 ### 3. Streaming / pipeline
-Relay ffmpeg + mediamtx com estado de sessão e viewer count in-memory por réplica (não compartilhado). Precisa coordenar quem roda a relay de cada câmera e como o viewer count é visto entre réplicas. Liga direto com [[SOFTWARE-2003 - Encerramento robusto de sessões de stream (reaper + lease)]] (SOFTWARE-2003).
+Relay ffmpeg + mediamtx com estado de sessão e viewer count in-memory por réplica (não compartilhado). Precisa coordenar quem roda a relay de cada câmera e como o viewer count é visto entre réplicas. Liga direto com [[SOFTWARE-2003 - Ciclo de vida de sessões de streaming e telemetria de banda por câmera]] (SOFTWARE-2003).
 
 ## Modelo proposto
 

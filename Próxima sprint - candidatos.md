@@ -14,7 +14,7 @@ atualizado: 2026-07-03
 
 ## Candidatos (agora detalhados em nota própria)
 
-- [ ] [[SOFTWARE-2003 - Encerramento robusto de sessões de stream (reaper + lease)]] — corrige o vazamento de `viewerCount` que mantém relays ffmpeg puxando 1080p das câmeras sem viewer. Origem: [[Incidente - vazamento de sessões de stream (banda das câmeras)]]. Frente Streaming.
+- [ ] [[SOFTWARE-2003 - Ciclo de vida de sessões de streaming e telemetria de banda por câmera]] — corrige o vazamento de `viewerCount` que mantém relays ffmpeg puxando 1080p das câmeras sem viewer. Origem: [[Incidente - vazamento de sessões de stream (banda das câmeras)]]. Frente Streaming.
 - [ ] [[SOFTWARE-2004 - Particionamento de tabelas de telemetria de câmeras]] — tabelas de histórico/telemetria que mais crescem (janelas de 5 min, TTFF, heartbeat, rollup). Gancho: [[SOFTWARE-1922 - Janelas de 5 min + latência + rollup 90d]].
 - [ ] [[SOFTWARE-2005 - Novas regras de permissões de usuário]] — repassadas pelo Hadson em 02/07. Item mais documentado do lote; base para detalhar a spec.
 - [ ] [[SOFTWARE-2006 - Separação dos eventos de câmera por domínio]] — isolar a funcionalidade de eventos num domínio próprio. Gancho: [[SOFTWARE-1921 - Eventos de câmera (auto + duração)]].

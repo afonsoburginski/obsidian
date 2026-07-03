@@ -4,21 +4,21 @@
     "type": "split",
     "children": [
       {
-        "id": "f0e4a6b2a87c10cf",
+        "id": "111c4ac40d9cf7e8",
         "type": "tabs",
         "children": [
           {
-            "id": "f6f40dedb904b8cb",
+            "id": "85c866514e1b1974",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Sprint/22/SOFTWARE-1923 - Bitrate histórico + TTFF.md",
+                "file": "Sprint/23/SOFTWARE-2003 - Ciclo de vida de sessões de streaming e telemetria de banda por câmera.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "SOFTWARE-1923 - Bitrate histórico + TTFF"
+              "title": "SOFTWARE-2003 - Ciclo de vida de sessões de streaming e telemetria de banda por câmera"
             }
           }
         ]
@@ -78,7 +78,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 412.5
+    "width": 404.5
   },
   "right": {
     "id": "7f39f37a7b274764",
@@ -192,7 +192,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 335.5
+    "width": 412.5
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -205,48 +205,50 @@
       "bases:Criar nova base": false,
       "obsidian-excalidraw-plugin:New drawing": false,
       "obsidian-git:Open Git source control": false,
+      "star-notebooklm:Send to NotebookLM": false,
+      "star-notebooklm:Open NotebookLM": false,
       "new-3d-graph:Open 3d graph": false
     }
   },
-  "active": "f6f40dedb904b8cb",
+  "active": "85c866514e1b1974",
   "lastOpenFiles": [
-    "Sprint/22/SOFTWARE-1924 - getHealthMetrics + série + SLA.md",
-    "Sprint/23/SOFTWARE-2003 - Encerramento robusto de sessões de stream (reaper + lease).md",
     "Sprint/23/Incidente - vazamento de sessões de stream (banda das câmeras).md",
-    "Próxima sprint - candidatos.md",
-    "Sprint/23/Encerramento robusto de sessões de stream (reaper + lease).md",
+    "Docs/ms-cameras/Diagramas/09 - Streaming - estrategia de codec.excalidraw.md",
+    "Sprint/23/SOFTWARE-2003 - Banda por câmera + encerramento robusto de sessões de stream.md",
+    "Sprint/23/SOFTWARE-2003 - Ciclo de vida de sessões de streaming e telemetria de banda por câmera.md",
+    "Docs/ms-cameras/Diagramas/08 - MOD-008 bandwidth-monitoring.excalidraw.md",
+    "Docs/ms-cameras/Diagramas/07 - MOD-007 camera-events.excalidraw.md",
+    "Docs/ms-cameras/Diagramas/06 - MOD-006 video-wall.excalidraw.md",
+    "Docs/ms-cameras/Diagramas/00 - Geral - Modulo Cameras.excalidraw.md",
+    "Docs/ms-cameras/Diagramas/01 - MOD-001 cameras-crud.excalidraw.md",
+    "Docs/ms-cameras/Diagramas/02 - MOD-002 multi-protocol-adapter.excalidraw.md",
+    "Docs/ms-cameras/Diagramas/03 - MOD-003 camera-health.excalidraw.md",
+    "Docs/ms-cameras/Diagramas/04 - MOD-004 hls-streaming-pipeline.excalidraw.md",
+    "Docs/ms-cameras/Diagramas/05 - MOD-004 ptz-presets.excalidraw.md",
+    "Excalidraw/Drawing 2026-07-03 09.56.17.excalidraw.md",
     "Sprint/23/SOFTWARE-2009 - Escalabilidade horizontal do ms-cameras em Kubernetes.md",
     "Sprint/23/SOFTWARE-2008 - Integração com perfis de mídia (endpoints).md",
     "Sprint/23/SOFTWARE-2007 - Revisar uso de systemId em rotas de API.md",
     "Sprint/23/SOFTWARE-2006 - Separação dos eventos de câmera por domínio.md",
     "Sprint/23/SOFTWARE-2005 - Novas regras de permissões de usuário.md",
-    "Sprint/23/SOFTWARE-2004 - Particionamento de tabelas de telemetria de câmeras.md",
-    "Sprint/23/Escalabilidade horizontal do ms-cameras em Kubernetes.md",
-    "Sprint/22/SOFTWARE-1990 - Streaming público (LL-HLS + watchdog).md",
-    "Sprint/23/Attlas - Sprint 23.md.tmp.112566.d01dd602caff",
-    "Sprint/23/Attlas - Sprint 23.md.tmp.112566.c5b086ca3aed",
-    "Sprint/23/Integração com perfis de mídia (endpoints).md",
-    "Sprint/23/Integração com perfis de mídia (endpoints).md.tmp.112566.3613e0a5f82c",
-    "Sprint/22/SOFTWARE-1923 - Bitrate histórico + TTFF.md",
-    "Sprint/23/Novas regras de permissões de usuário.md",
-    "Sprint/22/SOFTWARE-1922 - Janelas de 5 min + latência + rollup 90d.md",
-    "Sprint/23/Revisar uso de systemId em rotas de API.md",
-    "Sprint/23/Revisar uso de systemId em rotas de API.md.tmp.112566.b187bbd1ccbe",
-    "Sprint/23/Separação dos eventos de câmera por domínio.md",
-    "Sprint/23/Novas regras de permissões de usuário.md.tmp.112566.6e84f842bc46",
-    "Sprint/23/Particionamento de tabelas de telemetria de câmeras.md",
-    "Sprint/23/Particionamento de tabelas de telemetria de câmeras.md.tmp.112566.3bd34e34e175",
-    "Sprint/23/Encerramento robusto de sessões de stream (reaper + lease).md.tmp.112566.c87e0ad6cec5",
+    "Sprint/23/SOFTWARE-2003 - Encerramento robusto de sessões de stream (reaper + lease).md",
+    "Sprint/23/Plano - Banda por câmera (bitrate configurado ONVIF + VAPIX).md",
     "Sprint/23/Attlas - Sprint 23.md",
-    "Sprint/22/Attlas - Sprint 22.md",
-    "Sem título.canvas",
+    "Sprint/22/SOFTWARE-1923 - Bitrate histórico + TTFF.md",
+    "Sprint/23/SOFTWARE-2004 - Particionamento de tabelas de telemetria de câmeras.md",
+    "Próxima sprint - candidatos.md",
+    "Sprint/23/Encerramento robusto de sessões de stream (reaper + lease).md",
     "Sprint/23",
-    "Reports/2026-07-03.md",
-    "Docs/ms-cameras/Diagramas/03 - MOD-003 camera-health.excalidraw.md",
-    "Docs/Sprint 21 - Backend Cameras.excalidraw.md",
-    "Docs/ms-cameras/ms-cameras - visão geral.md",
+    "Sprint/22",
     "Docs/ms-cameras/Saúde e monitoramento",
     "Docs/ms-cameras/Status em tempo real",
+    "Docs/ms-cameras/Video Wall",
+    "Docs/ms-cameras/Eventos, incidentes e alarmes",
+    "Docs/ms-cameras/PTZ e presets",
+    "Docs/ms-cameras/Saúde e disponibilidade",
+    "Docs/ms-cameras/Integração com dispositivo",
+    "Docs/ms-cameras/Cameras",
+    "Sem título.canvas",
     "Sem título 2.canvas",
     "Sem título 1.canvas"
   ]
