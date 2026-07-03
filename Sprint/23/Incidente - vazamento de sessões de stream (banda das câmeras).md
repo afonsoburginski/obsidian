@@ -71,4 +71,6 @@ Desacoplar o encerramento da sessão do `DELETE` do cliente:
 ## Ligado a
 
 - [[SOFTWARE-1923 - Bitrate histórico + TTFF]] (área do ciclo de vida das sessões e do sampler de bitrate).
+- [[Plano - Banda por câmera (bitrate configurado ONVIF + VAPIX)]] — decisão de arquitetura (03/07): medir banda por bitrate **configurado** do device (ONVIF/VAPIX) 24/7 + real oportunístico, em vez de puxar vídeo.
+- [[SOFTWARE-2003 - Encerramento robusto de sessões de stream (reaper + lease)]] — o fix do ciclo de vida (reaper/lease) que este incidente exige.
 - [[Próxima sprint - candidatos]].

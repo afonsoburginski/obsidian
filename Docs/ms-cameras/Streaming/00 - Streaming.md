@@ -19,7 +19,9 @@ e o diagnóstico do travamento que só acontece no WebRTC.
 - [[02-HLS|02 - HLS (LL-HLS)]] - caminho de fallback, sobre HTTP/TCP com buffer.
 - [[03-WebRTC-WHEP|03 - WebRTC (WHEP)]] - caminho primário, baixa latência sobre UDP.
 - [[04-Diagnostico-travamento-WebRTC|04 - Diagnóstico do travamento no WebRTC]] - causa raiz e como medir (PR 566).
-- [[04 - MOD-004 hls-streaming-pipeline.excalidraw|Diagrama (Excalidraw)]] - o pipeline e o diagnóstico do travamento em um quadro editável.
+- [[Streaming - Codecs e fallbacks|Codecs e fallbacks]] - estratégia de codec no ffmpeg (copy / hvc1 / transcode) + 3 camadas de fallback, com exemplos ponta a ponta.
+- [[04 - MOD-004 hls-streaming-pipeline.excalidraw|Diagrama — pipeline (Excalidraw)]] - o pipeline e o diagnóstico do travamento em um quadro editável.
+- [[09 - Streaming - estrategia de codec.excalidraw|Diagrama — estratégia de codec]] - decisão de codec (copy/hvc1/transcode) e fallback.
 
 ## Resumo de uma linha
 
