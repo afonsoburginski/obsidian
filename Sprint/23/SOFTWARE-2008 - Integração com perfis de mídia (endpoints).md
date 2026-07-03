@@ -20,15 +20,12 @@ atualizado: 2026-07-03
 > Tarefa 6. **É [Back]**, não frontend: a tela já está pronta consumindo mock, o que falta é o backend expor a rota para a tela integrar. Mesmo padrão do bloco Saúde da Câmera (front no mock, backend entrega o endpoint).
 
 ## Problema
-
 O frontend do módulo de câmeras tem a tela de perfis de mídia construída, mas não há endpoint no `ms-cameras` que ela consuma. Sem rota, a tela fica presa no mock.
 
 ## Objetivo
-
 Expor a rota/endpoints de perfis de mídia por câmera para a tela do frontend integrar.
 
 ## Contexto
-
 - Perfis de mídia = configurações de encoder da câmera (resolução, codec, bitrate, fps), tipicamente expostas via **ONVIF media profiles** (`GetProfiles`).
 - No backend hoje existe o modelo `CameraStreamProfile` (primary/secondary), mas sem endpoint que a tela use.
 

@@ -43,8 +43,18 @@ Câmera aparecia "Operacional/Estável" enquanto o stream travava (dev.v2, SNL 1
 - [x] Campo `streamStatus` derivado no `IStreamDiagnostics` (UC-027): path pronto e limpo → OK; path ausente com sessão rastreada → DOWN; sem sessão e sem path → INACTIVE; `framesInError > 0` / reconectando / viewers sem peer → DEGRADED.
 - [x] Spec UC-027 atualizada (BR-DIAG-004) + 7 testes unitários (5 caminhos). Gate verde: 668 testes, lint 0, build ok.
 
-## A fazer hoje (dentro desta PR)
+## Round de review do Claude resolvido (03/07, commit `98f55529b`)
 
-- [ ] **Filtro de busca por "uptime" na saúde de câmeras** — vai entrar aqui na #577 (não é próxima sprint).
+15 achados do `claude[bot]` catalogados e todos endereçados na #577; os 15 threads respondidos e resolvidos. Gate verde: lint 0 erros, 719 testes, build ok.
+
+- [x] **TTFF: 1 amostra por abertura** — dedup por flag `ttffRecorded` no `state` (o opener real chama `spawnFfmpeg` e depois `ensureRunning` já em STARTING, mesmo ramo dos waiters; distinção por ramo não funcionaria). BR-TELE-002.
+- [x] **Retenção de `CameraTtffSample`** — `deleteOlderThan(days)` no cron diário do rollup com `FINE_RETENTION_DAYS` (item 5 do DoD, antes pendente).
+- [x] **Sampler amostra o path da qualidade ativa** via `StreamSessionRegistry` (prefere PRIMARY, cai pra ativa); SECONDARY passa a medir bitrate.
+- [x] **Floor de elapsed** contra bitrate inflado + **rollup read** projeta `avgBitrateMbps` (30d/90d).
+- [x] Higiene: `.env.example` duplicado limpo, log de TTFF com `quality`+`sessionStartedAt`, comentário de cron overlap, DoD e política de índice `CONCURRENTLY` no PROJ-006.
+
+## A fazer (dentro desta PR)
+
+- [ ] **Filtro de busca por "uptime" na saúde de câmeras** — ainda pendente, vai entrar aqui na #577 (não é próxima sprint). Hoje só existe `uptimePercent` como métrica (1922/1924), não há filtro de listagem.
 - [x] Resolver merge conflict da #577 contra `develop` (feito 03/07: conflito em `PROJ-005-availability-window-sampler.md`, "índice único"; merge commitado `ad5fd9de2` e pushado; CI rodando).
-- [ ] Review + merge da PR #577.
+- [ ] Review + merge da PR #577 (aprovada por `neto-atman`; round do Claude resolvido).
