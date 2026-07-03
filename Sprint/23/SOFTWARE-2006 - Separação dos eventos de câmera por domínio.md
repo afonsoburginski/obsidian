@@ -5,8 +5,9 @@ tags:
   - task
   - eventos
   - refactor
-card: a criar no ClickUp
-titulo: "[Back] Separação dos eventos de câmera por domínio"
+card: SOFTWARE-2006
+clickup: https://app.clickup.com/t/86ajc6v2q
+titulo: "[Back] Eventos: separacao dos eventos de camera por dominio"
 frente: Eventos
 tamanho: a estimar
 status: a planejar

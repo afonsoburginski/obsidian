@@ -5,8 +5,9 @@ tags:
   - task
   - api
   - multi-tenant
-card: a criar no ClickUp
-titulo: "[Back] Revisar uso de systemId em rotas de API"
+card: SOFTWARE-2007
+clickup: https://app.clickup.com/t/86ajc6v3u
+titulo: "[Back] API: revisar uso de systemId nas rotas"
 frente: API / Multi-tenant
 tamanho: a estimar
 status: a planejar

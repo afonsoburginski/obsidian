@@ -5,8 +5,9 @@ tags:
   - task
   - banco
   - telemetria
-card: a criar no ClickUp
-titulo: "[Back] Particionamento das tabelas de telemetria de câmeras"
+card: SOFTWARE-2004
+clickup: https://app.clickup.com/t/86ajc6uu0
+titulo: "[Back] Banco: particionamento das tabelas de telemetria de cameras"
 frente: Banco / Infra
 tamanho: a estimar
 status: a planejar

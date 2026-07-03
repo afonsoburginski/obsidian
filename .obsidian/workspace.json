@@ -8,7 +8,7 @@
         "type": "tabs",
         "children": [
           {
-            "id": "1c6b50edce58d1e6",
+            "id": "f6f40dedb904b8cb",
             "type": "leaf",
             "state": {
               "type": "markdown",
@@ -20,23 +20,8 @@
               "icon": "lucide-file",
               "title": "Próxima sprint - candidatos"
             }
-          },
-          {
-            "id": "f6f40dedb904b8cb",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Sprint/22/SOFTWARE-1923 - Bitrate histórico + TTFF.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "SOFTWARE-1923 - Bitrate histórico + TTFF"
-            }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -225,12 +210,25 @@
   },
   "active": "f6f40dedb904b8cb",
   "lastOpenFiles": [
-    "Sprint/23/Próxima sprint - candidatos.md",
-    "Sprint/23/Novas regras de permissões de usuário.md",
-    "Sprint/22/SOFTWARE-1923 - Bitrate histórico + TTFF.md",
-    "Sprint/22/SOFTWARE-1922 - Janelas de 5 min + latência + rollup 90d.md",
     "Sprint/23/Incidente - vazamento de sessões de stream (banda das câmeras).md",
     "Sprint/23/Encerramento robusto de sessões de stream (reaper + lease).md",
+    "Sprint/23/SOFTWARE-2009 - Escalabilidade horizontal do ms-cameras em Kubernetes.md",
+    "Sprint/23/SOFTWARE-2008 - Integração com perfis de mídia (endpoints).md",
+    "Sprint/23/SOFTWARE-2007 - Revisar uso de systemId em rotas de API.md",
+    "Sprint/23/SOFTWARE-2006 - Separação dos eventos de câmera por domínio.md",
+    "Sprint/23/SOFTWARE-2005 - Novas regras de permissões de usuário.md",
+    "Sprint/23/SOFTWARE-2004 - Particionamento de tabelas de telemetria de câmeras.md",
+    "Sprint/23/SOFTWARE-2003 - Encerramento robusto de sessões de stream (reaper + lease).md",
+    "Sprint/23/Escalabilidade horizontal do ms-cameras em Kubernetes.md",
+    "Sprint/22/SOFTWARE-1990 - Streaming público (LL-HLS + watchdog).md",
+    "Sprint/23/Próxima sprint - candidatos.md",
+    "Sprint/23/Attlas - Sprint 23.md.tmp.112566.d01dd602caff",
+    "Sprint/23/Attlas - Sprint 23.md.tmp.112566.c5b086ca3aed",
+    "Sprint/23/Integração com perfis de mídia (endpoints).md",
+    "Sprint/23/Integração com perfis de mídia (endpoints).md.tmp.112566.3613e0a5f82c",
+    "Sprint/22/SOFTWARE-1923 - Bitrate histórico + TTFF.md",
+    "Sprint/23/Novas regras de permissões de usuário.md",
+    "Sprint/22/SOFTWARE-1922 - Janelas de 5 min + latência + rollup 90d.md",
     "Sprint/23/Revisar uso de systemId em rotas de API.md",
     "Sprint/23/Revisar uso de systemId em rotas de API.md.tmp.112566.b187bbd1ccbe",
     "Sprint/23/Separação dos eventos de câmera por domínio.md",
@@ -247,21 +245,8 @@
     "Docs/Sprint 21 - Backend Cameras.excalidraw.md",
     "Docs/ms-cameras/ms-cameras - visão geral.md",
     "Docs/ms-cameras/Diagramas/08 - MOD-008 bandwidth-monitoring.excalidraw.md",
-    "Docs/ms-cameras/Diagramas/07 - MOD-007 camera-events.excalidraw.md",
-    "Docs/ms-cameras/Diagramas/05 - MOD-004 ptz-presets.excalidraw.md",
-    "Docs/ms-cameras/Diagramas/04 - MOD-004 hls-streaming-pipeline.excalidraw.md",
-    "Docs/ms-cameras/Diagramas/06 - MOD-006 video-wall.excalidraw.md",
-    "Docs/ms-cameras/Diagramas/Streaming - HLS x WebRTC.excalidraw.md",
-    "Docs/ms-cameras/Diagramas/Streaming.excalidraw.md",
-    "Docs/ms-cameras/Status em tempo real/Status em tempo real - Requisitos e SLA.md",
-    "Docs/ms-cameras/Saúde e monitoramento/Status em tempo real - Requisitos e SLA.md",
-    "Docs/ms-cameras/Saúde e monitoramento/Status em tempo real - Fluxos.md",
-    "Docs/ms-cameras/Saúde e monitoramento/Status em tempo real - Arquitetura e estratégias.md",
     "Docs/ms-cameras/Saúde e monitoramento",
     "Docs/ms-cameras/Status em tempo real",
-    "Docs/ms-cameras/Video Wall",
-    "Docs/ms-cameras/Eventos, incidentes e alarmes",
-    "Docs/ms-cameras/PTZ e presets",
     "Sem título 2.canvas",
     "Sem título 1.canvas"
   ]

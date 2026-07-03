@@ -4,8 +4,9 @@ tags:
   - sprint-23
   - task
   - streaming
-card: a criar no ClickUp
-titulo: "[Back] Encerramento robusto de sessões de stream (reaper + lease de viewer)"
+card: SOFTWARE-2003
+clickup: https://app.clickup.com/t/86ajc6un8
+titulo: "[Back] Streaming: encerramento robusto de sessoes (reaper + lease de viewer)"
 frente: Streaming
 tamanho: a estimar
 status: a planejar

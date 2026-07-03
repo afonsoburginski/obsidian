@@ -14,11 +14,13 @@ atualizado: 2026-07-03
 
 ## Candidatos (agora detalhados em nota própria)
 
-- [ ] [[Encerramento robusto de sessões de stream (reaper + lease)]] — corrige o vazamento de `viewerCount` que mantém relays ffmpeg puxando 1080p das câmeras sem viewer. Origem: [[Incidente - vazamento de sessões de stream (banda das câmeras)]]. Frente Streaming.
-- [ ] [[Particionamento de tabelas de telemetria de câmeras]] — tabelas de histórico/telemetria que mais crescem (janelas de 5 min, TTFF, heartbeat, rollup). Gancho: [[SOFTWARE-1922 - Janelas de 5 min + latência + rollup 90d]].
-- [ ] [[Novas regras de permissões de usuário]] — repassadas pelo Hadson em 02/07. Item mais documentado do lote; base para detalhar a spec.
-- [ ] [[Separação dos eventos de câmera por domínio]] — isolar a funcionalidade de eventos num domínio próprio. Gancho: [[SOFTWARE-1921 - Eventos de câmera (auto + duração)]].
-- [ ] [[Revisar uso de systemId em rotas de API]] — checar se há mais rotas que precisam do escopo `systemId` (já aplicado na busca por topologia da #574).
+- [ ] [[SOFTWARE-2003 - Encerramento robusto de sessões de stream (reaper + lease)]] — corrige o vazamento de `viewerCount` que mantém relays ffmpeg puxando 1080p das câmeras sem viewer. Origem: [[Incidente - vazamento de sessões de stream (banda das câmeras)]]. Frente Streaming.
+- [ ] [[SOFTWARE-2004 - Particionamento de tabelas de telemetria de câmeras]] — tabelas de histórico/telemetria que mais crescem (janelas de 5 min, TTFF, heartbeat, rollup). Gancho: [[SOFTWARE-1922 - Janelas de 5 min + latência + rollup 90d]].
+- [ ] [[SOFTWARE-2005 - Novas regras de permissões de usuário]] — repassadas pelo Hadson em 02/07. Item mais documentado do lote; base para detalhar a spec.
+- [ ] [[SOFTWARE-2006 - Separação dos eventos de câmera por domínio]] — isolar a funcionalidade de eventos num domínio próprio. Gancho: [[SOFTWARE-1921 - Eventos de câmera (auto + duração)]].
+- [ ] [[SOFTWARE-2007 - Revisar uso de systemId em rotas de API]] — checar se há mais rotas que precisam do escopo `systemId` (já aplicado na busca por topologia da #574).
+- [ ] [[SOFTWARE-2008 - Integração com perfis de mídia (endpoints)]] — **[Back]**: a tela do front já está pronta no mock, falta o `ms-cameras` expor a rota de perfis de mídia (ONVIF media profiles / `CameraStreamProfile`) pra tela integrar.
+- [ ] [[SOFTWARE-2009 - Escalabilidade horizontal do ms-cameras em Kubernetes]] — **épico**: rodar o ms-cameras com N réplicas de ponta a ponta (WS com adapter Redis + funil + lock + shards, healthcheck particionado, streaming coordenado, pod pai orquestrando a distribuição de câmeras).
 
 ## Insumo de planejamento
 

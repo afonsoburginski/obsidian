@@ -10,19 +10,21 @@ atualizado: 2026-07-03
 
 # Attlas — Sprint 23 (em planejamento)
 
-Backend `ms-cameras` e adjacências (squad 2). Sprint ainda **não criada no ClickUp**, então nenhuma tarefa tem `SOFTWARE-xxxx` - os cards e PRs são preenchidos quando abrirmos a sprint. Por ora cada tarefa está documentada e separada em nota própria.
+Backend `ms-cameras` e adjacências (squad 2). Sprint **ainda não criada no ClickUp**: as 7 tarefas foram criadas no **backlog da lista da Sprint 22** (temporário, mover depois), já com card `SOFTWARE-xxxx`, tag `squad 2` e assignee Afonso. Cada tarefa está documentada e separada em nota própria. Falta estimar e quebrar em specs atômicas.
 
 Origem do escopo: backlog levantado ao validar o ambiente em dev (03/07) + repasses de negócio. Backlog bruto: [[Próxima sprint - candidatos]].
 
 ## Tarefas
 
-| #   | Task                                                             | Frente             | Tamanho   | Card    | Status     |
-| --- | --------------------------------------------------------------- | ------------------ | --------- | ------- | ---------- |
-| 1   | [[Encerramento robusto de sessões de stream (reaper + lease)]]  | Streaming          | a estimar | a criar | a planejar |
-| 2   | [[Particionamento de tabelas de telemetria de câmeras]]         | Banco / Infra      | a estimar | a criar | a planejar |
-| 3   | [[Novas regras de permissões de usuário]]                       | Permissões         | a estimar | a criar | a planejar |
-| 4   | [[Separação dos eventos de câmera por domínio]]                 | Eventos            | a estimar | a criar | a planejar |
-| 5   | [[Revisar uso de systemId em rotas de API]]                     | API / Multi-tenant | a estimar | a criar | a planejar |
+| #   | Task                                                             | Frente             | Tamanho   | Card          | Status  |
+| --- | --------------------------------------------------------------- | ------------------ | --------- | ------------- | ------- |
+| 1   | [[SOFTWARE-2003 - Encerramento robusto de sessões de stream (reaper + lease)]]  | Streaming          | a estimar | SOFTWARE-2003 | backlog |
+| 2   | [[SOFTWARE-2004 - Particionamento de tabelas de telemetria de câmeras]]         | Banco / Infra      | a estimar | SOFTWARE-2004 | backlog |
+| 3   | [[SOFTWARE-2005 - Novas regras de permissões de usuário]]                       | Permissões         | a estimar | SOFTWARE-2005 | backlog |
+| 4   | [[SOFTWARE-2006 - Separação dos eventos de câmera por domínio]]                 | Eventos            | a estimar | SOFTWARE-2006 | backlog |
+| 5   | [[SOFTWARE-2007 - Revisar uso de systemId em rotas de API]]                     | API / Multi-tenant | a estimar | SOFTWARE-2007 | backlog |
+| 6   | [[SOFTWARE-2008 - Integração com perfis de mídia (endpoints)]]                  | Cameras            | a estimar | SOFTWARE-2008 | backlog |
+| 7   | [[SOFTWARE-2009 - Escalabilidade horizontal do ms-cameras em Kubernetes]]       | Escalabilidade     | épico     | SOFTWARE-2009 | backlog |
 
 ## Incidentes relacionados
 
@@ -30,9 +32,10 @@ Origem do escopo: backlog levantado ao validar o ambiente em dev (03/07) + repas
 
 ## A fazer no planejamento
 
-- [ ] Criar a Sprint 23 no ClickUp (lista + tag `squad 2`) e gerar os cards `SOFTWARE-xxxx`.
+- [x] Cards criados no ClickUp (SOFTWARE-2003 a 2009), no backlog da lista Sprint 22, com tag `squad 2` e assignee Afonso.
+- [ ] Criar a Sprint 23 no ClickUp e **mover** os 5 cards para lá.
 - [ ] Estimar cada tarefa (tamanho) e quebrar em specs atômicas (`UC-*` REST, `PROJ-*` handler/cron) em `apps/ms-cameras/docs/atomic/`.
-- [ ] Preencher `card`, `pr`, `branch` em cada nota conforme forem criados.
+- [ ] Preencher `pr` e `branch` em cada nota conforme forem criados.
 - [ ] Detalhar a tarefa 3 (permissões) a partir do material repassado pelo Hadson em 02/07.
 
 ## Processo (SDD + gate de qualidade)

@@ -4,8 +4,9 @@ tags:
   - sprint-23
   - task
   - permissoes
-card: a criar no ClickUp
-titulo: "[Back] Novas regras de permissões de usuário"
+card: SOFTWARE-2005
+clickup: https://app.clickup.com/t/86ajc6uzx
+titulo: "[Back] Permissoes: novas regras de permissoes de usuario"
 frente: Permissões
 tamanho: a estimar
 status: a planejar
@@ -26,7 +27,7 @@ Aplicar as novas regras de permissões de usuário repassadas pelo Hadson. Defin
 - [ ] Consolidar o material do Hadson (02/07) e transcrever as regras exatas aqui.
 - [ ] Mapear o que é papel/perfil x permissão granular por recurso.
 - [ ] Identificar onde vive hoje a autorização (Kong valida JWT no gateway; `@attlas/core-auth` lê claims) e o que muda em `ms-organization` vs nos serviços consumidores.
-- [ ] Cruzar com a tarefa [[Revisar uso de systemId em rotas de API]] (escopo multi-tenant costuma andar junto de permissão).
+- [ ] Cruzar com a tarefa [[SOFTWARE-2007 - Revisar uso de systemId em rotas de API]] (escopo multi-tenant costuma andar junto de permissão).
 - [ ] Derivar specs atômicas por serviço afetado.
 
 ## Fontes de verdade
