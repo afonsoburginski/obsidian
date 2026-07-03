@@ -13,15 +13,30 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Reports/2026-07-03.md",
+                "file": "Sprint/23/Próxima sprint - candidatos.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "2026-07-03"
+              "title": "Próxima sprint - candidatos"
+            }
+          },
+          {
+            "id": "f6f40dedb904b8cb",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Sprint/22/SOFTWARE-1923 - Bitrate histórico + TTFF.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "SOFTWARE-1923 - Bitrate histórico + TTFF"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -205,13 +220,29 @@
       "bases:Criar nova base": false,
       "obsidian-excalidraw-plugin:New drawing": false,
       "obsidian-git:Open Git source control": false,
-      "star-notebooklm:Send to NotebookLM": false,
-      "star-notebooklm:Open NotebookLM": false,
       "new-3d-graph:Open 3d graph": false
     }
   },
-  "active": "1c6b50edce58d1e6",
+  "active": "f6f40dedb904b8cb",
   "lastOpenFiles": [
+    "Sprint/23/Próxima sprint - candidatos.md",
+    "Sprint/23/Novas regras de permissões de usuário.md",
+    "Sprint/22/SOFTWARE-1923 - Bitrate histórico + TTFF.md",
+    "Sprint/22/SOFTWARE-1922 - Janelas de 5 min + latência + rollup 90d.md",
+    "Sprint/23/Incidente - vazamento de sessões de stream (banda das câmeras).md",
+    "Sprint/23/Encerramento robusto de sessões de stream (reaper + lease).md",
+    "Sprint/23/Revisar uso de systemId em rotas de API.md",
+    "Sprint/23/Revisar uso de systemId em rotas de API.md.tmp.112566.b187bbd1ccbe",
+    "Sprint/23/Separação dos eventos de câmera por domínio.md",
+    "Sprint/23/Novas regras de permissões de usuário.md.tmp.112566.6e84f842bc46",
+    "Sprint/23/Particionamento de tabelas de telemetria de câmeras.md",
+    "Sprint/23/Particionamento de tabelas de telemetria de câmeras.md.tmp.112566.3bd34e34e175",
+    "Sprint/23/Encerramento robusto de sessões de stream (reaper + lease).md.tmp.112566.c87e0ad6cec5",
+    "Sprint/23/Attlas - Sprint 23.md",
+    "Sprint/22/Attlas - Sprint 22.md",
+    "Sem título.canvas",
+    "Sprint/23",
+    "Reports/2026-07-03.md",
     "Docs/ms-cameras/Diagramas/03 - MOD-003 camera-health.excalidraw.md",
     "Docs/Sprint 21 - Backend Cameras.excalidraw.md",
     "Docs/ms-cameras/ms-cameras - visão geral.md",
@@ -226,29 +257,11 @@
     "Docs/ms-cameras/Saúde e monitoramento/Status em tempo real - Requisitos e SLA.md",
     "Docs/ms-cameras/Saúde e monitoramento/Status em tempo real - Fluxos.md",
     "Docs/ms-cameras/Saúde e monitoramento/Status em tempo real - Arquitetura e estratégias.md",
-    "Docs/ms-cameras/Saúde e monitoramento/Status em tempo real (push).md",
-    "Docs/ms-cameras/Saúde e monitoramento/Saúde e monitoramento - Requisitos e SLA.md",
-    "Docs/ms-cameras/Saúde e monitoramento/Saúde e monitoramento - Fluxos.md",
-    "Docs/ms-cameras/Saúde e monitoramento/Saúde e monitoramento - Arquitetura e estratégias.md",
-    "Docs/ms-cameras/Saúde e monitoramento/00 - Saúde e monitoramento.md",
     "Docs/ms-cameras/Saúde e monitoramento",
-    "Docs/ms-cameras/Saúde e disponibilidade/Saúde e disponibilidade - Requisitos e SLA.md",
-    "Docs/ms-cameras/Status em tempo real/Status em tempo real - Fluxos.md",
-    "Docs/ms-cameras/Status em tempo real/Status em tempo real - Arquitetura e estratégias.md",
-    "Docs/ms-cameras/Saúde e disponibilidade/Saúde e disponibilidade - Fluxos.md",
-    "Docs/ms-cameras/Saúde e disponibilidade/Saúde e disponibilidade - Arquitetura e estratégias.md",
-    "Docs/ms-cameras/Saúde e disponibilidade/00 - Saúde e disponibilidade.md",
-    "Docs/ms-cameras/Status em tempo real/00 - Status em tempo real.md",
     "Docs/ms-cameras/Status em tempo real",
     "Docs/ms-cameras/Video Wall",
     "Docs/ms-cameras/Eventos, incidentes e alarmes",
     "Docs/ms-cameras/PTZ e presets",
-    "Docs/ms-cameras/Saúde e disponibilidade",
-    "Docs/ms-cameras/Integração com dispositivo",
-    "Docs/ms-cameras/Cameras",
-    "Docs/ms-cameras/Diagramas",
-    "Sem título.canvas",
-    "Sprint/Sprint 22/Sem título 2.base",
     "Sem título 2.canvas",
     "Sem título 1.canvas"
   ]
