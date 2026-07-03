@@ -5,7 +5,7 @@ tags:
   - sprint-22
 sprint: Sprint 22 (29/06 a 05/07/2026)
 card: SOFTWARE-1889
-status: em andamento (T1 mergeada/Closed; T2-T6 em code review)
+status: quase fechada (T1-T4 e T6 mergeadas/Closed; T5/#577 e T7/#630 em code review)
 ---
 
 # Attlas - Sprint 22 (29/06 a 05/07/2026)
@@ -20,11 +20,12 @@ Escopo de dev backend-only: o frontend de "Saude da Camera" ja esta construido c
 | # | Tarefa | Frente | Tamanho | ClickUp | Status |
 | --- | --- | --- | --- | --- | --- |
 | 1 | Travamento do WebRTC (sem transcode) | Streaming | Media | SOFTWARE-1889 | PR #566 MERGEADA - fix validado local ponta a ponta (mediamtx remuxando RTP no cap de MTU, WebRTC sem STUN, videowall sem colapso) |
-| 2 | Busca de cameras por topologia (area / subarea) | Topologia | Pequena, isolada | SOFTWARE-1920 | PR #574 pushed + pronta p/ review (inclui escopo systemId + contadores videowall); sem conflito, mergeia limpa |
-| 3 | Eventos de camera (geracao automatica + duracao) | Eventos | Media | SOFTWARE-1921 | PR #575 pushed + pronta p/ review; sem conflito, mergeia limpa |
-| 4 | Saude da Camera: janelas de 5 min de disponibilidade + latencia (+ rollup 90d) | Saude | Grande | SOFTWARE-1922 | PR #576 pronta; sem conflito, mergeia limpa (mergear apos #566) |
-| 5 | Saude da Camera: bitrate historico + TTFF | Saude | Media | SOFTWARE-1923 | PR #577 pushed, fora de draft, aguardando review (empilhada); rebase onto develop apos #566+#576 mergearem. Recebeu tambem o fix do bug de producao "status Estavel com stream travado" (streamStatus na UC-027), aguardando push do commit |
-| 6 | Saude da Camera: endpoint `getHealthMetrics` + serie + SLA | Saude | Media | SOFTWARE-1924 | PR #578 pushed, fora de draft, aguardando review (carrega #576); rebase onto develop apos #576 mergear |
+| 2 | Busca de cameras por topologia (area / subarea) | Topologia | Pequena, isolada | SOFTWARE-1920 | PR #574 MERGEADA (01/07); task Closed |
+| 3 | Eventos de camera (geracao automatica + duracao) | Eventos | Media | SOFTWARE-1921 | PR #575 MERGEADA (01/07); task Closed |
+| 4 | Saude da Camera: janelas de 5 min de disponibilidade + latencia (+ rollup 90d) | Saude | Grande | SOFTWARE-1922 | PR #576 MERGEADA (02/07), review do neto-atman resolvido; task Closed |
+| 5 | Saude da Camera: bitrate historico + TTFF | Saude | Media | SOFTWARE-1923 | PR #577 ABERTA, aguardando review/merge (unica task nao fechada da sprint). Carrega tambem o fix "status Estavel com stream travado" (streamStatus na UC-027) |
+| 6 | Saude da Camera: endpoint `getHealthMetrics` + serie + SLA | Saude | Media | SOFTWARE-1924 | PR #578 MERGEADA (01/07); task Closed |
+| 7 | Streaming publico: mediamtx LL-HLS (3->7 segmentos) + watchdog WHEP->HLS no player | Streaming | Pequena, cross (`shared/`) | SOFTWARE-1990 | PR #630 ABERTA, em code review. Follow-up do diagnostico WebRTC da T1 |
 
 A Tarefa 1 e a **SOFTWARE-1889** ("[Back] Dividas tecnicas ms-cameras: persistencia de conexao e travamentos no WebRTC"), a branch que estamos. Veio da Sprint 21 e segue na Sprint 22, hoje em code review (PR #566). Diagnostico abaixo serve de registro dela.
 
@@ -32,9 +33,9 @@ Ordem sugerida: fechar o WebRTC (Tarefa 1, PR #566 ja aberto), depois a 2 (topol
 
 ## Cascateamento e ordem de merge
 
-Estado: #566 MERGEABLE + APPROVED; #574/#575/#576/#577/#578 fora de draft e pushadas, aguardando review (merge ainda nao feito).
+Estado (02/07): cascata resolvida. #566, #574, #575, #578 e #576 MERGEADAS; so #577 segue aberta, aguardando review/merge. As tasks correspondentes estao Closed no ClickUp (menos SOFTWARE-1923).
 
-Ordem de merge: **#566 -> #576 -> rebase #578 onto develop -> rebase #577 onto develop**. #574 e #575 sao independentes, mergeiam a qualquer momento.
+Ordem de merge executada: **#566 -> #574/#575 (independentes) -> #578 -> #576**. Falta so rebasear #577 onto develop e mergear quando aprovar.
 
 - **#576 -> #578 (duplicacao a vigiar):** as branches nao sao empilhadas no git, mas a #578 carrega copia byte-a-byte da implementacao do #576 (mesma migration de disponibilidade/rollup, schemas, aggregator, repositories, workers, `.env.example`). Mergear as duas independentes = migration duplicada + conflito. Mergear #576 primeiro e rebasear #578 onto develop faz a copia sumir; revisar a #578 so pelo delta (composer + controller + handler + contrato).
 - **#566 -> #577 (dependencia de codigo):** o #577 (bitrate) usa o `MediamtxClient` introduzido no #566. Rebasear #577 onto develop apos #566+#576 mergearem encolhe o diff ao delta proprio.
@@ -193,6 +194,20 @@ Decisao (com o dono): manter `connectionStatus` device-only conforme a separacao
 - [x] Spec UC-027 atualizada (BR-DIAG-004, interface, criterios, testes).
 - [x] 7 testes unitarios cobrindo os cinco caminhos. Gate verde: 668 testes, lint 0 erros, build ok.
 - Pendente: commit + push do afonso (harness nao faz git ops).
+
+#### Fundacao de WebRTC publico via TURN (PR #597, CROSS-032) - retornar depois
+
+Follow-up do #566. Decisao do dono (01/07): o streaming vai ser exposto pra internet publica, mas so consome quem ja esta logado no Attlas (sem stream anonimo). Aberto PR #597 (branch `shared/feat/public-webrtc-turn`, base develop) com a fundacao versionada e INERTE ate deploy:
+
+- servico `coturn` no docker-compose.yml (relay TURN sobre TLS 5349 pra furar firewall corporativo, faixa de relay 49160-49200, nega peers privados).
+- `docker/turnserver.conf` + `docker/mediamtx.yml` com `webrtcAdditionalHosts` e `webrtcICEServers2` dirigidos por env do servidor (credenciais nunca versionadas).
+- spec `docs/specs/cross-service/CROSS-032-public-webrtc-turn.md` com runbook.
+
+Follow-ups travados no runbook (nao feitos ainda): implementar a auth do stream (URL WHEP assinada e curta validada pelo mediamtx, reusa permissoes), abrir portas no SG da AWS (8189/udp, 3478, 5349, 49160-49200/udp), certificado TLS no coturn, ligar os ICE servers no player (frontend), e deploy. Enquanto a auth nao estiver pronta, NAO abrir as portas no SG.
+
+Contexto do "por que estavel com stream travado": ver tambem o fix de streamStatus adicionado ao #577 acima.
+
+**Streaming publico funcionando (02/07, PR #630, SOFTWARE-1990, em code review):** o WebRTC publico passou a conectar ponta a ponta no dev sem depender do TURN. A causa raiz era de infra no servidor de dev (a cadeia FORWARD do iptables tinha perdido o jump do Docker por causa do Tailscale, mais a UDP 8189 fechada no Security Group), corrigida e persistida no box. No repo entraram dois ajustes: LL-HLS do mediamtx subiu de 3 para 7 segmentos (com 3 o muxer HLS morria na hora e derrubava o fallback pra todos), e um watchdog no player que cai pra HLS em ~8s quando o WebRTC negocia mas a midia nao chega. A fundacao TURN (#597) segue como reserva pra quem esta atras de firewall corporativo que bloqueia UDP.
 
 ### Tarefa 6 - Endpoint getHealthMetrics + serie + SLA
 

@@ -8,20 +8,35 @@
         "type": "tabs",
         "children": [
           {
-            "id": "833a32f75a555a7a",
+            "id": "7abd0c57a731ec36",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Docs/Kubernetes/arquitetura.md",
-                "mode": "preview",
+                "file": "Sprint/Attlas - Sprint 22.md",
+                "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "arquitetura"
+              "title": "Attlas - Sprint 22"
+            }
+          },
+          {
+            "id": "d11dbadb702dde1b",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Esboço de task.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Esboço de task"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -78,8 +93,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 360.51103591918945,
-    "collapsed": true
+    "width": 360.51103591918945
   },
   "right": {
     "id": "7f39f37a7b274764",
@@ -175,6 +189,18 @@
               "icon": "git-pull-request",
               "title": "Source Control"
             }
+          },
+          {
+            "id": "ddd2a3e1a4c67036",
+            "type": "leaf",
+            "state": {
+              "type": "file-properties",
+              "state": {
+                "file": "Esboço de task.md"
+              },
+              "icon": "lucide-info",
+              "title": "Propriedades do arquivo Esboço de task"
+            }
           }
         ],
         "currentTab": 5
@@ -193,21 +219,31 @@
       "command-palette:Abrir paleta de comandos": false,
       "bases:Criar nova base": false,
       "obsidian-excalidraw-plugin:New drawing": false,
-      "obsidian-git:Open Git source control": false
+      "obsidian-git:Open Git source control": false,
+      "galaxy-view:打开星系视图": false
     }
   },
-  "active": "833a32f75a555a7a",
+  "active": "eb00cdf02b16c0b3",
   "lastOpenFiles": [
+    "Sprint/Attlas - Sprint 22.md",
+    "Esboço de task.md",
+    "Reports/Sem título.md",
+    "Reports/2026-07-03.md",
+    "Reports/2026-07-02.md",
+    "Docs/Kubernetes/04-CI-CD.md",
+    "Reports/2026-07-01.md",
+    "Reports/2026-07-01.md.tmp.4462.636d4b68b5d6",
+    "Docs/Kubernetes/01-VISAO-GERAL.md",
+    "Docs/Streaming/04-Diagnostico-travamento-WebRTC.md",
+    "Docs/Kubernetes/02-DIMENSIONAMENTO.md",
+    "Docs/Kubernetes/arquitetura.md",
     "Docs/Kubernetes/Arquitetura.excalidraw.md",
     "Docs/Kubernetes/Provisionar cluster - Terraform RKE2.md",
     "Docs/Kubernetes/Regras de escala - ScaledObjects.md",
     "Docs/Sprint 21 - Backend Cameras.excalidraw.md",
     "Docs/Kubernetes/Bootstrap - KEDA e autoescala.md",
     "Docs/Kubernetes/03-PRODUCAO.md",
-    "Docs/Kubernetes/02-DIMENSIONAMENTO.md",
-    "Docs/Kubernetes/01-VISAO-GERAL.md",
     "Docs/Kubernetes/00 - Indice.md",
-    "Sprint/Attlas - Sprint 22.md",
     "Reports/2026-06-30.md",
     "Reports/Report diario.md",
     "Reports/2026-06-26.md",
@@ -222,18 +258,9 @@
     "Sprint/Attlas - Sprint 22.md.tmp.11125.73ff854b0307",
     "Sprint/Attlas - Sprint 22.md.tmp.11125.6643187c2587",
     "Sprint/Attlas - Sprint 22.md.tmp.11125.33750dce1d2a",
-    "Sprint/Attlas - Sprint 22.md.tmp.14166.2b7d28cd6bcc",
     "Docs/Infra/CI runners - disco cheio (runbook e prevencao).md",
     "README.md",
     "Home.md",
-    "Docs/Streaming/Streaming - HLS x WebRTC.excalidraw.md",
-    "Docs/Kubernetes/arquitetura.md",
-    "Docs/Streaming/Streaming.excalidraw.md",
-    "Docs/Streaming/01-Arquitetura-streaming.md",
-    "Docs/Streaming/04-Diagnostico-travamento-WebRTC.md",
-    "Docs/Streaming/03-WebRTC-WHEP.md",
-    "Docs/Streaming/02-HLS.md",
-    "Excalidraw/Drawing 2026-06-26 15.15.18.excalidraw.md",
     "Sem título 2.canvas",
     "Sem título 1.canvas",
     "Sem título.canvas"
