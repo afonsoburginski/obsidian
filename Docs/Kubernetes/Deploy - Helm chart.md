@@ -13,7 +13,7 @@ resolvem dentro do namespace. **Não altera o `docker-compose.yml`** (deploy do 
 
 - **microservices**: organization, traffic-model, pmv, cameras, connector-une,
   communication-channels, audit. (Adicione à lista para subir mais — sem template novo.)
-- **databases**: 6 PostgreSQL (`emptyDir`, efêmero). **redis**: 3.
+- **databases**: 6 PostgreSQL (`emptyDir`, efêmero) — `connector-une` não tem banco, só Redis. **redis**: 3.
 - **infra**: zookeeper, kafka (+ Job `kafka-init`), kong, mailhog, mediamtx. **web-attlas**.
 
 ## Pré-requisitos

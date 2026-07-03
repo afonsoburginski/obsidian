@@ -63,7 +63,7 @@ Ao aplicar pela 1ª vez num host libvirt, três coisas mordem — todas resolvid
 Provisiona **3 control-plane (HA, VIP via kube-vip) + N workers fixos** (`server_count` /
 `agent_count`, com sizing por papel: `server_vcpu`/`agent_vcpu`/`*_memory_mb` + `vip`).
 **Não** há autoscaler de nó — a capacidade de VM é fixa/planejada. A escala de carga é de
-**pods, via KEDA** (ver `infra/bootstrap/scaling/` e [`01-VISAO-GERAL`](../../docs/01-VISAO-GERAL.md) §4). O `var.max_pods` é só teto.
+**pods, via KEDA** (ver `infra/bootstrap/scaling/` e [[01-VISAO-GERAL]] §4). O `var.max_pods` é só teto.
 
 ## Depois do cluster no ar (camadas seguintes, fora deste módulo)
 

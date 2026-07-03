@@ -1,7 +1,7 @@
 # Escalonamento de pods com KEDA — plano por serviço (attlas-quito)
 
 > [!abstract] Regra
-> Escala **só de pods**, via **KEDA** (ScaledObjects). **Bancos e infra com estado NÃO escalam** (`db-*`, `redis-*`, `kafka`, `zookeeper` = single-instance + PV). KEDA cria um HPA por baixo de cada ScaledObject. KEDA já instalado no cluster (ns `keda`). Refs: [scalers](https://keda.sh/docs/2.20/scalers/), [kafka](https://keda.sh/docs/2.20/scalers/apache-kafka/).
+> Escala **só de pods**, via **KEDA** (ScaledObjects). **Bancos e infra com estado NÃO escalam** (`db-*`, `redis-*`, `kafka`, `zookeeper` = single-instance + PV). KEDA cria um HPA por baixo de cada ScaledObject. KEDA já instalado no cluster (ns `keda`, v2.16.1). Refs: [scalers](https://keda.sh/docs/2.16/scalers/), [kafka](https://keda.sh/docs/2.16/scalers/apache-kafka/).
 
 ## Qual scaler para cada caso
 
@@ -32,14 +32,14 @@
 
 ## Templates de ScaledObject
 
-- [`rest-cpu.yaml`](./rest-cpu.yaml) — serviço REST/stateless (CPU).
-- [`kafka-consumer.yaml`](./kafka-consumer.yaml) — consumidor Kafka (lag) + CPU.
+- `rest-cpu.yaml` — serviço REST/stateless (CPU).
+- `kafka-consumer.yaml` — consumidor Kafka (lag) + CPU.
 
 Convém versioná-los **no chart `infra/helm/attlas`**, um ScaledObject por serviço, gated pela flag `enabled` do serviço (ver [[04-CI-CD]]). Kafka interno do cluster = sem auth (`sasl: none`, `tls: disable`); se um dia tiver SASL/TLS, usar `TriggerAuthentication`.
 
 ## Parâmetros a calibrar
 
 - `minReplicaCount` ≥ 1 nos serviços sempre-ligados (sem scale-to-zero nos críticos).
-- `maxReplicaCount`: teto por serviço — lembrar do limite de **CPU/RAM dos 3 workers fixos** (8 CPU/16 GB cada); a soma dos picos tem que caber.
-- `kafka.lagThreshold`: mensagens de lag por réplica antes de escalar (default 10; subir p/ serviços de alto volume).
+- `maxReplicaCount`: teto por serviço — a soma dos picos tem que caber em 2 dos 3 workers (N+1). Worker do servidor de teste = 8 vCPU/16 GB; produção = 16 vCPU/48 GB (ver [[02-DIMENSIONAMENTO]] §5 e §7).
+- `kafka.lagThreshold`: mensagens de lag por réplica antes de escalar (default 50 no chart; subir p/ serviços de alto volume).
 - `cpu` target: ~50–70% de utilização.

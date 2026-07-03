@@ -1,30 +1,30 @@
-Attlas 26 - Quito | Hardware
+---
+tags:
+  - kubernetes
+  - infra
+  - hardware
+---
 
-VMs (cluster RKE2 HA, idêntico ao laboratório; muda só o hypervisor:
-Nutanix no lugar do KVM)
+# Hardware — resumo
 
-- 3 control-plane: 4 vCPU / 8 GB RAM / 50 GB SSD (cada)
-- 3 workers: 16 vCPU / 32 GB RAM / 100 GB SSD (cada)
+Resumo do hardware do cluster de **produção** (RKE2 HA 3+3). Cálculo completo, armazenamento e limites por serviço: [[02-DIMENSIONAMENTO]] (§5 e §7). Operação no cliente: [[03-PRODUCAO]].
 
-Soma das 6 VMs: 60 vCPU | 120 GB RAM | 450 GB SSD
+> [!important] Hardware total do cluster: **60 vCPU / 120 GB RAM / ~3 TB SSD**
 
-Servidor para o cluster (VMs + hypervisor Nutanix + folga de crescimento):
+| Papel | Qtd | vCPU (cada) | RAM (cada) | SSD |
+| --- | --- | --- | --- | --- |
+| Control-plane (RKE2 + etcd) | 3 | 4 | 8 GB | 100 GB |
+| Worker (agent) | 3 | **16** | **32 GB** | **200 GB** |
+| Pool de dados (Nutanix CSI) | 1 pool | — | — | **~2 TB** |
+| **TOTAL** | **6 VMs** | **60 vCPU** | **120 GB** | **~3 TB** |
 
-- CPU: 72 vCPU (60 das VMs + 12 do Nutanix / CVM)
-- RAM: 192 GB (120 das VMs + 32 do Nutanix + folga)
-- SSD: 2 TB (450 GB das VMs + folga p/ crescimento de auditoria/Kafka)
+- **De onde vêm os números.** Worker de 16 vCPU: o regime de Quito (~23 vCPU, pico ~32) tem que caber em **2 dos 3 workers** (N+1 → 2×16 = 32). RAM de 32 GB: puxada pelo `db-audit` (~5 GB sozinho no attlas 25) + réplicas de câmeras; 2 workers = 64 GB seguram o regime (~21 GB) com folga.
+- **Discos das VMs são pequenos** (só SO/imagens/efêmero: control-plane 100 GB, worker 200 GB). O dado dos serviços com estado vive num **pool via Nutanix CSI** — 1 volume por banco, instância única sem réplica (`db-audit` o maior). ~2 TB de partida (attlas 25 = ~700 GB hoje), expansível. Backup é do cliente, off-box.
+- **Servidor de teste** (`attlas-quito` no lab): mesma topologia 3+3 num cluster menor (workers hoje 8 vCPU / 16 GB), por ser prova de conceito. Os números de produção não dependem do tamanho do lab.
+- **Alternativa equivalente** aos workers de 16 vCPU: 5–6 workers de 8 vCPU (mesma capacidade, mais nós).
 
-SO das VMs: Ubuntu Server 24.04 LTS
-Kubernetes: RKE2 v1.35.5 (gestão via Rancher/Fleet, deploy via Helm)
-Criação das VMs: Nutanix (painel Prism ou Terraform / provider Nutanix)
+## Rede e acesso (produção — Quito)
 
-Rede / IP (sub-rede dedicada):
-
-- 6 IPs via DHCP (1 por VM)
-- 1 IP fixo (fora do DHCP) para o VIP do servidor de API
-- 1 IP para a aplicação web
-
-Acesso:
-
-- Gestão do cluster: VPN WireGuard (Atman <-> Quito)
-- Usuários: aplicação web via HTTPS
+- Sub-rede dedicada: 6 IPs por DHCP (1/VM) + 1 IP fixo para o VIP do API server (kube-vip) + 1 IP para a web.
+- SO: Ubuntu Server 24.04 LTS · Kubernetes: RKE2 v1.35.5 · VMs criadas pelo Nutanix (Prism / Terraform).
+- Gestão: VPN WireGuard (Atman ↔ Quito). Usuários: web por HTTPS (ingress).

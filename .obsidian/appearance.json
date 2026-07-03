@@ -1,3 +1,9 @@
 {
-  "theme": "obsidian"
+  "theme": "obsidian",
+  "accentColor": "#3794eb",
+  "interfaceFontFamily": "AppleGothic",
+  "textFontFamily": "AppleGothic",
+  "baseFontSizeAction": true,
+  "baseFontSize": 14,
+  "translucency": true
 }

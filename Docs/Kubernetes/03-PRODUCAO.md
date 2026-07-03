@@ -3,20 +3,21 @@
 > Resumo: o cliente provê um servidor físico Nutanix; o Nutanix cria 6 VMs fixas; as VMs formam um cluster RKE2 HA (3 control-plane + 3 workers) gerido pelo Rancher; a escala automática é de pods, via KEDA (não de VMs); a aplicação é distribuída por GitOps (Rancher Fleet) alimentado pela CI do GitHub Actions.
 
 - Versão: 3.0 - Data: 26/06/2026
-- Companion: [[01-VISAO-GERAL]] (plataforma, validada no lab), [[02-DIMENSIONAMENTO]] (testes de carga e hardware), [[04-CI-CD]] (distribuição), [[arquitetura]] (diagrama). Resumo de hardware enviado ao cliente: [`hardware-resumo.md`](./hardware-resumo.md).
+- Companion: [[01-VISAO-GERAL]] (plataforma, validada no lab), [[02-DIMENSIONAMENTO]] (testes de carga e hardware), [[04-CI-CD]] (distribuição), [[arquitetura]] (diagrama). Configuração das VMs: seção "Configuração das VMs (produção - Quito)" do [[Guia operacional (infra)]].
 
-## 1. Hardware
+## 1. Configuração das VMs
 
-O cliente compra UMA máquina física (servidor Nutanix). O Nutanix cria, dentro dela, as 6 VMs do cluster. Logo o hardware a adquirir é a soma das VMs mais o overhead do próprio Nutanix.
+A Atman entrega a configuração do cluster de **produção** (hardware forte), que são 6 VMs fixas: **hardware total do cluster = 60 vCPU / 120 GB / ~3 TB SSD** (ver [[02-DIMENSIONAMENTO]] seção 5). O servidor de teste roda a mesma topologia num cluster menor, por ser prova de conceito. O servidor físico que hospeda estas VMs (o Nutanix, incluindo a reserva do próprio AHV/CVM) é dimensionado e adquirido pelo cliente. O que fixamos aqui é a VM; o hardware físico embaixo dela é responsabilidade do cliente.
 
-| Item                         | Especificação                       |
-| ---------------------------- | ----------------------------------- |
-| **Máquina física**           | **72 vCPU / 192 GB RAM / 2 TB SSD** |
-| 3 control-plane (cada)       | 4 vCPU / 8 GB / 50 GB SSD           |
-| 3 workers (cada)             | 16 vCPU / 32 GB / 100 GB SSD        |
-| Overhead Nutanix (AHV + CVM) | ~12 vCPU / ~32 GB                   |
+| Papel                       | Qtd    | vCPU (cada) | RAM (cada) | SSD    |
+| --------------------------- | ------ | ----------- | ---------- | ------ |
+| Control-plane (server)      | 3      | 4           | 8 GB       | 100 GB |
+| Worker (agent)              | 3      | 16          | 32 GB      | 200 GB |
+| Pool de dados (Nutanix CSI) | 1 pool | -           | -          | ~2 TB  |
 
-- Soma das 6 VMs: 60 vCPU / 120 GB / 450 GB SSD. O resto é overhead do Nutanix e folga de crescimento.
+- Soma: **60 vCPU / 120 GB / ~3 TB SSD** (~0,9 TB nos discos de SO das VMs + ~2 TB no pool de dados). O host do cliente tem que comportar isso mais a reserva do próprio Nutanix; esse dimensionamento do host é do cliente.
+- SSD: os discos das VMs são pequenos (control-plane 100 GB, worker 200 GB: só SO/imagens/efêmero). O dado dos serviços com estado **não fica no disco do worker**, e sim num **pool de dados via Nutanix CSI** - 1 volume por banco, instância única sem réplica (db-audit o maior). Estimativa ~2 TB (attlas 25 = ~700 GB hoje), expansível; backup é do cliente. Detalhe: ver [[02-DIMENSIONAMENTO]] seção 5.
+- Recurso por microsserviço (reserva e teto de cada réplica): ver [[02-DIMENSIONAMENTO]] seção 7.
 - CPU das VMs em modo passthrough (host) para o KEDA ter métrica de CPU precisa.
 - SO: Ubuntu Server 24.04 LTS. Kubernetes: RKE2 v1.35.5.
 - Worker de 16 vCPU é o sizing de produção (o lab rodou 8 vCPU sem carga real de cidade). Medições e cálculo: ver [[02-DIMENSIONAMENTO]].
@@ -55,7 +56,7 @@ Tudo acima de RKE2 é idêntico ao lab; a única troca é a virtualização (KVM
 
 ## 4. Escala
 
-Modelo idêntico ao da plataforma, detalhado em [[01-VISAO-GERAL]] §4: a escala automática é só de **pods** (KEDA, por CPU e/ou lag de Kafka), as **VMs são fixas** (3+3, sem autoscaler de nó) e os **bancos não escalam** (single-instance + PV). Recorte de produção: os tetos de réplica por serviço são dimensionados para caber em 2 workers (N+1) - ver [[02-DIMENSIONAMENTO]] §5.
+Modelo idêntico ao da plataforma, detalhado em [[01-VISAO-GERAL]] §4: a escala automática é só de **pods** (KEDA, por CPU e/ou lag de Kafka), as **VMs são fixas** (3+3, sem autoscaler de nó) e os **bancos não escalam** (single-instance + PV). Recorte de produção (**hardware dedicado**): o `max` de réplica de cada serviço é um **limite duro**, e a soma de `max x teto de CPU` mais a reserva dos serviços com estado é dimensionada para caber no cluster com o regime dentro de 2 workers (N+1). Tabela e regra em [[02-DIMENSIONAMENTO]] seção 7.
 
 ## 5. Armazenamento
 

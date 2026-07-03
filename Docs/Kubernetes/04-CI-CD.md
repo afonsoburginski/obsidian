@@ -13,10 +13,10 @@
 Do commit ao cluster, em 5 passos:
 
 1. **Código** numa única branch (trunk). O merge só entra com lint + test + build verdes (ver `CLAUDE.md`).
-2. **GitHub Actions** builda os serviços afetados (`nx affected`) e publica **uma imagem por serviço** com **tag imutável** (`:<semver>` + `:<git-sha>`).
+2. **GitHub Actions** builda os serviços afetados (`nx affected`) e publica **uma imagem por serviço**. Hoje: `:dev` (mutável) + `:<git-sha>` (imutável). Alvo: substituir `:dev` por `:<semver>` imutável (release set, §5).
 3. **Docker Registry** guarda as imagens. A mesma imagem serve todos os clientes (**build once, deploy many**).
 4. **Git (GitOps)** guarda, por cluster, **qual versão e quais serviços** rodam — em `values/<cliente>.yaml`.
-5. **Rancher Fleet** observa o Git e aplica o chart Helm [`infra/helm/attlas`](../helm/attlas) com os valores daquele cluster (`helm upgrade`).
+5. **Rancher Fleet** observa o Git e aplica o chart Helm `infra/helm/attlas` com os valores daquele cluster (`helm upgrade`).
 
 > Diagrama do fluxo: [[arquitetura]] (bloco "Pipeline CI/CD").
 
@@ -24,12 +24,12 @@ Do commit ao cluster, em 5 passos:
 
 ## 2. As regras que valem
 
-| Regra                                | O que significa                                                                      |
-| ------------------------------------ | ------------------------------------------------------------------------------------ |
-| **Build once, deploy many**          | A imagem é construída **uma vez** e **promovida** entre clusters, sem rebuild        |
-| **Uma branch, não uma por ambiente** | O que diferencia os clusters é **configuração + versão fixada em Git**, não a branch |
-| **Versão imutável**                  | Tag fixa `:<semver>` + `:<git-sha>`; **nunca** `latest`/`production` mutável         |
-| **Estado em Git**                    | O que cada cluster roda vive versionado; o **Fleet** reconcilia (deploy declarativo) |
+| Regra                                | O que significa                                                                                                   |
+| ------------------------------------ | ----------------------------------------------------------------------------------------------------------------- |
+| **Build once, deploy many**          | A imagem é construída **uma vez** e **promovida** entre clusters, sem rebuild                                     |
+| **Uma branch, não uma por ambiente** | O que diferencia os clusters é **configuração + versão fixada em Git**, não a branch                              |
+| **Versão imutável** (alvo)           | Meta: tag imutável `:<semver>` + `:<git-sha>`, sem tag mutável. Hoje a CI ainda publica `:dev` (mutável) — ver §5 |
+| **Estado em Git**                    | O que cada cluster roda vive versionado; o **Fleet** reconcilia (deploy declarativo)                              |
 
 Um **release set** (ex.: `attlas-2026.06.0`) agrupa as versões de todos os serviços de um release. **É ele que se fixa por cluster** — fácil de promover, reverter e auditar.
 
@@ -63,6 +63,6 @@ services:                             services:
 
 - **Registry:** definir Docker Hub `atmanadmin/*` (privado) ou registry próprio — o resto do desenho independe disso.
 - **Segredos:** manter fora do Git em claro (SealedSecrets / ExternalSecrets).
-- **CI:** mudar para **tag imutável + release set** (o legado usa `:production`), criar a pasta GitOps e ligar o Fleet nela.
+- **CI:** hoje publica `:dev` (mutável) + `:<git-sha>`; mudar para **tag imutável + release set** (`:<semver>`), criar a pasta GitOps e ligar o Fleet nela.
 - **Registro no Rancher automatizado:** hoje o import do cluster no Rancher é manual (aplicar o manifesto do agente após o `terraform apply`). Automatizar como passo do bootstrap (§4) para o ciclo cliente-novo ser realmente um disparo só.
 - **Distribuição de imagens privadas:** sem registry acessível ao cluster, as imagens `atmanadmin/*` são carregadas à mão no containerd de cada nó (`ctr import`). Com o registry (acima) + `imagePullSecret`, o nó puxa sozinho.

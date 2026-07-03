@@ -88,13 +88,13 @@ A escala **automática é só de pods**, via **KEDA**. A capacidade de VM é **f
 ### 4.1 Regras de escalonamento com KEDA — decisão e como configuramos
 
 > [!important] Decisão (best practice de gestão com KEDA)
-> A escala horizontal de pods é gerida **exclusivamente por ScaledObjects do KEDA**, declarados **como código no chart** [`infra/helm/attlas`](../helm/attlas) (bloco `scaling` em `values.yaml`) — **um ScaledObject por serviço stateless**. **Bancos/broker/cache não entram em `scaling`** → não recebem ScaledObject → não escalam. Regra versionada, auditável e reconciliada por GitOps; **sem `kubectl` manual** no cluster.
+> A escala horizontal de pods é gerida **exclusivamente por ScaledObjects do KEDA**, declarados **como código no chart** `infra/helm/attlas` (bloco `scaling` em `values.yaml`) — **um ScaledObject por serviço stateless**. **Bancos/broker/cache não entram em `scaling`** → não recebem ScaledObject → não escalam. Regra versionada, auditável e reconciliada por GitOps; **sem `kubectl` manual** no cluster.
 
 **Onde a regra vive (fonte única de verdade).** O mapa `scaling:` no `values.yaml` do chart — uma entrada por serviço com `min`/`max` e os gatilhos (`cpu`, `kafka`). O template `templates/scaledobjects.yaml` itera esse mapa e gera um ScaledObject por entrada, _gated_ por `keda.enabled`. Quem **não** está no mapa não escala (é assim que os bancos ficam de fora).
 
 **Como atualizar uma regra (fluxo GitOps).** Editar a entrada do serviço em `values/<cliente>.yaml` (ou no `values.yaml` base) → commit → **Fleet** reconcilia → `helm upgrade` → KEDA aplica o ScaledObject novo e ajusta o HPA por baixo. **Nunca** editar o ScaledObject direto no cluster (`kubectl edit`) — perde a fonte de verdade no Git.
 
-**Como escolher o gatilho** (a tabela por serviço fica em [`infra/bootstrap/scaling/`](../bootstrap/scaling/README.md)):
+**Como escolher o gatilho** (a tabela por serviço fica em [[Regras de escala - ScaledObjects]]):
 
 | Natureza da carga           | Gatilho                                            | Por quê                                      |
 | --------------------------- | -------------------------------------------------- | -------------------------------------------- |
@@ -107,14 +107,14 @@ A escala **automática é só de pods**, via **KEDA**. A capacidade de VM é **f
 **Parâmetros e calibração:**
 
 - `min ≥ 1` nos serviços sempre-ligados (sem scale-to-zero nos críticos).
-- `max` limitado pela **CPU/RAM dos 3 workers fixos** (8 CPU/16 GB cada) — a soma dos picos tem que caber.
+- `max` limitado pela **CPU/RAM dos workers** (alvo do cluster: 16 vCPU / 32 GB; servidor de teste hoje 8 vCPU / 16 GB, ver [[02-DIMENSIONAMENTO]] §5) - a soma dos picos tem que caber em 2 de 3 (N+1).
 - `kafka.lag` (lagThreshold): msgs de lag por réplica antes de escalar (default 50 no chart; subir p/ alto volume).
 - Kafka interno = `sasl: none` / `tls: disable`, bootstrap `kafka.attlas.svc.cluster.local:29092`. Com SASL/TLS no futuro → `TriggerAuthentication`.
 
 **Validado no servidor.** KEDA `v2.16.1` (ns `keda`: operator + metrics-apiserver + admission). ScaledObject `burner` (`cpu` 50%, 1→20) gerando o HPA `keda-hpa-burner` — escala de pods comprovada nos workers. Os ScaledObjects dos `ms-*` sobem junto com a stack (via chart) quando as imagens estão publicadas.
 
 > [!note] O limite real é CPU/RAM (não o `max-pods`)
-> `max-pods=110` é só teto; o que limita a densidade de pods por worker é **CPU/RAM (requests)**. Como os workers são fixos (8 CPU/16 GB), dimensione os requests dos serviços para caber. Memória não é compressível — se o uso real estourar a RAM do nó, o kernel faz **OOM-kill**/eviction.
+> `max-pods=110` é só teto; o que limita a densidade de pods por worker é **CPU/RAM (requests)**. Como os workers têm tamanho fixo (cluster: 16 vCPU / 32 GB; servidor de teste hoje 8/16), dimensione os requests dos serviços para caber. Memória não é compressível - se o uso real estourar a RAM do nó, o kernel faz **OOM-kill**/eviction.
 
 > [!note] Load balancer é outro eixo (não cria capacidade)
 > O **Ingress nginx** (porta 80/443 do host) + **kube-proxy** apenas **repartem** o tráfego entre as réplicas existentes. Quem **cria capacidade** é o **KEDA** (pods). Não há LB de nuvem.

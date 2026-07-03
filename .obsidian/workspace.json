@@ -4,39 +4,20 @@
     "type": "split",
     "children": [
       {
-        "id": "86a513865a69b76f",
+        "id": "f0e4a6b2a87c10cf",
         "type": "tabs",
         "children": [
           {
-            "id": "7abd0c57a731ec36",
+            "id": "1c6b50edce58d1e6",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Sprint/Attlas - Sprint 22.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "Attlas - Sprint 22"
-            }
-          },
-          {
-            "id": "d11dbadb702dde1b",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Esboço de task.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "Esboço de task"
+              "type": "graph",
+              "state": {},
+              "icon": "lucide-git-fork",
+              "title": "Visualização em gráfico"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -93,7 +74,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 360.51103591918945
+    "width": 412.5
   },
   "right": {
     "id": "7f39f37a7b274764",
@@ -196,10 +177,10 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "Esboço de task.md"
+                "file": "Sprint/Sprint 22/Attlas - Sprint 22.md"
               },
               "icon": "lucide-info",
-              "title": "Propriedades do arquivo Esboço de task"
+              "title": "Propriedades do arquivo Attlas - Sprint 22"
             }
           }
         ],
@@ -207,7 +188,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 497.5
+    "width": 335.5
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -220,49 +201,51 @@
       "bases:Criar nova base": false,
       "obsidian-excalidraw-plugin:New drawing": false,
       "obsidian-git:Open Git source control": false,
-      "galaxy-view:打开星系视图": false
+      "star-notebooklm:Send to NotebookLM": false,
+      "star-notebooklm:Open NotebookLM": false,
+      "new-3d-graph:Open 3d graph": false
     }
   },
-  "active": "eb00cdf02b16c0b3",
+  "active": "1c6b50edce58d1e6",
   "lastOpenFiles": [
-    "Sprint/Attlas - Sprint 22.md",
-    "Esboço de task.md",
-    "Reports/Sem título.md",
-    "Reports/2026-07-03.md",
-    "Reports/2026-07-02.md",
-    "Docs/Kubernetes/04-CI-CD.md",
-    "Reports/2026-07-01.md",
-    "Reports/2026-07-01.md.tmp.4462.636d4b68b5d6",
-    "Docs/Kubernetes/01-VISAO-GERAL.md",
-    "Docs/Streaming/04-Diagnostico-travamento-WebRTC.md",
-    "Docs/Kubernetes/02-DIMENSIONAMENTO.md",
-    "Docs/Kubernetes/arquitetura.md",
-    "Docs/Kubernetes/Arquitetura.excalidraw.md",
-    "Docs/Kubernetes/Provisionar cluster - Terraform RKE2.md",
-    "Docs/Kubernetes/Regras de escala - ScaledObjects.md",
+    "Docs/ms-cameras/Diagramas/03 - MOD-003 camera-health.excalidraw.md",
     "Docs/Sprint 21 - Backend Cameras.excalidraw.md",
-    "Docs/Kubernetes/Bootstrap - KEDA e autoescala.md",
-    "Docs/Kubernetes/03-PRODUCAO.md",
-    "Docs/Kubernetes/00 - Indice.md",
-    "Reports/2026-06-30.md",
-    "Reports/Report diario.md",
-    "Reports/2026-06-26.md",
-    "Sprint/Attlas - Sprint 22.md.tmp.568458.21561053d353",
-    "Sprint/Attlas - Sprint 22.md.tmp.568458.c28285bc1a27",
-    "Sprint/Sprint 22 - Status PRs e cascateamento.md",
-    "Sprint/Sprint 22 - Status PRs e cascateamento.md.tmp.568458.ede920eb9ed4",
-    "Sprint/Attlas - Sprint 22.md.tmp.568458.b408b3a2fbff",
-    "Reports/2026-06-29.md",
-    "Sprint/Sprint 22 - Status PRs e cascateamento.md.tmp.325833.a8e31a76ed85",
-    "Sprint/Sprint 22 - Status PRs e cascateamento.md.tmp.325833.47ef4ddade45",
-    "Sprint/Attlas - Sprint 22.md.tmp.11125.73ff854b0307",
-    "Sprint/Attlas - Sprint 22.md.tmp.11125.6643187c2587",
-    "Sprint/Attlas - Sprint 22.md.tmp.11125.33750dce1d2a",
-    "Docs/Infra/CI runners - disco cheio (runbook e prevencao).md",
-    "README.md",
-    "Home.md",
+    "Docs/ms-cameras/ms-cameras - visão geral.md",
+    "Docs/ms-cameras/Diagramas/08 - MOD-008 bandwidth-monitoring.excalidraw.md",
+    "Docs/ms-cameras/Diagramas/07 - MOD-007 camera-events.excalidraw.md",
+    "Docs/ms-cameras/Diagramas/05 - MOD-004 ptz-presets.excalidraw.md",
+    "Docs/ms-cameras/Diagramas/04 - MOD-004 hls-streaming-pipeline.excalidraw.md",
+    "Docs/ms-cameras/Diagramas/06 - MOD-006 video-wall.excalidraw.md",
+    "Docs/ms-cameras/Diagramas/Streaming - HLS x WebRTC.excalidraw.md",
+    "Docs/ms-cameras/Diagramas/Streaming.excalidraw.md",
+    "Docs/ms-cameras/Status em tempo real/Status em tempo real - Requisitos e SLA.md",
+    "Docs/ms-cameras/Saúde e monitoramento/Status em tempo real - Requisitos e SLA.md",
+    "Docs/ms-cameras/Saúde e monitoramento/Status em tempo real - Fluxos.md",
+    "Docs/ms-cameras/Saúde e monitoramento/Status em tempo real - Arquitetura e estratégias.md",
+    "Docs/ms-cameras/Saúde e monitoramento/Status em tempo real (push).md",
+    "Docs/ms-cameras/Saúde e monitoramento/Saúde e monitoramento - Requisitos e SLA.md",
+    "Docs/ms-cameras/Saúde e monitoramento/Saúde e monitoramento - Fluxos.md",
+    "Docs/ms-cameras/Saúde e monitoramento/Saúde e monitoramento - Arquitetura e estratégias.md",
+    "Docs/ms-cameras/Saúde e monitoramento/00 - Saúde e monitoramento.md",
+    "Docs/ms-cameras/Saúde e monitoramento",
+    "Docs/ms-cameras/Saúde e disponibilidade/Saúde e disponibilidade - Requisitos e SLA.md",
+    "Docs/ms-cameras/Status em tempo real/Status em tempo real - Fluxos.md",
+    "Docs/ms-cameras/Status em tempo real/Status em tempo real - Arquitetura e estratégias.md",
+    "Docs/ms-cameras/Saúde e disponibilidade/Saúde e disponibilidade - Fluxos.md",
+    "Docs/ms-cameras/Saúde e disponibilidade/Saúde e disponibilidade - Arquitetura e estratégias.md",
+    "Docs/ms-cameras/Saúde e disponibilidade/00 - Saúde e disponibilidade.md",
+    "Docs/ms-cameras/Status em tempo real/00 - Status em tempo real.md",
+    "Docs/ms-cameras/Status em tempo real",
+    "Docs/ms-cameras/Video Wall",
+    "Docs/ms-cameras/Eventos, incidentes e alarmes",
+    "Docs/ms-cameras/PTZ e presets",
+    "Docs/ms-cameras/Saúde e disponibilidade",
+    "Docs/ms-cameras/Integração com dispositivo",
+    "Docs/ms-cameras/Cameras",
+    "Docs/ms-cameras/Diagramas",
+    "Sem título.canvas",
+    "Sprint/Sprint 22/Sem título 2.base",
     "Sem título 2.canvas",
-    "Sem título 1.canvas",
-    "Sem título.canvas"
+    "Sem título 1.canvas"
   ]
 }
