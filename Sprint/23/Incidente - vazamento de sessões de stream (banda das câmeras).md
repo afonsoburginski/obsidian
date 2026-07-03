@@ -71,4 +71,4 @@ Desacoplar o encerramento da sessão do `DELETE` do cliente:
 ## Ligado a
 
 - [[SOFTWARE-1923 - Bitrate histórico + TTFF]] (área do ciclo de vida das sessões e do sampler de bitrate).
-- [[Próxima sprint - candidatos]].
+- [[Attlas - Sprint 23]].

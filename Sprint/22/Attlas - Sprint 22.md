@@ -42,7 +42,7 @@ Ordem de merge executada: **#566 → #574/#575 → #578 → #576**. Falta rebase
 - [ ] Review + merge de **#577** e **#630**.
 - [ ] Testar o ambiente em dev, validar e documentar melhorias/implementações faltantes para a próxima sprint.
 
-Candidatos da próxima sprint: [[Próxima sprint - candidatos]].
+Candidatos da próxima sprint: [[Attlas - Sprint 23]].
 
 ## Processo (SDD + gate de qualidade)
 

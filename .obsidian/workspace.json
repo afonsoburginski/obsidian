@@ -4,21 +4,21 @@
     "type": "split",
     "children": [
       {
-        "id": "f0e4a6b2a87c10cf",
+        "id": "049d2d9b66a03d86",
         "type": "tabs",
         "children": [
           {
-            "id": "f6f40dedb904b8cb",
+            "id": "06c9875efb0c8874",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "split-diff-view",
               "state": {
-                "file": "Sprint/22/SOFTWARE-1923 - Bitrate histórico + TTFF.md",
-                "mode": "source",
-                "source": false
+                "aFile": "Sprint/23/Incidente - vazamento de sessões de stream (banda das câmeras).md",
+                "bFile": "Sprint/23/Incidente - vazamento de sessões de stream (banda das câmeras).md",
+                "aRef": ""
               },
-              "icon": "lucide-file",
-              "title": "SOFTWARE-1923 - Bitrate histórico + TTFF"
+              "icon": "diff",
+              "title": "Diff: Incidente - vazamento de sessões de stream (banda das câmeras)  (Working Tree)"
             }
           }
         ]
@@ -78,8 +78,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 372.51103591918945,
-    "collapsed": true
+    "width": 372.51103591918945
   },
   "right": {
     "id": "7f39f37a7b274764",
@@ -193,7 +192,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 335.5
+    "width": 318.5
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -209,8 +208,16 @@
       "new-3d-graph:Open 3d graph": false
     }
   },
-  "active": "f6f40dedb904b8cb",
+  "active": "06c9875efb0c8874",
   "lastOpenFiles": [
+    "Sprint/23/SOFTWARE-2004 - Particionamento de tabelas de telemetria de câmeras.md",
+    "Sprint/22/SOFTWARE-1921 - Eventos de câmera (auto + duração).md",
+    "Sprint/22/SOFTWARE-1923 - Bitrate histórico + TTFF.md",
+    "Sprint/22/Attlas - Sprint 22.md.tmp.112566.a8bde4a71004",
+    "Sprint/23/Incidente - vazamento de sessões de stream (banda das câmeras).md.tmp.112566.938c2d1a8fea",
+    "Sprint/23/Attlas - Sprint 23.md.tmp.112566.ec3823ee345f",
+    "Sprint/23/Attlas - Sprint 23.md.tmp.112566.882923cece53",
+    "Sprint/23/SOFTWARE-2016 - Filtro de topologia multivalor + topologyElement na listagem.md",
     "Sprint/22/SOFTWARE-1924 - getHealthMetrics + série + SLA.md",
     "Sprint/23/SOFTWARE-2003 - Encerramento robusto de sessões de stream (reaper + lease).md",
     "Sprint/23/Incidente - vazamento de sessões de stream (banda das câmeras).md",
@@ -218,11 +225,8 @@
     "Sprint/23/SOFTWARE-2007 - Revisar uso de systemId em rotas de API.md",
     "Sprint/23/SOFTWARE-2006 - Separação dos eventos de câmera por domínio.md",
     "Sprint/23/SOFTWARE-2005 - Novas regras de permissões de usuário.md",
-    "Sprint/23/SOFTWARE-2004 - Particionamento de tabelas de telemetria de câmeras.md",
     "Sprint/22/SOFTWARE-1990 - Streaming público (LL-HLS + watchdog).md",
-    "Sprint/22/SOFTWARE-1921 - Eventos de câmera (auto + duração).md",
     "Sprint/23/Attlas - Sprint 23.md",
-    "Sprint/22/SOFTWARE-1923 - Bitrate histórico + TTFF.md",
     "Próxima sprint - candidatos.md",
     "Sprint/23/Encerramento robusto de sessões de stream (reaper + lease).md",
     "Sprint/23/SOFTWARE-2009 - Escalabilidade horizontal do ms-cameras em Kubernetes.md",
@@ -239,15 +243,9 @@
     "Sprint/23/Novas regras de permissões de usuário.md.tmp.112566.6e84f842bc46",
     "Sprint/23/Particionamento de tabelas de telemetria de câmeras.md",
     "Sprint/23/Particionamento de tabelas de telemetria de câmeras.md.tmp.112566.3bd34e34e175",
-    "Sprint/23/Encerramento robusto de sessões de stream (reaper + lease).md.tmp.112566.c87e0ad6cec5",
     "Sprint/22/Attlas - Sprint 22.md",
     "Sem título.canvas",
-    "Sprint/23",
     "Reports/2026-07-03.md",
-    "Docs/ms-cameras/Diagramas/03 - MOD-003 camera-health.excalidraw.md",
-    "Docs/Sprint 21 - Backend Cameras.excalidraw.md",
-    "Docs/ms-cameras/Saúde e monitoramento",
-    "Docs/ms-cameras/Status em tempo real",
     "Sem título 2.canvas",
     "Sem título 1.canvas"
   ]
