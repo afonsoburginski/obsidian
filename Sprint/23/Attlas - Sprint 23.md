@@ -18,7 +18,7 @@ Origem do escopo: backlog levantado ao validar o ambiente em dev (03/07) + repas
 
 | #   | Task                                                             | Frente             | Tamanho   | Card          | Status  |
 | --- | --------------------------------------------------------------- | ------------------ | --------- | ------------- | ------- |
-| 1   | [[SOFTWARE-2003 - Encerramento robusto de sessões de stream (reaper + lease)]]  | Streaming          | a estimar | SOFTWARE-2003 | backlog |
+| 1   | [[SOFTWARE-2003 - Ciclo de vida de sessões de streaming e telemetria de banda por câmera]]  | Streaming          | a estimar | SOFTWARE-2003 | backlog |
 | 2   | [[SOFTWARE-2004 - Particionamento de tabelas de telemetria de câmeras]]         | Banco / Infra      | a estimar | SOFTWARE-2004 | backlog |
 | 3   | [[SOFTWARE-2005 - Novas regras de permissões de usuário]]                       | Permissões         | a estimar | SOFTWARE-2005 | backlog |
 | 4   | [[SOFTWARE-2006 - Separação dos eventos de câmera por domínio]]                 | Eventos            | a estimar | SOFTWARE-2006 | backlog |

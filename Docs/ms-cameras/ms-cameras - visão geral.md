@@ -86,4 +86,4 @@ Schema multi-arquivo em `src/database/schema/`; client gerado em `database/gener
 ## Diagramas
 
 Canvases Excalidraw em `Diagramas/`:
-[[00 - Geral - Modulo Cameras.excalidraw|Geral]] · [[01 - MOD-001 cameras-crud.excalidraw|CRUD]] · [[02 - MOD-002 multi-protocol-adapter.excalidraw|Multi-protocolo]] · [[03 - MOD-003 camera-health.excalidraw|Saúde]] · [[04 - MOD-004 hls-streaming-pipeline.excalidraw|Streaming]] · [[05 - MOD-004 ptz-presets.excalidraw|PTZ]] · [[06 - MOD-006 video-wall.excalidraw|Video Wall]] · [[07 - MOD-007 camera-events.excalidraw|Eventos]] · [[08 - MOD-008 bandwidth-monitoring.excalidraw|Banda]]
+[[00 - Geral - Modulo Cameras.excalidraw|Geral]] · [[01 - MOD-001 cameras-crud.excalidraw|CRUD]] · [[02 - MOD-002 multi-protocol-adapter.excalidraw|Multi-protocolo]] · [[03 - MOD-003 camera-health.excalidraw|Saúde]] · [[04 - MOD-004 hls-streaming-pipeline.excalidraw|Streaming]] · [[05 - MOD-004 ptz-presets.excalidraw|PTZ]] · [[06 - MOD-006 video-wall.excalidraw|Video Wall]] · [[07 - MOD-007 camera-events.excalidraw|Eventos]] · [[08 - MOD-008 bandwidth-monitoring.excalidraw|Banda]] · [[09 - Streaming - estrategia de codec.excalidraw|Codec]]
