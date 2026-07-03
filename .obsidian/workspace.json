@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Sprint/23/Próxima sprint - candidatos.md",
+                "file": "Sprint/22/SOFTWARE-1923 - Bitrate histórico + TTFF.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Próxima sprint - candidatos"
+              "title": "SOFTWARE-1923 - Bitrate histórico + TTFF"
             }
           }
         ]
@@ -210,7 +210,10 @@
   },
   "active": "f6f40dedb904b8cb",
   "lastOpenFiles": [
+    "Sprint/22/SOFTWARE-1924 - getHealthMetrics + série + SLA.md",
+    "Sprint/23/SOFTWARE-2003 - Encerramento robusto de sessões de stream (reaper + lease).md",
     "Sprint/23/Incidente - vazamento de sessões de stream (banda das câmeras).md",
+    "Próxima sprint - candidatos.md",
     "Sprint/23/Encerramento robusto de sessões de stream (reaper + lease).md",
     "Sprint/23/SOFTWARE-2009 - Escalabilidade horizontal do ms-cameras em Kubernetes.md",
     "Sprint/23/SOFTWARE-2008 - Integração com perfis de mídia (endpoints).md",
@@ -218,10 +221,8 @@
     "Sprint/23/SOFTWARE-2006 - Separação dos eventos de câmera por domínio.md",
     "Sprint/23/SOFTWARE-2005 - Novas regras de permissões de usuário.md",
     "Sprint/23/SOFTWARE-2004 - Particionamento de tabelas de telemetria de câmeras.md",
-    "Sprint/23/SOFTWARE-2003 - Encerramento robusto de sessões de stream (reaper + lease).md",
     "Sprint/23/Escalabilidade horizontal do ms-cameras em Kubernetes.md",
     "Sprint/22/SOFTWARE-1990 - Streaming público (LL-HLS + watchdog).md",
-    "Sprint/23/Próxima sprint - candidatos.md",
     "Sprint/23/Attlas - Sprint 23.md.tmp.112566.d01dd602caff",
     "Sprint/23/Attlas - Sprint 23.md.tmp.112566.c5b086ca3aed",
     "Sprint/23/Integração com perfis de mídia (endpoints).md",
@@ -244,7 +245,6 @@
     "Docs/ms-cameras/Diagramas/03 - MOD-003 camera-health.excalidraw.md",
     "Docs/Sprint 21 - Backend Cameras.excalidraw.md",
     "Docs/ms-cameras/ms-cameras - visão geral.md",
-    "Docs/ms-cameras/Diagramas/08 - MOD-008 bandwidth-monitoring.excalidraw.md",
     "Docs/ms-cameras/Saúde e monitoramento",
     "Docs/ms-cameras/Status em tempo real",
     "Sem título 2.canvas",
