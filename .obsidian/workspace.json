@@ -11,12 +11,14 @@
             "id": "aefcd834f81d621a",
             "type": "leaf",
             "state": {
-              "type": "excalidraw",
+              "type": "markdown",
               "state": {
-                "file": "Docs/ms-cameras/Diagramas/05 - MOD-004 ptz-presets.excalidraw.md"
+                "file": "Reports/2026-07-06.md",
+                "mode": "source",
+                "source": false
               },
-              "icon": "excalidraw-icon",
-              "title": "05 - MOD-004 ptz-presets.excalidraw"
+              "icon": "lucide-file",
+              "title": "2026-07-06"
             }
           }
         ]
@@ -208,9 +210,10 @@
   },
   "active": "aefcd834f81d621a",
   "lastOpenFiles": [
+    "Reports/2026-07-03.md",
+    "Reports/2026-07-06.md",
     "Docs/ms-cameras/Diagramas/05 - MOD-004 ptz-presets.excalidraw.md",
     "Docs/ms-cameras/Diagramas/02 - MOD-002 multi-protocol-adapter.excalidraw.md",
-    "Reports/2026-07-03.md",
     "Próxima sprint - candidatos.md",
     "Sprint/23/Attlas - Sprint 23.md",
     "Sprint/23/Plano - Banda por câmera (bitrate configurado ONVIF + VAPIX).md",
@@ -233,7 +236,6 @@
     "Sprint/23/SOFTWARE-2008 - Integração com perfis de mídia (endpoints).md",
     "Sprint/23/SOFTWARE-2007 - Revisar uso de systemId em rotas de API.md",
     "Sprint/23/SOFTWARE-2006 - Separação dos eventos de câmera por domínio.md",
-    "Sprint/23/SOFTWARE-2005 - Novas regras de permissões de usuário.md",
     "Sprint/23",
     "Sprint/22",
     "Docs/ms-cameras/Saúde e monitoramento",
