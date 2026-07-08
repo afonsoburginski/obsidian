@@ -4,21 +4,21 @@
     "type": "split",
     "children": [
       {
-        "id": "3819463b83ed29d3",
+        "id": "c270355b2751e286",
         "type": "tabs",
         "children": [
           {
-            "id": "d5dd1627cc0fe672",
+            "id": "4e8428b1a78cad36",
             "type": "leaf",
             "state": {
-              "type": "split-diff-view",
+              "type": "markdown",
               "state": {
-                "aFile": "Reports/2026-07-04.md",
-                "bFile": "Reports/2026-07-04.md",
-                "aRef": ""
+                "file": "Reports/2026-07-08.md",
+                "mode": "source",
+                "source": false
               },
-              "icon": "diff",
-              "title": "Diff: 2026-07-04  (Working Tree)"
+              "icon": "lucide-file",
+              "title": "2026-07-08"
             }
           }
         ]
@@ -78,7 +78,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 335.51103591918945
+    "width": 305.51103591918945,
+    "collapsed": true
   },
   "right": {
     "id": "7f39f37a7b274764",
@@ -208,44 +209,44 @@
       "new-3d-graph:Open 3d graph": false
     }
   },
-  "active": "d5dd1627cc0fe672",
+  "active": "eb00cdf02b16c0b3",
   "lastOpenFiles": [
-    "Reports/2026-07-04.md",
-    "Docs/ms-cameras/Streaming/Plano - Banda por câmera (bitrate configurado ONVIF + VAPIX).md",
+    "Sprint/23/SOFTWARE-2008 - Integração com perfis de mídia (endpoints).md.tmp.8865.c9618c9f33ac",
+    "Sprint/23/SOFTWARE-2008 - Integração com perfis de mídia (endpoints).md.tmp.8865.367f67386cbd",
+    "Reports/Report diario.md",
+    "Sprint/23/SOFTWARE-2023-F3 - Streaming adaptativo (resolucao_codec) e correcoes F1-F4.md",
     "Sprint/23/SOFTWARE-2003 - Ciclo de vida de sessões de streaming e telemetria de banda por câmera.md",
+    "Sprint/23/Attlas - Sprint 23.md",
     "Sprint/23/SOFTWARE-2004 - Particionamento de tabelas de telemetria de câmeras.md",
-    "Reports/2026-07-03.md",
-    "Docs/ms-cameras/Diagramas/07 - MOD-007 camera-events.excalidraw.md",
-    "Docs/ms-cameras/Streaming/Incidente - vazamento de sessões de stream (banda das câmeras).md",
-    "Docs/ms-cameras/Diagramas/06 - MOD-006 video-wall.excalidraw.md",
-    "Docs/ms-cameras/Diagramas/05 - MOD-004 ptz-presets.excalidraw.md",
-    "Docs/ms-cameras/Diagramas/02 - MOD-002 multi-protocol-adapter.excalidraw.md",
-    "Docs/ms-cameras/Diagramas/00 - Geral - Modulo Cameras.excalidraw.md",
-    "Docs/ms-cameras/Diagramas/08 - MOD-008 bandwidth-monitoring.excalidraw.md",
-    "Docs/ms-cameras/Diagramas/09 - Streaming - estrategia de codec.excalidraw.md",
-    "Excalidraw/Drawing 2026-07-03 09.56.17.excalidraw.md",
-    "Sprint/22/SOFTWARE-1924 - getHealthMetrics + série + SLA.md",
-    "Sprint/23/Plano - Banda por câmera (bitrate configurado ONVIF + VAPIX).md",
-    "Sprint/22/SOFTWARE-1923 - Bitrate histórico + TTFF.md",
-    "Sprint/22/SOFTWARE-1921 - Eventos de câmera (auto + duração).md",
-    "Sprint/22/Attlas - Sprint 22.md.tmp.112566.a8bde4a71004",
-    "Sprint/23/Incidente - vazamento de sessões de stream (banda das câmeras).md.tmp.112566.938c2d1a8fea",
-    "Sprint/23/Attlas - Sprint 23.md.tmp.112566.ec3823ee345f",
-    "Sprint/23/Attlas - Sprint 23.md.tmp.112566.882923cece53",
-    "Sprint/23/SOFTWARE-2016 - Filtro de topologia multivalor + topologyElement na listagem.md",
-    "Sprint/23/SOFTWARE-2003 - Encerramento robusto de sessões de stream (reaper + lease).md",
-    "Sprint/23/Incidente - vazamento de sessões de stream (banda das câmeras).md",
-    "Sprint/23/SOFTWARE-2008 - Integração com perfis de mídia (endpoints).md",
-    "Sprint/23/SOFTWARE-2007 - Revisar uso de systemId em rotas de API.md",
-    "Sprint/23/SOFTWARE-2006 - Separação dos eventos de câmera por domínio.md",
-    "Sprint/23/SOFTWARE-2005 - Novas regras de permissões de usuário.md",
+    "Reports/2026-07-08.md.tmp.8632.7f63480196bf",
+    "Sprint/23/SOFTWARE-2008 - Integração com perfis de mídia (endpoints).md.tmp.8632.911373914c83",
+    "Reports/2026-07-08.md.tmp.8632.02c8c631c305",
+    "Reports/2026-07-08.md",
+    "Sprint/23/SOFTWARE-2008 - Integração com perfis de mídia (endpoints).md.tmp.8632.96bc1640aeaf",
     "Sprint/22/SOFTWARE-1990 - Streaming público (LL-HLS + watchdog).md",
-    "Sprint/23/Attlas - Sprint 23.md.tmp.112566.d01dd602caff",
-    "Sprint/23/Attlas - Sprint 23.md.tmp.112566.c5b086ca3aed",
-    "Sprint/23/Integração com perfis de mídia (endpoints).md.tmp.112566.3613e0a5f82c",
-    "Sprint/23/Revisar uso de systemId em rotas de API.md.tmp.112566.b187bbd1ccbe",
-    "Sprint/23/Novas regras de permissões de usuário.md.tmp.112566.6e84f842bc46",
-    "Sprint/23/Particionamento de tabelas de telemetria de câmeras.md.tmp.112566.3bd34e34e175",
+    "Sprint/22/SOFTWARE-1923 - Bitrate histórico + TTFF.md",
+    "Sprint/22/SOFTWARE-1922 - Janelas de 5 min + latência + rollup 90d.md",
+    "Sprint/22/SOFTWARE-1921 - Eventos de câmera (auto + duração).md",
+    "Sprint/22/SOFTWARE-1924 - getHealthMetrics + série + SLA.md",
+    "Sprint/22/CROSS-032 - Fundação WebRTC público via TURN.md",
+    "Sprint/22/Saúde da Câmera - regras de negócio e contratos.md",
+    "Sprint/22/SOFTWARE-1889 - WebRTC travamento (dívidas técnicas).md",
+    "Sprint/22/SOFTWARE-1920 - Busca de câmeras por topologia.md",
+    "Sprint/22/Attlas - Sprint 22.md",
+    "Reports/2026-07-07.md",
+    "Reports/2026-07-04.md",
+    "Reports/2026-07-07.md.tmp.8632.80960f1f3940",
+    "SOFTWARE-2005 - Novas regras de permissões de usuário.md",
+    "SOFTWARE-2009 - Escalabilidade horizontal do ms-cameras em Kubernetes.md",
+    "Sem título 1",
+    "Sem título",
+    "Sprint/23/SOFTWARE-2006 - Separação dos eventos de câmera por domínio.md",
+    "Sprint/23/SOFTWARE-2008 - Integração com perfis de mídia (endpoints).md",
+    "Docs/ms-cameras/camera-streaming-latency-codec.md",
+    "Docs/ms-cameras/SOFTWARE-2003-fase3-validation.md",
+    "Docs/ms-cameras/ms-cameras - visão geral.md",
+    "Docs/ms-cameras/codec-protocol-adaptive-strategy-research.md.tmp.7707.63e9ba25b66d",
+    "Docs/ms-cameras/camera-streaming-latency-codec.md.tmp.6452.208f11903e25",
     "Sem título.canvas",
     "Sem título 2.canvas",
     "Sem título 1.canvas"

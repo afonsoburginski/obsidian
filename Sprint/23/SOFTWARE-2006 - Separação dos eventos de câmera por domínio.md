@@ -10,9 +10,12 @@ clickup: https://app.clickup.com/t/86ajc6v2q
 titulo: "[Back] Eventos: separacao dos eventos de camera por dominio"
 frente: Eventos
 tamanho: a estimar
-status: a planejar
+status: spec em review
+branch: cameras/refactor/SOFTWARE-2006
+pr: https://github.com/atmanadmin/attlas-2026/pull/710
+spec: MOD-010-camera-events-domain
 sprint: "[[Attlas - Sprint 23]]"
-atualizado: 2026-07-03
+atualizado: 2026-07-08
 ---
 
 # Separação dos eventos de câmera por domínio

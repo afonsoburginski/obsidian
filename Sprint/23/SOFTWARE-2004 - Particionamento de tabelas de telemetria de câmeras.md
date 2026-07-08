@@ -10,9 +10,12 @@ clickup: https://app.clickup.com/t/86ajc6uu0
 titulo: "[Back] Banco: particionamento das tabelas de telemetria de cameras"
 frente: Banco / Infra
 tamanho: a estimar
-status: a planejar
+status: spec em review
+branch: cameras/feat/SOFTWARE-2004
+pr: https://github.com/atmanadmin/attlas-2026/pull/709
+spec: MOD-009-telemetry-partitioning + PROJ-009-telemetry-partition-maintenance
 sprint: "[[Attlas - Sprint 23]]"
-atualizado: 2026-07-03
+atualizado: 2026-07-08
 ---
 
 # Particionamento das tabelas de telemetria de câmeras

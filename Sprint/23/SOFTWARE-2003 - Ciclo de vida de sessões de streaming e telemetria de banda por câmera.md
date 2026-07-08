@@ -10,9 +10,9 @@ clickup: https://app.clickup.com/t/86ajc6un8
 titulo: "[Back] Streaming de câmeras: ciclo de vida de sessões e telemetria de consumo de banda por câmera (ONVIF/VAPIX)"
 frente: Streaming / Saúde
 tamanho: a estimar
-status: a planejar
+status: em teste — F3 adaptativo/codec mergeada na develop via #656 (08/07); faltam F4, confirmação em device e provisionamento
 sprint: "[[Attlas - Sprint 23]]"
-atualizado: 2026-07-03
+atualizado: 2026-07-08
 ---
 
 # Ciclo de vida de sessões de streaming e telemetria de banda por câmera
