@@ -11,8 +11,8 @@ titulo: "[Back] Streaming de câmeras: ciclo de vida de sessões e telemetria de
 frente: Streaming / Saúde
 tamanho: a estimar
 status: em teste — F3 adaptativo/codec mergeada na develop via #656 (08/07); faltam F4, confirmação em device e provisionamento
-sprint: "[[Attlas - Sprint 23]]"
-atualizado: 2026-07-08
+sprint: "[[Attlas - Sprint 24]]"
+atualizado: 2026-07-13
 ---
 
 # Ciclo de vida de sessões de streaming e telemetria de banda por câmera

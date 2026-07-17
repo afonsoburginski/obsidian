@@ -9,9 +9,9 @@ clickup: https://app.clickup.com/t/86ajc6uzx
 titulo: "[Back] Permissoes: novas regras de permissoes de usuario"
 frente: Permissões
 tamanho: a estimar
-status: a planejar
-sprint: "[[Attlas - Sprint 23]]"
-atualizado: 2026-07-03
+status: a planejar (Sprint 24 - destrinchar a SPEC-002)
+sprint: "[[Attlas - Sprint 24]]"
+atualizado: 2026-07-13
 ---
 
 # Novas regras de permissões de usuário

@@ -4,21 +4,21 @@
     "type": "split",
     "children": [
       {
-        "id": "c270355b2751e286",
+        "id": "61a06f85fa5dcc44",
         "type": "tabs",
         "children": [
           {
-            "id": "4e8428b1a78cad36",
+            "id": "b5684534cda85f16",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Reports/2026-07-08.md",
+                "file": "Reports/2026-07-17.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "2026-07-08"
+              "title": "2026-07-17"
             }
           }
         ]
@@ -78,8 +78,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 305.51103591918945,
-    "collapsed": true
+    "width": 229.51103591918945
   },
   "right": {
     "id": "7f39f37a7b274764",
@@ -209,44 +208,44 @@
       "new-3d-graph:Open 3d graph": false
     }
   },
-  "active": "eb00cdf02b16c0b3",
+  "active": "a025b9b6a66377fd",
   "lastOpenFiles": [
-    "Sprint/23/SOFTWARE-2008 - Integração com perfis de mídia (endpoints).md.tmp.8865.c9618c9f33ac",
-    "Sprint/23/SOFTWARE-2008 - Integração com perfis de mídia (endpoints).md.tmp.8865.367f67386cbd",
-    "Reports/Report diario.md",
-    "Sprint/23/SOFTWARE-2023-F3 - Streaming adaptativo (resolucao_codec) e correcoes F1-F4.md",
-    "Sprint/23/SOFTWARE-2003 - Ciclo de vida de sessões de streaming e telemetria de banda por câmera.md",
-    "Sprint/23/Attlas - Sprint 23.md",
-    "Sprint/23/SOFTWARE-2004 - Particionamento de tabelas de telemetria de câmeras.md",
-    "Reports/2026-07-08.md.tmp.8632.7f63480196bf",
-    "Sprint/23/SOFTWARE-2008 - Integração com perfis de mídia (endpoints).md.tmp.8632.911373914c83",
-    "Reports/2026-07-08.md.tmp.8632.02c8c631c305",
-    "Reports/2026-07-08.md",
-    "Sprint/23/SOFTWARE-2008 - Integração com perfis de mídia (endpoints).md.tmp.8632.96bc1640aeaf",
-    "Sprint/22/SOFTWARE-1990 - Streaming público (LL-HLS + watchdog).md",
-    "Sprint/22/SOFTWARE-1923 - Bitrate histórico + TTFF.md",
-    "Sprint/22/SOFTWARE-1922 - Janelas de 5 min + latência + rollup 90d.md",
-    "Sprint/22/SOFTWARE-1921 - Eventos de câmera (auto + duração).md",
-    "Sprint/22/SOFTWARE-1924 - getHealthMetrics + série + SLA.md",
-    "Sprint/22/CROSS-032 - Fundação WebRTC público via TURN.md",
-    "Sprint/22/Saúde da Câmera - regras de negócio e contratos.md",
-    "Sprint/22/SOFTWARE-1889 - WebRTC travamento (dívidas técnicas).md",
-    "Sprint/22/SOFTWARE-1920 - Busca de câmeras por topologia.md",
-    "Sprint/22/Attlas - Sprint 22.md",
-    "Reports/2026-07-07.md",
-    "Reports/2026-07-04.md",
-    "Reports/2026-07-07.md.tmp.8632.80960f1f3940",
-    "SOFTWARE-2005 - Novas regras de permissões de usuário.md",
-    "SOFTWARE-2009 - Escalabilidade horizontal do ms-cameras em Kubernetes.md",
-    "Sem título 1",
-    "Sem título",
-    "Sprint/23/SOFTWARE-2006 - Separação dos eventos de câmera por domínio.md",
-    "Sprint/23/SOFTWARE-2008 - Integração com perfis de mídia (endpoints).md",
-    "Docs/ms-cameras/camera-streaming-latency-codec.md",
-    "Docs/ms-cameras/SOFTWARE-2003-fase3-validation.md",
-    "Docs/ms-cameras/ms-cameras - visão geral.md",
-    "Docs/ms-cameras/codec-protocol-adaptive-strategy-research.md.tmp.7707.63e9ba25b66d",
-    "Docs/ms-cameras/camera-streaming-latency-codec.md.tmp.6452.208f11903e25",
+    "Reports/2026-07-17.md.tmp.786275.f7ebe3938237",
+    "Sprint/24/SOFTWARE-2212 - Dashboard câmeras - SPEC ms-cameras + resolver período-escopo.md",
+    "Reports/2026-07-17.md",
+    "Sprint/25/SOFTWARE-2216 - Dashboard câmeras - heatmap de eventos.md",
+    "Sprint/25/SOFTWARE-2214 - Dashboard câmeras - donuts tipo + capacidade + incident-severity.md",
+    "Sprint/25/Dashboard de câmeras - backend.md",
+    "Sprint/25/SOFTWARE-2213 - Dashboard câmeras - KPIs + gauge + distribuição conectividade.md",
+    "Sprint/25/SOFTWARE-2219 - Dashboard câmeras - tabelas de conectividade.md",
+    "Sprint/25/Attlas - Sprint 25.md",
+    "Sprint/25/SOFTWARE-2200 - Analítico desacoplado (teste ACOM + controlador).md",
+    "Sprint/sem prazo/SOFTWARE-2200 - Analítico desacoplado (teste ACOM + controlador).md",
+    "Sprint/25/SOFTWARE-2218 - Dashboard câmeras - banda.md",
+    "Sprint/25/SOFTWARE-2217 - Dashboard câmeras - marcadores do mapa.md",
+    "Sprint/25/SOFTWARE-2215 - Dashboard câmeras - série de uptime.md",
+    "Sprint/sem prazo/SOFTWARE-2224 - Eventos câmeras - observações + reportar (condicional).md",
+    "Sprint/26/SOFTWARE-2219 - Dashboard câmeras - tabelas de conectividade.md",
+    "Sprint/26/SOFTWARE-2218 - Dashboard câmeras - banda.md",
+    "Sprint/26/SOFTWARE-2217 - Dashboard câmeras - marcadores do mapa.md",
+    "Sprint/26/SOFTWARE-2216 - Dashboard câmeras - heatmap de eventos.md",
+    "Sprint/26/SOFTWARE-2215 - Dashboard câmeras - série de uptime.md",
+    "Sprint/26/SOFTWARE-2214 - Dashboard câmeras - donuts tipo + capacidade + incident-severity.md",
+    "Sprint/26/SOFTWARE-2213 - Dashboard câmeras - KPIs + gauge + distribuição conectividade.md",
+    "Sprint/26/Dashboard de câmeras - backend.md",
+    "Sprint/26",
+    "Reports/2026-07-16.md",
+    "Sprint/24/SOFTWARE-2134 - Analítico de vídeo ao vivo (detecção + bounding boxes).md",
+    "Sprint/24/SOFTWARE-2134 - Decisão técnica e fluxo (analítico ao vivo).md",
+    "Sprint/24/SOFTWARE-2134 - Analítico de vídeo ao vivo (detecção + bounding boxes).md.tmp.786275.e53f04e12d30",
+    "Sprint/25/Attlas - Sprint 25.md.tmp.682872.bd993676da17",
+    "Sprint/sem prazo/sedZUBH2E",
+    "Sprint/25",
+    "Sprint/24/Attlas - Sprint 24.md.tmp.597643.4566e03d3848",
+    "Sprint/24/SOFTWARE-2226 - Robustez do pipeline de câmeras, analítico e infra.md.tmp.32111.faeb20e526d6",
+    "Sprint/24/SOFTWARE-2226 - Robustez do pipeline de câmeras, analítico e infra.md.tmp.32111.b34b2df0458f",
+    "Sprint/24/Attlas - Sprint 24.md.tmp.32111.7e3d73f9db81",
+    "Sprint/24/Attlas - Sprint 24.md.tmp.32111.85958480444d",
     "Sem título.canvas",
     "Sem título 2.canvas",
     "Sem título 1.canvas"
