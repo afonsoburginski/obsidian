@@ -1,18 +1,18 @@
 ---
 tags:
   - attlas
-  - sprint-25
+  - sem-prazo
   - card
 card: SOFTWARE-2216
 epico: SOFTWARE-1899
 frente: Dashboard de câmeras - backend
-sprint: Sprint 25 (20/7/26 - 26/7/26)
-status: to do
+sprint: sem prazo (ClickUp Sprint 25 / backlog)
+status: backlog
 pontos: 5
-atualizado: 2026-07-17
+atualizado: 2026-07-20
 ---
 
-# SOFTWARE-2216 - Dashboard câmeras: heatmap de eventos
+# SOFTWARE-2216 - Dashboard de câmeras - heatmap de eventos
 
 Backend do heatmap câmera x tempo. Contrato pronto. 1 PR.
 
@@ -24,7 +24,7 @@ Backend do heatmap câmera x tempo. Contrato pronto. 1 PR.
 
 **Agregação (falta)**: `COUNT GROUP BY cameraId, time_bucket(occurredAt), severity`, top-N câmeras por volume, multi-câmera. Hoje só listagem paginada por câmera.
 
-**Reuso**: `deriveCameraEventCategory` (`events/_shared/`) se filtrar por categoria; bucketização de [[SOFTWARE-2212 - Dashboard câmeras - SPEC ms-cameras + resolver período-escopo|2212]].
+**Reuso**: `deriveCameraEventCategory` (`events/_shared/`) se filtrar por categoria; bucketização de [[SOFTWARE-2212 - Fundação do dashboard de câmeras - resolver de período-escopo|2212]].
 
 Edital 4.6 (mapa de calor de eventos). Frente: [[Dashboard de câmeras - backend]]. Épico SOFTWARE-1899.
 

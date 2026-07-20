@@ -1,18 +1,18 @@
 ---
 tags:
   - attlas
-  - sem-prazo
+  - sprint-25
   - card
 cards: SOFTWARE-2220, 2221, 2222, 2223, 2224
 epico: SOFTWARE-2047 (Eventos - Eventos de todas as câmeras)
-sprint: sem prazo (ClickUp Sprint 25 / backlog)
-status: backlog - 5 cards (1 PR cada, 1 condicional), linkados ao épico 2047; contratos + backend existente mapeados (2026-07-15)
-atualizado: 2026-07-17
+sprint: Sprint 25 (20/7/26 - 26/7/26)
+status: to do (Sprint 25) - lista+detalhe base JÁ entregues pelo UC-032 (SOFTWARE-1914, #803, lucas); foco da semana = stats (2221) + timeline/acionamentos (2222) + recurrence (2223) + campos reais/filtros (2220 re-escopado); 2224 condicional no backlog
+atualizado: 2026-07-20
 ---
 
 # Eventos de câmeras - backend
 
-Backend da tela de **Eventos de câmeras** (`/cameras/events` + detalhe `/cameras/events/:id`). O frontend já existe e roda **em mock** (flag `useMock = true`; Lucas, épico SOFTWARE-2047, subtasks [Front] Closed). Contratos prontos. Falta o `ms-cameras` expor a **agregação cross-câmera** em `/api/cameras/events/*`. Backend-only, 1 card = 1 PR.
+Backend da tela de **Eventos de câmeras** (`/cameras/events` + detalhe `/cameras/events/:id`). O frontend já existe (Lucas, épico SOFTWARE-2047). A **lista e o detalhe cross-câmera já foram entregues** pelo UC-032 (SOFTWARE-1914, PR #803) e o front consome sem mock. Falta o `ms-cameras` expor `stats / timeline / recurrence / observations-report` (ainda mockados) e preencher os **campos placeholder e filtros ignorados** da lista/detalhe. Backend-only, 1 card = 1 PR.
 
 ## Cuidado: "eventos" tem três camadas
 
@@ -24,7 +24,7 @@ Backend da tela de **Eventos de câmeras** (`/cameras/events` + detalhe `/camera
 
 - Front: `apps/web-attlas/src/app/modules/cameras-events/`; `camera-events.service.ts` com `useMock = true`, ramos `http.get/post` prontos.
 - Contratos: `libs/contracts/src/lib/camera/` (`i-list-camera-events-*`, `-stats`, `-recurrence`, `-observation`, `-triggered-action`, `-detail`, `-log-entry`). Prontos.
-- Backend hoje: só eventos por-câmera (`GetCameraEventLogHandler`, `GetCameraEventDetailHandler`).
+- Backend hoje: **lista + detalhe cross-câmera JÁ existem** (`ListCameraEventsHandler`, `GetCrossCameraEventDetailHandler`, `events/reading/`) via UC-032 (SOFTWARE-1914, #803, lucas, mergeada); mais os por-câmera (`GetCameraEventLogHandler`, `GetCameraEventDetailHandler`). **Sem backend**: stats, timeline de evento, recurrence, observations/report. **Placeholder na lista/detalhe**: area/subarea (string vazia), status (`'OPEN'`), triggerCount (`1`); os filtros area/subarea/origin/state/status são aceitos mas **ignorados**.
 
 **O model `CameraEventLog` é mais magro que o contrato de lista.** Colunas que existem: `id, cameraId, occurredAt, eventType, subType, severity (String INFO/WARN/ERROR), summary, translationKey, payload Json, correlationId, operatorId, createdAt`. Colunas que o contrato pede e **NÃO existem**: `eventCode`, `category` (derivada read-time via `deriveCameraEventCategory`), `area`, `subarea`, `origin`, `status`, `triggerCount`, `durationSeconds` (vive em `payload.durationMinutes`), `detectedAt` (= `occurredAt`), `updatedAt`. `Camera` também **não tem** `code` (CAM-###) nem area/subarea (deriva de `trafficElementId` via topologia).
 
@@ -32,16 +32,17 @@ Enums: `category` = enum `CameraEventCategory` (OPERATIONAL/HARDWARE/COMMUNICATI
 
 ## Cards (1 PR cada) e mapa
 
-| Card | Endpoints | Existe / falta | Pts |
-| --- | --- | --- | --- |
-| **2220** | `GET /api/cameras/events` (lista `IPaginatedResponse<IListCameraEventItem>`) | molde `GetCameraEventLogHandler` (mas força `cameraId` e retorna `ICameraEventLogPage`); falta: escopar por `systemId`, join `Camera`, derivar area/subarea/category, gerar `eventCode`, agregar `triggerCount`, `origin`/`status` (sem coluna), envelope `IPaginatedResponse` | 5 |
-| **2221** | `/events/stats` (`ICameraEventsStats`: total/critical/warning/info + trend) | nada existe; `COUNT GROUP BY severity` no mesmo `where` da lista + `trendPct` (janela anterior) + `captionParams` (`COUNT DISTINCT cameraId`) | 3 |
-| **2222** | `/events/:id`, `/events/:id/timeline` | detalhe base já existe (`GetCameraEventDetailHandler` + `linkedIncident`); falta enriquecimento (join Camera/geo/operatorName) e `triggeredActions[]` (**ALARM não persistido, OS não existe**); timeline de evento não existe (só de incidente) | 5 |
-| **2223** | `/events/:id/recurrence?period=` (`ICameraEventRecurrence` 1h/24h/7d/30d) | nada; agregação bucketizada com `total` + `categoryCount` (via `buildCategoryWhere`) | 3 |
-| **2224** | `/events/:id/observations`, `POST /events/:id/report` | **condicional** (Incidents/Inventário adiado; botão desabilitado no front); model Prisma novo + CRUD + report multipart | 3 |
-| **Total base (2220-2223)** | | | **16** |
+Base **lista + detalhe** entregue pelo UC-032 (SOFTWARE-1914, #803, lucas). Estes cards são o que sobra:
 
-Pré-req `SPEC-ms-cameras` está no card SOFTWARE-2212 (Dashboard). Follow-up fora da base: real-time (prepend via WS, `CameraStatusRealtimeService` frame `camera:event:new`), ~2 pts.
+| Card | Escopo | Existe / falta | Pts |
+| --- | --- | --- | --- |
+| **2220** (re-escopado) | campos reais + filtros da lista/detalhe | area/subarea via topologia, honrar filtros ignorados (area/subarea/origin/state/status), status/triggerCount reais | 5 |
+| **2221** | `/events/stats` (`ICameraEventsStats`: total/critical/warning/info + trend) | nada existe; `COUNT GROUP BY severity` no mesmo `where` da lista + `trendPct` (janela anterior) | 3 |
+| **2222** (re-escopado) | `/events/:id/timeline` + `triggeredActions` INCIDENT | timeline do evento não existe (só de incidente); `triggeredActions` devolve `[]` (só INCIDENT viável; ALARM/OS bloqueados) | 5 |
+| **2223** | `/events/:id/recurrence?period=` (1h/24h/7d/30d) | nada; agregação bucketizada `total` + `categoryCount` (via `buildCategoryWhere`) | 3 |
+| **2224** | `/events/:id/observations`, `POST /events/:id/report` | **condicional/backlog**: model Prisma novo + CRUD + report; depende de Incidents/Inventário (adiado) | 3 |
+
+Pré-req `SPEC-ms-cameras`: bootado pelo card SOFTWARE-2212. Follow-up fora da base: real-time (prepend via WS, `camera:event:new`), ~2 pts.
 
 ## Reuso concreto
 
@@ -61,9 +62,9 @@ Pré-req `SPEC-ms-cameras` está no card SOFTWARE-2212 (Dashboard). Follow-up fo
 
 ## Notas por card (1 PR cada)
 
-- [[SOFTWARE-2220 - Eventos câmeras - lista cross-câmera]]
+- [[SOFTWARE-2220 - Eventos câmeras - campos reais + filtros]]
 - [[SOFTWARE-2221 - Eventos câmeras - stats]]
-- [[SOFTWARE-2222 - Eventos câmeras - detalhe + timeline]]
+- [[SOFTWARE-2222 - Eventos câmeras - timeline + acionamentos]]
 - [[SOFTWARE-2223 - Eventos câmeras - recorrência]]
 - [[SOFTWARE-2224 - Eventos câmeras - observações + reportar (condicional)]]
 

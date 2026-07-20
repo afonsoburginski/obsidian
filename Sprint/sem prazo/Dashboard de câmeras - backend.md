@@ -1,13 +1,13 @@
 ---
 tags:
   - attlas
-  - sprint-25
+  - sem-prazo
   - card
 cards: SOFTWARE-2212, 2213, 2214, 2215, 2216, 2217, 2218, 2219
 epico: SOFTWARE-1899 (Dashboard - Módulo de Dashboard das câmeras)
-sprint: Sprint 25 (20/7/26 - 26/7/26)
-status: to do (Sprint 25) - specs escritas UC-033..039, 7 draft PRs abertos (2213-2219, PRs #856-863); implementacao pendente
-atualizado: 2026-07-17
+sprint: sem prazo (ClickUp Sprint 25 / backlog)
+status: backlog - saiu da Sprint 25 em 20/07 (troca por Eventos); specs UC-033..039 escritas, 7 draft PRs abertos (2213-2219, PRs #856-863); implementacao pendente
+atualizado: 2026-07-20
 ---
 
 # Dashboard de câmeras - backend
@@ -85,14 +85,14 @@ Follow-up fora da base: real-time de KPIs/gauge por WebSocket (`CameraStatusReal
 
 ## Notas por card (1 PR cada)
 
-- [[SOFTWARE-2212 - Dashboard câmeras - SPEC ms-cameras + resolver período-escopo]]
-- [[SOFTWARE-2213 - Dashboard câmeras - KPIs + gauge + distribuição conectividade]]
-- [[SOFTWARE-2214 - Dashboard câmeras - donuts tipo + capacidade + incident-severity]]
-- [[SOFTWARE-2215 - Dashboard câmeras - série de uptime]]
-- [[SOFTWARE-2216 - Dashboard câmeras - heatmap de eventos]]
-- [[SOFTWARE-2217 - Dashboard câmeras - marcadores do mapa]]
-- [[SOFTWARE-2218 - Dashboard câmeras - banda]]
-- [[SOFTWARE-2219 - Dashboard câmeras - tabelas de conectividade]]
+- [[SOFTWARE-2212 - Fundação do dashboard de câmeras - resolver de período-escopo]]
+- [[SOFTWARE-2213 - Dashboard de câmeras - KPIs, gauge e distribuição de conectividade]]
+- [[SOFTWARE-2214 - Dashboard de câmeras - donuts (tipo, capacidade analítica, incidentes)]]
+- [[SOFTWARE-2215 - Dashboard de câmeras - série de uptime]]
+- [[SOFTWARE-2216 - Dashboard de câmeras - heatmap de eventos]]
+- [[SOFTWARE-2217 - Dashboard de câmeras - marcadores do mapa]]
+- [[SOFTWARE-2218 - Dashboard de câmeras - banda (consumo, por área, comparação)]]
+- [[SOFTWARE-2219 - Dashboard de câmeras - tabelas de conectividade (intermitentes, latência, degradação)]]
 
 ## Referências
 

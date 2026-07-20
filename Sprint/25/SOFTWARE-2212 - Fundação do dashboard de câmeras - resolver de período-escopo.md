@@ -1,19 +1,19 @@
 ---
 tags:
   - attlas
-  - sprint-24
+  - sprint-25
   - card
 card: SOFTWARE-2212
 epico: SOFTWARE-1899
 frente: Dashboard de câmeras - backend
-sprint: Sprint 24 (13/7/26 - 19/7/26)
-status: APROVADA - PR #822 aberta e APPROVED por Hadson, 0 threads pendentes, mergeable. Falta só o merge na develop.
+sprint: Sprint 25 (20/7/26 - 26/7/26)
+status: em code review - PR #822 APPROVED por Hadson, mergeable, 0 threads. Fundação MOD-013 compartilhada (dashboard + eventos); movida da Sprint 24 pra 25 em 20/07 porque os Eventos desta semana dependem dela. Falta só o merge.
 pontos: 3
-atualizado: 2026-07-17
+atualizado: 2026-07-20
 pr: https://github.com/atmanadmin/attlas-2026/pull/822
 ---
 
-# SOFTWARE-2212 - Dashboard câmeras: SPEC-ms-cameras + resolver de período/escopo
+# SOFTWARE-2212 - Fundação do dashboard de câmeras: resolver de período/escopo
 
 Fundação compartilhada do backend das telas de Dashboard e Eventos. 1 PR.
 

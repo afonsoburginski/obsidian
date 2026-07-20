@@ -4,7 +4,7 @@ tags:
   - sprint-24
   - moc
 sprint: Sprint 24 (13/7/26 - 19/7/26)
-status: as 3 tasks da semana estão prontas ou aprovadas. 2134 MERGED (PR #790, 15/7). 2212 APPROVED, mergeable (PR #822). 2226 APPROVED por Hadson (PR #830, 17/7), CI rodando, review resolvido. Falta merge de 2212 e 2226 + deploy manual. Dashboard (2213-2219) planejado pra Sprint 25; eventos (2220-2224) + 2200 + 2201 em sem prazo
+status: fechada. 2134 e 2226 mergeados (PRs #790, #830); 2226 concluído (Closed). 2212 (PR #822, ainda em review) movido pra Sprint 25 em 20/07, porque os Eventos dependem dele. Sprint 25 pivotou pra Eventos de câmeras (2220-2223); Dashboard (2213-2219) foi pro backlog
 atualizado: 2026-07-17
 ---
 
@@ -18,8 +18,8 @@ Base: em cima do que o **Daniel** já tem no controlador/detector + referência 
 
 ## Essa semana
 
-- [x] **SOFTWARE-2226 - Robustez do pipeline de câmeras, analítico e infra** (APROVADA) - [[SOFTWARE-2226 - Robustez do pipeline de câmeras, analítico e infra]]: PR #830 APPROVED por Hadson (17/7), review resolvido (B12 + gate de spec), 0 threads abertas, CI rodando. Boot híbrido resiliente, consumer consolidado + groupId único, fan-out multi-câmera, observabilidade do WS/analítico, env fail-fast + broker por env, provisionamento ONVIF no cadastro. Falta CI verde + merge + deploy manual. Infra/ops (kafka-init gerador, aquario, systemIds) seguem como follow-up fora do PR.
-- [x] **SOFTWARE-2212 - Fundação do dashboard (SPEC + resolver período/escopo)** (APROVADA) - [[SOFTWARE-2212 - Dashboard câmeras - SPEC ms-cameras + resolver período-escopo]]: PR #822 APPROVED por Hadson, mergeable, 0 threads abertas. Falta só o merge. Destrava os 7 widgets do dashboard (agora na Sprint 25).
+- [x] **SOFTWARE-2226 - Testes do analítico e provisionamento no cadastro** (CONCLUÍDA, Closed) - [[SOFTWARE-2226 - Testes do analítico e provisionamento no cadastro]]: PR #830 mergeada na develop em 17/07 (aguarda deploy manual). Boot híbrido resiliente, consumer consolidado + groupId único, fan-out multi-câmera, observabilidade do WS/analítico, env fail-fast + broker por env, provisionamento ONVIF no cadastro. Infra/ops (kafka-init gerador, aquario, systemIds) seguem como follow-up fora do PR.
+- [x] **SOFTWARE-2212 - Fundação do dashboard de câmeras: resolver de período/escopo** (APROVADA, movida pra Sprint 25) - [[SOFTWARE-2212 - Fundação do dashboard de câmeras - resolver de período-escopo]]: PR #822 APPROVED por Hadson, mergeable, 0 threads abertas, falta só o merge. Fundação MOD-013 compartilhada; movida pra Sprint 25 em 20/07 porque os Eventos desta semana reusam o resolver dela.
 
 ## Já entregue
 
@@ -28,13 +28,13 @@ Base: em cima do que o **Daniel** já tem no controlador/detector + referência 
 
 ## Próxima semana (Sprint 25)
 
-Backend do **Dashboard de câmeras** (2213-2219, 7 cards, 1 PR cada) - specs escritas (UC-033..039) e draft PRs abertos (#856-863), implementação na Sprint 25. Ver [[Attlas - Sprint 25]] e [[Dashboard de câmeras - backend]].
+Pivotou em 20/07: o foco da Sprint 25 passou a ser o backend da tela de **Eventos de câmeras** (2220-2223) + a fundação 2212 (movida da 24). O **Dashboard de câmeras** (2213-2219) foi pro backlog - specs UC-033..039 e draft PRs #856-863 seguem abertos, retomáveis. Ver [[Attlas - Sprint 25]].
 
 ## Sem prazo (backlog - ClickUp Sprint 25 / backlog)
 
 Movido pra pasta `Sprint/sem prazo` - não é dessa semana nem da próxima:
 
-- **Eventos de câmeras** (2220-2224, 5 cards) - [[Eventos de câmeras - backend]].
+- **Eventos de câmeras**: a base 2220-2223 entrou na Sprint 25 em 20/07; só o 2224 (condicional) segue sem prazo. [[Eventos de câmeras - backend]].
 - **SOFTWARE-2200 - Analítico desacoplado (teste ACOM + controlador)** - [[SOFTWARE-2200 - Analítico desacoplado (teste ACOM + controlador)]]: a contraparte do 2134 (câmera comum sem edge → detecção atuando no controlador via ACOM). É onde as decisões borda-vs-CV-própria e atuação-hardware-vs-software se resolvem.
 - **SOFTWARE-2201 - Integração videowall externo (NovaStar H9)** - [[SOFTWARE-2201 - Integração videowall externo (NovaStar H9)]]: Attlas comanda o mural de LED por Open API (TCP-IP), exigido pelo contrato de Quito. Adaptador `INT-*` novo, provável em `ms-cameras`.
 

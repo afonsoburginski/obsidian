@@ -1,18 +1,18 @@
 ---
 tags:
   - attlas
-  - sprint-25
+  - sem-prazo
   - card
 card: SOFTWARE-2218
 epico: SOFTWARE-1899
 frente: Dashboard de câmeras - backend
-sprint: Sprint 25 (20/7/26 - 26/7/26)
-status: to do
+sprint: sem prazo (ClickUp Sprint 25 / backlog)
+status: backlog
 pontos: 5
-atualizado: 2026-07-17
+atualizado: 2026-07-20
 ---
 
-# SOFTWARE-2218 - Dashboard câmeras: banda (consumo + por área + comparação)
+# SOFTWARE-2218 - Dashboard de câmeras - banda (consumo, por área, comparação)
 
 Backend dos indicadores de rede/banda. Contrato pronto. 1 PR.
 

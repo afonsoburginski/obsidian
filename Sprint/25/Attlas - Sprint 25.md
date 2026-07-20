@@ -4,39 +4,45 @@ tags:
   - sprint-25
   - moc
 sprint: Sprint 25 (20/7/26 - 26/7/26)
-status: planejada - backend do Dashboard de câmeras (2213-2219, 7 cards, to do); specs escritas (UC-033..039) e 7 draft PRs abertos (#856-863) base develop; implementação na semana
-atualizado: 2026-07-17
+status: em andamento - troca de escopo em 20/07: Dashboard (2213-2219) voltou pro backlog; foco = backend da tela de Eventos de câmeras. Lista+detalhe já entregues pelo UC-032 (#803, lucas); resta stats/timeline/recurrence/campos-filtros (2220-2223, to do). Fixes 2271 (mergeado) e 2272 (em review) também na semana
+atualizado: 2026-07-20
 ---
 
 # Attlas - Sprint 25
 
-Foco: **backend do Dashboard de câmeras** (`/api/cameras/dashboard/*`). O frontend já roda 100% em mock (épico [Front] SOFTWARE-1899) e os ~35 contratos estão prontos em `@attlas/contracts`; falta o `ms-cameras` responder as agregações. Backend-only, 1 card = 1 PR, tudo sobre a fundação de período/escopo do 2212 (MOD-013).
+Foco: **backend da tela de Eventos de câmeras** (`/api/cameras/events/*`). Mudança de plano em 20/07 - o Dashboard de câmeras (2213-2219) saiu desta semana e voltou pro backlog. A **lista e o detalhe cross-câmera já foram entregues** pelo UC-032 (SOFTWARE-1914, PR #803, lucas) e o front consome sem mock; a semana é o que sobra: stats, timeline, recurrence e os campos/filtros reais da lista/detalhe. Backend-only, 1 card = 1 PR.
 
-Dependência: o **2212** (fundação, PR #822, code review na Sprint 24) precisa mergear antes - os 7 widgets abaixo dependem do resolver de período/escopo dele.
+A fundação **2212** (MOD-013, PR #822 APPROVED aguardando merge) foi movida da Sprint 24 pra cá em 20/07 - os endpoints de eventos reusam o resolver de período/escopo e o `SPEC-ms-cameras` que ele bootou. O merge dele destrava a semana.
 
-## Cards (1 PR cada) - specs escritas + draft PRs abertos
+## Cards (1 PR cada) - esta semana
 
-Cada card já tem a atômica `UC-*` escrita e uma PR em draft na base `develop`, assignee afonsoburginski. Falta a implementação.
+Base lista+detalhe já entregue pelo UC-032 (#803). O que sobra:
 
-| Card | Widget | Endpoints | Spec | PR (draft) | Pts |
-| --- | --- | --- | --- | --- | --- |
-| [[SOFTWARE-2213 - Dashboard câmeras - KPIs + gauge + distribuição conectividade\|2213]] | KPIs + gauge + distribuição de conectividade | `/kpis`, `/connectivity-gauge`, `/connectivity-distribution` | UC-033 | [#856](https://github.com/atmanadmin/attlas-2026/pull/856) | 5 |
-| [[SOFTWARE-2214 - Dashboard câmeras - donuts tipo + capacidade + incident-severity\|2214]] | donuts (tipo, capacidade analítica, incidentes) | `/type-distribution`, `/analytic-capacity`, `/incident-severity` | UC-034 | [#857](https://github.com/atmanadmin/attlas-2026/pull/857) | 3 |
-| [[SOFTWARE-2215 - Dashboard câmeras - série de uptime\|2215]] | série de uptime | `/uptime` | UC-035 | [#858](https://github.com/atmanadmin/attlas-2026/pull/858) | 5 |
-| [[SOFTWARE-2216 - Dashboard câmeras - heatmap de eventos\|2216]] | heatmap de eventos | `/events-heatmap` | UC-036 | [#860](https://github.com/atmanadmin/attlas-2026/pull/860) | 5 |
-| [[SOFTWARE-2217 - Dashboard câmeras - marcadores do mapa\|2217]] | marcadores do mapa | `/map` | UC-037 | [#861](https://github.com/atmanadmin/attlas-2026/pull/861) | 3 |
-| [[SOFTWARE-2218 - Dashboard câmeras - banda\|2218]] | banda (consumo, por área, comparação) | `/bandwidth`, `/bandwidth-by-area`, `/bandwidth-comparison` | UC-038 | [#862](https://github.com/atmanadmin/attlas-2026/pull/862) | 5 |
-| [[SOFTWARE-2219 - Dashboard câmeras - tabelas de conectividade\|2219]] | tabelas de conectividade (intermitentes, latência, degradação) | `/connectivity/{intermittent,latency,degradation}` | UC-039 | [#863](https://github.com/atmanadmin/attlas-2026/pull/863) | 5 |
-| **Total** | | | | | **31** |
+| Card | Escopo | Existe / falta | Pts |
+| --- | --- | --- | --- |
+| [[SOFTWARE-2220 - Eventos câmeras - campos reais + filtros\|2220]] | campos reais + filtros da lista/detalhe | area/subarea via topologia, honrar filtros ignorados (area/subarea/origin/state/status), status/triggerCount reais | 5 |
+| [[SOFTWARE-2221 - Eventos câmeras - stats\|2221]] | `/events/stats` (total/critical/warning/info + trend) | nada existe; `COUNT GROUP BY severity` no mesmo `where` da lista + trend | 3 |
+| [[SOFTWARE-2222 - Eventos câmeras - timeline + acionamentos\|2222]] | `/events/:id/timeline` + `triggeredActions` INCIDENT | timeline do evento não existe; `triggeredActions` devolve `[]` (só INCIDENT viável) | 5 |
+| [[SOFTWARE-2223 - Eventos câmeras - recorrência\|2223]] | `/events/:id/recurrence?period=` | nada; agregação bucketizada por período | 3 |
+| **Total** | | | **16** |
 
-Frente e mapa dado-por-métrica: [[Dashboard de câmeras - backend]].
+Draft PRs (spec-only UC-*, base develop): 2220 [#899](https://github.com/atmanadmin/attlas-2026/pull/899) (UC-043), 2221 [#895](https://github.com/atmanadmin/attlas-2026/pull/895) (UC-040), 2222 [#896](https://github.com/atmanadmin/attlas-2026/pull/896) (UC-041), 2223 [#897](https://github.com/atmanadmin/attlas-2026/pull/897) (UC-042).
 
-## Backlog (sem prazo)
+Frente e mapa de reuso: [[Eventos de câmeras - backend]].
 
-Eventos de câmeras (2220-2224) + SOFTWARE-2200 + SOFTWARE-2201 estão na pasta `Sprint/sem prazo` (ClickUp Sprint 25 / backlog) - não entram nesta semana.
+## Condicional / backlog
+
+- [[SOFTWARE-2224 - Eventos câmeras - observações + reportar (condicional)]] - segue backlog: depende de Incidents/Inventário (adiados), botão desabilitado no front.
+- **Dashboard de câmeras (2213-2219)** - voltou pro backlog em 20/07. Specs UC-033..039 e os 7 draft PRs (#856-863) seguem abertos, prontos pra retomar. Frente: [[Dashboard de câmeras - backend]].
+- SOFTWARE-2200 (analítico desacoplado) e SOFTWARE-2201 (videowall externo) - backlog, sem prazo.
+
+## Fixes da semana
+
+- SOFTWARE-2271 (#885, mergeado) - guarda de sistema selecionado nas rotas system-scoped (fecha o 400 de system-id ausente). Destravei o build de produção que quebrava por import órfão no videowall antes de mergear.
+- SOFTWARE-2272 (#888, em review) - semeia os 3 tópicos Kafka faltantes no seed do deploy (AD do ms-audit + analytics do ms-cameras).
 
 ## Processo (SDD + gate)
 
 - 1 atômica = 1 PR; gate completo do serviço (`nx test/lint/build`), não só affected; 0 erros de lint.
 - PR base `develop`. Sem `HttpException`/`Error` crus. CI antes do deploy.
-- Specs em `apps/ms-cameras/docs/atomic/UC-033..UC-039`; fundação compartilhada MOD-013 (2212).
+- Specs em `apps/ms-cameras/docs/atomic/`; fundação compartilhada MOD-013 (2212).

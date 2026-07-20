@@ -1,18 +1,18 @@
 ---
 tags:
   - attlas
-  - sprint-25
+  - sem-prazo
   - card
 card: SOFTWARE-2213
 epico: SOFTWARE-1899
 frente: Dashboard de câmeras - backend
-sprint: Sprint 25 (20/7/26 - 26/7/26)
-status: to do
+sprint: sem prazo (ClickUp Sprint 25 / backlog)
+status: backlog
 pontos: 5
-atualizado: 2026-07-17
+atualizado: 2026-07-20
 ---
 
-# SOFTWARE-2213 - Dashboard câmeras: KPIs + gauge + distribuição de conectividade
+# SOFTWARE-2213 - Dashboard de câmeras - KPIs, gauge e distribuição de conectividade
 
 Backend dos KPIs e conectividade da tela de Dashboard de câmeras. Front mockado, contrato pronto. 1 PR.
 
@@ -30,7 +30,7 @@ Backend dos KPIs e conectividade da tela de Dashboard de câmeras. Front mockado
 
 **Agregação (falta)**: `COUNT(*) GROUP BY connectionStatus` por escopo/tenant (hoje só `findAll()` cru). `targetPct` de config.
 
-**Reuso**: `CameraHealthSnapshotRepository`, `ConnectivityHealthEvaluator`, `computeUptimeByCamera` (`cameras.repository.ts:124`). Escopo/período: [[SOFTWARE-2212 - Dashboard câmeras - SPEC ms-cameras + resolver período-escopo|SOFTWARE-2212]].
+**Reuso**: `CameraHealthSnapshotRepository`, `ConnectivityHealthEvaluator`, `computeUptimeByCamera` (`cameras.repository.ts:124`). Escopo/período: [[SOFTWARE-2212 - Fundação do dashboard de câmeras - resolver de período-escopo|SOFTWARE-2212]].
 
 Edital 4.6 (Indicadores de conectividade). Frente: [[Dashboard de câmeras - backend]]. Épico SOFTWARE-1899.
 

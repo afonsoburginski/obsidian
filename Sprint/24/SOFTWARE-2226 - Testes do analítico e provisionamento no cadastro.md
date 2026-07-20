@@ -6,11 +6,11 @@ tags:
   - tech-debt
 card: SOFTWARE-2226
 sprint: Sprint 24 (13/7/26 - 19/7/26)
-status: APROVADA - PR #830 APPROVED por Hadson em 17/7/26, 0 threads pendentes, CI rodando. Review resolvido (B12 + gate de spec). Falta CI verde + merge + deploy manual. Infra/ops (kafka-init gerador, aquario, systemIds) seguem como follow-up fora do PR.
-atualizado: 2026-07-17
+status: CONCLUÍDA (Closed) - PR #830 mergeada na develop em 17/07 (aguarda deploy manual). Review resolvido (B12 + gate de spec). Infra/ops (kafka-init gerador, aquario, systemIds) seguem como follow-up fora do PR.
+atualizado: 2026-07-20
 ---
 
-# Robustez do pipeline de câmeras, analítico e infra
+# Testes do analítico e provisionamento no cadastro
 
 Backlog de melhorias e dívidas técnicas levantadas a partir dos incidentes de depuração do dev no EC2 em 15/07 (deploy que derrubou o ms-cameras, câmera do analítico sem bounding box, queda do aquario). Agora é o foco ativo da semana (in progress). Ordenado por retorno.
 

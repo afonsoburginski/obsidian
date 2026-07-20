@@ -1,18 +1,18 @@
 ---
 tags:
   - attlas
-  - sprint-25
+  - sem-prazo
   - card
 card: SOFTWARE-2215
 epico: SOFTWARE-1899
 frente: Dashboard de câmeras - backend
-sprint: Sprint 25 (20/7/26 - 26/7/26)
-status: to do
+sprint: sem prazo (ClickUp Sprint 25 / backlog)
+status: backlog
 pontos: 5
-atualizado: 2026-07-17
+atualizado: 2026-07-20
 ---
 
-# SOFTWARE-2215 - Dashboard câmeras: série de uptime
+# SOFTWARE-2215 - Dashboard de câmeras - série de uptime
 
 Backend da série temporal de disponibilidade (uptime). Contrato pronto. 1 PR.
 
@@ -22,7 +22,7 @@ Backend da série temporal de disponibilidade (uptime). Contrato pronto. 1 PR.
 
 **Fonte**: `CameraAvailabilityDailyRollup` (dias fechados: onlineWindows/degradedWindows/offlineWindows) + `CameraAvailabilityWindow` (dia parcial, 5 min). % uptime = onlineWindows / total.
 
-**Agregação (falta)**: somar windows de N câmeras por bucket, por rede/escopo. `health-metrics.composer.ts` compõe `dailyAvailability[]`/`uptimePercent` mas **por câmera única** - generalizar e alinhar buckets ao período ([[SOFTWARE-2212 - Dashboard câmeras - SPEC ms-cameras + resolver período-escopo|2212]]).
+**Agregação (falta)**: somar windows de N câmeras por bucket, por rede/escopo. `health-metrics.composer.ts` compõe `dailyAvailability[]`/`uptimePercent` mas **por câmera única** - generalizar e alinhar buckets ao período ([[SOFTWARE-2212 - Fundação do dashboard de câmeras - resolver de período-escopo|2212]]).
 
 **Reuso**: `health-metrics.composer.ts`, `health-range.ts`, `availability.aggregator.ts`.
 
