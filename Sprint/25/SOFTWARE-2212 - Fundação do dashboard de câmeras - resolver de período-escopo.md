@@ -7,9 +7,9 @@ card: SOFTWARE-2212
 epico: SOFTWARE-1899
 frente: Dashboard de câmeras - backend
 sprint: Sprint 25 (20/7/26 - 26/7/26)
-status: em code review - PR #822 APPROVED por Hadson, mergeable, 0 threads. Fundação MOD-013 compartilhada (dashboard + eventos); movida da Sprint 24 pra 25 em 20/07 porque os Eventos desta semana dependem dela. Falta só o merge.
+status: MERGEADA (22/07) - PR #822. Fundação MOD-013 compartilhada (dashboard + eventos); movida da Sprint 24 pra 25 em 20/07 porque os Eventos desta semana dependem dela. O merge destravou a semana.
 pontos: 3
-atualizado: 2026-07-20
+atualizado: 2026-07-22
 pr: https://github.com/atmanadmin/attlas-2026/pull/822
 ---
 

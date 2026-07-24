@@ -7,9 +7,9 @@ card: SOFTWARE-2217
 epico: SOFTWARE-1899
 frente: Dashboard de câmeras - backend
 sprint: sem prazo (ClickUp Sprint 25 / backlog)
-status: backlog
+status: code review
 pontos: 3
-atualizado: 2026-07-20
+atualizado: 2026-07-24
 ---
 
 # SOFTWARE-2217 - Dashboard de câmeras - marcadores do mapa
@@ -29,4 +29,4 @@ Backend dos marcadores geográficos. Contrato pronto. 1 PR.
 Edital 4.6 (representação geoposicionada). Frente: [[Dashboard de câmeras - backend]]. Épico SOFTWARE-1899.
 
 ---
-**Spec** `apps/ms-cameras/docs/atomic/UC-037-dashboard-map-markers.md` · **PR** [#861](https://github.com/atmanadmin/attlas-2026/pull/861) (draft, base `develop`) · **ClickUp** Sprint 25 / to do
+**Spec** `apps/ms-cameras/docs/atomic/UC-037-dashboard-map-markers.md` · **PR** [#861](https://github.com/atmanadmin/attlas-2026/pull/861) (code review, base `develop`) · **ClickUp** Sprint 25 / code review · review interno 24/07: fixes aplicados (1 commit) + atualizada com a develop

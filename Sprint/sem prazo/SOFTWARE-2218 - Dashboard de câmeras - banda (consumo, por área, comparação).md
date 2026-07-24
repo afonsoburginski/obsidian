@@ -7,9 +7,9 @@ card: SOFTWARE-2218
 epico: SOFTWARE-1899
 frente: Dashboard de câmeras - backend
 sprint: sem prazo (ClickUp Sprint 25 / backlog)
-status: backlog
+status: code review
 pontos: 5
-atualizado: 2026-07-20
+atualizado: 2026-07-24
 ---
 
 # SOFTWARE-2218 - Dashboard de câmeras - banda (consumo, por área, comparação)
@@ -35,4 +35,4 @@ Backend dos indicadores de rede/banda. Contrato pronto. 1 PR.
 Edital 4.6 (Indicadores de rede). Frente: [[Dashboard de câmeras - backend]]. Épico SOFTWARE-1899.
 
 ---
-**Spec** `apps/ms-cameras/docs/atomic/UC-038-dashboard-bandwidth-series.md` · **PR** [#862](https://github.com/atmanadmin/attlas-2026/pull/862) (draft, base `develop`) · **ClickUp** Sprint 25 / to do
+**Spec** `apps/ms-cameras/docs/atomic/UC-038-dashboard-bandwidth-series.md` · **PR** [#862](https://github.com/atmanadmin/attlas-2026/pull/862) (code review, base `develop`) · **ClickUp** Sprint 25 / code review · review interno 24/07: fixes aplicados (1 commit) + atualizada com a develop

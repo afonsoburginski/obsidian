@@ -7,12 +7,15 @@ card: SOFTWARE-2220
 epico: SOFTWARE-2047
 frente: Eventos de câmeras - backend
 sprint: Sprint 25 (20/7/26 - 26/7/26)
-status: to do
+status: MERGEADA (22/07) - PR #899, base develop
 pontos: 5
-atualizado: 2026-07-20
+atualizado: 2026-07-22
 spec: UC-043
 pr: https://github.com/atmanadmin/attlas-2026/pull/899
 ---
+
+> [!note] 2026-07-21 - Review respondido
+> Endereçei as 27 threads do @claude no PR #899 (todas resolvidas). Ajustes: parse de from/to como UTC, whitelist do filtro de status (desconhecido = MATCH_NONE), Logger içado, walk de topologia paralelizado por nível, refs de spec fora dos comentários e cobertura de outage + bordas de filtro. 3 commits pushados, aguardando CI.
 
 # SOFTWARE-2220 - Eventos câmeras: campos reais + filtros da lista/detalhe
 

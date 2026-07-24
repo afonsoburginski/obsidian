@@ -6,8 +6,8 @@ tags:
 cards: SOFTWARE-2220, 2221, 2222, 2223, 2224
 epico: SOFTWARE-2047 (Eventos - Eventos de todas as câmeras)
 sprint: Sprint 25 (20/7/26 - 26/7/26)
-status: to do (Sprint 25) - lista+detalhe base JÁ entregues pelo UC-032 (SOFTWARE-1914, #803, lucas); foco da semana = stats (2221) + timeline/acionamentos (2222) + recurrence (2223) + campos reais/filtros (2220 re-escopado); 2224 condicional no backlog
-atualizado: 2026-07-20
+status: Sprint 25 - lista+detalhe base entregues pelo UC-032 (#803, lucas). Em 22/07: 2220 (#899) e 2224 (#903) MERGEADOS; 2221 (#895)/2222 (#896)/2223 (#897) com conflitos resolvidos + fix de CI (resolveNodeTopology), 2221 verde e 2222/2223 reexecutando. integração front aberta (SOFTWARE-2289, PR #951) - depende de 2222/2223
+atualizado: 2026-07-22
 ---
 
 # Eventos de câmeras - backend
@@ -40,7 +40,7 @@ Base **lista + detalhe** entregue pelo UC-032 (SOFTWARE-1914, #803, lucas). Este
 | **2221** | `/events/stats` (`ICameraEventsStats`: total/critical/warning/info + trend) | nada existe; `COUNT GROUP BY severity` no mesmo `where` da lista + `trendPct` (janela anterior) | 3 |
 | **2222** (re-escopado) | `/events/:id/timeline` + `triggeredActions` INCIDENT | timeline do evento não existe (só de incidente); `triggeredActions` devolve `[]` (só INCIDENT viável; ALARM/OS bloqueados) | 5 |
 | **2223** | `/events/:id/recurrence?period=` (1h/24h/7d/30d) | nada; agregação bucketizada `total` + `categoryCount` (via `buildCategoryWhere`) | 3 |
-| **2224** | `/events/:id/observations`, `POST /events/:id/report` | **condicional/backlog**: model Prisma novo + CRUD + report; depende de Incidents/Inventário (adiado) | 3 |
+| **2224** | `/events/:id/observations` (GET/POST), `POST /events/:id/report` | **feito (PR #903, UC-044)**: model `CameraEventObservation` novo + migration; report cria `CameraIncident` DETECTED. Evidências multipart e ALARM/OS = follow-up | 3 |
 
 Pré-req `SPEC-ms-cameras`: bootado pelo card SOFTWARE-2212. Follow-up fora da base: real-time (prepend via WS, `camera:event:new`), ~2 pts.
 

@@ -8,17 +8,17 @@
         "type": "tabs",
         "children": [
           {
-            "id": "b5684534cda85f16",
+            "id": "e3ec448d2163778a",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Reports/2026-07-17.md",
+                "file": "Sem título 1.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "2026-07-17"
+              "title": "Sem título 1"
             }
           }
         ]
@@ -78,7 +78,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 229.51103591918945
+    "width": 352.51103591918945
   },
   "right": {
     "id": "7f39f37a7b274764",
@@ -208,44 +208,44 @@
       "new-3d-graph:Open 3d graph": false
     }
   },
-  "active": "b5684534cda85f16",
+  "active": "e3ec448d2163778a",
   "lastOpenFiles": [
-    "Sprint/25/SOFTWARE-2222 - Eventos câmeras - timeline + acionamentos.md",
+    "Reports/Report diario.md",
+    "Reports/2026-07-24.md",
+    "Sprint/26/Attlas - Sprint 26.md",
     "Sprint/25/SOFTWARE-2220 - Eventos câmeras - campos reais + filtros.md",
-    "Sprint/25/SOFTWARE-2220 - Eventos câmeras - campos reais + filtros.md.tmp.110709.20e71a9894fd",
-    "Sprint/24/Attlas - Sprint 24.md.tmp.110709.2076aef2cabb",
     "Sprint/25/SOFTWARE-2212 - Fundação do dashboard de câmeras - resolver de período-escopo.md",
-    "Reports/2026-07-20.md",
+    "Sprint/25/SOFTWARE-2293 - Cache remoto self-hosted no CI.md",
+    "Docs/Acessos SSH - Infra Attlas.md",
+    "Docs/Observabilidade CI - plano (stack completa).md",
+    "Sem título 1.md",
+    "Sprint/25/SOFTWARE-2313 - Detalhe de evento por câmera - area-subarea e ações disparadas.md",
+    "Sprint/25/Attlas - Sprint 25.md.tmp.74530.af57ad440e55",
+    "Sprint/25/Attlas - Sprint 25.md.tmp.74530.fd10017ad0e7",
+    "Reports/2026-07-23.md",
+    "Reports/2026-07-22.md",
+    "Reports/Report diario 2026-07-23.md",
+    "Reports/Sem título.md",
     "Sprint/25/Eventos de câmeras - backend.md",
+    "Reports/2026-07-21.md",
+    "Reports/2026-07-22.md.tmp.1060617.876053c4e189",
+    "Reports/2026-07-22.md.tmp.1060617.5744eed7c879",
+    "Sprint/25/SOFTWARE-2294 - Timeline pela cadeia do incidente.md",
+    "Sprint/25/SOFTWARE-2294 - Timeline pela cadeia do incidente.md.tmp.1060617.84dcc3a6d677",
+    "Sprint/25/sedExSReX",
+    "Sprint/25/sed58bW7i",
+    "Sprint/25/Attlas - Sprint 25.md.tmp.1060617.8d838512b932",
+    "Sprint/25/Attlas - Sprint 25.md.tmp.1060617.44c63180b2d1",
+    "Sprint/25/Attlas - Sprint 25.md.tmp.1060617.1e75a525ae29",
+    "Sprint/25/SOFTWARE-2289 - Eventos câmeras - integração front-back.md",
+    "Reports/2026-07-20.md",
+    "Reports/2026-07-20 1.md",
+    "Reports/2026-07-17.md",
+    "Sprint/25/SOFTWARE-2222 - Eventos câmeras - timeline + acionamentos.md",
     "Sprint/sem prazo/Dashboard de câmeras - backend.md",
     "Sprint/25/SOFTWARE-2223 - Eventos câmeras - recorrência.md",
     "Sprint/25/SOFTWARE-2222 - Eventos câmeras - detalhe + timeline.md",
     "Sprint/25/SOFTWARE-2221 - Eventos câmeras - stats.md",
-    "Sprint/25/SOFTWARE-2220 - Eventos câmeras - lista cross-câmera.md",
-    "Sprint/sem prazo/SOFTWARE-2219 - Dashboard de câmeras - tabelas de conectividade (intermitentes, latência, degradação).md",
-    "Sprint/sem prazo/SOFTWARE-2218 - Dashboard de câmeras - banda (consumo, por área, comparação).md",
-    "Sprint/sem prazo/SOFTWARE-2217 - Dashboard de câmeras - marcadores do mapa.md",
-    "Sprint/sem prazo/SOFTWARE-2216 - Dashboard de câmeras - heatmap de eventos.md",
-    "Sprint/sem prazo/SOFTWARE-2215 - Dashboard de câmeras - série de uptime.md",
-    "Sprint/sem prazo/SOFTWARE-2214 - Dashboard de câmeras - donuts (tipo, capacidade analítica, incidentes).md",
-    "Sprint/sem prazo/SOFTWARE-2213 - Dashboard de câmeras - KPIs, gauge e distribuição de conectividade.md",
-    "Reports/Report diario.md",
-    "Reports/2026-07-17.md",
-    "Sprint/24/Attlas - Sprint 24.md.tmp.9688.26252f1291ab",
-    "Sprint/24/SOFTWARE-2226 - Testes do analítico e provisionamento no cadastro.md",
-    "Sprint/24/SOFTWARE-2226 - Robustez do pipeline de câmeras, analítico e infra.md.tmp.9688.0c6d6fb502e2",
-    "Reports/2026-07-17.md.tmp.786275.f7ebe3938237",
-    "Sprint/24/SOFTWARE-2212 - Dashboard câmeras - SPEC ms-cameras + resolver período-escopo.md",
-    "Sprint/25/SOFTWARE-2216 - Dashboard câmeras - heatmap de eventos.md",
-    "Sprint/25/SOFTWARE-2214 - Dashboard câmeras - donuts tipo + capacidade + incident-severity.md",
-    "Sprint/25/Dashboard de câmeras - backend.md",
-    "Sprint/25/SOFTWARE-2213 - Dashboard câmeras - KPIs + gauge + distribuição conectividade.md",
-    "Sprint/25/SOFTWARE-2219 - Dashboard câmeras - tabelas de conectividade.md",
-    "Sprint/26",
-    "Sprint/24/SOFTWARE-2134 - Analítico de vídeo ao vivo (detecção + bounding boxes).md.tmp.786275.e53f04e12d30",
-    "Sprint/25/Attlas - Sprint 25.md.tmp.682872.bd993676da17",
-    "Sprint/sem prazo/sedZUBH2E",
-    "Sprint/25",
     "Sem título.canvas",
     "Sem título 2.canvas",
     "Sem título 1.canvas"

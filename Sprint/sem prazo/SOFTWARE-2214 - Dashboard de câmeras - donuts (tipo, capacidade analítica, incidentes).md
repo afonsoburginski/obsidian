@@ -7,9 +7,9 @@ card: SOFTWARE-2214
 epico: SOFTWARE-1899
 frente: Dashboard de câmeras - backend
 sprint: sem prazo (ClickUp Sprint 25 / backlog)
-status: backlog
+status: code review
 pontos: 3
-atualizado: 2026-07-20
+atualizado: 2026-07-24
 ---
 
 # SOFTWARE-2214 - Dashboard de câmeras - donuts (tipo, capacidade analítica, incidentes)
@@ -30,4 +30,4 @@ Backend dos donuts operacionais/incidentes. Contrato pronto. 1 PR.
 Edital 4.6 (operacionais + incidentes). Frente: [[Dashboard de câmeras - backend]]. Épico SOFTWARE-1899.
 
 ---
-**Spec** `apps/ms-cameras/docs/atomic/UC-034-dashboard-distribution-donuts.md` · **PR** [#857](https://github.com/atmanadmin/attlas-2026/pull/857) (draft, base `develop`) · **ClickUp** Sprint 25 / to do
+**Spec** `apps/ms-cameras/docs/atomic/UC-034-dashboard-distribution-donuts.md` · **PR** [#857](https://github.com/atmanadmin/attlas-2026/pull/857) (code review, base `develop`) · **ClickUp** Sprint 25 / code review · review interno 24/07: fixes aplicados (1 commit) + atualizada com a develop
