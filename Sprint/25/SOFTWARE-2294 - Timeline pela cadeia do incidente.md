@@ -7,7 +7,7 @@ card: SOFTWARE-2294
 epico: SOFTWARE-2047
 frente: Eventos de câmeras - backend
 sprint: Sprint 25 (20/7/26 - 26/7/26)
-status: code review - entregue DENTRO da PR #951 (a pedido, pra resolver rápido), commit a4a0f3269
+status: Closed (entregue na #951, mergeada 24/07)
 pontos: 3
 atualizado: 2026-07-22
 spec: UC-041 (revisada) + UC-021 (revisada)

@@ -1,10 +1,10 @@
 ---
 tags:
   - attlas
-  - sem-prazo
+  - sprint-25
   - card
 card: SOFTWARE-2200
-sprint: sem prazo (ClickUp Sprint 25 / backlog)
+sprint: Sprint 25 (20/7/26 - 26/7/26)
 status: backlog - não é dessa semana; a quebrar em atômicas SDD
 atualizado: 2026-07-17
 ---

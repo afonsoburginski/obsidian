@@ -7,7 +7,7 @@ card: SOFTWARE-2289
 epico: SOFTWARE-2047
 frente: Eventos de câmeras - backend
 sprint: Sprint 25 (20/7/26 - 26/7/26)
-status: mergeada - PR #951 mergeada em 23/7 depois de mais uma rodada de review (2 bloqueantes - label duplicado do filtro de status, box-shadow hardcoded) e do conflito de merge com a develop resolvido. Plano pós-aprovação (dividir em 3 fases/cards) segue valendo - side card (86ajny8x2), página de detalhes (2294).
+status: Closed (entregue na #951, mergeada 24/07)
 pontos: 2
 atualizado: 2026-07-23
 spec: MOD-001-cameras-events

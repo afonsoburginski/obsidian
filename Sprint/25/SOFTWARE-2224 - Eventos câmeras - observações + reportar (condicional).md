@@ -1,12 +1,12 @@
 ---
 tags:
   - attlas
-  - sem-prazo
+  - sprint-25
   - card
 card: SOFTWARE-2224
 epico: SOFTWARE-2047
 frente: Eventos de câmeras - backend
-sprint: sem prazo (ClickUp Sprint 25 / backlog)
+sprint: Sprint 25 (20/7/26 - 26/7/26)
 status: backlog (condicional)
 pontos: 3
 atualizado: 2026-07-17

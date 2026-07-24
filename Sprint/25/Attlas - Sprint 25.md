@@ -29,7 +29,7 @@ O núcleo da sprint é **dashboard de câmeras + eventos de câmeras**. Eventos 
 | 2312 cache-correctness + serialização + fix ms-pmv | Closed | #1017 |
 | 2271 / 2272 / 2283 fixes | Closed | #885 / #888 / #912 |
 | 2213-2219 dashboard backend (atualizadas com develop + fixes de review) | **code review** | #856 / #857 / #858 / #860 / #861 / #862 / #863 |
-| 2313 detalhe de evento por câmera (area/subarea + ações disparadas) | **code review** | #1033 |
+| 2313 detalhe de evento por câmera (area/subarea + ações disparadas) | Closed (mergeada 24/07) | #1033 |
 | 2321 / 2322 fila da integração + higiene automática do CI (docker-gc + hooks pós-job + rotação) | Closed (mergeada 24/07) | #1038 (a #1040 foi consolidada nela e fechada) |
 | 2323 governor fair-share de RAM + reciclagem de swap | Closed (mergeada 24/07) | #1045 |
 | 2200 analítico desacoplado, 2201 videowall externo | backlog | - |

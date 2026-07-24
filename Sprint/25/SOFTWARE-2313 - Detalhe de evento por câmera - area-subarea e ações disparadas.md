@@ -7,7 +7,7 @@ card: SOFTWARE-2313
 epico: SOFTWARE-1899
 frente: Eventos de câmeras - backend
 sprint: Sprint 25 (20/7/26 - 26/7/26)
-status: code review
+status: Closed (mergeada 24/07, #1033)
 pontos: 2
 atualizado: 2026-07-24
 ---
