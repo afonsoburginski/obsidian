@@ -20,15 +20,15 @@ porque um QA dedicado entra no time semana que vem e essa validação vira insum
 
 ### Teste e comparação (streaming / hardware) — pausado, backlog
 
-- **[Teste] Performance do streaming de vídeo: banda, latência e média** (SOFTWARE-2314) - medir banda média por stream, latência (TTFF / glass-to-glass) e média geral sob carga; vira baseline pra comparar com o 25.
-- **[Teste] Comparativo Attlas 25 x 26: video wall** (SOFTWARE-2315) - funcionalidades, integração, comportamento, regressões.
-- **[Teste] Comparativo Attlas 25 x 26: arquitetura de hardware e streaming** (SOFTWARE-2316) - protocolos (WebRTC/HLS), codecs, topologia de relays, pipeline de mídia e recursos de máquina.
+- [[SOFTWARE-2314 - Performance do streaming de vídeo]] - medir banda média por stream, latência (TTFF / glass-to-glass) e média geral sob carga; vira baseline pra comparar com o 25.
+- [[SOFTWARE-2315 - Comparativo Attlas 25x26 - video wall]] - funcionalidades, integração, comportamento, regressões.
+- [[SOFTWARE-2316 - Comparativo Attlas 25x26 - arquitetura de hardware e streaming]] - protocolos (WebRTC/HLS), codecs, topologia de relays, pipeline de mídia e recursos de máquina.
 
 ### QA de funcionalidade (telas) — ativo
 
 - [[SOFTWARE-2317 - Fluxo E2E de cadastro de câmera]] - cadastro, validação de credenciais, assistir (player ao vivo), editar. **Validado 27/07** — ver relatório [[SOFTWARE-2317-cadastro-e2e-validation]] (3 bugs corrigidos + 1 doc corrigida no ms-cameras).
-- **[QA] Tela de Dashboard de câmeras** (SOFTWARE-2318) - KPIs, gauge, donuts, marcadores do mapa, heatmap, série de uptime, banda, conectividade. Ainda não validado.
-- **[QA] Tela de Eventos e detalhes** (SOFTWARE-2319) - lista, filtros, stats, timeline pela cadeia do incidente, recorrência, observações, reportar; side card/drawer + página de detalhes. Ainda não validado.
+- [[SOFTWARE-2318 - Dashboard de câmeras - validação E2E de dados]] - KPIs, gauge, donuts, marcadores do mapa, heatmap, série de uptime, banda, conectividade. Ainda não validado.
+- [[SOFTWARE-2319 - Eventos de câmeras - validação E2E de dados]] - lista, filtros, stats, timeline pela cadeia do incidente, recorrência, observações, reportar; side card/drawer + página de detalhes. Ainda não validado.
 
 ## Notas de planejamento
 
