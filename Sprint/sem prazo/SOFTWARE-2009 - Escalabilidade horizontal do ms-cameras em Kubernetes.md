@@ -12,9 +12,9 @@ clickup: https://app.clickup.com/t/86ajc71x6
 titulo: "[Back] ms-cameras: escalabilidade horizontal em Kubernetes (WS, healthcheck, streaming)"
 frente: Escalabilidade / Infra
 tamanho: a estimar (épico)
-status: backlog
-sprint: "[[Attlas - Sprint 23]]"
-atualizado: 2026-07-03
+status: Sprint 24 ataca a fatia 1 (redis-cameras + Socket.IO Redis adapter + WS scoping MOD-011 4.2)
+sprint: "[[Attlas - Sprint 24]]"
+atualizado: 2026-07-13
 ---
 
 # Escalabilidade horizontal do ms-cameras em Kubernetes
