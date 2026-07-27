@@ -11,7 +11,7 @@ clickup: https://app.clickup.com/t/86ajpnu7f
 titulo: "[QA] Eventos de câmeras — validação E2E de dados (listagem e detalhes)"
 frente: Eventos
 tamanho: a estimar
-status: to do
+status: validado (API+banco); falta clique-a-clique no web-attlas
 sprint: "[[Attlas - Sprint 26]]"
 atualizado: 2026-07-27
 ---
@@ -38,15 +38,29 @@ se isso já foi resolvido ou se ainda é comportamento esperado antes de reporta
 
 ## Escopo da validação
 
-- [ ] Lista de eventos (filtros: area/subarea/origin/state/status)
-- [ ] KPIs/stats da tela de eventos
-- [ ] Detalhe do evento (side card/drawer)
-- [ ] Página própria de detalhe
-- [ ] Timeline pela cadeia do incidente
-- [ ] Recorrência
-- [ ] Observações + reportar (condicional)
+- [x] Lista de eventos (filtros: severity/origin/status reais; area/subarea/state não testados — ver Pendências)
+- [x] KPIs/stats da tela de eventos
+- [x] Detalhe do evento (side card/drawer)
+- [x] Timeline (fallback contexto-da-câmera + cadeia do incidente)
+- [x] Recorrência
+- [x] Observações + reportar
 
-## Pendências conhecidas (herdadas da validação de [[SOFTWARE-2317 - Fluxo E2E de cadastro de câmera]])
+## Resultado
 
-- Login real via `ms-organization` bloqueado pelo Kafka local (ver `local_dev_machine_setup` —
-  memória do Claude); testar via API pode exigir o mesmo contorno de JWT assinado manualmente.
+Relatório completo: [[SOFTWARE-2319-eventos-e2e-validation]].
+
+Todos os 8 endpoints validados via API + Postgres. `status`/`triggerCount` já **não são mais
+placeholder** (UC-043 entregou os dois reais) — confirmado ao vivo: reportei um evento de teste,
+virou um `CameraIncident` `DETECTED`, e o `status` do evento mudou de `OPEN` pra `DETECTED` na hora,
+com `triggeredActions` populado. Nenhum bug de código encontrado.
+
+## Pendências
+
+- [ ] `area`/`subarea` — sempre vazios neste ambiente porque `ms-traffic-model` não estava rodando
+      (degradação correta, BR-043-01); não validei o caminho feliz nem o filtro por área/subárea.
+- [ ] Filtro `state` (connectionStatus) — não testado.
+- [ ] Clique-a-clique no `web-attlas` — sessão sem ferramenta de browser.
+- Login real via `ms-organization` continua bloqueado pelo Kafka local (ver `local_dev_machine_setup`
+  — memória do Claude); testado via JWT assinado manualmente, mesmo contorno de
+  [[SOFTWARE-2317 - Fluxo E2E de cadastro de câmera]] e
+  [[SOFTWARE-2318 - Dashboard de câmeras - validação E2E de dados]].
