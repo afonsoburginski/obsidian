@@ -210,6 +210,7 @@
   },
   "active": "a025b9b6a66377fd",
   "lastOpenFiles": [
+    "Docs/ms-cameras/SOFTWARE-2318-dashboard-e2e-validation.md",
     "Sprint/26/SOFTWARE-2316 - Comparativo Attlas 25x26 - arquitetura de hardware e streaming.md",
     "Sprint/26/SOFTWARE-2315 - Comparativo Attlas 25x26 - video wall.md",
     "Sprint/26/SOFTWARE-2314 - Performance do streaming de vídeo.md",
@@ -236,7 +237,6 @@
     "Sprint/25/SOFTWARE-2222 - Eventos câmeras - timeline + acionamentos.md",
     "Sprint/25/SOFTWARE-2221 - Eventos câmeras - stats.md",
     "Sprint/25/SOFTWARE-2220 - Eventos câmeras - campos reais + filtros.md",
-    "Sprint/25/SOFTWARE-2219 - Dashboard de câmeras - tabelas de conectividade (intermitentes, latência, degradação).md",
     "Sprint/25",
     "Sprint/24",
     "Sprint/26",

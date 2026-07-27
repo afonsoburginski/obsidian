@@ -11,7 +11,7 @@ clickup: https://app.clickup.com/t/86ajpnu4j
 titulo: "[QA] Dashboard de câmeras — validação E2E de dados (front x banco)"
 frente: Dashboard
 tamanho: a estimar
-status: to do
+status: validado (API+banco); falta clique-a-clique no web-attlas
 sprint: "[[Attlas - Sprint 26]]"
 atualizado: 2026-07-27
 ---
@@ -38,17 +38,29 @@ analítica/incidentes), série de uptime, heatmap de eventos, marcadores do mapa
 
 ## Escopo da validação
 
-- [ ] KPIs + gauge + distribuição de conectividade
-- [ ] Donuts (tipo, capacidade analítica, incidentes)
-- [ ] Série de uptime
-- [ ] Heatmap de eventos
-- [ ] Marcadores do mapa
-- [ ] Banda (consumo, por área, comparação)
-- [ ] Tabelas de conectividade (intermitentes, latência, degradação)
+- [x] KPIs + gauge + distribuição de conectividade
+- [x] Donuts (tipo, capacidade analítica, incidentes)
+- [x] Série de uptime
+- [x] Heatmap de eventos
+- [x] Marcadores do mapa
+- [x] Banda (consumo, por área*, comparação) — *by-area não testado no caminho feliz (exige `ms-traffic-model`)
+- [x] Tabelas de conectividade (intermitentes, latência, degradação)
 
-## Pendências conhecidas (herdadas da validação de [[SOFTWARE-2317 - Fluxo E2E de cadastro de câmera]])
+## Resultado
 
-- Login real via `ms-organization` bloqueado pelo Kafka local (ver `local_dev_machine_setup` —
-  memória do Claude); testar via API pode exigir o mesmo contorno de JWT assinado manualmente.
-- web-attlas confirmado compilando e com proxy correto pro `ms-cameras` (porta 3300 direto,
-  bypassando Kong em dev local).
+Relatório completo: [[SOFTWARE-2318-dashboard-e2e-validation]].
+
+Todos os 13 endpoints validados via API + cruzamento com Postgres — dados batem exatamente. Nenhum
+bug de código encontrado. 2 achados: rollup diário do ambiente local parado em 24/07 (limitação de
+dado, não bug) e 6 specs atômicas (UC-033/034/036/037/038/039) documentando a rota errada
+(`/api/cameras/dashboard/*` em vez de `/api/dashboard/*` real) — corrigidas.
+
+## Pendências
+
+- [ ] `bandwidth-by-area` no caminho feliz — exige `ms-traffic-model` rodando (não estava no ar).
+- [ ] Clique-a-clique no `web-attlas` — sessão sem ferramenta de browser.
+- [ ] Rodar o job de rollup diário (ou reseed) antes de validar visualmente os gráficos de tendência,
+      senão os últimos 2-3 dias aparecem vazios/zerados.
+- Login real via `ms-organization` continua bloqueado pelo Kafka local (ver `local_dev_machine_setup`
+  — memória do Claude); testado via JWT assinado manualmente, mesmo contorno de
+  [[SOFTWARE-2317 - Fluxo E2E de cadastro de câmera]].

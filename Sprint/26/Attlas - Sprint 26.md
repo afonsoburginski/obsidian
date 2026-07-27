@@ -27,7 +27,7 @@ porque um QA dedicado entra no time semana que vem e essa validação vira insum
 ### QA de funcionalidade (telas) — ativo
 
 - [[SOFTWARE-2317 - Fluxo E2E de cadastro de câmera]] - cadastro, validação de credenciais, assistir (player ao vivo), editar. **Validado 27/07** — ver relatório [[SOFTWARE-2317-cadastro-e2e-validation]] (3 bugs corrigidos + 1 doc corrigida no ms-cameras).
-- [[SOFTWARE-2318 - Dashboard de câmeras - validação E2E de dados]] - KPIs, gauge, donuts, marcadores do mapa, heatmap, série de uptime, banda, conectividade. Ainda não validado.
+- [[SOFTWARE-2318 - Dashboard de câmeras - validação E2E de dados]] - KPIs, gauge, donuts, marcadores do mapa, heatmap, série de uptime, banda, conectividade. **Validado 27/07** — ver relatório [[SOFTWARE-2318-dashboard-e2e-validation]] (0 bugs de código, 1 doc corrigida — 6 specs com rota errada).
 - [[SOFTWARE-2319 - Eventos de câmeras - validação E2E de dados]] - lista, filtros, stats, timeline pela cadeia do incidente, recorrência, observações, reportar; side card/drawer + página de detalhes. Ainda não validado.
 
 ## Notas de planejamento
