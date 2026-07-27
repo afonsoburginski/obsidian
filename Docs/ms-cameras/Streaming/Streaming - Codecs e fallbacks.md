@@ -11,6 +11,15 @@ stream de pé: **qualidade** (perfil de stream), **codec** (HEVC→H264) e **rec
 caiu). Requisitos: RNF-CAM-05 (H.264/H.265 configuráveis por stream) e RF-CAM-06 (primário/secundário).
 Fonte: `apps/ms-cameras/src/streaming/services/ffmpeg-session.service.ts` e `.../camera-stream-source.resolver.ts`.
 
+> **Negociação de codec por cliente (INT-008, 2026-07).** O codec deixou de ser fixo pelo perfil e
+> passou a ser negociado por request: o player (`StreamCodecService`, web-attlas) sonda
+> `MediaCapabilities.decodingInfo` + `RTCRtpReceiver.getCapabilities` e pede `?codec=h265` só quando
+> o decode é por hardware (`smooth && powerEfficient`); senão H264. O backend chaveia a sessão/relay
+> por `(cameraId, quality, codec)` — H264 e H265 coexistem, path mediamtx `<cameraId>-<quality>[-h265]`
+> — e o resolver injeta `videocodec` conforme o request (o `requestedCodec` sobrepõe o codec do perfil),
+> com fallback H264 no mesmo path. O fallback server-side HEVC→H264 abaixo continua valendo. Detalhe em
+> `apps/ms-cameras/docs/atomic/INT-008-codec-negotiation.md` e MOD-004 §13.
+
 ## Codec no ingest (ffmpeg)
 
 `spawnFfmpeg()` monta os args do ffmpeg conforme o codec resolvido (`state.codec`, normalizado

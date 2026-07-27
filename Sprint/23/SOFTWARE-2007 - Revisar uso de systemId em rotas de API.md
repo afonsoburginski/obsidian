@@ -10,9 +10,12 @@ clickup: https://app.clickup.com/t/86ajc6v3u
 titulo: "[Back] API: revisar uso de systemId nas rotas"
 frente: API / Multi-tenant
 tamanho: a estimar
-status: a planejar
+status: spec em review
+branch: cameras/refactor/SOFTWARE-2007
+pr: https://github.com/atmanadmin/attlas-2026/pull/711
+spec: MOD-011-tenant-scoping
 sprint: "[[Attlas - Sprint 23]]"
-atualizado: 2026-07-03
+atualizado: 2026-07-08
 ---
 
 # Revisar uso de systemId em rotas de API
