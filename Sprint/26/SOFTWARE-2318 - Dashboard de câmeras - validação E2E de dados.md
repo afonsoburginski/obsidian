@@ -68,3 +68,13 @@ dado, não bug) e 6 specs atômicas (UC-033/034/036/037/038/039) documentando a 
 - Login real via `ms-organization` continua bloqueado pelo Kafka local (ver `local_dev_machine_setup`
   — memória do Claude); testado via JWT assinado manualmente, mesmo contorno de
   [[SOFTWARE-2317 - Fluxo E2E de cadastro de câmera]].
+
+## Achados do clique-a-clique (28/07)
+
+Card novo aberto no ClickUp ([SOFTWARE-2357](https://app.clickup.com/t/86ajr4e0z), status "code
+review"):
+
+- [x] **Sem largura limite** — o grid esticava full-bleed em monitor ultra-wide (nenhum ponto da
+      cadeia `.dashboard`/`SystemLayout` tinha `max-width`). Corrigido na branch
+      `cameras/feat/SOFTWARE-2326-2`, mesmo padrão já usado na home da Organization (`max-width`
+      via token `--container-7xl` + `margin: auto`). PR [#1119](https://github.com/atmanadmin/attlas-2026/pull/1119) aberta (a #1058 já foi mergeada).

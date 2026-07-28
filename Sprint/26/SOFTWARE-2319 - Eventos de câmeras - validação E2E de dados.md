@@ -59,8 +59,25 @@ com `triggeredActions` populado. Nenhum bug de código encontrado.
 - [ ] `area`/`subarea` — sempre vazios neste ambiente porque `ms-traffic-model` não estava rodando
       (degradação correta, BR-043-01); não validei o caminho feliz nem o filtro por área/subárea.
 - [ ] Filtro `state` (connectionStatus) — não testado.
-- [ ] Clique-a-clique no `web-attlas` — sessão sem ferramenta de browser.
+- [x] Clique-a-clique no `web-attlas` — feito em 28/07. 0 bugs de dado (confirma o resultado
+      original), mas 3 gaps de UI/feature achados, ver abaixo.
 - Login real via `ms-organization` continua bloqueado pelo Kafka local (ver `local_dev_machine_setup`
   — memória do Claude); testado via JWT assinado manualmente, mesmo contorno de
   [[SOFTWARE-2317 - Fluxo E2E de cadastro de câmera]] e
   [[SOFTWARE-2318 - Dashboard de câmeras - validação E2E de dados]].
+
+## Achados do clique-a-clique (28/07)
+
+Não são bugs de dado — gaps de UI/feature na tela já construída. Card novo aberto no ClickUp
+([SOFTWARE-2356](https://app.clickup.com/t/86ajr3ffz)), implementados na branch
+`cameras/fix/SOFTWARE-2356`, commitados localmente:
+
+- [x] **Filtro por dispositivo** — `cameraId` já existia fim-a-fim no contrato/backend (só usado
+      internamente pelo card "últimos eventos do dispositivo"); exposto agora como filtro na tela
+      de lista + forwardado também pro endpoint de stats (que não recebia).
+- [x] **Filtro "todo o período"** — não existia em nenhuma camada (enum, i18n, contrato, DTO,
+      where-builder). Adicionado o token `all` fim-a-fim; omite o filtro de data inteiro.
+- [x] **Rótulo de comparação do badge de tendência** — o badge já mostra a variação percentual mas
+      não dizia contra o que compara (BLOCKER aberto em `UF-004-camera-events-summary-cards.md`).
+      Adicionado hover tooltip no componente compartilhado; o tratamento visual definitivo (rótulo
+      sempre visível) segue em aberto — o badge é um pill compacto sem espaço óbvio pro texto.

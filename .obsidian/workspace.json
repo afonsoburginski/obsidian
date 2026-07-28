@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Docs/Observabilidade CI - plano (stack completa).md",
+                "file": "Sprint/26/SOFTWARE-2317 - Fluxo E2E de cadastro de câmera.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Observabilidade CI - plano (stack completa)"
+              "title": "SOFTWARE-2317 - Fluxo E2E de cadastro de câmera"
             }
           }
         ]
@@ -78,7 +78,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 352.51103591918945
+    "width": 455.51103591918945
   },
   "right": {
     "id": "7f39f37a7b274764",
@@ -210,14 +210,17 @@
   },
   "active": "e3ec448d2163778a",
   "lastOpenFiles": [
-    "Docs/Attlas nova definicao modulos.docx.md",
-    "Docs/Acessos SSH - Infra Attlas.md",
+    "Docs/ms-cameras/Câmeras reais - conexão para testes.md",
     "Sprint/26/SOFTWARE-2319 - Eventos de câmeras - validação E2E de dados.md",
+    "Sprint/26/SOFTWARE-2317 - Fluxo E2E de cadastro de câmera.md.tmp.36372.42505bd86cfe",
     "Sprint/26/SOFTWARE-2318 - Dashboard de câmeras - validação E2E de dados.md",
     "Sprint/26/SOFTWARE-2317 - Fluxo E2E de cadastro de câmera.md",
+    "SOFTWARE-2317-cadastro-e2e-validation.md",
+    "Docs/Observabilidade CI - plano (stack completa).md",
+    "Docs/Attlas nova definicao modulos.docx.md",
+    "Docs/Acessos SSH - Infra Attlas.md",
     "Sprint/26/SOFTWARE-2316 - Comparativo Attlas 25x26 - arquitetura de hardware e streaming.md",
     "Sprint/26/SOFTWARE-2315 - Comparativo Attlas 25x26 - video wall.md",
-    "SOFTWARE-2317-cadastro-e2e-validation.md",
     "Reports/2026-07-24.md",
     "Sprint/26/Attlas - Sprint 26.md.tmp.11446.32f7c8624a50",
     "Sprint/26/Attlas - Sprint 26.md.tmp.11446.6350e40d37d7",
@@ -241,11 +244,8 @@
     "Sprint/25/SOFTWARE-2283 - URLs internas fixas no docker-compose.md.tmp.252896.e85cb9d7603c",
     "Sprint/25/SOFTWARE-2272 - Semeia tópicos Kafka faltantes no deploy.md",
     "Sprint/25/SOFTWARE-2271 - Lista de câmeras 400 sem sistema selecionado.md",
-    "Sprint/25/SOFTWARE-2295 - Side card de eventos integrado ao backend.md",
-    "Sprint/25/SOFTWARE-2201 - Integração videowall externo (NovaStar H9).md",
     "Reports/2026-07-24.md.tmp.252896.0343a439ffc3",
     "Sprint/25/Attlas - Sprint 25.md.tmp.74530.af57ad440e55",
-    "Sprint/25/Attlas - Sprint 25.md.tmp.74530.fd10017ad0e7",
     "Sem título.canvas",
     "Sem título 2.canvas",
     "Sem título 1.canvas"
