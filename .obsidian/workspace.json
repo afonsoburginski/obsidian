@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Sprint/26/SOFTWARE-2317 - Fluxo E2E de cadastro de câmera.md",
+                "file": "Sem título 1.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "SOFTWARE-2317 - Fluxo E2E de cadastro de câmera"
+              "title": "Sem título 1"
             }
           }
         ]
@@ -78,7 +78,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 455.51103591918945
+    "width": 345.51103591918945
   },
   "right": {
     "id": "7f39f37a7b274764",
@@ -192,7 +192,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 318.5
+    "width": 279.5
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -210,12 +210,15 @@
   },
   "active": "e3ec448d2163778a",
   "lastOpenFiles": [
+    "Reports/2026-07-28.md.tmp.127712.6ed5fed31480",
+    "Reports/2026-07-28.md",
+    "SOFTWARE-2318-dashboard-e2e-validation.md",
+    "SOFTWARE-2317-cadastro-e2e-validation.md",
+    "Sprint/26/SOFTWARE-2317 - Fluxo E2E de cadastro de câmera.md",
     "Docs/ms-cameras/Câmeras reais - conexão para testes.md",
     "Sprint/26/SOFTWARE-2319 - Eventos de câmeras - validação E2E de dados.md",
     "Sprint/26/SOFTWARE-2317 - Fluxo E2E de cadastro de câmera.md.tmp.36372.42505bd86cfe",
     "Sprint/26/SOFTWARE-2318 - Dashboard de câmeras - validação E2E de dados.md",
-    "Sprint/26/SOFTWARE-2317 - Fluxo E2E de cadastro de câmera.md",
-    "SOFTWARE-2317-cadastro-e2e-validation.md",
     "Docs/Observabilidade CI - plano (stack completa).md",
     "Docs/Attlas nova definicao modulos.docx.md",
     "Docs/Acessos SSH - Infra Attlas.md",
@@ -232,7 +235,6 @@
     "Reports/2026-07-25.md",
     "Reports/2026-07-06.md",
     "SOFTWARE-2319-eventos-e2e-validation.md",
-    "SOFTWARE-2318-dashboard-e2e-validation.md",
     "Sprint/25/SOFTWARE-2313 - Detalhe de evento por câmera - area-subarea e ações disparadas.md",
     "Sprint/25/SOFTWARE-2323 - Governor fair-share de RAM + reciclagem de swap.md",
     "Sprint/25/SOFTWARE-2322 - Higiene automática dos runners de CI.md",
@@ -242,8 +244,6 @@
     "Sprint/25/SOFTWARE-2312 - Cache-correctness do NX no CI + serialização da integração.md.tmp.252896.3663f658f549",
     "Sprint/25/SOFTWARE-2283 - URLs internas fixas no docker-compose.md",
     "Sprint/25/SOFTWARE-2283 - URLs internas fixas no docker-compose.md.tmp.252896.e85cb9d7603c",
-    "Sprint/25/SOFTWARE-2272 - Semeia tópicos Kafka faltantes no deploy.md",
-    "Sprint/25/SOFTWARE-2271 - Lista de câmeras 400 sem sistema selecionado.md",
     "Reports/2026-07-24.md.tmp.252896.0343a439ffc3",
     "Sprint/25/Attlas - Sprint 25.md.tmp.74530.af57ad440e55",
     "Sem título.canvas",
