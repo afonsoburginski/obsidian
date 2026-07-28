@@ -3,16 +3,18 @@ tags:
   - attlas
   - sem-prazo
   - card
-cards: SOFTWARE-2212, 2213, 2214, 2215, 2216, 2217, 2218, 2219
+cards: SOFTWARE-2212, 2213, 2214, 2215, 2216, 2217, 2218, 2219, 2326
 epico: SOFTWARE-1899 (Dashboard - Módulo de Dashboard das câmeras)
-sprint: sem prazo (ClickUp Sprint 25 / backlog)
-status: backlog - saiu da Sprint 25 em 20/07 (troca por Eventos); specs UC-033..039 escritas, 7 draft PRs abertos (2213-2219, PRs #856-863); implementacao pendente
-atualizado: 2026-07-20
+sprint: Sprint 25 (backend) + Sprint 25 cauda (integração front, SOFTWARE-2326)
+status: backend 100% mergeado (25/07, PRs #856-863) + integração front concluída (SOFTWARE-2326, PR #1058, em code review) - falta só o e2e visual no dev (Kong do ambiente defasado da develop, ver SOFTWARE-2318)
+atualizado: 2026-07-28
 ---
 
 # Dashboard de câmeras - backend
 
-Backend das agregações que alimentam a tela de **Dashboard de câmeras** (`/cameras/dashboard`). O frontend já existe e roda **100% em mock** (Lucas, épico SOFTWARE-1899, subtasks [Front] em teste); os ~35 contratos estão prontos. Falta o `ms-cameras` responder em `/api/cameras/dashboard/*`. Backend-only, 1 card = 1 PR.
+Backend das agregações que alimentam a tela de **Dashboard de câmeras** (`/cameras/dashboard`). Os ~35 contratos foram publicados em `@attlas/contracts/camera/dashboard/*` e o `ms-cameras` responde os 15 endpoints em **`/api/dashboard/*`** (nota: a rota real NÃO tem `/cameras/` no meio - os drafts abaixo citavam `/api/cameras/dashboard/*`, corrigido nas specs UC-033..039 em 27/07, achado F2 do relatório [[SOFTWARE-2318-dashboard-e2e-validation]]).
+
+**Atualização 25-28/07**: as 7 PRs de backend (2213-2219, #856-863) **mergearam todas em 25/07**. O front (que rodava 100% em mock, épico SOFTWARE-1899) foi ligado na virada [[SOFTWARE-2326 - Integração do dashboard de câmeras com o backend real|SOFTWARE-2326]] (PR #1058): o `CamerasDashboardService` é HTTP puro, mock apagado. Validação API+banco (27/07, sessão de QA): 13/13 endpoints batendo com o Postgres, 0 bugs de código - ver [[SOFTWARE-2318-dashboard-e2e-validation]]. Falta só o clique-a-clique visual, bloqueado pelo Kong do ambiente dev estar defasado da develop.
 
 ## Cuidado: são três "dashboards" diferentes
 
@@ -93,6 +95,7 @@ Follow-up fora da base: real-time de KPIs/gauge por WebSocket (`CameraStatusReal
 - [[SOFTWARE-2217 - Dashboard de câmeras - marcadores do mapa]]
 - [[SOFTWARE-2218 - Dashboard de câmeras - banda (consumo, por área, comparação)]]
 - [[SOFTWARE-2219 - Dashboard de câmeras - tabelas de conectividade (intermitentes, latência, degradação)]]
+- [[SOFTWARE-2326 - Integração do dashboard de câmeras com o backend real]] (front, virada de mock pra HTTP)
 
 ## Referências
 

@@ -7,9 +7,9 @@ card: SOFTWARE-2216
 epico: SOFTWARE-1899
 frente: Dashboard de câmeras - backend
 sprint: Sprint 25 (20/7/26 - 26/7/26)
-status: code review
+status: Closed
 pontos: 5
-atualizado: 2026-07-24
+atualizado: 2026-07-28
 ---
 
 # SOFTWARE-2216 - Dashboard de câmeras - heatmap de eventos
@@ -29,4 +29,4 @@ Backend do heatmap câmera x tempo. Contrato pronto. 1 PR.
 Edital 4.6 (mapa de calor de eventos). Frente: [[Dashboard de câmeras - backend]]. Épico SOFTWARE-1899.
 
 ---
-**Spec** `apps/ms-cameras/docs/atomic/UC-036-dashboard-events-heatmap.md` · **PR** [#860](https://github.com/atmanadmin/attlas-2026/pull/860) (code review, base `develop`) · **ClickUp** Sprint 25 / code review · review interno 24/07: fixes aplicados (1 commit) + atualizada com a develop
+**Spec** `apps/ms-cameras/docs/atomic/UC-036-dashboard-events-heatmap.md` · **PR** [#860](https://github.com/atmanadmin/attlas-2026/pull/860) (**MERGEADA** 25/07) · **ClickUp** Closed · review interno 24/07: fixes aplicados (1 commit) + atualizada com a develop

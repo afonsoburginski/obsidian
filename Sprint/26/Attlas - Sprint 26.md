@@ -4,8 +4,8 @@ tags:
   - sprint-26
   - moc
 sprint: Sprint 26 (27/7/26 - 2/8/26)
-status: leva de QA (2317+2318+2319) validada via API+banco em 27/07; falta clique-a-clique no web-attlas. Comparativo Attlas 25x26 pausado (voltou pro backlog).
-atualizado: 2026-07-27
+status: leva de QA (2317+2318+2319) validada via API+banco em 27/07; falta clique-a-clique no web-attlas. Comparativo Attlas 25x26 pausado (voltou pro backlog). Em 28/07 - SOFTWARE-2326 (PR #1058, Sprint 25) ligou o front do dashboard ao backend real, destravando parte da pendência de 2318 (falta o e2e visual - Kong do dev defasado).
+atualizado: 2026-07-28
 ---
 
 # Attlas - Sprint 26
@@ -27,7 +27,7 @@ porque um QA dedicado entra no time semana que vem e essa validação vira insum
 ### QA de funcionalidade (telas) — ativo
 
 - [[SOFTWARE-2317 - Fluxo E2E de cadastro de câmera]] - cadastro, validação de credenciais, assistir (player ao vivo), editar. **Validado 27/07** — ver relatório [[SOFTWARE-2317-cadastro-e2e-validation]] (3 bugs corrigidos + 1 doc corrigida no ms-cameras).
-- [[SOFTWARE-2318 - Dashboard de câmeras - validação E2E de dados]] - KPIs, gauge, donuts, marcadores do mapa, heatmap, série de uptime, banda, conectividade. **Validado 27/07** — ver relatório [[SOFTWARE-2318-dashboard-e2e-validation]] (0 bugs de código, 1 doc corrigida — 6 specs com rota errada).
+- [[SOFTWARE-2318 - Dashboard de câmeras - validação E2E de dados]] - KPIs, gauge, donuts, marcadores do mapa, heatmap, série de uptime, banda, conectividade. **Validado 27/07** — ver relatório [[SOFTWARE-2318-dashboard-e2e-validation]] (0 bugs de código, 1 doc corrigida — 6 specs com rota errada). **28/07**: front ligado ao backend real ([[SOFTWARE-2326 - Integração do dashboard de câmeras com o backend real|SOFTWARE-2326]], PR #1058) — falta só o clique-a-clique visual (Kong do dev defasado da develop).
 - [[SOFTWARE-2319 - Eventos de câmeras - validação E2E de dados]] - lista, filtros, stats, timeline pela cadeia do incidente, recorrência, observações, reportar; side card/drawer + página de detalhes. **Validado 27/07** — ver relatório [[SOFTWARE-2319-eventos-e2e-validation]] (0 bugs de código).
 
 ## Notas de planejamento

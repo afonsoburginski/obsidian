@@ -7,9 +7,9 @@ card: SOFTWARE-2213
 epico: SOFTWARE-1899
 frente: Dashboard de câmeras - backend
 sprint: Sprint 25 (20/7/26 - 26/7/26)
-status: code review
+status: Closed
 pontos: 5
-atualizado: 2026-07-24
+atualizado: 2026-07-28
 ---
 
 # SOFTWARE-2213 - Dashboard de câmeras - KPIs, gauge e distribuição de conectividade
@@ -35,4 +35,4 @@ Backend dos KPIs e conectividade da tela de Dashboard de câmeras. Front mockado
 Edital 4.6 (Indicadores de conectividade). Frente: [[Dashboard de câmeras - backend]]. Épico SOFTWARE-1899.
 
 ---
-**Spec** `apps/ms-cameras/docs/atomic/UC-033-dashboard-kpis-connectivity.md` · **PR** [#856](https://github.com/atmanadmin/attlas-2026/pull/856) (code review, base `develop`) · **ClickUp** Sprint 25 / code review · review interno 24/07: migration do índice `Camera(systemId, lifecycleState)` (infra network-wide compartilhada do lote de dashboard, ancorada aqui por ser a 1ª PR) + atualizada com a develop
+**Spec** `apps/ms-cameras/docs/atomic/UC-033-dashboard-kpis-connectivity.md` · **PR** [#856](https://github.com/atmanadmin/attlas-2026/pull/856) (**MERGEADA** 25/07) · **ClickUp** Closed · review interno 24/07: migration do índice `Camera(systemId, lifecycleState)` (infra network-wide compartilhada do lote de dashboard, ancorada aqui por ser a 1ª PR) + atualizada com a develop

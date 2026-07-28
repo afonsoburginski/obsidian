@@ -4,8 +4,8 @@ tags:
   - sprint-25
   - moc
 sprint: Sprint 25 (20/7/26 - 26/7/26)
-status: em andamento - troca de escopo em 20/07: Dashboard (2213-2219) voltou pro backlog; foco = backend da tela de Eventos de câmeras. Em 22/07 (fim do dia): os 5 cards de eventos (2220-2224) + fundação 2212 + 2134 TODOS MERGEADOS na develop. Em 23/07: #951 (2289) mergeada depois de mais uma rodada de review + conflito com a develop resolvido. Em 24/07: infra de CI fechada - runners escalados (3 sumo heavy + 1 EC2), #964 (2293) mergeada, e a auditoria de cache achou o problema sistêmico (client Prisma stale servido pelo cache remoto compartilhado, quebrava vários serviços) - #1017 (cache-correctness + serialização da integração + fix de memória do ms-pmv) mergeada; develop e #951 verdes de ponta a ponta. ClickUp: 2289/2294/2295 (as 3 fases da tela de Eventos, todas entregues na #951) Closed, card novo do #1017 criado. Cards restantes: dashboard backend (2213-2219) com as 7 PRs #856-863 abertas em code review, 2200/2201 no backlog. Em 24/07 (tarde): as 7 PRs do dashboard atualizadas com a develop e com os fixes do review interno pushados (inclui o índice Camera(systemId, lifecycleState) na #856); a correção órfã do detalhe de evento por câmera (ficou fora da #951 já mergeada) virou card novo 2313 + PR #1033.
-atualizado: 2026-07-24
+status: em andamento - troca de escopo em 20/07: Dashboard (2213-2219) voltou pro backlog; foco = backend da tela de Eventos de câmeras. Em 22/07 (fim do dia): os 5 cards de eventos (2220-2224) + fundação 2212 + 2134 TODOS MERGEADOS na develop. Em 23/07: #951 (2289) mergeada depois de mais uma rodada de review + conflito com a develop resolvido. Em 24/07: infra de CI fechada - runners escalados (3 sumo heavy + 1 EC2), #964 (2293) mergeada, e a auditoria de cache achou o problema sistêmico (client Prisma stale servido pelo cache remoto compartilhado, quebrava vários serviços) - #1017 (cache-correctness + serialização da integração + fix de memória do ms-pmv) mergeada; develop e #951 verdes de ponta a ponta. ClickUp: 2289/2294/2295 (as 3 fases da tela de Eventos, todas entregues na #951) Closed, card novo do #1017 criado. Cards restantes: dashboard backend (2213-2219) com as 7 PRs #856-863 abertas em code review, 2200/2201 no backlog. Em 24/07 (tarde): as 7 PRs do dashboard atualizadas com a develop e com os fixes do review interno pushados (inclui o índice Camera(systemId, lifecycleState) na #856); a correção órfã do detalhe de evento por câmera (ficou fora da #951 já mergeada) virou card novo 2313 + PR #1033. Em 25/07: as 7 PRs do dashboard (2213-2219) MERGEADAS na develop. Em 28/07: integração front do dashboard (SOFTWARE-2326, PR #1058) - CamerasDashboardService virou HTTP puro, mock apagado; validação API+banco de 27/07 (SOFTWARE-2318) já confirmava os 13 endpoints corretos, faltava só ligar o front.
+atualizado: 2026-07-28
 ---
 
 # Attlas - Sprint 25
@@ -28,10 +28,11 @@ O núcleo da sprint é **dashboard de câmeras + eventos de câmeras**. Eventos 
 | 2293 cache remoto self-hosted no CI | Closed | #964 |
 | 2312 cache-correctness + serialização + fix ms-pmv | Closed | #1017 |
 | 2271 / 2272 / 2283 fixes | Closed | #885 / #888 / #912 |
-| 2213-2219 dashboard backend (atualizadas com develop + fixes de review) | **code review** | #856 / #857 / #858 / #860 / #861 / #862 / #863 |
+| 2213-2219 dashboard backend | Closed (mergeadas 25/07) | #856 / #857 / #858 / #860 / #861 / #862 / #863 |
 | 2313 detalhe de evento por câmera (area/subarea + ações disparadas) | Closed (mergeada 24/07) | #1033 |
 | 2321 / 2322 fila da integração + higiene automática do CI (docker-gc + hooks pós-job + rotação) | Closed (mergeada 24/07) | #1038 (a #1040 foi consolidada nela e fechada) |
 | 2323 governor fair-share de RAM + reciclagem de swap | Closed (mergeada 24/07) | #1045 |
+| 2326 integração front do dashboard com o backend real | **code review** | #1058 |
 | 2200 analítico desacoplado, 2201 videowall externo | backlog | - |
 
 O resto desta nota é o registro cronológico da semana.
@@ -68,9 +69,9 @@ Backend da tela de Eventos 100% na develop. ClickUp: os 5 cards Closed.
 
 Frente e mapa de reuso: [[Eventos de câmeras - backend]].
 
-## Dashboard (code review) e backlog
+## Dashboard (mergeado) e backlog
 
-- **Dashboard de câmeras (2213-2219)** - saiu do foco em 20/07, mas as 7 PRs (uma por card) estão **abertas e em code review** no ClickUp: #856 (2213 KPIs/gauge), #857 (2214 donuts), #858 (2215 uptime), #860 (2216 heatmap), #861 (2217 marcadores), #862 (2218 banda), #863 (2219 conectividade). Specs UC-033..039. Frente: [[Dashboard de câmeras - backend]].
+- **Dashboard de câmeras (2213-2219)** - saiu do foco em 20/07, as 7 PRs (uma por card) ficaram em code review até 24/07 e **mergearam todas em 25/07**: #856 (2213 KPIs/gauge), #857 (2214 donuts), #858 (2215 uptime), #860 (2216 heatmap), #861 (2217 marcadores), #862 (2218 banda), #863 (2219 conectividade). Specs UC-033..039. Integração do front (SOFTWARE-2326, PR #1058) em code review. Frente: [[Dashboard de câmeras - backend]].
 - **Review interno + fixes (24/07)**: rodei review interno nas 8 PRs abertas (nenhum bloqueante) e apliquei os ajustes, um commit por PR: índice `Camera(systemId, lifecycleState)` para o scan network-wide (migration única na #856, herdada pelo lote); teto de leitura de eventos no mapa (#861) e desempate estável no top-N do heatmap (#860); `ClockToken` registrado no dashboard e testes de propagação de 502 (#857, #863); campo morto e rotas em comentário corrigidos (#862, #863); rota do teste de uptime (#858). Antes disso, cada branch foi atualizada com a develop (só a #951 tinha 1 conflito, resolvido a favor do fix de cache do prisma).
 - **[[SOFTWARE-2313 - Detalhe de evento por câmera - area-subarea e ações disparadas|SOFTWARE-2313]]** ([#1033](https://github.com/atmanadmin/attlas-2026/pull/1033), code review) - card novo. A rota de detalhe de evento por câmera devolvia area/subarea em branco e limitava as ações disparadas a uma só (`take: 1`), divergindo da rota cross-camera. Como a #951 já mergeou, o fix virou card + PR próprios (1 card = 1 PR). Reusa a mesma resolução de topologia da rota cross-camera.
 - SOFTWARE-2200 (analítico desacoplado) e SOFTWARE-2201 (videowall externo) - backlog, sem prazo.

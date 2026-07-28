@@ -4,21 +4,21 @@
     "type": "split",
     "children": [
       {
-        "id": "838ca15f6d3d23f7",
+        "id": "61a06f85fa5dcc44",
         "type": "tabs",
         "children": [
           {
-            "id": "aefcd834f81d621a",
+            "id": "e3ec448d2163778a",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Reports/2026-07-27.md",
+                "file": "Reports/2026-07-24.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "2026-07-27"
+              "title": "2026-07-24"
             }
           }
         ]
@@ -78,7 +78,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 404.5
+    "width": 352.51103591918945
   },
   "right": {
     "id": "7f39f37a7b274764",
@@ -192,7 +192,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 412.5
+    "width": 318.5,
+    "collapsed": true
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -208,44 +209,44 @@
       "new-3d-graph:Open 3d graph": false
     }
   },
-  "active": "aefcd834f81d621a",
+  "active": "e3ec448d2163778a",
   "lastOpenFiles": [
-    "Sprint/23/SOFTWARE-2003 - Ciclo de vida de sessões de streaming e telemetria de banda por câmera.md",
-    "Reports/2026-07-27.md",
-    "Docs/ms-cameras/SOFTWARE-2319-eventos-e2e-validation.md",
-    "Docs/ms-cameras/SOFTWARE-2318-dashboard-e2e-validation.md",
+    "Sprint/26/Attlas - Sprint 26.md.tmp.11446.6350e40d37d7",
+    "Sprint/25/SOFTWARE-2326 - Integração do dashboard de câmeras com o backend real.md",
+    "Sprint/25/sedcR3Vix",
+    "Sprint/25/sedEa5BOY",
+    "Sprint/26/SOFTWARE-2319 - Eventos de câmeras - validação E2E de dados.md",
+    "Sprint/26/SOFTWARE-2318 - Dashboard de câmeras - validação E2E de dados.md",
+    "Sprint/26/SOFTWARE-2317 - Fluxo E2E de cadastro de câmera.md",
     "Sprint/26/SOFTWARE-2316 - Comparativo Attlas 25x26 - arquitetura de hardware e streaming.md",
     "Sprint/26/SOFTWARE-2315 - Comparativo Attlas 25x26 - video wall.md",
     "Sprint/26/SOFTWARE-2314 - Performance do streaming de vídeo.md",
-    "Sprint/26/SOFTWARE-2319 - Eventos de câmeras - validação E2E de dados.md",
-    "Sprint/26/SOFTWARE-2318 - Dashboard de câmeras - validação E2E de dados.md",
-    "Sprint/sem prazo/SOFTWARE-2009 - Escalabilidade horizontal do ms-cameras em Kubernetes.md",
-    "Sprint/sem prazo/SOFTWARE-2005 - Novas regras de permissões de usuário.md",
-    "Sprint/sem prazo",
-    "Sprint/26/Attlas - Sprint 26.md",
+    "Reports/2026-07-27.md",
+    "Reports/2026-07-25.md",
+    "Reports/2026-07-06.md",
+    "Docs/ms-cameras/SOFTWARE-2319-eventos-e2e-validation.md",
+    "Docs/ms-cameras/SOFTWARE-2318-dashboard-e2e-validation.md",
+    "Docs/ms-cameras/SOFTWARE-2317-cadastro-e2e-validation.md",
+    "Sprint/25/SOFTWARE-2313 - Detalhe de evento por câmera - area-subarea e ações disparadas.md",
     "Sprint/25/SOFTWARE-2323 - Governor fair-share de RAM + reciclagem de swap.md",
     "Sprint/25/SOFTWARE-2322 - Higiene automática dos runners de CI.md",
     "Sprint/25/SOFTWARE-2321 - Fila da integração no runner.md",
-    "Sprint/25/SOFTWARE-2313 - Detalhe de evento por câmera - area-subarea e ações disparadas.md",
+    "Sprint/25/SOFTWARE-2321 - Fila da integração no runner.md.tmp.252896.24ecbaf000cc",
     "Sprint/25/SOFTWARE-2312 - Cache-correctness do NX no CI + serialização da integração.md",
-    "Sprint/25/SOFTWARE-2295 - Side card de eventos integrado ao backend.md",
-    "Sprint/25/SOFTWARE-2294 - Timeline pela cadeia do incidente.md",
-    "Sprint/25/SOFTWARE-2293 - Cache remoto self-hosted no CI.md",
-    "Sprint/25/SOFTWARE-2289 - Eventos câmeras - integração front-back.md",
+    "Sprint/25/SOFTWARE-2312 - Cache-correctness do NX no CI + serialização da integração.md.tmp.252896.3663f658f549",
     "Sprint/25/SOFTWARE-2283 - URLs internas fixas no docker-compose.md",
+    "Sprint/25/SOFTWARE-2283 - URLs internas fixas no docker-compose.md.tmp.252896.e85cb9d7603c",
     "Sprint/25/SOFTWARE-2272 - Semeia tópicos Kafka faltantes no deploy.md",
     "Sprint/25/SOFTWARE-2271 - Lista de câmeras 400 sem sistema selecionado.md",
+    "Sprint/25/SOFTWARE-2295 - Side card de eventos integrado ao backend.md",
+    "Sprint/25/SOFTWARE-2201 - Integração videowall externo (NovaStar H9).md",
+    "Sprint/25/SOFTWARE-2200 - Analítico desacoplado (teste ACOM + controlador).md",
     "Sprint/25/SOFTWARE-2224 - Eventos câmeras - observações + reportar (condicional).md",
-    "Sprint/25/SOFTWARE-2223 - Eventos câmeras - recorrência.md",
-    "Sprint/25",
-    "Sprint/24",
-    "Sprint/26",
-    "Sprint/23",
-    "Sprint/22",
-    "Docs/ms-cameras/Saúde e monitoramento",
-    "Docs/ms-cameras/Status em tempo real",
-    "Docs/ms-cameras/Video Wall",
-    "Docs/ms-cameras/Eventos, incidentes e alarmes",
+    "Reports/2026-07-24.md.tmp.252896.0343a439ffc3",
+    "Sprint/25/Attlas - Sprint 25.md.tmp.74530.af57ad440e55",
+    "Sprint/25/Attlas - Sprint 25.md.tmp.74530.fd10017ad0e7",
+    "Reports/2026-07-22.md.tmp.1060617.876053c4e189",
+    "Reports/2026-07-22.md.tmp.1060617.5744eed7c879",
     "Sem título.canvas",
     "Sem título 2.canvas",
     "Sem título 1.canvas"
