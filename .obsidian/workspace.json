@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Sprint/23/SOFTWARE-2003 - Ciclo de vida de sessões de streaming e telemetria de banda por câmera.md",
+                "file": "Reports/2026-07-27.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "SOFTWARE-2003 - Ciclo de vida de sessões de streaming e telemetria de banda por câmera"
+              "title": "2026-07-27"
             }
           }
         ]
@@ -208,8 +208,10 @@
       "new-3d-graph:Open 3d graph": false
     }
   },
-  "active": "a025b9b6a66377fd",
+  "active": "aefcd834f81d621a",
   "lastOpenFiles": [
+    "Sprint/23/SOFTWARE-2003 - Ciclo de vida de sessões de streaming e telemetria de banda por câmera.md",
+    "Reports/2026-07-27.md",
     "Docs/ms-cameras/SOFTWARE-2319-eventos-e2e-validation.md",
     "Docs/ms-cameras/SOFTWARE-2318-dashboard-e2e-validation.md",
     "Sprint/26/SOFTWARE-2316 - Comparativo Attlas 25x26 - arquitetura de hardware e streaming.md",
@@ -235,8 +237,6 @@
     "Sprint/25/SOFTWARE-2271 - Lista de câmeras 400 sem sistema selecionado.md",
     "Sprint/25/SOFTWARE-2224 - Eventos câmeras - observações + reportar (condicional).md",
     "Sprint/25/SOFTWARE-2223 - Eventos câmeras - recorrência.md",
-    "Sprint/25/SOFTWARE-2222 - Eventos câmeras - timeline + acionamentos.md",
-    "Sprint/25/SOFTWARE-2221 - Eventos câmeras - stats.md",
     "Sprint/25",
     "Sprint/24",
     "Sprint/26",
