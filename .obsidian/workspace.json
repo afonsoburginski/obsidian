@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Sem título 1.md",
+                "file": "Reports/2026-07-28.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Sem título 1"
+              "title": "2026-07-28"
             }
           }
         ]
@@ -78,7 +78,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 345.51103591918945
+    "width": 345.51103591918945,
+    "collapsed": true
   },
   "right": {
     "id": "7f39f37a7b274764",
@@ -210,6 +211,7 @@
   },
   "active": "e3ec448d2163778a",
   "lastOpenFiles": [
+    "Sem título 1.md",
     "Reports/2026-07-28.md.tmp.127712.6ed5fed31480",
     "Reports/2026-07-28.md",
     "SOFTWARE-2318-dashboard-e2e-validation.md",
@@ -245,7 +247,6 @@
     "Sprint/25/SOFTWARE-2283 - URLs internas fixas no docker-compose.md",
     "Sprint/25/SOFTWARE-2283 - URLs internas fixas no docker-compose.md.tmp.252896.e85cb9d7603c",
     "Reports/2026-07-24.md.tmp.252896.0343a439ffc3",
-    "Sprint/25/Attlas - Sprint 25.md.tmp.74530.af57ad440e55",
     "Sem título.canvas",
     "Sem título 2.canvas",
     "Sem título 1.canvas"
