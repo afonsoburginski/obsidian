@@ -7,7 +7,7 @@ card: SOFTWARE-2326
 epico: SOFTWARE-1899
 frente: Dashboard de câmeras - backend
 sprint: Sprint 25 (20/7/26 - 26/7/26)
-status: code review
+status: Closed
 pontos: a estimar
 atualizado: 2026-07-28
 ---
@@ -15,36 +15,38 @@ atualizado: 2026-07-28
 # SOFTWARE-2326 - Integração do dashboard de câmeras com o backend real
 
 Virada de mock pra HTTP real da tela de Dashboard de câmeras, análoga à SOFTWARE-2289 dos Eventos
-(#951). Continuação da PR #1054 (que mergeou por engano só a spec CROSS-040). Branch
-`cameras/feat/SOFTWARE-2326-2`.
+(#951). Continuação da PR #1054 (que mergeou por engano só a spec CROSS-040). PR
+[#1058](https://github.com/atmanadmin/attlas-2026/pull/1058), **mergeada em 25/07 22:11**.
 
-Com os 7 backends do dashboard (2213-2219, PRs #856-863) todos mergeados em 25/07, a integração saiu
-completa numa passada: os **15 métodos** do `CamerasDashboardService` são HTTP puro contra
-`/api/dashboard/*` (query de período/escopo via `buildDashboardQuery`; as 3 tabelas de conectividade
-somam paginação/busca/ordenação via `buildConnectivityQuery`, novo). Mock apagado
-(`cameras-dashboard.mock.ts` + `paginate-mock-rows.util.ts` + `dashboard-mock-latency.constant.ts`).
+## O que entrou
 
-**Achados no caminho**:
-- `getAnalyticCapacity` não tinha consumidor no front e estava mistipado contra o endpoint real
-  (`/analytic-capacity` retorna `IDashboardCameraCapabilities`, não `IDashboardDistribution`) -
-  removido; o donut de capacidades (UF-013) usa `getCameraCapabilities` apontando pro mesmo endpoint.
-- `getMapMarkers` aponta pra `/map` (não `/map-markers` como o CROSS-040 previa); as tabelas apontam
-  pra `/connectivity/{intermittent,latency,degradation}` (controller `dashboard/connectivity`).
-- Faltava a rota `/api/dashboard/kpis` no `docker/kong.yml` (única sem cobertura - o Kong faz
-  prefix-match, então `connectivity`/`bandwidth` já cobriam o resto) - adicionada nesta PR.
+Com os 7 backends do dashboard (2213-2219, PRs #856-863) mergeados no mesmo dia, a integração foi
+além da virada básica - no dia 25/07, em sequência: os **16 métodos** do `CamerasDashboardService`
+ligados a `/api/dashboard/*` (mock apagado), tabelas de conectividade no backend real, fixes de
+review, e um adicional que não estava no escopo original: **atualização em tempo real via
+Socket.IO com adapter Redis** (`redis-io.adapter.ts`, `camera-status.gateway.ts`,
+`dashboard-invalidation.publisher.ts` no `ms-cameras`) - o dashboard invalida/refaz o fetch sozinho
+quando o dado muda, sem precisar de refresh manual. Mapa, capacidades e degradação foram religados
+ao backend real no mesmo lote.
 
-**Specs**: [[CROSS-040]] (as-built) + `UF-002-dashboard-service-and-contracts.md` atualizadas. Specs
-dos serviços/componentes: `HttpTestingController` no service spec, stub do serviço no spec das
-connectivity-tabs (dependia do delay do mock).
+Depois disso, mais trabalho incremental: scope filter coerente + gráfico de disponibilidade
+empilhado (21/07), ajustes de UI (abas, sparklines, expand em modal).
 
-**Pendência**: e2e visual real na tela - bloqueado pelo Kong do ambiente `dev.v2` estar defasado da
-develop (só a família `bandwidth` respondia em 28/07). Mesma pendência do card de QA
-[[SOFTWARE-2318 - Dashboard de câmeras - validação E2E de dados|SOFTWARE-2318]] ("clique-a-clique no
-web-attlas"), que já validou os 13 endpoints via API+banco em 27/07.
+## Estado real vs. o que eu tinha registrado antes
+
+Nesta sessão eu retomei o trabalho a partir de um resumo de conversa que ainda achava a PR #1058
+aberta e o front parcialmente ligado - o resumo tinha ficado "congelado" num ponto anterior ao
+merge. Fiz de novo (numa branch cuja PR já tinha sido fechada) uma versão simplificada da mesma
+virada, sem saber que o trabalho real já tinha avançado muito mais (incluindo o real-time). Esse
+retrabalho ficou órfão na branch remota `cameras/feat/SOFTWARE-2326-2` (2 commits acima do merge
+da PR), sem PR aberta - não deve ser mesclado, é redundante.
+
+**Pendência real remanescente**: e2e visual pela tela (clique-a-clique), que depende do Kong do
+ambiente `dev.v2` estar sincronizado com a develop (ver [[SOFTWARE-2318 - Dashboard de câmeras - validação E2E de dados|SOFTWARE-2318]],
+que já validou os 13 endpoints via API+banco em 27/07).
 
 Frente: [[Dashboard de câmeras - backend]]. Épico SOFTWARE-1899.
 
 ---
 **Spec** `docs/specs/cross-service/CROSS-040-cameras-dashboard-fullstack-integration.md` · **PR**
-[#1058](https://github.com/atmanadmin/attlas-2026/pull/1058) (code review, base `develop`) ·
-**ClickUp** Sprint 25 / code review
+[#1058](https://github.com/atmanadmin/attlas-2026/pull/1058) (**MERGEADA** 25/07) · **ClickUp** Closed

@@ -11,9 +11,9 @@ clickup: https://app.clickup.com/t/86ajpnu4j
 titulo: "[QA] Dashboard de câmeras — validação E2E de dados (front x banco)"
 frente: Dashboard
 tamanho: a estimar
-status: validado (API+banco); front ligado ao real (SOFTWARE-2326, PR #1058, 28/07); falta o e2e visual (Kong do dev defasado)
+status: validado (API+banco); front já estava ligado ao real desde 25/07 (SOFTWARE-2326, PR #1058, Closed); falta o e2e visual (Kong do dev defasado)
 sprint: "[[Attlas - Sprint 26]]"
-atualizado: 2026-07-27
+atualizado: 2026-07-28
 ---
 
 # Dashboard de câmeras — validação E2E de dados
@@ -58,10 +58,11 @@ dado, não bug) e 6 specs atômicas (UC-033/034/036/037/038/039) documentando a 
 ## Pendências
 
 - [ ] `bandwidth-by-area` no caminho feliz — exige `ms-traffic-model` rodando (não estava no ar).
-- [x] ~~Clique-a-clique no `web-attlas` — sessão sem ferramenta de browser.~~ Front ligado ao backend
-      real em 28/07 ([[SOFTWARE-2326 - Integração do dashboard de câmeras com o backend real|SOFTWARE-2326]],
-      PR #1058) — falta ainda o e2e visual pela tela, bloqueado pelo Kong do ambiente `dev.v2` estar
-      defasado da develop (só a família `bandwidth` respondia no probe de 28/07).
+- [x] ~~Clique-a-clique no `web-attlas` — sessão sem ferramenta de browser.~~ Front já estava ligado
+      ao backend real desde 25/07 ([[SOFTWARE-2326 - Integração do dashboard de câmeras com o backend real|SOFTWARE-2326]],
+      PR #1058, Closed - inclusive com realtime via Socket.IO/Redis) — falta ainda o e2e visual pela
+      tela, bloqueado pelo Kong do ambiente `dev.v2` estar defasado da develop (só a família
+      `bandwidth` respondia no probe de 28/07).
 - [ ] Rodar o job de rollup diário (ou reseed) antes de validar visualmente os gráficos de tendência,
       senão os últimos 2-3 dias aparecem vazios/zerados.
 - Login real via `ms-organization` continua bloqueado pelo Kafka local (ver `local_dev_machine_setup`
