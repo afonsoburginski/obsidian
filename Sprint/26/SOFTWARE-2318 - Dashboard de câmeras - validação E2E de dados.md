@@ -11,9 +11,9 @@ clickup: https://app.clickup.com/t/86ajpnu4j
 titulo: "[QA] Dashboard de câmeras — validação E2E de dados (front x banco)"
 frente: Dashboard
 tamanho: a estimar
-status: validado (API+banco); front já estava ligado ao real desde 25/07 (SOFTWARE-2326, PR #1058, Closed); falta o e2e visual (Kong do dev defasado)
+status: validado (API+banco); front já ligado ao real desde 25/07 (SOFTWARE-2326, PR #1058, Closed); achado de largura (2357) com PR #1139 aberta e CI verde
 sprint: "[[Attlas - Sprint 26]]"
-atualizado: 2026-07-28
+atualizado: 2026-07-29
 ---
 
 # Dashboard de câmeras — validação E2E de dados
@@ -75,6 +75,10 @@ Card novo aberto no ClickUp ([SOFTWARE-2357](https://app.clickup.com/t/86ajr4e0z
 review"):
 
 - [x] **Sem largura limite** — o grid esticava full-bleed em monitor ultra-wide (nenhum ponto da
-      cadeia `.dashboard`/`SystemLayout` tinha `max-width`). Corrigido na branch
-      `cameras/feat/SOFTWARE-2326-2`, mesmo padrão já usado na home da Organization (`max-width`
-      via token `--container-7xl` + `margin: auto`). PR [#1119](https://github.com/atmanadmin/attlas-2026/pull/1119) aberta (a #1058 já foi mergeada).
+      cadeia `.dashboard`/`SystemLayout` tinha `max-width`). Corrigido, mesmo padrão já usado na home
+      da Organization (`max-width` via token `--container-7xl` + `margin: auto`). PR original #1119
+      fechada (branch antiga, substituída); recriada como PR
+      [#1139](https://github.com/atmanadmin/attlas-2026/pull/1139) — essa branch tinha sido cortada
+      antes da #1058 mergear a mesma conversão de mock→backend real, então precisou mesclar com a
+      develop em 29/07 (3 arquivos em conflito, resolvidos a favor da versão já mergeada) + remover
+      uma rota Kong duplicada (`/api/dashboard/kpis`) achada nessa mesclagem. CI verde.

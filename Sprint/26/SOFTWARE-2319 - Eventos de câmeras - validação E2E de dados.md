@@ -11,9 +11,9 @@ clickup: https://app.clickup.com/t/86ajpnu7f
 titulo: "[QA] Eventos de câmeras — validação E2E de dados (listagem e detalhes)"
 frente: Eventos
 tamanho: a estimar
-status: validado (API+banco); falta clique-a-clique no web-attlas
+status: validado (API+banco+clique-a-clique); 0 bugs de código; card fechado no ClickUp em 29/07
 sprint: "[[Attlas - Sprint 26]]"
-atualizado: 2026-07-27
+atualizado: 2026-07-29
 ---
 
 # Eventos de câmeras — validação E2E de dados
@@ -81,3 +81,6 @@ Não são bugs de dado — gaps de UI/feature na tela já construída. Card novo
       não dizia contra o que compara (BLOCKER aberto em `UF-004-camera-events-summary-cards.md`).
       Adicionado hover tooltip no componente compartilhado; o tratamento visual definitivo (rótulo
       sempre visível) segue em aberto — o badge é um pill compacto sem espaço óbvio pro texto.
+
+PR [#1121](https://github.com/atmanadmin/attlas-2026/pull/1121), CI verde (uma falha por flake de
+infra no testcontainer do `ms-traffic-model`, sem relação com o diff — resolvida com rerun).

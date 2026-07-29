@@ -10,9 +10,9 @@ clickup: https://app.clickup.com/t/86ajpntyc
 titulo: "[QA] Fluxo E2E de câmera — cadastro, validação, player e edição (dados vs banco)"
 frente: Cadastro/CRUD
 tamanho: a estimar
-status: validado
+status: validado; PR #1137 recebeu changes-requested em 29/07, 5 bloqueantes corrigidos no mesmo dia, aguardando re-review
 sprint: "[[Attlas - Sprint 26]]"
-atualizado: 2026-07-28
+atualizado: 2026-07-29
 ---
 
 # Fluxo E2E de cadastro de câmera
@@ -128,3 +128,43 @@ Ainda na branch `cameras/fix/SOFTWARE-2317` (renomeada, sem o sufixo `-cadastro-
       afetaria qualquer câmera cadastrada numa porta diferente da padrão. Corrigido junto (novo
       `splitCameraIpAddress`, reusado também no bootstrap pra não concatenar porta em cima de um
       `ipAddress` que já pode trazer `:porta` embutido).
+
+## Review da PR #1137 (29/07) — 5 bloqueantes, todos fechados
+
+O review pediu mudanças. Os achados eram concretos e o commit `9330ed47d` fecha todos:
+
+- [x] **3 suítes quebradas** (`cameras.repository.spec`, `create-cameras.handler.spec`,
+      `camera-creation-device-step.component.spec`) — todas eram assertivas que ficaram para trás
+      dos próprios commits desta PR (o `include` novo no `changeState`, o `ipAddress` default do
+      helper `cmd()`, o terceiro input do card). Corrigido o lado do teste nas três — nenhuma era
+      bug de produção. Viola a regra dura do `CLAUDE.md`, então era bloqueante mesmo.
+- [x] **Migration ausente para a BR-CRUD-009** — a PR introduziu a invariante "IP único entre
+      câmeras ativas do tenant" só com checagem de aplicação. O reviewer apontou (corretamente) que
+      o ciclo shadow do §[DBM] roda contra um Postgres descartável e não dependia do `infra:up`
+      estar de pé, que foi a justificativa que eu tinha usado pra postergar. Criado
+      `20260729114417_camera_active_ip_unique` com o índice parcial
+      `UNIQUE (systemId, ipAddress) WHERE deletedAt IS NULL` (`CONCURRENTLY`) + o índice btree
+      `(systemId, ipAddress)` que o parcial não cobre (serve o branch soft-deleted). Ciclo validado:
+      dois `--exit-code 0`, e o diff pós-rollback confirmou que o índice parcial é **invisível** ao
+      Prisma — que é exatamente o motivo de o ledger existir.
+- [x] **`DBM-DRIFT.md` do ms-cameras estava só com o placeholder** "não mapeado ainda" — preenchido
+      com a entrada do índice parcial + nota de que o particionamento semanal de telemetria segue
+      não auditado (próximo que tocar aquela área deve classificar).
+- [x] **Corrida TOCTOU** — a checagem lê fora da transaction de escrita, então dois submits
+      concorrentes (duplo-clique, retry após 5xx, import paralelo) podiam ambos inserir. O índice
+      fecha a janela; adicionada a tradução do `P2002` → `CAMERA_DUPLICATE_IP` no create **e** no
+      update, com narrow no `meta.target` pra não engolir violação de outra constraint. Teste pros
+      dois caminhos.
+- [x] **A1 (sugestão, mas era bug real)** — `provisioned-bandwidth-collector` concatenava
+      `${ipAddress}:${port}` sem `splitCameraIpAddress`, mesma classe de bug que esta PR já corrigia
+      noutros pontos: câmera em porta não-padrão viraria `10.1.1.1:8080:80` na leitura de bitrate.
+- [x] **A5** — `MOD-001` atualizado (assinatura do `createMany`, métodos de busca por IP, e seção
+      nova descrevendo as duas camadas da BR-CRUD-009: quem garante vs quem tipa o erro).
+
+Gate completo (suíte inteira, não afetados): `ms-cameras` 187 suítes/1437 testes, `web-attlas`
+920 suítes/9296 testes, lint 0 erros nos dois, build ok.
+
+Ficaram em aberto os 🟡 não-impeditivos. Os mais relevantes: **A2** (reativação não limpa
+`CameraStreamProfile`/PTZ/snapshot da encarnação anterior — câmera reativada pode aparecer online
+antes do primeiro heartbeat) e **A4** (autocomplete de interseção inoperável por teclado, o `blur`
+fecha o painel antes do foco alcançar as opções). Candidatos a card próprio.
