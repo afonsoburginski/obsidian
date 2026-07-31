@@ -1,38 +1,39 @@
 ---
 tags:
   - doc
-  - cameras
   - ms-cameras
+  - cameras
   - saude
+atualizado: 2026-07-03
 ---
 
-# Saúde e monitoramento — Requisitos e SLA
+# Saúde e monitoramento - Requisitos e SLA
 
-> Requisitos de negócio cobertos por este submódulo e a definição de SLA. Hub: [[00 - Saúde e monitoramento]]. Regras completas de exibição: [[Saúde da Câmera - regras de negócio e contratos]]. Requisitos: `docs/modules/cameras.md`.
+> Requisitos de negócio cobertos por este submódulo e a definição de SLA. Hub: [[Saúde e monitoramento]]. Regras completas de exibição: [[Saúde da câmera - regras de negócio e contratos]]. Requisitos: `docs/modules/cameras.md`.
 
 ## Requisitos cobertos
 
 | Req | Nome | Critério | Como é atendido |
 | --- | --- | --- | --- |
 | RF-CAM-03 | Heartbeat e conectividade | Monitorar continuamente heartbeat, latência, perda de pacotes e qualidade do stream; registrar falhas, inclusive sobre APIs proprietárias | Loop de ping (Axis WS / ONVIF PullPoint) → RTT + perda %; evaluator deriva estado; falhas viram log de eventos + incidente |
-| RF-CAM-04 | Monitoramento real-time | Estado corrente da câmera em tempo real (online/offline etc.) | `CameraOperationalSnapshot` + push WebSocket a cada mudança de estado ([[Status em tempo real (push)]]) |
+| RF-CAM-04 | Monitoramento real-time | Estado corrente da câmera em tempo real (online/offline etc.) | `CameraOperationalSnapshot` + push WebSocket a cada mudança de estado ([[Status em tempo real]]) |
 | RNF-CAM-01 | Escalabilidade horizontal | Crescer a rede sem interrupção nem redesign | Uma instância de worker por câmera, armada no boot; sampler/rollup iteram a lista dinâmica |
 | RNF-CAM-03 | Latência operacional | Streaming/PTZ responsivos em incidente | Latência é medida e pontuada (secundária ao loss no score Q); alimenta o SLA e o estado |
 
-**Parcialmente atendido — "qualidade do stream" (RF-CAM-03):** o `connectionStatus` mede só o canal de controle ao device, **sem sinal de vídeo**. A qualidade de vídeo vive à parte em `streamStatus` (UC-027, ver [[04-Diagnostico-travamento-WebRTC]]); bitrate/TTFF históricos estão **persistidos mas ainda não expostos** pelo handler UC-026 (pendência PROJ-006 — [[SOFTWARE-1923 - Bitrate histórico + TTFF]]).
+**Parcialmente atendido - "qualidade do stream" (RF-CAM-03):** o `connectionStatus` mede só o canal de controle ao device, **sem sinal de vídeo**. A qualidade de vídeo vive à parte em `streamStatus` (UC-027, ver [[Streaming - Diagnóstico de travamento no WebRTC]]); bitrate/TTFF históricos estão **persistidos mas ainda não expostos** pelo handler UC-026 (pendência PROJ-006 - [[SOFTWARE-1923 - Bitrate histórico + TTFF]]).
 
 ## Estados
 
-**Device** — `CameraConnectionStatus`: `STABLE` · `PARTIALLY_UNSTABLE` · `UNSTABLE` · `OFFLINE` (do score Q + histerese). Mapeados para 3 estados de tela — `ONLINE` (STABLE) · `DEGRADED` (PARTIALLY + UNSTABLE) · `OFFLINE` (BR-AVAIL-001).
+**Device** - `CameraConnectionStatus`: `STABLE` · `PARTIALLY_UNSTABLE` · `UNSTABLE` · `OFFLINE` (do score Q + histerese). Mapeados para 3 estados de tela - `ONLINE` (STABLE) · `DEGRADED` (PARTIALLY + UNSTABLE) · `OFFLINE` (BR-AVAIL-001).
 
-**Vídeo** — `StreamHealthStatus`: `OK` · `DEGRADED` · `DOWN` · `INACTIVE` (desacoplado do device; UC-027).
+**Vídeo** - `StreamHealthStatus`: `OK` · `DEGRADED` · `DOWN` · `INACTIVE` (desacoplado do device; UC-027).
 
 ## SLA e disponibilidade
 
 - **Unidade de medida**: janela de **5 min** (env `AVAILABILITY_WINDOW_MINUTES`). Dia/semana/período são composições de janelas, nunca um valor diário medido à parte (BR-AVAIL-002).
 - **SLA = % do tempo Online** sobre o período (`uptimePercent`). Só Online conta; Degradada e Offline reduzem.
 - **Meta de SLA = 99.0%** (env `CAMERA_SLA_TARGET_PERCENT`, mesma para todas as câmeras). `slaDeviationPercent = Online% − meta`.
-- **Uptime ≠ SLA**: `reachabilityPercent = (Online + Degradada) / total` — o card "Uptime", métrica separada do SLA.
+- **Uptime ≠ SLA**: `reachabilityPercent = (Online + Degradada) / total` - o card "Uptime", métrica separada do SLA.
 - **Janela vazia/faltante = Offline** (BR-AVAIL-005): ausência de heartbeat não é prova de que a câmera esteve online.
 
 ## Retenção

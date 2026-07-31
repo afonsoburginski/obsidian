@@ -1,18 +1,23 @@
 ---
-tags: [doc, cameras, ms-cameras, eventos]
+tags:
+  - doc
+  - ms-cameras
+  - cameras
+  - eventos
+atualizado: 2026-07-03
 ---
 
-# Eventos, incidentes e alarmes — Fluxos
+# Eventos, incidentes e alarmes - Fluxos
 
-> Submódulo do [[ms-cameras - visão geral]]. Índice: [[00 - Eventos, incidentes e alarmes]]. Arquitetura: [[Eventos, incidentes e alarmes - Arquitetura e estratégias]]. Visual: [[07 - MOD-007 camera-events.excalidraw|diagrama]].
+> Submódulo do [[ms-cameras]]. Índice: [[Eventos, incidentes e alarmes]]. Arquitetura: [[Eventos, incidentes e alarmes - Arquitetura e estratégias]]. Visual: [[07 - MOD-007 camera-events.excalidraw|diagrama]].
 
-Use cases (backend) e user flow (frontend) passo a passo. Sem diagrama — ver o canvas.
+Use cases (backend) e user flow (frontend) passo a passo. Sem diagrama - ver o canvas.
 
-## UC-019 — Registro de evento
+## UC-019 - Registro de evento
 
 ### Fonte A: transição interna (worker de saúde)
 
-1. Worker detecta transição (offline, reconexão, evento VAPIX, PTZError…) — ver [[00 - Saúde e monitoramento]].
+1. Worker detecta transição (offline, reconexão, evento VAPIX, PTZError…) - ver [[Saúde e monitoramento]].
 2. `safeAppendEvent` grava em `CameraEventLog` (`HEALTH_*`/`CONNECTIVITY_CHANGED` + `causeCode`).
 3. `eventBus.publish(CameraEventLogCreatedEvent)` → WebSocket `camera:event:new`.
 4. **Fim.** Não publica em `event-logged` → não dispara correlação/alarme (ver nuance no índice).
@@ -29,7 +34,7 @@ Use cases (backend) e user flow (frontend) passo a passo. Sem diagrama — ver o
    5. `eventBus.publish` (WebSocket) **e** `publisher.publishEventLogged` (Kafka, best-effort).
 4. `event-logged` faz **fan-out** para UC-021 (correlação) e UC-022 (alarme, Branch B).
 
-## UC-021 — Correlação em incidente
+## UC-021 - Correlação em incidente
 
 Consumidor de `event-logged`. `CorrelateEventsListener.handle` valida o payload (`validateEventLogEntry`; drop se inválido) e chama `CorrelateEventsService.correlate`:
 
@@ -52,18 +57,18 @@ Consumidor de `event-logged`. `CorrelateEventsListener.handle` valida o payload 
 | `dropExpiredTentative` | `TENTATIVE`, `updatedAt` < now-120s | → `DROPPED` |
 | `autoResolveByRecovery` | `DETECTED`, ≥80% das câmeras com `HEALTH_ONLINE` após `detectedAt` | → `RESOLVED` |
 
-## UC-022 — Emissão de alarme (2 branches)
+## UC-022 - Emissão de alarme (2 branches)
 
 `EmitAlarmListener` consome dois tópicos; erros não-swallowable são relançados (Kafka reentrega).
 
-### Branch A — incidente correlacionado (`incident-created`)
+### Branch A - incidente correlacionado (`incident-created`)
 
 1. Guarda: `affectedCameraIds` vazio → `warn` + drop.
 2. `mapToAlarm({ causeCode, fromCluster: true })`; `null` → não emite.
 3. `alarmId = deriveAlarmId('INCIDENT', incidentId)`; `affectedEntities` = todas as câmeras.
 4. Publica `alarm-raised` (key = `incidentId`).
 
-### Branch B — evento crítico isolado (`event-logged`)
+### Branch B - evento crítico isolado (`event-logged`)
 
 1. `isAlarmableEvent(causeCode, severity)` falso → não emite (`ERROR` sempre; `VAPIX_TAMPERING` sempre; senão não).
 2. `findIncidentByEventLogId` achou ligação → skip (cluster já cobre).
@@ -71,12 +76,12 @@ Consumidor de `event-logged`. `CorrelateEventsListener.handle` valida o payload 
 4. `alarmId = deriveAlarmId('EVENT', eventLogId)`; `affectedEntities` = a câmera.
 5. Publica `alarm-raised` (key = `cameraId`).
 
-## UC-017 / UC-018 — Leitura de log e detalhe
+## UC-017 / UC-018 - Leitura de log e detalhe
 
 - **Log** (`GET /cameras/:id/events`): valida câmera (404), aplica filtros `eventType`/`severity`/`category` (CSV), `search` (em `summary`/`translationKey`), janela `from`/`to` (sobre **`createdAt`**) e `sort` (default `occurredAt desc`; aceita `severity`/`actor`). Paginação `limit` (default 20, máx 100). Categoria derivada por item.
-- **Detalhe** (`GET /cameras/:id/events/:eventId`): `findEventScopedByCamera` — evento de outra câmera ou de câmera deletada resolve `null` → 404 sem vazar existência. Inclui `linkedIncident {id, status}` (link mais recente).
+- **Detalhe** (`GET /cameras/:id/events/:eventId`): `findEventScopedByCamera` - evento de outra câmera ou de câmera deletada resolve `null` → 404 sem vazar existência. Inclui `linkedIncident {id, status}` (link mais recente).
 
-## UC-023 / UC-024 — Leitura de incidentes
+## UC-023 / UC-024 - Leitura de incidentes
 
 - **Lista** (`GET /cameras/incidents`): sem `from`/`to`, janela default = 7 dias. Status default oculta `TENTATIVE`/`DROPPED` (só `DETECTED`/`INVESTIGATING`/`RESOLVED`). Filtros `severity`/`type`/`status`/`cameraId`; `type` traduzido para sufixos de `correlationKey`. `affectedCameraIds`/`eventCount` agregados à parte (não limitados pela página).
 - **Detalhe** (`GET /cameras/incidents/:id`): status interno (`TENTATIVE`/`DROPPED`) → 404. Timeline ASC (cronológica), cap `MAX_TIMELINE_ITEMS = 200` com flag `timelineTruncated`. Traz `reportedBy`/`assignedTo`/`workOrderId` (nullable hoje).

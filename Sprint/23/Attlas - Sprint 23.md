@@ -27,7 +27,7 @@ Origem do escopo: backlog levantado ao validar o ambiente em dev (03/07) + repas
 | 5   | [[SOFTWARE-2007 - Revisar uso de systemId em rotas de API]]                     | API / Multi-tenant | M         | SOFTWARE-2007 | ✅ MERGEADA + em PROD (12/07), [PR #711](https://github.com/atmanadmin/attlas-2026/pull/711). Escopo por sistema nas rotas (leak da saúde fechado + timeline de incident) + **log de eventos agnóstico de marca** (taxonomia canônica, linguagem clara, tampering→"possível adulteração") + **fix do gráfico de saúde 30/90 dias**. Backfill do banco de prod feito. Card fechado. Pendências fora do escopo: WS scoping (MOD-011 §4.2) e provisionar redis-cameras em prod |
 | 6   | [[SOFTWARE-2008 - Integração com perfis de mídia (endpoints)]]                  | Cameras            | a estimar | SOFTWARE-2008 | ✅ MERGEADA na develop (09/07), [PR #708](https://github.com/atmanadmin/attlas-2026/pull/708), card fechado. Escopo ampliado (08/07): (1) perfis de mídia = inventário ONVIF do device em `CameraMediaProfile` + descoberta automática + endpoint servindo do banco (12 câmeras/34 perfis reais local); (2) log de eventos = server-side + filtro de severidade/operador + atualização ao vivo. Testes o user valida no web-attlas |
 | 7   | [[SOFTWARE-2009 - Escalabilidade horizontal do ms-cameras em Kubernetes]]       | Escalabilidade     | épico     | SOFTWARE-2009 | backlog |
-| 8   | [[SOFTWARE-2016 - Filtro de topologia multivalor + topologyElement na listagem]] | Cameras / Topologia | a estimar | SOFTWARE-2016 | backlog |
+| 8   | SOFTWARE-2016 - Filtro de topologia multivalor + topologyElement na listagem (sem nota própria) | Cameras / Topologia | a estimar | SOFTWARE-2016 | backlog |
 
 ## Incidentes relacionados
 

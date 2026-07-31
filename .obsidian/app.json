@@ -1,6 +1,6 @@
 {
   "newFileLocation": "current",
-  "attachmentFolderPath": "anexos",
+  "attachmentFolderPath": "./",
   "alwaysUpdateLinks": true,
   "promptDelete": false
 }

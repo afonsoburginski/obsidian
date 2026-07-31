@@ -21,7 +21,7 @@ sprint: "[[Attlas - Sprint 22]]"
 # SOFTWARE-1924 — Endpoint getHealthMetrics + série + SLA
 
 > Tarefa 6. **PR [#578](https://github.com/atmanadmin/attlas-2026/pull/578) MERGEADA (01/07)** · ClickUp **Closed**.
-> Contexto: [[Saúde da Câmera - regras de negócio e contratos]]. Junta tudo no endpoint que o frontend consome.
+> Contexto: [[Saúde da câmera - regras de negócio e contratos]]. Junta tudo no endpoint que o frontend consome.
 
 ## Entregue (#578)
 

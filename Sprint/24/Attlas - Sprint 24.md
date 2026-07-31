@@ -35,7 +35,7 @@ Pivotou em 20/07: o foco da Sprint 25 passou a ser o backend da tela de **Evento
 Movido pra pasta `Sprint/sem prazo` - não é dessa semana nem da próxima:
 
 - **Eventos de câmeras**: a base 2220-2223 entrou na Sprint 25 em 20/07; só o 2224 (condicional) segue sem prazo. [[Eventos de câmeras - backend]].
-- **SOFTWARE-2200 - Analítico desacoplado (teste ACOM + controlador)** - [[SOFTWARE-2200 - Analítico desacoplado (teste ACOM + controlador)]]: a contraparte do 2134 (câmera comum sem edge → detecção atuando no controlador via ACOM). É onde as decisões borda-vs-CV-própria e atuação-hardware-vs-software se resolvem.
+- **SOFTWARE-2200 - Prova ponta a ponta do analítico desacoplado** - [[SOFTWARE-2200 - Prova ponta a ponta do analítico desacoplado]]: a contraparte do 2134 (câmera comum sem edge → detecção atuando no controlador via ACOM). É onde as decisões borda-vs-CV-própria e atuação-hardware-vs-software se resolvem.
 - **SOFTWARE-2201 - Integração videowall externo (NovaStar H9)** - [[SOFTWARE-2201 - Integração videowall externo (NovaStar H9)]]: Attlas comanda o mural de LED por Open API (TCP-IP), exigido pelo contrato de Quito. Adaptador `INT-*` novo, provável em `ms-cameras`.
 
 ## Fora do foco (não esquecer)

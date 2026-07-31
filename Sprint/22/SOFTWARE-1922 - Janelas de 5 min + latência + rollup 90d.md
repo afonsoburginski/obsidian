@@ -21,7 +21,7 @@ sprint: "[[Attlas - Sprint 22]]"
 # SOFTWARE-1922 — Janelas de 5 min de disponibilidade + latência (+ rollup 90d)
 
 > Tarefa 4. **PR [#576](https://github.com/atmanadmin/attlas-2026/pull/576) MERGEADA (02/07)**, review do neto-atman resolvido · ClickUp **Closed**. Spec PROJ-005.
-> Contexto: [[Saúde da Câmera - regras de negócio e contratos]]. Pré-requisito das Tarefas 5 e 6.
+> Contexto: [[Saúde da câmera - regras de negócio e contratos]]. Pré-requisito das Tarefas 5 e 6.
 
 Base de dados histórica para disponibilidade e latência.
 

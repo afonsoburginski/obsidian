@@ -1,8 +1,5 @@
 [
   "obsidian-excalidraw-plugin",
   "obsidian-git",
-  "google-calendar",
-  "heatmap-calendar",
-  "tasks-calendar-wrapper",
-  "new-3d-graph"
+  "heatmap-calendar"
 ]

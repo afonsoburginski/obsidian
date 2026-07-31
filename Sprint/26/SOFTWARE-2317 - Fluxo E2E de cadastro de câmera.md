@@ -29,7 +29,7 @@ no caminho.
 
 ## Resultado
 
-Relatório completo: [[SOFTWARE-2317-cadastro-e2e-validation]].
+O relatório detalhado da sessão de validação não foi trazido para o vault; o registro é o resumo abaixo.
 
 Todos os critérios de aceitação passaram (create, validate-credentials, get, list, update, state
 transitions, HLS sem stream profile, soft-delete). 3 bugs de código encontrados e corrigidos:

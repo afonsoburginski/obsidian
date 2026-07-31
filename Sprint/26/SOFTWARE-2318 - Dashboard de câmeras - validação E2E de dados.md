@@ -48,7 +48,7 @@ analítica/incidentes), série de uptime, heatmap de eventos, marcadores do mapa
 
 ## Resultado
 
-Relatório completo: [[SOFTWARE-2318-dashboard-e2e-validation]].
+O relatório detalhado da sessão de validação não foi trazido para o vault; o registro é o resumo abaixo.
 
 Todos os 13 endpoints validados via API + cruzamento com Postgres — dados batem exatamente. Nenhum
 bug de código encontrado. 2 achados: rollup diário do ambiente local parado em 24/07 (limitação de

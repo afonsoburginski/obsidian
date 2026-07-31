@@ -22,7 +22,7 @@ sprint: "[[Attlas - Sprint 22]]"
 # SOFTWARE-1923 — Bitrate histórico + TTFF
 
 > Tarefa 5. **PR [#577](https://github.com/atmanadmin/attlas-2026/pull/577) ABERTA, em code review** — única task da sprint ainda não fechada · ClickUp **code review**. Spec PROJ-006.
-> Contexto: [[Saúde da Câmera - regras de negócio e contratos]]. Empilhada sobre #566 + #576.
+> Contexto: [[Saúde da câmera - regras de negócio e contratos]]. Empilhada sobre #566 + #576.
 
 Telemetria que ainda não era coletada ao longo do tempo. Sob a regra de reuso: **bitrate NÃO ganha tabela nem cron próprios** — vive na mesma janela de 5 min da [[SOFTWARE-1922 - Janelas de 5 min + latência + rollup 90d]].
 

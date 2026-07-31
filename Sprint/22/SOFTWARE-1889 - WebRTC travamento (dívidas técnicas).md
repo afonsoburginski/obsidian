@@ -56,4 +56,4 @@ Câmeras travavam **só no WebRTC** (no HLS puro não). Diagnóstico feito no am
 
 ## Fontes
 
-- Diagnóstico completo: [[04-Diagnostico-travamento-WebRTC]].
+- Diagnóstico completo: [[Streaming - Diagnóstico de travamento no WebRTC]].

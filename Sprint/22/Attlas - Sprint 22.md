@@ -28,7 +28,7 @@ Escopo dev backend-only: o frontend de "Saúde da Câmera" já está construído
 | 7   | [[SOFTWARE-1990 - Streaming público (LL-HLS + watchdog)]]    | Streaming | SOFTWARE-1990 | [#630](https://github.com/atmanadmin/attlas-2026/pull/630) | ✅ MERGED 03/07 · Closed |
 | +   | [[CROSS-032 - Fundação WebRTC público via TURN]]             | Streaming | CROSS-032     | [#597](https://github.com/atmanadmin/attlas-2026/pull/597) | ✅ MERGED 01/07          |
 
-Contexto compartilhado do bloco Saúde: [[Saúde da Câmera - regras de negócio e contratos]].
+Contexto compartilhado do bloco Saúde: [[Saúde da câmera - regras de negócio e contratos]].
 
 ## Estado (06/07)
 
@@ -49,5 +49,5 @@ Candidatos e continuidade da próxima sprint: [[Attlas - Sprint 23]].
 
 ## Fontes de verdade
 
-- Contexto de negócio e contratos: [[Saúde da Câmera - regras de negócio e contratos]].
-- Diagnóstico WebRTC: [[04-Diagnostico-travamento-WebRTC]].
+- Contexto de negócio e contratos: [[Saúde da câmera - regras de negócio e contratos]].
+- Diagnóstico WebRTC: [[Streaming - Diagnóstico de travamento no WebRTC]].

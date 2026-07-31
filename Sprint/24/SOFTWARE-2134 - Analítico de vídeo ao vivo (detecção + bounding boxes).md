@@ -54,3 +54,33 @@ O rezendelc pediu ajustes no front (`CHANGES_REQUESTED`), todos no overlay de an
 
 - Config/desenho dos laços indo pro device (CRUD + provisionamento) e os microsserviços ms-virtual-loop / ms-dai / ms-acom estão numa linha separada com specs SDD (branch própria), a reconciliar com os contratos da develop.
 - Alinhar as regiões do front com as do device (front carregar as regiões do device em vez do localStorage).
+
+## Auditoria de 31/07: o que ainda falta para fechar o card
+
+Levantamento contra a develop antes de planejar a Sprint 27. **A implementação está no lugar e o card
+no ClickUp está defasado** (segue em `to do`, prioridade alta, desde 15/07). O que sobra é higiene e
+dois defeitos pequenos, e virou o SOFTWARE-2391, na fila da [[Attlas - Sprint 27]] depois do
+replanejamento que deixou a semana com foco único no analítico desacoplado.
+
+**Confirmado funcionando**: o front assina os dois eventos, o overlay desenha as caixas com
+interpolação por relógio de frame (delay adaptativo entre 180 e 1800 ms, EMA do intervalo entre frames
+e decaimento do jitter de entrega) e a região acende por 1,5s na detecção. O alinhamento das regiões
+com as do device também já foi feito: o serviço do front virou HTTP puro contra
+`/object-detection-regions` e `/virtual-loops`, sem `localStorage`.
+
+**Defeitos reais achados:**
+
+- **Derivação de `kind` invertida** no consumer do ms-cameras: `hasIncident ? OBJECT_DETECTION : VIRTUAL_LOOP`. Região ocupada sem incidente é reportada como laço virtual mesmo em câmera que só tem DAI. Invisível hoje porque o front descarta o campo, mas é contrato saindo errado. Ou vem da capacidade configurada, ou o contrato declara que `kind` é informativo.
+- **Dois sockets por câmera**: as duas assinaturas abrem `io()` separado para o mesmo namespace e sala. Front puro, candidato a card filho.
+- `regionIndex` e `speed` são emitidos pelo backend e nunca consumidos pelo front.
+
+**Doc mentindo em três lugares:**
+
+- O docblock do serviço de analítico ao vivo no front ainda diz que o backend não emite esses eventos.
+- A `UF-033` declara a solução como front-only com persistência em `localStorage` e o overlay ao vivo como fora de escopo, com o item de DoD desmarcado. Nada disso é verdade desde 15/07.
+- `MOD-014` e as `PROJ-011/012/013` estão `in-review` com 19 caixas de DoD abertas sobre código já implementado e validado.
+
+**Limitação a registrar em MOD-014**: o edge sobe com o producer desligado e religar é ação explícita
+de operador, porque o reconciliador (`PROJ-014`) foi revertido em 29/07 por manter o device
+reiniciando. Sem esse registro no doc, o card reabre no primeiro reboot de campo. Detalhe em
+[[Carga desnecessária nas câmeras - reconciler do analítico e conexões duplicadas]].

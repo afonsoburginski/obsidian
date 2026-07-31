@@ -12,9 +12,9 @@ atualizado: 2026-07-28
 
 # Dashboard de câmeras - backend
 
-Backend das agregações que alimentam a tela de **Dashboard de câmeras** (`/cameras/dashboard`). Os ~35 contratos foram publicados em `@attlas/contracts/camera/dashboard/*` e o `ms-cameras` responde os 16 endpoints em **`/api/dashboard/*`** (nota: a rota real NÃO tem `/cameras/` no meio - os drafts abaixo citavam `/api/cameras/dashboard/*`, corrigido nas specs UC-033..039 em 27/07, achado F2 do relatório [[SOFTWARE-2318-dashboard-e2e-validation]]).
+Backend das agregações que alimentam a tela de **Dashboard de câmeras** (`/cameras/dashboard`). Os ~35 contratos foram publicados em `@attlas/contracts/camera/dashboard/*` e o `ms-cameras` responde os 16 endpoints em **`/api/dashboard/*`** (nota: a rota real NÃO tem `/cameras/` no meio - os drafts abaixo citavam `/api/cameras/dashboard/*`, corrigido nas specs UC-033..039 em 27/07, achado F2 da validação E2E, ver [[SOFTWARE-2318 - Dashboard de câmeras - validação E2E de dados]]).
 
-**Atualização 25/07**: as 7 PRs de backend (2213-2219, #856-863) mergearam, e no mesmo dia a integração front [[SOFTWARE-2326 - Integração do dashboard de câmeras com o backend real|SOFTWARE-2326]] (PR #1058) foi além do previsto - `CamerasDashboardService` HTTP puro (16 métodos), mock apagado, mais atualização em tempo real via Socket.IO com adapter Redis (não estava no escopo original do card). Validação API+banco (27/07, sessão de QA): 13/13 endpoints batendo com o Postgres, 0 bugs de código - ver [[SOFTWARE-2318-dashboard-e2e-validation]]. Falta só o clique-a-clique visual, bloqueado pelo Kong do ambiente dev estar defasado da develop.
+**Atualização 25/07**: as 7 PRs de backend (2213-2219, #856-863) mergearam, e no mesmo dia a integração front [[SOFTWARE-2326 - Integração do dashboard de câmeras com o backend real|SOFTWARE-2326]] (PR #1058) foi além do previsto - `CamerasDashboardService` HTTP puro (16 métodos), mock apagado, mais atualização em tempo real via Socket.IO com adapter Redis (não estava no escopo original do card). Validação API+banco (27/07, sessão de QA): 13/13 endpoints batendo com o Postgres, 0 bugs de código - ver [[SOFTWARE-2318 - Dashboard de câmeras - validação E2E de dados]]. Falta só o clique-a-clique visual, bloqueado pelo Kong do ambiente dev estar defasado da develop.
 
 ## Cuidado: são três "dashboards" diferentes
 

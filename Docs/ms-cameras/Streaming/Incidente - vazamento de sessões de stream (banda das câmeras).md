@@ -1,16 +1,17 @@
 ---
 tags:
-  - attlas
-  - sprint-23
-  - incidente
+  - doc
   - ms-cameras
+  - cameras
+  - attlas
+  - incidente
   - streaming
+atualizado: 2026-07-03
 frente: Streaming
 ambiente: EC2 dev (dev.v2.attlas.atmansystems.com)
 host: ip-172-31-46-250
 status: mitigado (ms-cameras parado)
 gancho: "[[SOFTWARE-1923 - Bitrate histórico + TTFF]]"
-atualizado: 2026-07-03
 ---
 
 # Incidente - vazamento de sessões de stream drenando a banda das câmeras
@@ -72,6 +73,6 @@ Desacoplar o encerramento da sessão do `DELETE` do cliente:
 
 - [[SOFTWARE-1923 - Bitrate histórico + TTFF]] (área do ciclo de vida das sessões e do sampler de bitrate).
 - [[Attlas - Sprint 23]].
-- [[Plano - Banda por câmera (bitrate configurado ONVIF + VAPIX)]] — decisão de arquitetura (03/07): medir banda por bitrate **configurado** do device (ONVIF/VAPIX) 24/7 + real oportunístico, em vez de puxar vídeo.
-- [[SOFTWARE-2003 - Ciclo de vida de sessões de streaming e telemetria de banda por câmera]] — o fix do ciclo de vida (reaper/lease) que este incidente exige.
-- [[Próxima sprint - candidatos]].
+- [[Plano - Banda por câmera (bitrate configurado ONVIF + VAPIX)]] - decisão de arquitetura (03/07): medir banda por bitrate **configurado** do device (ONVIF/VAPIX) 24/7 + real oportunístico, em vez de puxar vídeo.
+- [[SOFTWARE-2003 - Ciclo de vida de sessões de streaming e telemetria de banda por câmera]] - o fix do ciclo de vida (reaper/lease) que este incidente exige.
+- Candidatos para a próxima sprint saíram deste incidente (sem nota própria no vault).

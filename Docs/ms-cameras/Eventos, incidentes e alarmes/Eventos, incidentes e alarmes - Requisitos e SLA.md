@@ -1,10 +1,15 @@
 ---
-tags: [doc, cameras, ms-cameras, eventos]
+tags:
+  - doc
+  - ms-cameras
+  - cameras
+  - eventos
+atualizado: 2026-07-03
 ---
 
-# Eventos, incidentes e alarmes — Requisitos e SLA
+# Eventos, incidentes e alarmes - Requisitos e SLA
 
-> Submódulo do [[ms-cameras - visão geral]]. Índice: [[00 - Eventos, incidentes e alarmes]]. Contexto de domínio: `docs/modules/cameras.md`.
+> Submódulo do [[ms-cameras]]. Índice: [[Eventos, incidentes e alarmes]]. Contexto de domínio: `docs/modules/cameras.md`.
 
 Rastreabilidade RF/RNF → critério de domínio → estado real no código. "Domínio" = descrito no edital mas **não implementado**; "Parcial" = parte no código.
 
@@ -12,23 +17,23 @@ Rastreabilidade RF/RNF → critério de domínio → estado real no código. "Do
 
 | ID | Requisito | Critério (domínio) | Estado no código |
 | --- | --- | --- | --- |
-| RF-EVT-01 | Captura automática | Registra eventos de estado, comunicação, energia e PTZ | **Implementado** — worker de saúde emite `HEALTH_*`/`CONNECTIVITY_CHANGED` com `causeCode` VAPIX (network/power/tampering/PTZ/hardware); ingest externo via `event-ingest` |
-| RF-EVT-02 | Classificação e timeline | Tipo, severidade e origem + timeline correlacionando eventos | **Parcial** — `category` derivada `(eventType,causeCode)`, `severity` INFO/WARN/ERROR, timeline no detalhe do incidente (UC-024). Origem é a **câmera**; subárea/área não modeladas no evento |
-| RF-EVT-03 | Integração externa | Críticos→Alarmes, analítica→Analítico, tudo→Relatórios | **Parcial** — Alarmes OK (`alarm-raised`, UC-022). Analítico: categoria `ANALYTICS` **sem produtor**. Relatórios: **sem** forwarding dedicado (eventos só no DB local) |
-| RF-INC-01 | Criação auto e manual | Incidentes criados de eventos críticos ou manualmente | **Parcial** — auto via correlação (UC-021). **Criação manual não implementada** (sem endpoint) |
-| RF-INC-02 | Ciclo de vida + SLA | aberto→em análise→em manutenção→resolvido→fechado, SLA por etapa | **Parcial** — implementados `DETECTED`(aberto)/`RESOLVED` + internos `TENTATIVE`/`DROPPED`. `INVESTIGATING` existe e é visível mas **sem transição de código**. "em manutenção"/"fechado" **não modelados**. **SLA por etapa: Domínio** (não implementado) |
-| RF-INC-03 | Vinculação com OS | Incidentes físicos geram OS no Inventário | **Domínio** — coluna `workOrderId` existe (nullable), **sem integração** com Inventário |
-| RF-INC-04 | Histórico MTTR/MTBF | MTTR e MTBF por câmera e região, hotspots | **Domínio** — não implementado (`detectedAt`/`resolvedAt` existem, mas sem cálculo/agregação de métricas) |
+| RF-EVT-01 | Captura automática | Registra eventos de estado, comunicação, energia e PTZ | **Implementado** - worker de saúde emite `HEALTH_*`/`CONNECTIVITY_CHANGED` com `causeCode` VAPIX (network/power/tampering/PTZ/hardware); ingest externo via `event-ingest` |
+| RF-EVT-02 | Classificação e timeline | Tipo, severidade e origem + timeline correlacionando eventos | **Parcial** - `category` derivada `(eventType,causeCode)`, `severity` INFO/WARN/ERROR, timeline no detalhe do incidente (UC-024). Origem é a **câmera**; subárea/área não modeladas no evento |
+| RF-EVT-03 | Integração externa | Críticos→Alarmes, analítica→Analítico, tudo→Relatórios | **Parcial** - Alarmes OK (`alarm-raised`, UC-022). Analítico: categoria `ANALYTICS` **sem produtor**. Relatórios: **sem** forwarding dedicado (eventos só no DB local) |
+| RF-INC-01 | Criação auto e manual | Incidentes criados de eventos críticos ou manualmente | **Parcial** - auto via correlação (UC-021). **Criação manual não implementada** (sem endpoint) |
+| RF-INC-02 | Ciclo de vida + SLA | aberto→em análise→em manutenção→resolvido→fechado, SLA por etapa | **Parcial** - implementados `DETECTED`(aberto)/`RESOLVED` + internos `TENTATIVE`/`DROPPED`. `INVESTIGATING` existe e é visível mas **sem transição de código**. "em manutenção"/"fechado" **não modelados**. **SLA por etapa: Domínio** (não implementado) |
+| RF-INC-03 | Vinculação com OS | Incidentes físicos geram OS no Inventário | **Domínio** - coluna `workOrderId` existe (nullable), **sem integração** com Inventário |
+| RF-INC-04 | Histórico MTTR/MTBF | MTTR e MTBF por câmera e região, hotspots | **Domínio** - não implementado (`detectedAt`/`resolvedAt` existem, mas sem cálculo/agregação de métricas) |
 
 ## Requisito não funcional
 
 | ID | Requisito | Critério (domínio) | Estado no código |
 | --- | --- | --- | --- |
-| RNF-CAM-06 | Rastreabilidade total | Toda ação registrada com timestamp e identidade do operador | **Parcial** — eventos têm `occurredAt`/`createdAt` (Timestamptz, offset obrigatório) e `operatorId` (nullable). Eventos auto do worker e incidentes auto **não têm operador** (`operatorId`/`reportedBy` nulos, por serem do sistema) |
+| RNF-CAM-06 | Rastreabilidade total | Toda ação registrada com timestamp e identidade do operador | **Parcial** - eventos têm `occurredAt`/`createdAt` (Timestamptz, offset obrigatório) e `operatorId` (nullable). Eventos auto do worker e incidentes auto **não têm operador** (`operatorId`/`reportedBy` nulos, por serem do sistema) |
 
 ## Regras de correlação e janelas (`CorrelationConfig`)
 
-Não há SLA tracking por etapa; o que existe são janelas/limiares operacionais fixos (hardcoded neste sprint — promoção a DB-driven é card próprio).
+Não há SLA tracking por etapa; o que existe são janelas/limiares operacionais fixos (hardcoded neste sprint - promoção a DB-driven é card próprio).
 
 | Parâmetro | Valor | Papel |
 | --- | --- | --- |
@@ -61,4 +66,4 @@ Fontes: `handlers/correlate-events/correlation-rules.ts`, `handlers/_helpers/inc
 
 ## Relacionados
 
-[[00 - Saúde e monitoramento]] · [[00 - PTZ e presets]] · [[Status em tempo real (push)]] · [[00 - Streaming]]
+[[Saúde e monitoramento]] · [[PTZ e presets]] · [[Status em tempo real]] · [[Streaming]]

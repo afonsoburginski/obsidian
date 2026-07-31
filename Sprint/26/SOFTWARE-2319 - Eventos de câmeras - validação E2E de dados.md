@@ -47,7 +47,7 @@ se isso já foi resolvido ou se ainda é comportamento esperado antes de reporta
 
 ## Resultado
 
-Relatório completo: [[SOFTWARE-2319-eventos-e2e-validation]].
+O relatório detalhado da sessão de validação não foi trazido para o vault; o registro é o resumo abaixo.
 
 Todos os 8 endpoints validados via API + Postgres. `status`/`triggerCount` já **não são mais
 placeholder** (UC-043 entregou os dois reais) — confirmado ao vivo: reportei um evento de teste,

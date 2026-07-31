@@ -1,12 +1,18 @@
 ---
-tags: [doc, cameras, ms-cameras, hardware]
+tags:
+  - doc
+  - ms-cameras
+  - cameras
+  - dispositivo
+  - hardware
+atualizado: 2026-07-03
 ---
 
-# Integração com dispositivo — Fluxos
+# Integração com dispositivo - Fluxos
 
-> Fluxos técnicos do adaptador multi-protocolo. Índice: [[00 - Integração com dispositivo]]. Diagrama: [[02 - MOD-002 multi-protocol-adapter.excalidraw|diagrama]].
+> Fluxos técnicos do adaptador multi-protocolo. Índice: [[Integração com dispositivo]]. Diagrama: [[02 - MOD-002 multi-protocol-adapter.excalidraw|diagrama]].
 
-Camada **transversal**: não há user flow (UF-\*) próprio. Cada fluxo abaixo é acionado por um consumidor ([[00 - PTZ e presets\|PTZ]], [[00 - Streaming\|Streaming]], [[00 - Saúde e monitoramento\|Saúde]], [[00 - Cameras\|CRUD]]); aqui só o trecho de integração com o hardware.
+Camada **transversal**: não há user flow (UF-\*) próprio. Cada fluxo abaixo é acionado por um consumidor ([[PTZ e presets\|PTZ]], [[Streaming\|Streaming]], [[Saúde e monitoramento\|Saúde]], [[Cameras\|CRUD]]); aqui só o trecho de integração com o hardware.
 
 ## 1. Resolução de driver + comando PTZ (ONVIF)
 
@@ -27,14 +33,14 @@ Erro/timeout em qualquer I/O → `ExternalServiceException('camera-onvif', …)`
 
 ## 2. Comando VAPIX (Axis proprietário)
 
-Origem: `ptz.service.ts` → `executeVapixZoom` / `executeVapixAbsolute` / `executeVapixZoomStop`. **Não** passa pela factory nem pelo `OnvifDriver` — chama os utils direto.
+Origem: `ptz.service.ts` → `executeVapixZoom` / `executeVapixAbsolute` / `executeVapixZoomStop`. **Não** passa pela factory nem pelo `OnvifDriver` - chama os utils direto.
 
 | # | Passo | Detalhe |
 | --- | --- | --- |
-| 1 | Carrega câmera | `loadForVapix` (id + ip + credencial; sem guard de ONVIF/kind — vale p/ câmera fixa com zoom) |
+| 1 | Carrega câmera | `loadForVapix` (id + ip + credencial; sem guard de ONVIF/kind - vale p/ câmera fixa com zoom) |
 | 2 | Permissão | `cameras:ptz` se houver operador |
-| 3 | Chama VAPIX | `vapixAbsolutePtz` (`ptz.cgi?pan&tilt&zoom&speed`) ou `vapixContinuousZoom` (`continuouszoommove`) — unidades **nativas** (graus, zoom 1..9999) |
-| 4 | Digest auth | `AxisDigestClient.get()` — probe → 401 → reenvia com header Digest; 2xx = ok |
+| 3 | Chama VAPIX | `vapixAbsolutePtz` (`ptz.cgi?pan&tilt&zoom&speed`) ou `vapixContinuousZoom` (`continuouszoommove`) - unidades **nativas** (graus, zoom 1..9999) |
+| 4 | Digest auth | `AxisDigestClient.get()` - probe → 401 → reenvia com header Digest; 2xx = ok |
 | 5 | Auditoria | `CameraEventLog` (`PTZ_COMMAND`); stop é best-effort (não lança) |
 
 Conversões em `vapix-ptz.utils.ts`: `presetZoomLevelToVapix` (0..100% → 1..9999), `speedPercentToVapix` (0..100% → 1..100). Falha → `ExternalServiceException('camera-vapix', …, CAMERA_UNREACHABLE)`.
@@ -52,7 +58,7 @@ Origem: `streaming/services/camera-stream-source.resolver.ts` → `resolve(camer
 | 5 | Params Axis | `appendAxisVapixCodecParams` (só URLs `/axis-media/`: `videocodec`, keyframe, resolução) + `buildAxisFallbackUrl` (H.264 se codec ≠ H.264) |
 | 6 | Descritor | `strategy.buildLiveStreamDescriptor(source)` → `ICameraStream` (`protocol: 'RTSP'`, `sourceUrl`, `suggestedCodec`) |
 
-Nenhum profile ativo em toda a cadeia → `BusinessRuleViolationException('STREAM_PROFILE_NOT_CONFIGURED')`. Detalhe do pipeline em [[00 - Streaming|Streaming]].
+Nenhum profile ativo em toda a cadeia → `BusinessRuleViolationException('STREAM_PROFILE_NOT_CONFIGURED')`. Detalhe do pipeline em [[Streaming|Streaming]].
 
 ## 4. Probe de credenciais (descoberta ONVIF no cadastro)
 
@@ -77,5 +83,5 @@ Origem: `health/workers/camera-health.worker.ts`; bootstrap em `camera-health-bo
 | `AXIS_WEBSOCKET` | `AxisWsClient` (`health/clients/axis-ws.client.ts`) | `measurePing()` (RTT WS ping/pong) em loop auto-agendado | Token wssession via digest; filtros de tópico (NetworkLost, PTZError, Move, Tampering…); mapeia tópico→`CameraEventCauseCode`; rastreia posição PTZ enquanto `is_moving=1` |
 | `ONVIF_PULLPOINT` | `OnvifPullPointClient` (`health/clients/onvif-pullpoint.client.ts`) | cada `PullMessages` (long-poll `PT5S`) bem-sucedido = 1 heartbeat | Fallback SOAP p/ câmeras sem WebSocket Axis; subscription TTL `PT60S` |
 
-Fluxo comum: `startMonitoring` → abre client → eventos `connected`/`disconnected`/`error`/`heartbeat` alimentam snapshot + histórico + `EventBus`; reconexão com backoff+jitter. Avaliação de estado (STABLE/UNSTABLE/OFFLINE), incidentes e métricas pertencem a [[00 - Saúde e monitoramento|Saúde e monitoramento]]. Bootstrap hoje fixa `AXIS_WEBSOCKET`; seleção dinâmica de canal por fabricante ainda não está no bootstrap.
+Fluxo comum: `startMonitoring` → abre client → eventos `connected`/`disconnected`/`error`/`heartbeat` alimentam snapshot + histórico + `EventBus`; reconexão com backoff+jitter. Avaliação de estado (STABLE/UNSTABLE/OFFLINE), incidentes e métricas pertencem a [[Saúde e monitoramento|Saúde e monitoramento]]. Bootstrap hoje fixa `AXIS_WEBSOCKET`; seleção dinâmica de canal por fabricante ainda não está no bootstrap.
 </content>

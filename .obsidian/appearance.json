@@ -1,9 +1,12 @@
 {
   "theme": "obsidian",
   "accentColor": "#3794eb",
-  "interfaceFontFamily": "AppleGothic",
-  "textFontFamily": "AppleGothic",
+  "interfaceFontFamily": "",
+  "textFontFamily": "",
   "baseFontSizeAction": true,
   "baseFontSize": 14,
-  "translucency": true
+  "translucency": true,
+  "cssTheme": "Catppuccin",
+  "nativeMenus": true,
+  "enabledCssSnippets": ["galaxy-graph"]
 }

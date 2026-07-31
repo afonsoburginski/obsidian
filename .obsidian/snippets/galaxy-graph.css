@@ -1,0 +1,29 @@
+/* ==========================================================================
+   Galaxy graph - paleta Catppuccin Mocha
+   Só afeta o grafo (global e local). O grafo é desenhado em canvas, então o
+   que vale são estas variáveis: cor de nó, de linha, de tag, de anexo e de
+   link não resolvido, mais o fundo do painel.
+   ========================================================================== */
+
+.workspace-leaf-content[data-type='graph'],
+.workspace-leaf-content[data-type='localgraph'] {
+  /* céu profundo: um passo abaixo do crust (#11111b) para os nós brilharem */
+  --background-secondary: #09090f;
+
+  /* filamentos: lavanda bem apagada, quase nebulosa */
+  --graph-line: #585b7040;
+
+  /* estrelas sem grupo de cor: text do Mocha */
+  --graph-node: #cdd6f4;
+  --graph-node-focused: #f5e0dc;
+
+  /* tags e anexos entram como estrelas de outra classe */
+  --graph-node-tag: #f9e2af;
+  --graph-node-attachment: #fab387;
+
+  /* link não resolvido: poeira, visível mas sem competir */
+  --graph-node-unresolved: #6c708680;
+
+  --text-normal: #cdd6f4;
+  --text-muted: #a6adc8;
+}

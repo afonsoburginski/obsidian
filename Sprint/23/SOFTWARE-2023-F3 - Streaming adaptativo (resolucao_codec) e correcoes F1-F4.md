@@ -38,7 +38,7 @@ Origem: teste da Fase 3 da [[SOFTWARE-2003 - Ciclo de vida de sessões de stream
 `streaming.metrics.ts` + reaper. Novas metricas Prometheus: `ms_cameras_stream_reaper_reaped_total` (counter) e `ms_cameras_stream_sessions_active` (gauge). Antes reaps so apareciam em log.
 
 ### Negociacao de codec (INT-008, 2026-07-07)
-Fecha a peca que faltava da pesquisa de codec ([[codec-protocol-adaptive-strategy-research]]): servir H265 aos clientes que decodam por hardware e H264 como base universal, sempre com fallback. Cliente novo `StreamCodecService` (web-attlas) sonda `MediaCapabilities.decodingInfo` (webrtc + media-source) + `RTCRtpReceiver.getCapabilities` e so pede H265 quando `smooth && powerEfficient`; os 3 hosts (videowall, camera-detail, side-detail) abrem a sessao com o codec negociado. Backend: sessao/relay chaveada por `(cameraId, quality, codec)` (helper `stream-codec.helper.ts`), path mediamtx `-h265`, resolver injeta `videocodec` por request, fallback H264 no mesmo path. Reaper/diagnostics/availability-sampler passaram a construir o path pela variante. Specs `INT-008-codec-negotiation.md` + `MOD-004` (§13).
+Fecha a peca que faltava da pesquisa de codec ([[Pesquisa - codec, protocolo e latência]]): servir H265 aos clientes que decodam por hardware e H264 como base universal, sempre com fallback. Cliente novo `StreamCodecService` (web-attlas) sonda `MediaCapabilities.decodingInfo` (webrtc + media-source) + `RTCRtpReceiver.getCapabilities` e so pede H265 quando `smooth && powerEfficient`; os 3 hosts (videowall, camera-detail, side-detail) abrem a sessao com o codec negociado. Backend: sessao/relay chaveada por `(cameraId, quality, codec)` (helper `stream-codec.helper.ts`), path mediamtx `-h265`, resolver injeta `videocodec` por request, fallback H264 no mesmo path. Reaper/diagnostics/availability-sampler passaram a construir o path pela variante. Specs `INT-008-codec-negotiation.md` + `MOD-004` (§13).
 
 ## Merge com develop (2026-07-07)
 A PR estava com conflito em 5 arquivos (develop avancou em cima dos mesmos): `live-media-registry.service.ts`, `camera-detail.page.ts/.html`, `videowall.page.ts`, `UF-014`. Resolucao combinando os dois lados: fan-out do registry (SOFTWARE-2023) + pin/unpin (develop) convivem; videowall junta os metodos de ABR (F3) com o `reconcileStreamSessions` de rotacao (develop); camera-detail mantem o codec e adota a limpeza de dead code do develop (remocao de `frameRate`/`safeMode`/`notifications`). Push feito, PR voltou a MERGEABLE.
@@ -58,8 +58,8 @@ A PR estava com conflito em 5 arquivos (develop avancou em cima dos mesmos): `li
 
 ## Referencias
 
-- Relatorio da Fase 3 (validacao no EC2 dev): [[SOFTWARE-2003-fase3-validation]] (movido do repo para o vault)
-- Pesquisa de codec/protocolo/qualidade: [[codec-protocol-adaptive-strategy-research]]
+- Relatorio da Fase 3 (validacao no EC2 dev): nao chegou ao vault nem ao repo; o registro do que foi validado esta nesta nota
+- Pesquisa de codec/protocolo/qualidade: [[Pesquisa - codec, protocolo e latência]]
 - Spec da negociacao de codec: `apps/ms-cameras/docs/atomic/INT-008-codec-negotiation.md`
 - [[SOFTWARE-2003 - Ciclo de vida de sessões de streaming e telemetria de banda por câmera]]
 - [[SOFTWARE-2009 - Escalabilidade horizontal do ms-cameras em Kubernetes]] (separada, k8s; F4 e provisionamento nao dependem dela)

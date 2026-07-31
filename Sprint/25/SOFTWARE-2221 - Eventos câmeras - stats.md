@@ -24,7 +24,7 @@ Backend dos 4 cards de KPI da tela de Eventos. Contrato pronto. 1 PR.
 
 **Fonte**: `CameraEventLog.severity`.
 
-**Falta**: `COUNT GROUP BY severity` + total, no **mesmo `where` da lista** ([[SOFTWARE-2220 - Eventos câmeras - lista cross-câmera|2220]]); `trendPct` = janela atual vs anterior; `captionParams` (ex. nº de câmeras afetadas = `COUNT(DISTINCT cameraId)`).
+**Falta**: `COUNT GROUP BY severity` + total, no **mesmo `where` da lista** ([[SOFTWARE-2220 - Eventos câmeras - campos reais + filtros|2220]]); `trendPct` = janela atual vs anterior; `captionParams` (ex. nº de câmeras afetadas = `COUNT(DISTINCT cameraId)`).
 
 **Reuso**: mesmo `where`/`buildCategoryWhere` da lista; escopo por `systemId`.
 
