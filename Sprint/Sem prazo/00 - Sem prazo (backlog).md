@@ -9,7 +9,7 @@ aliases:
   - "Sem prazo"
 tipo: índice
 escopo: cards meus (squad 2) sem data de entrega, espalhados por várias listas do ClickUp
-atualizado: 2026-07-31
+atualizado: 2026-08-03
 ---
 
 # Sem prazo (backlog)
@@ -17,8 +17,12 @@ atualizado: 2026-07-31
 Cards atribuídos a mim que **não têm data de entrega** e não estão comprometidos com a semana
 corrente. No ClickUp eles aparecem na coluna **backlog** da lista da sprint em que foram criados, e
 é isso que confunde: card criado na Sprint 23 que nunca foi feito continua morando na lista da
-Sprint 23, não migra para a lista da semana atual. O board da Sprint 26 mostra todos eles juntos,
-mas a API os devolve pela lista de origem.
+Sprint 23, não migra sozinho para a lista da semana atual.
+
+**Prática desde 03/08**: quando a sprint de origem de um card `backlog` encerra (a lista fica sem
+janela de datas ativa), o card é movido a mão para a lista da sprint corrente, mantido em `backlog`.
+Não é reabrir prazo, é só não deixar card sem lista ativa. Foi feito com 2005/2400 (que na verdade
+saíram do sem-prazo, ver decisão abaixo) e com 2314/2315/2316 ao virar Sprint 27.
 
 Semântica do board (para não reinterpretar): **backlog** = não é dessa semana, **to do** = é dessa
 semana, **in progress** = pegando agora.
@@ -27,14 +31,14 @@ semana, **in progress** = pegando agora.
 
 | Card | Título | Status ClickUp | Lista de origem | Nota |
 | --- | --- | --- | --- | --- |
-| [SOFTWARE-2314](https://app.clickup.com/t/86ajpntf3) | Performance do streaming de vídeo (banda, latência, média) | backlog | Sprint 26 | [[SOFTWARE-2314 - Performance do streaming de vídeo]] |
-| [SOFTWARE-2315](https://app.clickup.com/t/86ajpntp1) | Comparativo Attlas 25x26: video wall | backlog | Sprint 26 | [[SOFTWARE-2315 - Comparativo Attlas 25x26 - video wall]] |
-| [SOFTWARE-2316](https://app.clickup.com/t/86ajpntuq) | Comparativo Attlas 25x26: hardware e streaming | backlog | Sprint 26 | [[SOFTWARE-2316 - Comparativo Attlas 25x26 - arquitetura de hardware e streaming]] |
+| [SOFTWARE-2314](https://app.clickup.com/t/86ajpntf3) | Performance do streaming de vídeo (banda, latência, média) | backlog | Sprint 27 (movido de Sprint 26 em 03/08) | [[SOFTWARE-2314 - Performance do streaming de vídeo]] |
+| [SOFTWARE-2315](https://app.clickup.com/t/86ajpntp1) | Comparativo Attlas 25x26: video wall | backlog | Sprint 27 (movido de Sprint 26 em 03/08) | [[SOFTWARE-2315 - Comparativo Attlas 25x26 - video wall]] |
+| [SOFTWARE-2316](https://app.clickup.com/t/86ajpntuq) | Comparativo Attlas 25x26: hardware e streaming | backlog | Sprint 27 (movido de Sprint 26 em 03/08) | [[SOFTWARE-2316 - Comparativo Attlas 25x26 - arquitetura de hardware e streaming]] |
 | [SOFTWARE-2201](https://app.clickup.com/t/86ajj1zdg) | Integração com videowall externo (NovaStar H9) | backlog | Sprint 25 | [[SOFTWARE-2201 - Integração videowall externo (NovaStar H9)]] |
-| ~~[SOFTWARE-2200](https://app.clickup.com/t/86ajj1xv4)~~ | Saiu do sem prazo em 31/07: virou a frente única da Sprint 27, movido para a lista da 27 e reescopado como prova ponta a ponta | fila da 27 | Sprint 27 | [[SOFTWARE-2200 - Prova ponta a ponta do analítico desacoplado]] |
+| ~~[SOFTWARE-2200](https://app.clickup.com/t/86ajj1xv4)~~ | Saiu do sem prazo em 31/07: virou a frente única da Sprint 27, movido para a lista da 27 e reescopado como prova ponta a ponta | fila da 27 | Sprint 27 | [[SOFTWARE-2200 - Prova de campo do analítico em container]] |
 | [SOFTWARE-2134](https://app.clickup.com/t/86ajh9v5j) | Analítico de vídeo ao vivo (detecção + bounding boxes) | Closed em 31/07 (entregue em 15/07; resíduo no SOFTWARE-2391) | Sprint 23 | [[SOFTWARE-2134 - Analítico de vídeo ao vivo (detecção + bounding boxes)]] (fica na pasta 24) |
 | [SOFTWARE-2009](https://app.clickup.com/t/86ajc71x6) | ms-cameras: escalabilidade horizontal em Kubernetes | backlog | Sprint 23 | [[SOFTWARE-2009 - Escalabilidade horizontal do ms-cameras em Kubernetes]] |
-| [SOFTWARE-2005](https://app.clickup.com/t/86ajc6uzx) | Permissões: novas regras de permissões de usuário | **in progress** (status defasado, nada em andamento) | Sprint 23 | [[SOFTWARE-2005 - Novas regras de permissões de usuário]] |
+| ~~[SOFTWARE-2005](https://app.clickup.com/t/86ajc6uzx)~~ | Saiu do sem prazo: rescopado em 31/07 para permissões nas rotas de câmeras (não transferido para o squad 3, ver decisão abaixo), movido para a lista da 27 em 03/08 | to do | Sprint 27 | [[SOFTWARE-2005 - Permissões nas rotas de câmeras - mapa das 86 rotas]] |
 | [SOFTWARE-1263](https://app.clickup.com/t/86ah842t3) | Unificar pastas do Prisma e Database | backlog, prioridade baixa | Quito | sem nota |
 | [SOFTWARE-1363](https://app.clickup.com/t/86aha9whm) | Plano de escalabilidade de streaming em HLS + Cloudflare | em teste (data de 11/05, vencida) | Quito | sem nota |
 
@@ -62,17 +66,17 @@ Fica fora: os dois crons diários/horários rodando em N réplicas (desperdício
 são idempotentes) e a unificação dos dois mecanismos de lock que já divergiram entre ms-cameras e
 ms-controllers.
 
-### 2005 permissões: TRANSFERIR para o squad 3
+### 2005 permissões: SUPERSEDIDO — não foi transferido, foi rescopado
 
-As 6 MOD e cerca de 30 atômicas de permissão vivem em `apps/ms-organization/docs/` sob o Hadson, com
-o runtime de autorização e os perfis de acesso já `completed`. O trabalho restante já tem card dele:
-SOFTWARE-2329 (conjuntos de rotas e subsistemas) e SOFTWARE-2292 (perfil imutável para planos de
-execução). Manter o 2005 no squad 2 é duplicar escopo.
+Levantamento inicial do dia propunha transferir o 2005 para o squad 3, porque as 6 MOD e cerca de 30
+atômicas de permissão vivem em `apps/ms-organization/docs/` sob o Hadson, com runtime de autorização e
+perfis de acesso já `completed` (trabalho restante já tem card dele: SOFTWARE-2329 e SOFTWARE-2292).
 
-**O achado colateral é dívida minha e merece card próprio**: o `ms-cameras` não tem **nenhum** decorator
-de autorização (só valida assinatura de JWT, e tem 3 rotas públicas em streaming) e o
-`ms-detector-history` não importa o módulo de auth. Card no backlog com dependência declarada no 2329:
-sem o catálogo de rotas do Hadson estável, eu decoraria contra um alvo que vai mudar.
+Decisão final do dia, registrada em [[Attlas - Sprint 26]], foi diferente: em vez de transferir, o 2005
+foi **rescopado** para o recorte que é nosso — o mapa das 86 rotas do `ms-cameras` (que não tem nenhum
+decorator de autorização) mais as chaves que faltam no catálogo. O achado colateral (aplicar o
+enforcement) virou card próprio, o [[SOFTWARE-2400 - Aplicar enforcement de permissão nas rotas de câmeras|2400]].
+Os dois saíram do sem-prazo: moram na lista da Sprint 27 desde 03/08 (ver [[Attlas - Sprint 27]]).
 
 ### 1263 unificar Prisma: REESCOPAR e sair do squad 2
 
@@ -101,7 +105,9 @@ Documentar na spec de TURN o teto de cerca de 40 sessões públicas simultâneas
 ### 2314 / 2315 / 2316 comparativo: sem ação
 
 Seguem pausados desde 27/07. Quando voltarem, dependem da instrumentação do item 2 do 1363: hoje não
-existe métrica por câmera para sustentar um comparativo honesto.
+existe métrica por câmera para sustentar um comparativo honesto. **03/08**: a lista da Sprint 26
+encerrou, então os três foram movidos para a lista da Sprint 27 no ClickUp, mantidos em `backlog` —
+não entram no foco único do analítico desta semana.
 
 ### 2200: virou a frente única da Sprint 27
 
@@ -130,5 +136,5 @@ sobra é higiene de doc e dois defeitos pequenos, e virou o SOFTWARE-2391, na fi
 - **Dono explícito do device de analítico**: o Attlas 25 ou a produção seguem carimbando o `source_id` e não tenho SSH em nenhum dos dois. Detalhe em [[Carga desnecessária nas câmeras - reconciler do analítico e conexões duplicadas]].
 - **Extrair o intersection-picker do `camera-creation-settings-step`** (cerca de 700 linhas, já tem `TODO(refactor)`), acordado no review da #1137.
 - **Prefixo de rota do ms-cameras**: é o único serviço que ocupa um segmento de raiz (`/api/dashboard`) em vez de prefixo próprio. Mudar é breaking em 7 controllers mais Kong, service do front e specs.
-- **Autorização no ms-cameras e no ms-detector-history**: ver a decisão do 2005 acima.
+- **Autorização no `ms-detector-history`**: não importa o módulo de auth. Ainda sem card — a parte do `ms-cameras` já tem card próprio (2005 + 2400, ver acima).
 - **Consolidar os dois sockets do analítico ao vivo** no front (um por stream, mesmo namespace e sala).

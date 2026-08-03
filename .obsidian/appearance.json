@@ -8,5 +8,7 @@
   "translucency": true,
   "cssTheme": "Catppuccin",
   "nativeMenus": true,
-  "enabledCssSnippets": ["galaxy-graph"]
+  "enabledCssSnippets": [
+    "galaxy-graph"
+  ]
 }

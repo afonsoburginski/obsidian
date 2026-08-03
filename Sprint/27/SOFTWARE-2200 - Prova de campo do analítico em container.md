@@ -8,25 +8,25 @@ tags:
 card: SOFTWARE-2200
 clickup: https://app.clickup.com/t/86ajj1xv4
 titulo: "[Back] Prova de campo do analítico em container até a timeline do detector"
-frente: Analítico desacoplado
+frente: Analítico em container
 tamanho: 2 pts
-status: fila da Sprint 27 (backlog no ClickUp). Reescopado em 31/07 - a atuação no controlador saiu para o SOFTWARE-2392 e o card virou a prova da rota analítica. Entra na sexta se o connector fechar na quinta.
+status: fila da Sprint 27 (in progress no ClickUp). Reescopado em 31/07 - a atuação no controlador saiu para o SOFTWARE-2392 e o card virou a prova da rota analítica. Entra na sexta se o connector fechar na quinta. Validado contra a develop em 03/08, com a rota corrigida abaixo. PR aberta em draft (plano de teste): [#1357](https://github.com/atmanadmin/attlas-2026/pull/1357).
 sprint: "[[Attlas - Sprint 27]]"
-atualizado: 2026-07-31
+atualizado: 2026-08-03
 ---
 
-# SOFTWARE-2200 - Prova ponta a ponta do analítico desacoplado
+# SOFTWARE-2200 - Prova de campo do analítico em container
 
-Card de origem da frente de analítico desacoplado, movido da Sprint 25 para a 27 e reescopado. O título
+Card de origem da frente de analítico em container, movido da Sprint 25 para a 27 e reescopado. O título
 antigo era "Testar módulo de analítico desacoplado" e incluía a atuação no controlador via ACOM. A
 atuação saiu para card próprio, e este ficou com o que é prova de verdade: **detecção de vídeo de câmera
 comum aparecendo na timeline do `ms-detector-history`**.
 
 ## Em uma frase
 
-Câmera sem analítico embarcado, motor desacoplado gerando a detecção do laço, o `ms-cameras`
-republicando ocupação normalizada, o connector traduzindo para o evento de detecção padrão do Attlas, e
-a detecção chegando ao histórico com contadores coerentes.
+Câmera sem analítico embarcado, motor em container gerando a detecção do laço, publicando a ocupação
+normalizada por região direto no Kafka, o connector traduzindo para o evento de detecção padrão do
+Attlas, e a detecção chegando ao histórico com contadores coerentes.
 
 ## Estado verificado no código (revisão de 31/07)
 
@@ -44,14 +44,20 @@ Duas premissas de 15/07 mudaram. As outras se confirmaram.
 - **O sumidouro está pronto.** `ms-detector-history` consome o raw, valida por `isDetectorRawEvent`, faz
   upsert do `MetaDetector`, persiste `DetectionRecord`, expõe `GET /detectors/:id/timeline` e gera falha
   em `attlas.detectors.fault`. Dá para testar sozinho injetando evento no tópico. **Confirmado.**
+  Ressalva de 03/08: hoje nenhum serviço consome `attlas.detectors.fault`, então o plano de teste
+  confere que o evento de falha foi publicado, não que algum alarme dispara.
 - **CORRIGIDO: a ACOM não está apenas especificada, está implementada.** O `ms-controllers` tem
   `src/acom/` inteiro: CRUD com `AcomAssociation` (controlador, slot, canal), cliente TCP com
   `getDeviceState` e `setDeviceParameters` (INT-081 e INT-082), codec de frame, pollers realtime de
   status e de dados, e escrita no padrão commit-depois-do-ACK. A peça que falta para atuar não é o
   transporte, é o **caller** que decide escrever a saída quando o laço detecta.
-- **CORRIGIDO: o cadastro do detector virtual quase existe.** O model `Detector` do `ms-traffic-model` já
-  tem `controllerId`, `slot`, `channel` e `type` com `VIRTUAL_LOOP` (valor 1 do enum numérico). Falta o
-  vínculo com câmera e região, e o `index` linear que o `IDetectorAddress` exige. Virou o SOFTWARE-2389.
+- **CORRIGIDO: o cadastro do detector virtual quase existe, mas o vínculo nasce no `ms-cameras`, não
+  no `ms-traffic-model`.** O model `Detector` do `ms-traffic-model` já tem `controllerId`, `slot`,
+  `channel` e `type` com `VIRTUAL_LOOP` (valor 1 do enum numérico), porém não existe hoje um cadastro
+  autoritativo de detector em lugar nenhum do repo, e o `ms-traffic-model` não expõe endpoint próprio
+  para isso (o detector vive embutido na Lane). O vínculo entre a região da câmera e o endereço do
+  detector, feito de decisão em 31/07, é responsabilidade do `ms-cameras` (SOFTWARE-2389), que é o
+  dono do domínio Cameras.
 - **Serviços da cadeia seguem esqueletos.** `ms-virtual-loop`, `ms-connector-virtual-loop`, `ms-dai` e
   `ms-acom` são scaffolds de "Hello API" com cerca de 70 linhas e `docs/` só com `.gitkeep`. Reais e
   prontos: `ms-detector-history`, `ms-controllers`, `ms-traffic-model` e a base de analítico do
@@ -66,14 +72,15 @@ Duas premissas de 15/07 mudaram. As outras se confirmaram.
 ```mermaid
 flowchart TD
     CAM["Câmera comum<br/>(sem edge embarcado)"]
-    ANL["Motor desacoplado<br/>(SOFTWARE-2386)"]
+    ANL["Analítico em container<br/>(SOFTWARE-2386, 2394-2396)"]
     CAM -->|"stream decidido no ADR<br/>(SOFTWARE-2385)"| ANL
 
-    ANL -->|"detecção por frame"| MSC["ms-cameras republica<br/>ocupação normalizada<br/>(SOFTWARE-2388)"]
-    MSC -->|"attlas.* por região, 100 ms"| CONN["ms-connector-virtual-loop<br/>(SOFTWARE-2390)"]
+    ANL -->|"ocupação normalizada por região<br/>(SOFTWARE-2397)"| CONN["ms-connector-virtual-loop<br/>(SOFTWARE-2390)"]
     CONN -->|"IDetectorRawEvent VIRTUAL_LOOP<br/>attlas.detectors.raw"| HIST["ms-detector-history<br/>(pronto: timeline + falha)"]
 
-    BIND["ms-traffic-model<br/>vínculo região para detector<br/>(SOFTWARE-2389)"] -.->|"cadastro que o connector cacheia"| CONN
+    BIND["ms-cameras<br/>vínculo região para detector<br/>(SOFTWARE-2389)"] -.->|"endereço que o connector cacheia"| CONN
+
+    EMB["Analítico embarcado<br/>(entregue em 15/07)"] -.->|"mesmo contrato de ocupação<br/>(SOFTWARE-2388)"| CONN
 
     CONN -.->|"fora da semana"| ACOMSW["caller da saída ACOM<br/>(SOFTWARE-2392)"]
     ACOMSW -.->|"entrada MDE"| CTRL["Controlador<br/>(lê como detector físico)"]
@@ -88,18 +95,21 @@ a 28, com o transporte ACOM já pronto e faltando só o caller.
 ## Plano de teste (este card)
 
 1. **Smoke do sumidouro, que isola do produtor.** Publicar um `IDetectorRawEvent` de laço virtual em
-   `attlas.detectors.raw` com o simulador e conferir em `GET /detectors/:id/timeline` que o
-   `DetectionRecord` foi persistido e o `MetaDetector` criado.
-2. **Motor desacoplado no ar**, apontado para o stream escolhido no ADR, com região provisionada e
+   `attlas.detectors.raw` com o simulador de linha de comando do repositório e conferir em
+   `GET /detectors/:id/timeline` que o `DetectionRecord` foi persistido e o `MetaDetector` criado.
+2. **Motor em container no ar**, apontado para o stream escolhido no ADR, com região provisionada e
    detecção publicada.
-3. **Cadeia completa**: ocupação normalizada saindo do `ms-cameras` e o connector publicando o raw.
+3. **Cadeia completa**: ocupação normalizada saindo do analítico em container e o connector
+   publicando o raw.
 4. **Veículo cruzando o laço**: UP e DOWN na timeline, com contadores RLE coerentes em unidades de
    100 ms.
-5. **Caminho de falha**: manter presença contínua além do timeout e confirmar `fault` em
-   `attlas.detectors.fault`.
+5. **Caminho de falha**: manter presença contínua além do timeout e confirmar que `fault` foi
+   publicado em `attlas.detectors.fault`. Nenhum serviço consome esse tópico hoje, então o critério
+   é o evento estar lá, não um alarme disparando.
 
-Evidência colada no card em cada passo. A identidade derivada tem que bater com o detector cadastrado no
-`ms-traffic-model`, senão o histórico cria um `MetaDetector` órfão e ninguém percebe.
+Evidência colada no card em cada passo. A identidade derivada tem que bater com o endereço do
+detector registrado pelo vínculo do SOFTWARE-2389, senão o histórico cria um `MetaDetector` órfão e
+ninguém percebe.
 
 ## Reuso (mapa)
 
@@ -112,7 +122,10 @@ Evidência colada no card em cada passo. A identidade derivada tem que bater com
 - **Template de connector**: `ms-connector-une` e `ms-connector-neo` (producer Kafka, cache de cadastro
   em Redis, health, config).
 - **ACOM pronta para quando a atuação entrar**: `ms-controllers/src/acom/`.
-- **Cadastro do detector**: `Detector` do `ms-traffic-model`, com `type` numérico `VIRTUAL_LOOP`.
+
+O model `Detector` do `ms-traffic-model` (com `type` numérico `VIRTUAL_LOOP`) não é o alvo de reuso
+para o vínculo região-detector: ele não tem endpoint próprio, não expõe `index` linear e não é o
+cadastro autoritativo. O endereço vem do vínculo novo que o SOFTWARE-2389 cria no `ms-cameras`.
 
 ## O que o merge da fase 2 respondeu, e o que sobrou
 
@@ -143,7 +156,9 @@ Sobraram, e viraram conteúdo de spec no SOFTWARE-2387 em vez de bloqueio:
 ## Referências
 
 - Rota embarcada, base do reuso: [[SOFTWARE-2134 - Analítico de vídeo ao vivo (detecção + bounding boxes)]].
-- Alimentação de vídeo: [[SOFTWARE-2385 - Alimentação de vídeo do analítico desacoplado]].
+- Alimentação de vídeo: [[SOFTWARE-2385 - Alimentação de vídeo do analítico em container]].
 - Motor fora da câmera: [[SOFTWARE-2386 - Especificação do analítico de vídeo em container]].
+- Vínculo região-detector: [[SOFTWARE-2389 - Vínculo região da câmera para endereço de detector]].
+- Connector: [[SOFTWARE-2390 - Connector de laço virtual - ocupação vira evento de detector]].
 - Plano do domínio de detecção: `docs/planning/detector-pipeline/` e `docs/modules/detectors.md`.
 - Planejamento da semana: [[Attlas - Sprint 27]].

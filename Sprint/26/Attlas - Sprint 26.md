@@ -4,8 +4,8 @@ tags:
   - sprint-26
   - moc
 sprint: Sprint 26 (27/7/26 - 2/8/26)
-status: sprint praticamente fechada em 31/07, com uma cauda: a #1175 mergeou e abriu 3 pendencias de tela que viraram o SOFTWARE-2384 (in progress). A leva de QA foi mergeada em 29/07 (#1120, #1121, #1137, #1138, #1139 + #1142 de infra) e a #1175, que eu tinha registrado como follow-up cosmético, cresceu e virou o entregável final do SOFTWARE-2356 — mergeada em 31/07 com 358 arquivos, incluindo o adapter Redis do Socket.IO (CROSS-043), single-writer por device (PROJ-017), métricas ao vivo no painel (PROJ-016) e o comparativo fixo de 30 dias nos KPIs de eventos (UC-040). O card 2356 foi renomeado para "[QA] Validação final do frontend — todas as telas" e fechado em 31/07, depois do merge da #1175; o único meu que segue aberto é o 2384. Os fixes de carga desnecessária nas câmeras (reconciler PROJ-014 removido + conexões VAPIX deduplicadas) entraram nessa PR, então deixaram de ser trabalho local sem card. Comparativo Attlas 25x26 (2314/2315/2316) segue pausado e as notas foram para Sprint/sem prazo.
-atualizado: 2026-07-31
+status: sprint encerrada em 02/08. Fechou com 6 cards Closed e 1 em code review (2384, aguardando merge da #1237) — é o único que sobrou na lista. Todo o resto que não era realmente desta semana saiu: 2005 e 2400 (permissões nas rotas de câmeras) e o comparativo pausado 2314/2315/2316 foram movidos para a lista da Sprint 27 no ClickUp em 03/08, porque a 26 encerrou e eles não tinham mais lista ativa. Ver [[Attlas - Sprint 27]].
+atualizado: 2026-08-03
 ---
 
 # Attlas - Sprint 26
@@ -31,9 +31,9 @@ backlog (o comparativo pausado). Os outros 4 são do Ricardo, com a tag `attlas2
 | 2357 dashboard sem largura limite em ultra-wide | Closed (29/07) | #1139 |
 | 2356 **validação final do frontend — todas as telas** | Closed (31/07) | #1121 + #1175 |
 | 2384 interseção na edição, cards de eventos e export do dashboard | code review, review dividido em 31/07 | [#1237](https://github.com/atmanadmin/attlas-2026/pull/1237) |
-| 2005 **permissões nas rotas de câmeras: mapa das 86 rotas e chaves que faltam** | to do, entrou em 31/07 | — |
-| 2400 **aplicar o enforcement de permissão nas rotas de câmeras** | to do, entrou em 31/07 | — |
-| 2314 / 2315 / 2316 comparativo Attlas 25x26 | backlog, pausado desde 27/07 | — |
+| ~~2005 permissões nas rotas de câmeras: mapa das 86 rotas e chaves que faltam~~ | movido para a lista da Sprint 27 em 03/08 | [[SOFTWARE-2005 - Permissões nas rotas de câmeras - mapa das 86 rotas]] |
+| ~~2400 aplicar o enforcement de permissão nas rotas de câmeras~~ | movido para a lista da Sprint 27 em 03/08 | [[SOFTWARE-2400 - Aplicar enforcement de permissão nas rotas de câmeras]] |
+| ~~2314 / 2315 / 2316 comparativo Attlas 25x26~~ | backlog, pausado desde 27/07; movido para a lista da Sprint 27 em 03/08 | [[00 - Sem prazo (backlog)]] |
 
 ### Permissões de câmera entram na semana (31/07)
 
@@ -53,6 +53,10 @@ Dois cards porque são duas PRs: 2005 entrega a tabela de decisão das 86 rotas 
 Risco a vigiar: ligar enforcement em serviço que nunca teve derruba tela que hoje funciona por ausência de
 regra, então os fluxos principais vão conferidos no `:4200` com login real antes do merge.
 
+**Atualização 03/08**: os dois ficaram na lista da Sprint 26 por decisão de 31/07 (não furar o foco
+único da 27), mas a sprint 26 encerrou em 02/08 sem eles serem tocados. Movidos para a lista da Sprint
+27 no ClickUp — ver [[Attlas - Sprint 27]] — sem entrar no track único do analítico desta semana.
+
 ### Continuidade da #1175 — cards novos (31/07)
 
 Três pendências de tela apareceram no uso depois do merge da #1175 e viraram um card só,
@@ -65,9 +69,9 @@ tabela de conectividade mente quando há mais de 100 linhas, e que uma spec docu
 
 ### Teste e comparação (streaming / hardware) — pausado, movido para sem prazo
 
-Os 3 cards continuam no backlog da lista da Sprint 26 no ClickUp, mas como não têm prazo nem
-previsão de retomada, as notas passaram para `Sprint/sem prazo/` em 31/07 —
-ver [[00 - Sem prazo (backlog)]].
+Os 3 cards não têm prazo nem previsão de retomada, e as notas passaram para `Sprint/sem prazo/` em
+31/07 — ver [[00 - Sem prazo (backlog)]]. Em 03/08, com a Sprint 26 encerrada, os cards em si
+(status ClickUp) foram movidos para a lista da Sprint 27, mantidos em `backlog`.
 
 - [[SOFTWARE-2314 - Performance do streaming de vídeo]] - medir banda média por stream, latência (TTFF / glass-to-glass) e média geral sob carga; vira baseline pra comparar com o 25.
 - [[SOFTWARE-2315 - Comparativo Attlas 25x26 - video wall]] - funcionalidades, integração, comportamento, regressões.
@@ -234,7 +238,7 @@ a semana seguinte para **uma frente só, o analítico desacoplado**: renome para
 foram escopados para outra sprint, com o desenho preservado nas notas de domínio. Ver
 [[Attlas - Sprint 27]].
 
-- **Analítico de vídeo começa na semana de 03/08**, puxando de [[SOFTWARE-2200 - Prova ponta a ponta do analítico desacoplado]] e [[SOFTWARE-2134 - Analítico de vídeo ao vivo (detecção + bounding boxes)]].
+- **Analítico de vídeo começa na semana de 03/08**, puxando de [[SOFTWARE-2200 - Prova de campo do analítico em container]] e [[SOFTWARE-2134 - Analítico de vídeo ao vivo (detecção + bounding boxes)]].
 - **VM com acesso ao dispositivo de videowall a requisitar**: o gestor vai solicitar acesso remoto a uma das máquinas que alcançam o equipamento. Destrava as validações em aberto do [[SOFTWARE-2201 - Integração videowall externo (NovaStar H9)]].
 - **Renomeação: o "Video Wall" de hoje passa a ser VMS (Video Monitoring System)** e "videowall" fica reservado ao painel físico externo de Quito. Atinge front, MOD-006, contratos e i18n; candidato a card próprio.
 - **Gerenciamento global do videowall externo**, não por sistema/tenant. Requisito novo do 2201, escopo de "global" a definir.
@@ -243,11 +247,12 @@ foram escopados para outra sprint, com o desenho preservado nas notas de domíni
 
 ## Fora da sprint: cards sem prazo
 
-O que não tem prazo e não é desta semana está consolidado em [[00 - Sem prazo (backlog)]] — 10 cards
-meus, espalhados pelas listas das Sprints 23, 25, 26 e Quito, porque no ClickUp o card fica na lista
-onde foi criado mesmo quando atravessa sprints. Inclui 2200/2201 (analítico desacoplado e videowall
-externo), 2005 (permissões), 2009 (escalabilidade), 2134 (analítico ao vivo, que entra na semana de
-03/08) e os 3 do comparativo pausado.
+O que não tem prazo e não é desta semana está consolidado em [[00 - Sem prazo (backlog)]] — cards
+meus espalhados pelas listas das Sprints 25, 27 e Quito, porque no ClickUp o card fica na lista onde
+foi criado mesmo quando atravessa sprints, **exceto** quando essa lista de origem encerra: em 03/08,
+com a Sprint 26 fechada, 2005, 2400 e os 3 do comparativo pausado (2314/2315/2316) foram movidos de
+propósito para a lista da Sprint 27, por já não terem mais lista ativa. Inclui também 2201 (videowall
+externo) e 2009 (escalabilidade), que seguem na Sprint 25 e 23 respectivamente.
 
 ## Notas de planejamento
 

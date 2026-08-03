@@ -4,8 +4,8 @@ tags:
   - sprint-27
   - moc
 sprint: Sprint 27 (3/8/26 - 9/8/26)
-status: replanejada em 31/07 com foco único no analítico de vídeo, e refatiada no fim do dia com granularidade fina. O alvo é o analítico que roda em CONTAINER, construído por nós - o embarcado na câmera já está integrado e entregue. Comprometido 16 pontos em 6 cards (2385, 2386, 2394 a 2397), fila de 19 pontos em 8 cards. VMS e videowall H9 escopados para outra sprint. Pontos a preencher à mão no campo nativo do ClickUp. Conferida contra o ClickUp em 31/07: o quadro do analítico bate card por card, e a frente de permissões de câmeras (2005 reescopado mais o 2400) fica na lista da Sprint 26 por decisão, fora desta semana.
-atualizado: 2026-07-31
+status: replanejada em 31/07 com foco único no analítico de vídeo, e refatiada no fim do dia com granularidade fina. O alvo é o analítico que roda em CONTAINER, construído por nós - o embarcado na câmera já está integrado e entregue. Comprometido 16 pontos em 6 cards (2385, 2386, 2394 a 2397), fila de 19 pontos em 8 cards. VMS e videowall H9 escopados para outra sprint. Pontos a preencher à mão no campo nativo do ClickUp. Higiene de board em 03/08: status ClickUp dos 8 cards da fila corrigido de `backlog` para `to do` (são trabalho real desta frente, só entram depois — `backlog` estava sinalizando errado "não é desta semana"); 2005/2400 (permissões) e o comparativo pausado 2314/2315/2316 movidos da lista da Sprint 26, encerrada em 02/08, para a lista da 27 — os dois primeiros em `to do` (prontos, fora do track), o comparativo em `backlog` (esse sim sem prazo). Ver seção "Fora do foco, na lista". **Fatiamento executado em 03/08**: as 14 specs escritas, validadas e cortadas em 14 PRs individuais (base develop), todas em **draft** — os 14 cards ClickUp desta frente movidos para `in progress` com o link da PR comentado em cada um. Ver seção "PRs abertas em 03/08".
+atualizado: 2026-08-03
 ---
 
 # Attlas - Sprint 27
@@ -23,7 +23,7 @@ do detector.
 
 | # | Card | Pts | Entrega | Dia |
 | --- | --- | --- | --- | --- |
-| 1 | [[SOFTWARE-2385 - Alimentação de vídeo do analítico desacoplado\|2385]] como o vídeo chega no analítico | 3 | ADR com número medido | Seg |
+| 1 | [[SOFTWARE-2385 - Alimentação de vídeo do analítico em container\|2385]] como o vídeo chega no analítico | 3 | ADR com número medido | Seg |
 | 2 | [[SOFTWARE-2386 - Especificação do analítico de vídeo em container\|2386]] especificação do analítico em container | 3 | `SPEC.md` mais MOD | Seg PM |
 | 3 | 2394 serviço, imagem e ingestão do stream | 3 | container de pé decodificando frame | Ter |
 | 4 | 2395 detecção de objetos por frame | 3 | inferência com caixa e classe | Qua |
@@ -39,7 +39,9 @@ precedente que o MOD-044 do squad de controladores criou.
 
 ## Fila (19 pts)
 
-Ordem de entrada. É o resto da frente, não é sobra de sprint.
+Ordem de entrada. É o resto da frente, não é sobra de sprint. Status ClickUp corrigido em 03/08 de
+`backlog` para `to do` (é trabalho real desta frente, só entra depois do comprometido) e depois,
+com a spec escrita e a PR em draft aberta, para `in progress` — ver "PRs abertas em 03/08".
 
 | Card | Pts | Espera o quê |
 | --- | --- | --- |
@@ -47,15 +49,36 @@ Ordem de entrada. É o resto da frente, não é sobra de sprint.
 | 2387 especificação do connector de laço virtual | 3 | contrato de ocupação publicado |
 | 2390 connector: ocupação vira evento de detector | 3 | a spec acima |
 | 2389 vínculo entre região da câmera e endereço de detector | 3 | a spec acima |
-| [[SOFTWARE-2200 - Prova ponta a ponta do analítico desacoplado\|2200]] prova de campo até a timeline | 2 | toda a cadeia |
+| [[SOFTWARE-2200 - Prova de campo do analítico em container\|2200]] prova de campo até a timeline | 2 | toda a cadeia |
 | 2388 analítico embarcado no mesmo contrato de ocupação | 2 | contrato de ocupação definido pelo container |
 | 2391 fechar as pendências do analítico ao vivo embarcado | 2 | nada, é resíduo do 2134 |
-| [[SOFTWARE-2392 - Recorte da atuação no controlador\|2392]] recorte da atuação via ACOM | 2 | alinhamento com o squad de controladores |
+| [[SOFTWARE-2392 - Recorte da atuação via ACOM (docs-only)\|2392]] recorte da atuação via ACOM | 2 | alinhamento com o squad de controladores |
 
 **Fora, com motivo**: renome do mosaico para VMS e integração do videowall H9 (escopados para outra
 sprint, desenho preservado em [[VMS]] e [[Videowall externo (NovaStar H9)]]), atuação com placa e contato
 seco em campo, tracking de objeto entre frames e contagem de fluxo (vem depois da presença), detecção de
 pedestre (segundo eixo, depois de veículo), e UI de vínculo de laço virtual.
+
+## Fora do foco, na lista
+
+Cards movidos da lista da Sprint 26 em 03/08 porque ela encerrou em 02/08 e eles não tinham mais
+lista ativa. Nenhum entra no track único do analítico.
+
+**Prontos para começar** (status `to do` — se algum tempo abrir na semana, são os próximos, mas não
+empurram nenhum dos seis comprometidos):
+
+| Card | Espera o quê |
+| --- | --- |
+| [[SOFTWARE-2005 - Permissões nas rotas de câmeras - mapa das 86 rotas\|2005]] mapa das 86 rotas de câmeras | nada, pronto para começar |
+| [[SOFTWARE-2400 - Aplicar enforcement de permissão nas rotas de câmeras\|2400]] aplicar o enforcement | tabela de decisão do 2005 |
+
+**Sem prazo mesmo** (status `backlog` — pausados desde 27/07, sem previsão de retomada, ver [[00 - Sem prazo (backlog)]]):
+
+| Card | Espera o quê |
+| --- | --- |
+| [[SOFTWARE-2314 - Performance do streaming de vídeo\|2314]] performance do streaming | instrumentação por câmera (item 2 do 1363) |
+| [[SOFTWARE-2315 - Comparativo Attlas 25x26 - video wall\|2315]] comparativo video wall | baseline do 2314 |
+| [[SOFTWARE-2316 - Comparativo Attlas 25x26 - arquitetura de hardware e streaming\|2316]] comparativo hardware/streaming | baseline do 2314 |
 
 ## A cadeia, elo por elo
 
@@ -74,18 +97,27 @@ lado de cima da cadeia: o analítico.
 
 ## As decisões que a especificação tem que fechar
 
+**Fechadas em 03/08** (ver seção "Validação de 03/08" e a nota do
+[[SOFTWARE-2386 - Especificação do analítico de vídeo em container|2386]] para o texto completo).
 Nenhum card de código começa antes disso, e elas mudam o custo de todos os outros:
 
 1. **Runtime e onde mora.** Reusar o esqueleto `ms-virtual-loop` em NestJS, como o resto do monorepo, ou
    serviço em Python fora do pipeline NX, que é o normal para inferência. NestJS mantém tooling, lint e CI
    de graça; Python ganha o ecossistema de visão computacional. O desvio, qualquer que seja, vai declarado.
+   Fechado: NestJS no esqueleto existente, com decodificação por processo filho e inferência por
+   biblioteca nativa; Python fica como alternativa rejeitada, com cláusula de reabertura se a medição
+   do 2395 provar essa via inviável.
 2. **Modelo de detecção**: qual, de onde vem o peso, onde fica versionado, custo por frame por resolução.
+   Fechado: rede leve de detecção de objetos, pesos versionados fora do repositório de código, nunca
+   binário solto no git.
 3. **Autoridade da geometria do laço**: no embarcado a região vive no device e o `ms-cameras` lê de lá.
-   No nosso analítico não existe device para guardar, então alguém tem que ser dono.
+   No nosso analítico não existe device para guardar, então alguém tem que ser dono. Fechado: `ms-cameras`
+   é a autoridade, e a validação achou que hoje **nenhuma geometria persiste em banco nenhum**, nem para
+   o caminho embarcado — a especificação cria a persistência de região, não só decide o dono.
 4. **Fronteira do serviço**: entra stream, sai ocupação por região. Não persiste série, não fala com
-   controlador, não calcula métrica de tráfego.
+   controlador, não calcula métrica de tráfego. Confirmado sem mudança.
 5. **Convergência com o embarcado**: os dois emitem a mesma forma de ocupação, para o consumidor não saber
-   a origem.
+   a origem. Confirmado sem mudança.
 
 ## A pergunta que abriu o replanejamento
 
@@ -93,7 +125,7 @@ O analítico em container vai ser feito, mas **como o vídeo chega nele de forma
 não estava decidido**. Por isso o ADR é o card 1: cada instância de analítico é um consumidor de vídeo a
 mais por câmera, e o Attlas já se machucou nesse eixo com relay preso mantendo `ffmpeg` vivo por
 `viewerCount` que nunca zerava. Opções, o que medir e o ciclo de vida da sessão sem espectador em
-[[SOFTWARE-2385 - Alimentação de vídeo do analítico desacoplado]].
+[[SOFTWARE-2385 - Alimentação de vídeo do analítico em container]].
 
 ## Fato que entrou depois do replanejamento: a fase 2 do detector raw mergeou
 
@@ -119,8 +151,12 @@ PROJ-009, com relatório de teste de campo). Consequências:
 1. **A ACOM não está apenas especificada, está implementada** no `ms-controllers` (CRUD com
    `AcomAssociation`, cliente TCP com `getDeviceState` e `setDeviceParameters`, codec de frame, pollers
    realtime). Falta o **caller**. Foi isso que permitiu tirar a atuação da semana sem perder nada.
-2. **O cadastro do detector virtual quase existe.** O model `Detector` do `ms-traffic-model` já tem
-   `controllerId`, `slot`, `channel` e `type` com `VIRTUAL_LOOP`. Falta o vínculo com câmera e região.
+2. **O cadastro do detector virtual quase existe, mas não é autoritativo.** O model `Detector` do
+   `ms-traffic-model` já tem `controllerId`, `slot`, `channel` e `type` com `VIRTUAL_LOOP`, mas não tem
+   índice linear, não é endpoint próprio e não existe hoje um cadastro autoritativo de detector em
+   lugar nenhum do repositório (o próprio `ms-detector-history` mantém um cadastro provisório enquanto
+   isso). Falta o vínculo com câmera e região, que é o [[SOFTWARE-2389 - Vínculo região da câmera para endereço de detector|2389]],
+   e a ausência de cadastro autoritativo em outro lugar reforça o desvio de autoridade para o `ms-cameras`.
 
 ## Escopo de squad
 
@@ -135,7 +171,7 @@ A nota de daily do dia foi absorvida aqui, e o desenho técnico de cada item viv
 Quatro pontos saíram da reunião:
 
 1. **O analítico de vídeo começa na semana de 03/08.** É o que virou o quadro acima, partindo do que já
-   existia em [[SOFTWARE-2200 - Prova ponta a ponta do analítico desacoplado]] e do analítico ao vivo
+   existia em [[SOFTWARE-2200 - Prova de campo do analítico em container]] e do analítico ao vivo
    embarcado, entregue no card 2134.
 2. **Máquina virtual com acesso ao processador de videowall de Quito, a requisitar.** O gestor vai
    solicitar acesso remoto a uma das máquinas que já alcançam o equipamento. É o que destrava as
@@ -173,11 +209,79 @@ não retrabalho.
    continua sem dono explícito e outro writer, o Attlas 25 ou a produção, segue carimbando o `source_id`,
    como está detalhado em
    [[Carga desnecessária nas câmeras - reconciler do analítico e conexões duplicadas]].
-6. **A frente de permissões de câmeras fica de fora, e isso é escolha.** O 2005 foi reescopado no fim de
-   31/07 para o mapa das 86 rotas do `ms-cameras`, nasceu o 2400 para aplicar o enforcement, e os dois
-   ficam na lista da Sprint 26 por decisão de 31/07, para a semana continuar sendo de uma frente só. São
-   dois cards nossos prontos para começar, então o risco é ficarem parados sem sprint enquanto o analítico
-   ocupa a semana inteira.
+6. **Resolvido em 03/08**: a frente de permissões de câmeras (2005 reescopado mais o 2400) ficou na lista
+   da Sprint 26 por decisão de 31/07, mas a sprint 26 encerrou em 02/08 sem os dois serem tocados. Movidos
+   para a lista da Sprint 27 (ver "Fora do foco, na lista") para não ficarem sem sprint — continuam de
+   fora do track único do analítico.
+
+## Validação de 03/08 (contra a develop)
+
+Levantamento completo dos 14 cards contra o código real da develop, feito em 03/08. Veredito: os 14
+cards continuam válidos. Duas correções de rota e autoridade, que já estão refletidas nas notas de
+cada card e no diagrama acima:
+
+- A ocupação normalizada é publicada direto pelo analítico em container no card de contrato
+  (2397). O `ms-cameras` só entra pelo caminho embarcado, no card 2388, republicando no mesmo
+  tópico. A versão anterior do desenho, com o `ms-cameras` no meio do caminho do container, estava
+  desatualizada.
+- O vínculo entre região da câmera e endereço de detector (2389) tem autoridade no `ms-cameras`,
+  não no `ms-traffic-model`. A dependência do card 2390 no ClickUp foi corrigida para refletir isso.
+
+Achados que entram como material de spec, não como bloqueio: nenhuma geometria de região persiste
+em banco hoje, nem para o caminho embarcado; o identificador de origem do device de campo não tem
+caminho de escrita; o analítico embarcado tem 27 critérios de aceite abertos, na maioria débito
+documental; o `ms-connector-virtual-loop` continua sendo, por documentação de domínio, o produtor
+designado do protocolo de laço virtual; e nenhum serviço consome hoje o tópico de falha de
+detector, o que muda o critério de aceite do passo 5 da prova de campo.
+
+Cada card com card ClickUp nesta frente agora tem exatamente uma nota própria em `Sprint/27/`, com
+os achados da validação registrados na seção "Validação 03/08" de cada uma.
+
+### Plano da branch única de specs
+
+As specs de toda a frente são escritas numa branch só, cortada da develop, antes de fatiar em uma
+PR por card. Ordem de escrita, por dependência de conteúdo: ADR de alimentação (2385), depois a
+especificação do serviço de analítico (2386), depois o contrato de ocupação (parte do 2397), depois
+a especificação do connector (2387), depois as atômicas de código na ordem da escada (2394 a 2398,
+2389, 2390, 2388), depois o recorte de atuação (2392) e a higiene do embarcado (2391), depois o
+plano de teste de campo (2200), fechando com as atualizações do documento de domínio de detectores.
+
+### Mapa de fatiamento (1 card = 1 PR)
+
+PRs de especificação primeiro, na ordem 2385, 2386, 2387. Os cards 2391, 2392 e o plano do 2200
+podem sair em qualquer ordem depois do 2386. PRs de código depois, cada um carregando a atômica já
+escrita: 2394, 2395, 2396, 2397, 2389, 2390, 2388, 2398. Um arquivo compartilhado por mais de um
+card entra no PR do card que o motiva primeiro.
+
+## PRs abertas em 03/08 (draft)
+
+As 14 specs foram escritas numa branch única de planejamento (`wip/sprint27-analytics-planning`,
+fora do repo remoto) e depois fatiadas em 14 branches próprias, cada uma cortada da develop com só
+o pedaço daquele card, seguindo o mapa de fatiamento acima. Todas as 14 PRs abaixo estão em
+**draft** — deixadas assim de propósito porque o dono da frente entra de folga. `docs/modules/
+detectors.md` foi dividido entre o PR do 2386 (a maior parte) e o do 2397 (só o parágrafo de posse
+da agregação), então os dois mergeiam sem conflito em qualquer ordem.
+
+| Card | PR | Conteúdo |
+| --- | --- | --- |
+| [[SOFTWARE-2385 - Alimentação de vídeo do analítico em container\|2385]] | [#1342](https://github.com/atmanadmin/attlas-2026/pull/1342) | CROSS-043 (ADR) + renumeração CROSS-032→044 |
+| [[SOFTWARE-2386 - Especificação do analítico de vídeo em container\|2386]] | [#1343](https://github.com/atmanadmin/attlas-2026/pull/1343) | SPEC + MOD-001 do `ms-virtual-loop` + detectors.md/cameras.md |
+| [[SOFTWARE-2387 - Especificação do connector de laço virtual\|2387]] | [#1345](https://github.com/atmanadmin/attlas-2026/pull/1345) | Bootstrap SDD do `ms-connector-virtual-loop` |
+| [[SOFTWARE-2394 - Analítico em container - serviço, imagem e ingestão\|2394]] | [#1346](https://github.com/atmanadmin/attlas-2026/pull/1346) | INT-001 ingestão |
+| [[SOFTWARE-2395 - Analítico em container - detecção por frame\|2395]] | [#1347](https://github.com/atmanadmin/attlas-2026/pull/1347) | INT-002 detecção |
+| [[SOFTWARE-2396 - Analítico em container - laço virtual e ocupação\|2396]] | [#1349](https://github.com/atmanadmin/attlas-2026/pull/1349) | PROJ-001 ocupação |
+| [[SOFTWARE-2397 - Analítico em container - publicar ocupação no Kafka\|2397]] | [#1350](https://github.com/atmanadmin/attlas-2026/pull/1350) | PROJ-002 publicação + detectors.md §4.4 |
+| [[SOFTWARE-2398 - Escala do analítico - câmeras por instância\|2398]] | [#1351](https://github.com/atmanadmin/attlas-2026/pull/1351) | MOD-002 escala |
+| [[SOFTWARE-2389 - Vínculo região da câmera para endereço de detector\|2389]] | [#1352](https://github.com/atmanadmin/attlas-2026/pull/1352) | MOD-015 + UC-048 vínculo região-detector |
+| [[SOFTWARE-2390 - Connector de laço virtual - ocupação vira evento de detector\|2390]] | [#1353](https://github.com/atmanadmin/attlas-2026/pull/1353) | PROJ-001 do connector (publica raw) |
+| [[SOFTWARE-2388 - Analítico embarcado no mesmo contrato de ocupação\|2388]] | [#1354](https://github.com/atmanadmin/attlas-2026/pull/1354) | PROJ-018 embarcado no contrato comum |
+| [[SOFTWARE-2391 - Pendências do analítico embarcado\|2391]] | [#1355](https://github.com/atmanadmin/attlas-2026/pull/1355) | Higiene do domínio embarcado |
+| [[SOFTWARE-2392 - Recorte da atuação via ACOM (docs-only)\|2392]] | [#1356](https://github.com/atmanadmin/attlas-2026/pull/1356) | Doc de planejamento ACOM |
+| [[SOFTWARE-2200 - Prova de campo do analítico em container\|2200]] | [#1357](https://github.com/atmanadmin/attlas-2026/pull/1357) | Plano de teste de campo |
+
+Todos os 14 cards no ClickUp foram movidos para `in progress` (estavam `to do`), com comentário
+linkando a PR de cada um. Próximo passo, quando a folga terminar: tirar as PRs de draft na ordem
+2385 → 2386 → 2387, pedir review, e só então destravar os PRs de código.
 
 ## Pendências de processo
 
@@ -188,8 +292,10 @@ não retrabalho.
 - **O 2005 não vai ser fechado, foi reescopado.** Em vez do genérico de permissões de usuário, que colidia
   com o trabalho do squad 3 no `ms-organization` (2329 e 2292), o card virou o recorte que é nosso: o mapa
   das 86 rotas do `ms-cameras`, que hoje não têm um único decorator de permissão, mais as chaves que
-  faltam no catálogo. Aplicar o enforcement virou card separado, o 2400. Decidido em 31/07 que os dois
-  permanecem na lista da Sprint 26 e não entram nesta semana, para não furar o foco único no analítico.
+  faltam no catálogo. Aplicar o enforcement virou card separado, o 2400. Decidido em 31/07 que os dois não
+  entrariam nesta semana, para não furar o foco único no analítico; permaneceram na lista da Sprint 26 até
+  ela encerrar em 02/08, e em 03/08 foram movidos para a lista da Sprint 27 (ver "Fora do foco, na lista")
+  só para terem lista ativa — continuam fora do track único do analítico.
 - Frente de VMS e H9: reabrir os cards na sprint em que forem escopadas. Desenho pronto, então é
   replanejamento e não retrabalho.
 

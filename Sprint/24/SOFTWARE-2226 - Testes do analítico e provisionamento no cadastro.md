@@ -59,7 +59,7 @@ Backlog de melhorias e dívidas técnicas levantadas a partir dos incidentes de 
 
 ## 5. Estratégico
 
-- **Priorizar o [[SOFTWARE-2200 - Prova ponta a ponta do analítico desacoplado]].** O stream travado (baixo FPS) de hoje é a câmera estrangulando o encoder pra rodar o analítico embarcado. Tirar o analítico de dentro da câmera resolve o FPS e é o caminho pra alimentar o controlador. É a decisão borda vs CV própria que já está mapeada.
+- **Priorizar o [[SOFTWARE-2200 - Prova de campo do analítico em container]].** O stream travado (baixo FPS) de hoje é a câmera estrangulando o encoder pra rodar o analítico embarcado. Tirar o analítico de dentro da câmera resolve o FPS e é o caminho pra alimentar o controlador. É a decisão borda vs CV própria que já está mapeada.
 
 ## Nota sobre o FPS do stream
 

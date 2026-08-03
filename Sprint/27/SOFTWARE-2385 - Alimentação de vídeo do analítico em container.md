@@ -8,16 +8,16 @@ tags:
 card: SOFTWARE-2385
 clickup: https://app.clickup.com/t/86aju62ta
 titulo: "[Back] Como o vídeo chega no analítico em container (banda, CPU e teto por instância)"
-frente: Analítico desacoplado
+frente: Analítico em container
 tamanho: 3 pts
-status: comprometido, primeiro card da semana (segunda). Aberto em 31/07 a partir da pergunta do planejamento - o analítico desacoplado vai ser feito, e como o vídeo chega nele de forma performática e escalável é a decisão que ainda não existe.
+status: comprometido, primeiro card da semana (segunda). Aberto em 31/07 a partir da pergunta do planejamento - o analítico em container vai ser feito, e como o vídeo chega nele de forma performática e escalável é a decisão que ainda não existe. Validado contra a develop em 03/08, sem mudança de escopo. PR aberta em draft: [#1342](https://github.com/atmanadmin/attlas-2026/pull/1342). ClickUp movido para `in progress`.
 sprint: "[[Attlas - Sprint 27]]"
-atualizado: 2026-07-31
+atualizado: 2026-08-03
 ---
 
-# SOFTWARE-2385 - Alimentação de vídeo do analítico desacoplado
+# SOFTWARE-2385 - Alimentação de vídeo do analítico em container
 
-O motor desacoplado não pode subir antes de existir resposta para "de onde ele lê o vídeo". A escolha
+O motor em container não pode subir antes de existir resposta para "de onde ele lê o vídeo". A escolha
 errada não aparece como bug: aparece como dreno de banda no device e como analítico cego quando ninguém
 está assistindo. Card docs-only, sem código de produção.
 
@@ -74,9 +74,27 @@ o Attlas já tem histórico de dano nesse eixo: relay preso com `viewerCount` qu
 - Câmeras por instância e custo por stream com número medido, não estimado.
 - Regra explícita de quem mantém a sessão viva para o analítico, e o que acontece ao passar do teto.
 
+## Validação 03/08
+
+Card conferido contra a develop e permanece válido. Achados que entram na decisão:
+
+- Câmera com analítico embarcado tem H265 recusado no relay, porque o hardware não sustenta encode
+  paralelo. Um analítico em container que consuma um substream da mesma câmera esbarra na mesma
+  restrição, então a opção escolhida precisa declarar essa fronteira.
+- A credencial RTSP entra no argumento do processo `ffmpeg` (visível para qualquer usuário da
+  máquina via `ps`). É argumento a mais contra a opção de o analítico puxar RTSP direto de cada
+  câmera, porque espalharia a credencial para mais um componente.
+- O relay hoje expõe só duas métricas de streaming, nenhuma por câmera. O MediaMTX tem um
+  Prometheus próprio com contadores por sessão que hoje não é coletado, e é a fonte natural para
+  medir o número deste card.
+- O analítico embarcado já sofre do problema que este card previne: consome um tópico fora do
+  registro de tópicos da plataforma, num broker separado. É a dívida que embasa a decisão de
+  manter o analítico em container dentro do relay que o `ms-cameras` já mantém, em vez de abrir
+  mais um canal solto.
+
 ## Encosta em
 
-- [[SOFTWARE-2386 - Especificação do analítico de vídeo em container]], que consome o que este card decidir.
+- [[SOFTWARE-2386 - Especificação do analítico de vídeo em container|2386]], que consome o que este card decidir.
 - [[Pesquisa - codec, protocolo e latência]] e [[Streaming - Codecs e fallbacks]], que já mediram o eixo
   de codec para o player, mais o 1363 (instrumentação de streaming), que é onde a métrica por câmera
   deveria estar e não está.

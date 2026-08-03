@@ -35,7 +35,7 @@ Pivotou em 20/07: o foco da Sprint 25 passou a ser o backend da tela de **Evento
 Movido pra pasta `Sprint/sem prazo` - não é dessa semana nem da próxima:
 
 - **Eventos de câmeras**: a base 2220-2223 entrou na Sprint 25 em 20/07; só o 2224 (condicional) segue sem prazo. [[Eventos de câmeras - backend]].
-- **SOFTWARE-2200 - Prova ponta a ponta do analítico desacoplado** - [[SOFTWARE-2200 - Prova ponta a ponta do analítico desacoplado]]: a contraparte do 2134 (câmera comum sem edge → detecção atuando no controlador via ACOM). É onde as decisões borda-vs-CV-própria e atuação-hardware-vs-software se resolvem.
+- **SOFTWARE-2200 - Prova de campo do analítico em container** - [[SOFTWARE-2200 - Prova de campo do analítico em container]]: a contraparte do 2134 (câmera comum sem edge → detecção atuando no controlador via ACOM). É onde as decisões borda-vs-CV-própria e atuação-hardware-vs-software se resolvem.
 - **SOFTWARE-2201 - Integração videowall externo (NovaStar H9)** - [[SOFTWARE-2201 - Integração videowall externo (NovaStar H9)]]: Attlas comanda o mural de LED por Open API (TCP-IP), exigido pelo contrato de Quito. Adaptador `INT-*` novo, provável em `ms-cameras`.
 
 ## Fora do foco (não esquecer)
@@ -44,7 +44,7 @@ Movido pra pasta `Sprint/sem prazo` - não é dessa semana nem da próxima:
 - **SOFTWARE-2003** - fechar o streaming (F4 + validar em Axis real). Em teste.
 - **SOFTWARE-2016** - filtro de topologia (destrava a PR #643 do front).
 - **SOFTWARE-2009** - fatia 1 da escalabilidade WS (redis-cameras + adapter). [[SOFTWARE-2009 - Escalabilidade horizontal do ms-cameras em Kubernetes|sem prazo]].
-- **SOFTWARE-2005** - permissões (base em `docs/modules/permissions.md`). [[SOFTWARE-2005 - Novas regras de permissões de usuário|sem prazo]].
+- **SOFTWARE-2005** - permissões (base em `docs/modules/permissions.md`). Rescopado em 31/07 para permissões nas rotas de câmeras, movido para a Sprint 27 em 03/08. [[SOFTWARE-2005 - Permissões nas rotas de câmeras - mapa das 86 rotas|nota atual]].
 - **PR #475** (docs de infra, SOFTWARE-1719) - foi mergeada por engano na develop em 17/7 e revertida no mesmo dia (revert PR #877). O trabalho de infra NÃO está na develop; pra entrar de vez é reabrir PR nova ou reverter o revert.
 
 ## Processo (SDD + gate)

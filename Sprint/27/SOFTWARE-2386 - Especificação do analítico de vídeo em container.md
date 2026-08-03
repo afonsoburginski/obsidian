@@ -7,11 +7,11 @@ tags:
 card: SOFTWARE-2386
 clickup: https://app.clickup.com/t/86aju62w6
 titulo: "[Back] Especificação do analítico de vídeo em container"
-frente: Analítico de vídeo
+frente: Analítico em container
 tamanho: 3 pts
-status: comprometido (segunda à tarde), depende do ADR de alimentação. Card reescrito em 31/07 - era "subir o motor do fornecedor" e virou a especificação do analítico que nós vamos construir.
+status: comprometido (segunda à tarde), depende do ADR de alimentação. Card reescrito em 31/07 - era "subir o motor do fornecedor" e virou a especificação do analítico que nós vamos construir. As 5 decisões foram fechadas em 03/08, ver seção própria. PR aberta em draft: [#1343](https://github.com/atmanadmin/attlas-2026/pull/1343). ClickUp movido para `in progress`.
 sprint: "[[Attlas - Sprint 27]]"
-atualizado: 2026-07-31
+atualizado: 2026-08-03
 ---
 
 # SOFTWARE-2386 - Especificação do analítico de vídeo em container
@@ -70,13 +70,39 @@ mas a forma nasce aqui.
 `SPEC.md` do serviço, que hoje não existe (o esqueleto tem `docs/` só com `.gitkeep`, então é bootstrap SDD
 obrigatório), mais a MOD do pipeline de analítico. Zero código de produção.
 
+## Validação 03/08
+
+Card conferido contra a develop, com a decisão 3 (autoridade da geometria) maior do que o card
+sugeria: hoje nenhuma geometria de região persiste em banco de dado nenhum, nem para o caminho
+embarcado, que é proxy direto para o device. O identificador de origem do device também não tem
+nenhum caminho de escrita no código atual, só leitura. A especificação precisa criar a persistência
+de região, não só decidir quem é dono dela.
+
+As 5 decisões foram fechadas nesta validação, para a especificação transcrever sem reabrir debate:
+
+1. Runtime é o serviço já esboçado no monorepo, em NestJS, com decodificação por processo filho e
+   inferência por biblioteca nativa. Python fica registrado como alternativa rejeitada, com cláusula
+   de reabertura se a medição do card de detecção provar essa via inviável.
+2. Modelo de detecção é uma rede leve de detecção de objetos, com pesos versionados fora do
+   repositório de código, nunca binário solto no git.
+3. Autoridade da geometria é o `ms-cameras`, por já ser o dono do domínio de câmeras e já guardar a
+   região do caminho embarcado. O serviço de analítico lê com cache e recarga sem restart.
+4. Fronteira do serviço confirmada como estava: entra stream, sai ocupação por região, sem
+   persistir série nem falar com controlador.
+5. Convergência com o embarcado confirmada: os dois emitem a mesma forma de evento, fechada na
+   especificação do contrato de ocupação.
+
+Registrar também no doc de domínio compartilhado que o analítico não vira um documento próprio
+nesta leva: os pontos que tocam esse domínio entram como atualização pontual, e um documento
+dedicado fica como próximo passo declarado.
+
 ## DoD
 
 Spec aprovada com as 5 decisões fechadas e as alternativas rejeitadas registradas com motivo.
 
 ## Encosta em
 
-- [[SOFTWARE-2385 - Alimentação de vídeo do analítico desacoplado]], que decide o que o serviço consome.
+- [[SOFTWARE-2385 - Alimentação de vídeo do analítico em container]], que decide o que o serviço consome.
 - [[SOFTWARE-2134 - Analítico de vídeo ao vivo (detecção + bounding boxes)]], que é o caminho embarcado já
   entregue e a referência de vocabulário de detecção e de região.
 - [[Attlas - Sprint 27]].
