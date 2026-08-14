@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Docs/server/Acessos SSH - Infra Attlas.md",
+                "file": "Reports/2026-08-14.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Acessos SSH - Infra Attlas"
+              "title": "2026-08-14"
             }
           }
         ]
@@ -80,8 +80,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 320.7294502258301,
-    "collapsed": true
+    "width": 320.7294502258301
   },
   "right": {
     "id": "7f39f37a7b274764",
@@ -212,12 +211,12 @@
   },
   "active": "61c53fad5184af9e",
   "lastOpenFiles": [
+    "Docs/server/Acessos SSH - Infra Attlas.md",
     "Reports/2026-08-14.md",
     "Docs/Convenções de escrita.md",
     "Docs/server/Consultar câmera Hikvision via ISAPI.md",
     "Docs/server/index.md",
     "Docs/server/Observabilidade CI - plano (stack completa).md",
-    "Docs/server/Acessos SSH - Infra Attlas.md",
     "Docs/Edital - Attlas nova definição de módulos.md",
     "Docs/index.md",
     "Docs/Plano - atualização da documentação do vault.md",

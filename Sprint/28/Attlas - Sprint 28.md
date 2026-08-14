@@ -178,7 +178,17 @@ boot.
 No conflito do merge com o que a #1607 entregou, os arquivos do detalhe de câmera ficaram com a versão
 já revisada da develop, que centraliza o passo adaptativo no StreamQualityController compartilhado e
 deleta o arquivo de constants local; o CardEmptyState standalone, exclusivo da #1592, foi preservado
-com o movimento para imports reaplicado. A #1592 está MERGEABLE, aguardando CI e o review novo.
+com o movimento para imports reaplicado.
+
+**Fechamento do dia: #1592 e #1609 mergeadas.** O CI de integração da #1592 acusou duas falhas reais e
+pré-existentes do trabalho do espelho: a tomada do painel abria o caminho no mediamtx antes de reservar
+a sessão no banco (dois takes concorrentes geravam dois adds; corrigido com a reivindicação no banco
+primeiro e setIngestPath depois, só para o vencedor) e o teste do mediamtx real estourava 120s porque a
+imagem é FROM scratch, sem shell para a sonda de porta do testcontainers (corrigido esperando a linha de
+log do listener HLS). A única falha restante era flake de teardown do email-queue do
+ms-communication-channels, alheio ao PR. A #1592 mergeou às 16:39, a #1609 foi retargetada para a
+develop e mergeou às 16:43. Nota de processo: duas sessões trabalhando o mesmo arquivo no mesmo checkout
+colidiram num stash pop com marcadores de conflito; consolidado a favor do design commitado, sem perda.
 
 A #1609 (cliente da Open API, card 2433) foi consolidada na sequência. Dois commits de correção do
 review estavam órfãos num worktree temporário sem nunca terem sido empurrados (a leitura dos flags

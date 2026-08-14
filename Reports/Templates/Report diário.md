@@ -36,6 +36,8 @@ Um fato concluído por bullet, verbo de ação no passado, variando o verbo (cor
 
 ## Densidade
 
+**O report é um resumo pequeno para o gerente ler e entender: cerca de um bullet por tema, só a informação que importa.** Detalhe fino de implementação fica na nota da sprint, nunca aqui. Regra prática: corpo com no máximo 6 a 8 bullets no dia inteiro (decidido em 14/08, depois de um report que saiu com 25).
+
 Dia com entrega real de código leva tópicos com bullets. **Dia leve** (majoritariamente review, sem código) corta os tópicos e entrega só a intro mais as listas de PRs. Trabalho que foi apenas spec e abertura de PR colapsa num tópico único, um bullet por PR.
 
 ```
