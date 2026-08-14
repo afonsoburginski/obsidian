@@ -13,7 +13,7 @@ clickup: https://app.clickup.com/t/86ajc71x6
 titulo: "[Back] ms-cameras: escalabilidade horizontal em Kubernetes (WS, healthcheck, streaming)"
 frente: Escalabilidade / Infra
 tamanho: a estimar (épico)
-status: backlog, sem prazo - mas a fatia 1 saiu por fora, dentro da PR #1175 do SOFTWARE-2356 (31/07) - adapter Redis do Socket.IO em @attlas/core-messaging (CROSS-043), Redis provisionado para o ms-cameras e single-writer por device via lease Redis (PROJ-017). Falta reescopar o que sobrou do épico.
+status: backlog, sem prazo - mas a fatia 1 saiu por fora, dentro da PR #1175 do SOFTWARE-2356 (31/07) - adapter Redis do Socket.IO em @attlas/core-messaging (CROSS-043), Redis provisionado para o ms-cameras e single-writer por device via lease Redis (PROJ-017). Falta reescopar o que sobrou do épico. Higiene de board em 10/08: home movida da lista da Sprint 23 para a da Sprint 28 (backlog preservado) e localização secundária pendurada na lista da Sprint 27 removida.
 lista_clickup: Sprint 23 (6/7/26 - 12/7/26)
 sprint: "[[00 - Sem prazo (backlog)]]"
 atualizado: 2026-07-31

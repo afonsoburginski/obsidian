@@ -4,21 +4,21 @@
     "type": "split",
     "children": [
       {
-        "id": "a38f9d8b60f93748",
+        "id": "f2126f7dc55ef3a8",
         "type": "tabs",
         "children": [
           {
-            "id": "09f9f17b7a39f9bd",
+            "id": "61c53fad5184af9e",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Docs/server/index.md",
+                "file": "Docs/server/Acessos SSH - Infra Attlas.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "index"
+              "title": "Acessos SSH - Infra Attlas"
             }
           }
         ]
@@ -80,7 +80,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 297.7115669250488
+    "width": 320.7294502258301,
+    "collapsed": true
   },
   "right": {
     "id": "7f39f37a7b274764",
@@ -209,44 +210,44 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "09f9f17b7a39f9bd",
+  "active": "61c53fad5184af9e",
   "lastOpenFiles": [
+    "Reports/2026-08-14.md",
+    "Docs/Convenções de escrita.md",
+    "Docs/server/Consultar câmera Hikvision via ISAPI.md",
+    "Docs/server/index.md",
     "Docs/server/Observabilidade CI - plano (stack completa).md",
     "Docs/server/Acessos SSH - Infra Attlas.md",
-    "Docs/index.md",
-    "Docs/Convenções de escrita.md",
     "Docs/Edital - Attlas nova definição de módulos.md",
+    "Docs/index.md",
     "Docs/Plano - atualização da documentação do vault.md",
-    "Reports/2026-07-31.md",
-    "Sprint/27/SOFTWARE-2398 - Escala do analítico - câmeras por instância.md",
-    "Sprint/27/SOFTWARE-2397 - Analítico em container - publicar ocupação no Kafka.md",
-    "Sprint/27/SOFTWARE-2396 - Analítico em container - laço virtual e ocupação.md",
-    "Sprint/27/SOFTWARE-2395 - Analítico em container - detecção por frame.md",
-    "Sprint/27/SOFTWARE-2394 - Analítico em container - serviço, imagem e ingestão.md",
-    "Sprint/27/SOFTWARE-2391 - Pendências do analítico embarcado.md",
-    "Sprint/27/SOFTWARE-2390 - Connector de laço virtual - ocupação vira evento de detector.md",
-    "Sprint/27/SOFTWARE-2389 - Vínculo região da câmera para endereço de detector.md",
-    "Sprint/27/SOFTWARE-2388 - Analítico embarcado no mesmo contrato de ocupação.md",
-    "Sprint/27/SOFTWARE-2387 - Especificação do connector de laço virtual.md",
-    "Sprint/27/SOFTWARE-2392 - Recorte da atuação via ACOM (docs-only).md.tmp.36822.85437a279867",
-    "Sprint/27/SOFTWARE-2200 - Prova de campo do analítico em container.md.tmp.36822.a8716e44e6cc",
-    "Sprint/27/SOFTWARE-2200 - Prova de campo do analítico em container.md.tmp.36822.83ab2a98fcc8",
-    "Sprint/27/SOFTWARE-2385 - Alimentação de vídeo do analítico em container.md.tmp.36822.63f87add5b4e",
-    "Sprint/27/SOFTWARE-2385 - Alimentação de vídeo do analítico em container.md.tmp.36822.2a0ce2eb17cc",
-    "Sprint/27/SOFTWARE-2392 - Recorte da atuação via ACOM (docs-only).md",
-    "Sprint/27/SOFTWARE-2200 - Prova de campo do analítico em container.md",
-    "Sprint/27/SOFTWARE-2385 - Alimentação de vídeo do analítico em container.md",
-    "Sprint/Sem prazo/SOFTWARE-2009 - Escalabilidade horizontal do ms-cameras em Kubernetes.md",
-    "Sprint/27/Attlas - Sprint 27.md.tmp.424151.e2a9556258f0",
-    "Sprint/Sem prazo/SOFTWARE-2201 - Integração videowall externo (NovaStar H9).md",
-    "Sprint/Sem prazo/SOFTWARE-2316 - Comparativo Attlas 25x26 - arquitetura de hardware e streaming.md",
-    "Sprint/Sem prazo/SOFTWARE-2315 - Comparativo Attlas 25x26 - video wall.md",
-    "Sprint/Sem prazo/SOFTWARE-2314 - Performance do streaming de vídeo.md",
-    "Sprint/26/SOFTWARE-2005 - Novas regras de permissões de usuário.md",
-    "Sprint/27",
-    "Sprint/Sem prazo",
-    "Templates",
-    "Docs/ms-cameras/Status em tempo real",
+    "Anotações sobre Analítico de vídeo.md",
+    "2026-07-16.md",
+    "attlas-vl-atspm.pdf",
+    "Docs/ms-cameras/index.md",
+    "Resume.md",
+    "Docs/ms-cameras/Carga desnecessária nas câmeras - reconciler do analítico e conexões duplicadas.md",
+    "Reports/Templates/Report diário.md",
+    "Sprint/28/Attlas - Sprint 28.md.tmp.191712.aa836fd17026",
+    "Sprint/28/SOFTWARE-2477 - Lançador radial do alvo de exibição.md.tmp.191712.f568117210cb",
+    "Sprint/28/SOFTWARE-2440 - Requisitos do videowall externo em arquivo próprio.md.tmp.191712.9ec5b1dcfedd",
+    "Docs/ms-cameras/Videowall externo/Pesquisa - transporte do espelhamento de tela.md",
+    "Docs/ms-cameras/Videowall externo/index.md.tmp.191712.427e60b341a3",
+    "Docs/ms-cameras/Videowall externo/index.md.tmp.191712.cc94f635a9e8",
+    "Reports/2026-07-04.md",
+    "Reports/2026-07-01.md",
+    "Reports/2026-06-26.md",
+    "Docs/Analítico/index.md",
+    "Docs/Analítico/Analítico - Fluxos.md",
+    "Docs/Analítico/Analítico - Arquitetura e estratégias.md",
+    "Reports/2026-08-12.md",
+    "Reports/2026-08-13.md",
+    "Docs/Analítico/Analítico - Requisitos e SLA.md",
+    "Docs/Analítico",
+    "Docs/ms-cameras/Analítico/Analítico - Fluxos.md",
+    "Docs/ms-cameras/Analítico",
+    "Sprint/28/SOFTWARE-2477 - Lançador radial do alvo de exibição.md.tmp.236051.671c58db2270",
+    "Reports/2026-08-10.md.tmp.153016.cc86d18cf410",
     "Sem título 1.canvas",
     "Sem título.canvas",
     "Docs/ms-cameras/Videowall externo/videowall-h9-quito.png",

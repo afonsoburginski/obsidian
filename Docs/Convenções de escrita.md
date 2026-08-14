@@ -59,9 +59,16 @@ plan de uma linha.
 
 ## Título de PR e assignee
 
+- **O título espelha o nome da task, sem inventar variação.** É o padrão: se a task é
+  "[Back] Renome para VMS: fase 1, API e contratos", o título da PR é o tipo mais essa frase. Não
+  descrever o conteúdo com outras palavras, não anunciar o recorte técnico que você escolheu, e
+  principalmente **não rotular a PR como "spec" quando ela também leva implementação** - quem lê o
+  board precisa reconhecer a task no título, e um rótulo de fase que não existe na task só confunde.
+  Quando a PR muda de escopo no meio, atualize o título de volta para o nome da task, não para a nova
+  descrição.
 - **Título pela natureza do trabalho, nunca `docs:`.** Mesmo que a PR contenha só a spec em markdown, o
-  tipo reflete o que a task entrega: feature nova é `feat:`, correção é `fix:`. Spec de uma feature é
-  `feat:`.
+  tipo reflete o que a task entrega: feature nova é `feat:`, correção é `fix:`, renome é `refactor:`.
+  Spec de uma feature é `feat:`.
 - **Assignee sempre `afonsoburginski`**, via `gh api repos/atmanadmin/attlas-2026/issues/<N>/assignees`,
   porque o `gh pr edit` quebra neste repo.
 - Base sempre `develop`, sem PR empilhada. "Base develop" não vai escrito no corpo, o GitHub já mostra.

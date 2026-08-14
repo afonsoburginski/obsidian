@@ -24,6 +24,7 @@ As **regras de negócio** (SLA, uptime vs reachability, mapa 4→3 estados, jane
 - [[Saúde e monitoramento - Arquitetura e estratégias]] - como funciona: bootstrap, worker, evaluator puro, janelas + rollup, composer.
 - [[Saúde e monitoramento - Fluxos]] - use cases e user flow passo a passo.
 - [[Saúde e monitoramento - Requisitos e SLA]] - RF/RNF cobertos, SLA, retenção.
+- [[Bitrate medido 24-7 - telemetria always-on]] - por que o bitrate vem do MediaMTX e não do device, provas de campo e custos por configuração.
 
 **Push em tempo real**: a entrega WebSocket do estado monitorado é assunto vizinho e tem pasta própria,
 [[Status em tempo real]] (Socket.IO `cameras-status`, cache Redis, gateway JWT, limitação de escala).

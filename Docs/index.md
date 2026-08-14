@@ -15,6 +15,7 @@ programação: é a porta de entrada do assunto e não repete o conteúdo das no
 ## Domínios
 
 - [[ms-cameras]] - o serviço de câmeras inteiro: cadastro, saúde, status em tempo real, streaming, PTZ, eventos, VMS e o videowall externo.
+- [[Analítico]] - módulo de Virtual Loop e ATSPM, dependente de Câmeras mas não parte dela. Hoje quase todo planejamento, com o caminho embarcado provisoriamente dentro do ms-cameras.
 - [[Kubernetes e infra]] - cluster, chart Helm, Terraform, KEDA e o que vive no repo `Developer/kubernetes`.
 - [[Server e CI]] - acessos SSH e observabilidade do CI.
 

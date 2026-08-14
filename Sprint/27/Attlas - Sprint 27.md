@@ -4,8 +4,8 @@ tags:
   - sprint-27
   - moc
 sprint: Sprint 27 (3/8/26 - 9/8/26)
-status: replanejada em 31/07 com foco único no analítico de vídeo, e refatiada no fim do dia com granularidade fina. O alvo é o analítico que roda em CONTAINER, construído por nós - o embarcado na câmera já está integrado e entregue. Comprometido 16 pontos em 6 cards (2385, 2386, 2394 a 2397), fila de 19 pontos em 8 cards. VMS e videowall H9 escopados para outra sprint. Pontos a preencher à mão no campo nativo do ClickUp. Higiene de board em 03/08: status ClickUp dos 8 cards da fila corrigido de `backlog` para `to do` (são trabalho real desta frente, só entram depois — `backlog` estava sinalizando errado "não é desta semana"); 2005/2400 (permissões) e o comparativo pausado 2314/2315/2316 movidos da lista da Sprint 26, encerrada em 02/08, para a lista da 27 — os dois primeiros em `to do` (prontos, fora do track), o comparativo em `backlog` (esse sim sem prazo). Ver seção "Fora do foco, na lista". **Fatiamento executado em 03/08**: as 14 specs escritas, validadas e cortadas em 14 PRs individuais (base develop), todas em **draft** — os 14 cards ClickUp desta frente movidos para `in progress` com o link da PR comentado em cada um. Ver seção "PRs abertas em 03/08".
-atualizado: 2026-08-03
+status: ENCERRADA em 09/08 SEM NENHUMA ENTREGA - a semana inteira foi de folga, nenhum card foi tocado, nenhuma linha de código foi escrita. Tudo abaixo é o PLANO que não foi executado, mantido como histórico. Os 14 cards do analítico voltaram ao SEM PRAZO em 10/08 e as notas deles vivem agora em `Sprint/Sem prazo/` (ver [[00 - Sem prazo (backlog)]]); as 14 PRs seguem abertas em draft. 2005/2400 (permissões de câmera) também saíram desta lista em 10/08, para a Sprint 28 em `to do`, notas movidas para `Sprint/28/`; 2314/2315/2316 foram para a Sprint 28 em `backlog`, notas em `Sprint/Sem prazo/`. Esta lista de Sprint 27 no ClickUp não tem mais nenhum card meu, só cards intocados de outros devs (attlas25/detran-df/Hellius). A Sprint 28 foi para o renome do VMS e o videowall externo. Histórico do planejamento; replanejada em 31/07 com foco único no analítico de vídeo, e refatiada no fim do dia com granularidade fina. O alvo é o analítico que roda em CONTAINER, construído por nós - o embarcado na câmera já está integrado e entregue. Comprometido 16 pontos em 6 cards (2385, 2386, 2394 a 2397), fila de 19 pontos em 8 cards. VMS e videowall H9 escopados para outra sprint. Pontos a preencher à mão no campo nativo do ClickUp. Higiene de board em 03/08: status ClickUp dos 8 cards da fila corrigido de `backlog` para `to do` (são trabalho real desta frente, só entram depois — `backlog` estava sinalizando errado "não é desta semana"); 2005/2400 (permissões) e o comparativo pausado 2314/2315/2316 movidos da lista da Sprint 26, encerrada em 02/08, para a lista da 27 — os dois primeiros em `to do` (prontos, fora do track), o comparativo em `backlog` (esse sim sem prazo). Ver seção "Fora do foco, na lista". **Fatiamento executado em 03/08**: as 14 specs escritas, validadas e cortadas em 14 PRs individuais (base develop), todas em **draft** — os 14 cards ClickUp desta frente movidos para `in progress` com o link da PR comentado em cada um. Ver seção "PRs abertas em 03/08".
+atualizado: 2026-08-12
 ---
 
 # Attlas - Sprint 27
@@ -282,6 +282,21 @@ da agregação), então os dois mergeiam sem conflito em qualquer ordem.
 Todos os 14 cards no ClickUp foram movidos para `in progress` (estavam `to do`), com comentário
 linkando a PR de cada um. Próximo passo, quando a folga terminar: tirar as PRs de draft na ordem
 2385 → 2386 → 2387, pedir review, e só então destravar os PRs de código.
+
+## Fechamento (09/08): nada entregue
+
+A sprint fechou **sem nenhuma entrega**. A semana inteira foi de folga: nenhum dos 6 cards comprometidos
+e nenhum dos 8 da fila foi tocado, nenhuma linha de código foi escrita, e as 14 PRs continuam em draft
+exatamente como deixadas em 03/08. Zero pontos entregues de 16 comprometidos.
+
+Tudo o que este documento descreve acima é **plano, não execução**. Vale como registro do desenho e das
+decisões de arquitetura fechadas em 31/07 e 03/08, que continuam válidas e evitam retrabalho quando a
+frente voltar.
+
+**Destino da frente (decidido em 10/08)**: o analítico em container voltou ao **sem prazo**. Os 14 cards
+estão em `backlog` na lista da Sprint 28 no ClickUp e as notas deles foram movidas para
+`Sprint/Sem prazo/`, indexadas em [[00 - Sem prazo (backlog)]] com o link da PR de cada um. A Sprint 28
+foi para o renome do VMS e o videowall externo, ver [[Attlas - Sprint 28]].
 
 ## Pendências de processo
 

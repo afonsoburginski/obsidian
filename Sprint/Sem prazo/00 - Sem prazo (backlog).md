@@ -34,13 +34,41 @@ semana, **in progress** = pegando agora.
 | [SOFTWARE-2314](https://app.clickup.com/t/86ajpntf3) | Performance do streaming de vídeo (banda, latência, média) | backlog | Sprint 27 (movido de Sprint 26 em 03/08) | [[SOFTWARE-2314 - Performance do streaming de vídeo]] |
 | [SOFTWARE-2315](https://app.clickup.com/t/86ajpntp1) | Comparativo Attlas 25x26: video wall | backlog | Sprint 27 (movido de Sprint 26 em 03/08) | [[SOFTWARE-2315 - Comparativo Attlas 25x26 - video wall]] |
 | [SOFTWARE-2316](https://app.clickup.com/t/86ajpntuq) | Comparativo Attlas 25x26: hardware e streaming | backlog | Sprint 27 (movido de Sprint 26 em 03/08) | [[SOFTWARE-2316 - Comparativo Attlas 25x26 - arquitetura de hardware e streaming]] |
-| [SOFTWARE-2201](https://app.clickup.com/t/86ajj1zdg) | Integração com videowall externo (NovaStar H9) | backlog | Sprint 25 | [[SOFTWARE-2201 - Integração videowall externo (NovaStar H9)]] |
-| ~~[SOFTWARE-2200](https://app.clickup.com/t/86ajj1xv4)~~ | Saiu do sem prazo em 31/07: virou a frente única da Sprint 27, movido para a lista da 27 e reescopado como prova ponta a ponta | fila da 27 | Sprint 27 | [[SOFTWARE-2200 - Prova de campo do analítico em container]] |
+| ~~[SOFTWARE-2201](https://app.clickup.com/t/86ajj1zdg)~~ | Saiu do sem prazo em 10/08: virou o card da especificação do alvo videowall, submódulo do VMS, comprometido na Sprint 28 (nota movida para a pasta 28) | to do | Sprint 28 | [[SOFTWARE-2201 - Integração videowall externo (NovaStar H9)]] |
+| [SOFTWARE-2200](https://app.clickup.com/t/86ajj1xv4) | Prova de campo do analítico em container até a timeline do detector | backlog | Sprint 28 (voltou ao sem prazo em 10/08 com a frente do analítico) | [[SOFTWARE-2200 - Prova de campo do analítico em container]] |
 | [SOFTWARE-2134](https://app.clickup.com/t/86ajh9v5j) | Analítico de vídeo ao vivo (detecção + bounding boxes) | Closed em 31/07 (entregue em 15/07; resíduo no SOFTWARE-2391) | Sprint 23 | [[SOFTWARE-2134 - Analítico de vídeo ao vivo (detecção + bounding boxes)]] (fica na pasta 24) |
-| [SOFTWARE-2009](https://app.clickup.com/t/86ajc71x6) | ms-cameras: escalabilidade horizontal em Kubernetes | backlog | Sprint 23 | [[SOFTWARE-2009 - Escalabilidade horizontal do ms-cameras em Kubernetes]] |
+| [SOFTWARE-2009](https://app.clickup.com/t/86ajc71x6) | ms-cameras: escalabilidade horizontal em Kubernetes | backlog | Sprint 28 (home movida da Sprint 23 em 10/08; sobra na lista da 27 removida) | [[SOFTWARE-2009 - Escalabilidade horizontal do ms-cameras em Kubernetes]] |
 | ~~[SOFTWARE-2005](https://app.clickup.com/t/86ajc6uzx)~~ | Saiu do sem prazo: rescopado em 31/07 para permissões nas rotas de câmeras (não transferido para o squad 3, ver decisão abaixo), movido para a lista da 27 em 03/08 | to do | Sprint 27 | [[SOFTWARE-2005 - Permissões nas rotas de câmeras - mapa das 86 rotas]] |
 | [SOFTWARE-1263](https://app.clickup.com/t/86ah842t3) | Unificar pastas do Prisma e Database | backlog, prioridade baixa | Quito | sem nota |
 | [SOFTWARE-1363](https://app.clickup.com/t/86aha9whm) | Plano de escalabilidade de streaming em HLS + Cloudflare | em teste (data de 11/05, vencida) | Quito | sem nota |
+
+## Frente do analítico em container: sem prazo desde 10/08
+
+Os 14 cards da frente voltaram ao sem prazo. A Sprint 27 tinha feito dela a frente única da semana,
+mas fechou em 09/08 **sem nenhuma entrega** porque a semana foi de folga, e a Sprint 28 foi para o
+renome do VMS e o videowall externo. As 14 PRs seguem abertas em draft, as specs continuam válidas, e
+retomar é replanejamento e não retrabalho. Status ClickUp de todos: `backlog` na lista da Sprint 28.
+
+| Card | Título | PR em draft | Nota |
+| --- | --- | --- | --- |
+| [SOFTWARE-2385](https://app.clickup.com/t/86aju62ta) | Como o vídeo chega no analítico em container | [#1342](https://github.com/atmanadmin/attlas-2026/pull/1342) | [[SOFTWARE-2385 - Alimentação de vídeo do analítico em container]] |
+| [SOFTWARE-2386](https://app.clickup.com/t/86aju62w6) | Especificação do analítico de vídeo em container | [#1343](https://github.com/atmanadmin/attlas-2026/pull/1343) | [[SOFTWARE-2386 - Especificação do analítico de vídeo em container]] |
+| [SOFTWARE-2387](https://app.clickup.com/t/86aju62yc) | Especificação do connector de laço virtual | [#1345](https://github.com/atmanadmin/attlas-2026/pull/1345) | [[SOFTWARE-2387 - Especificação do connector de laço virtual]] |
+| [SOFTWARE-2394](https://app.clickup.com/t/86aju7bxa) | Serviço, imagem e ingestão do stream | [#1346](https://github.com/atmanadmin/attlas-2026/pull/1346) | [[SOFTWARE-2394 - Analítico em container - serviço, imagem e ingestão]] |
+| [SOFTWARE-2395](https://app.clickup.com/t/86aju7c1v) | Detecção de objetos por frame | [#1347](https://github.com/atmanadmin/attlas-2026/pull/1347) | [[SOFTWARE-2395 - Analítico em container - detecção por frame]] |
+| [SOFTWARE-2396](https://app.clickup.com/t/86aju7c6y) | Laço virtual e ocupação da região | [#1349](https://github.com/atmanadmin/attlas-2026/pull/1349) | [[SOFTWARE-2396 - Analítico em container - laço virtual e ocupação]] |
+| [SOFTWARE-2397](https://app.clickup.com/t/86aju7cg8) | Publicar a ocupação no Kafka | [#1350](https://github.com/atmanadmin/attlas-2026/pull/1350) | [[SOFTWARE-2397 - Analítico em container - publicar ocupação no Kafka]] |
+| [SOFTWARE-2398](https://app.clickup.com/t/86aju7cjb) | Escala: câmeras por instância e distribuição | [#1351](https://github.com/atmanadmin/attlas-2026/pull/1351) | [[SOFTWARE-2398 - Escala do analítico - câmeras por instância]] |
+| [SOFTWARE-2389](https://app.clickup.com/t/86aju633j) | Vínculo região da câmera para endereço de detector | [#1352](https://github.com/atmanadmin/attlas-2026/pull/1352) | [[SOFTWARE-2389 - Vínculo região da câmera para endereço de detector]] |
+| [SOFTWARE-2390](https://app.clickup.com/t/86aju635n) | Connector: ocupação vira evento de detector | [#1353](https://github.com/atmanadmin/attlas-2026/pull/1353) | [[SOFTWARE-2390 - Connector de laço virtual - ocupação vira evento de detector]] |
+| [SOFTWARE-2388](https://app.clickup.com/t/86aju631k) | Analítico embarcado no mesmo contrato de ocupação | [#1354](https://github.com/atmanadmin/attlas-2026/pull/1354) | [[SOFTWARE-2388 - Analítico embarcado no mesmo contrato de ocupação]] |
+| [SOFTWARE-2391](https://app.clickup.com/t/86aju63bv) | Pendências do analítico embarcado | [#1355](https://github.com/atmanadmin/attlas-2026/pull/1355) | [[SOFTWARE-2391 - Pendências do analítico embarcado]] |
+| [SOFTWARE-2392](https://app.clickup.com/t/86aju63t9) | Recorte da atuação via ACOM | [#1356](https://github.com/atmanadmin/attlas-2026/pull/1356) | [[SOFTWARE-2392 - Recorte da atuação via ACOM (docs-only)]] |
+| [SOFTWARE-2200](https://app.clickup.com/t/86ajj1xv4) | Prova de campo até a timeline do detector | [#1357](https://github.com/atmanadmin/attlas-2026/pull/1357) | [[SOFTWARE-2200 - Prova de campo do analítico em container]] |
+
+Passo barato quando a frente voltar: tirar de draft as três PRs de especificação na ordem 2385, 2386 e
+2387, porque review não consome dia de implementação. Contexto completo do planejamento em
+[[Attlas - Sprint 27]].
 
 ## Decisão por card (refino de 31/07)
 
@@ -76,7 +104,9 @@ Decisão final do dia, registrada em [[Attlas - Sprint 26]], foi diferente: em v
 foi **rescopado** para o recorte que é nosso — o mapa das 86 rotas do `ms-cameras` (que não tem nenhum
 decorator de autorização) mais as chaves que faltam no catálogo. O achado colateral (aplicar o
 enforcement) virou card próprio, o [[SOFTWARE-2400 - Aplicar enforcement de permissão nas rotas de câmeras|2400]].
-Os dois saíram do sem-prazo: moram na lista da Sprint 27 desde 03/08 (ver [[Attlas - Sprint 27]]).
+Os dois saíram do sem-prazo: moraram na lista da Sprint 27 de 03/08 a 09/08 e, com a 27 encerrada sem
+os cards serem tocados, foram movidos para a lista da Sprint 28 em 10/08, onde seguem (ver
+[[Attlas - Sprint 28]]).
 
 ### 1263 unificar Prisma: REESCOPAR e sair do squad 2
 
@@ -117,12 +147,14 @@ vídeo, motor fora da câmera, spec do connector, ocupação normalizada, víncu
 evento raw. O card 2200 foi movido para a lista da 27 e reescopado como a prova ponta a ponta, com a
 atuação no controlador saindo para o 2392. Ver [[Attlas - Sprint 27]].
 
-### 2201: segue no sem prazo
+### 2201: saiu do sem prazo em 10/08, comprometido na Sprint 28
 
 A integração do videowall externo H9 estava comprometida no plano da manhã de 31/07 e foi escopada para
-outra sprint no replanejamento. O desenho não se perdeu, está em
-[[Videowall externo (NovaStar H9)]] e em [[SOFTWARE-2201 - Integração videowall externo (NovaStar H9)]],
-então quando a sprint dele chegar é planejamento e não retrabalho.
+outra sprint no replanejamento. A sprint dele chegou: a [[Attlas - Sprint 28]] fez do videowall externo
+uma das duas frentes da semana, com o 2201 comprometido como o card da especificação do módulo e o resto
+da frente fatiado em cards novos (cadastro, catálogo de capacidades, fontes IPC, layout/preset, brilho e
+tela). O desenho estava preservado em [[Videowall externo (NovaStar H9)]], então foi planejamento e não
+retrabalho, como previsto.
 
 ### 2134: card defasado no ClickUp
 
@@ -131,7 +163,7 @@ sobra é higiene de doc e dois defeitos pequenos, e virou o SOFTWARE-2391, na fi
 
 ## Candidatos a card (trabalho sem card hoje)
 
-- **Renomear "Video Wall" para VMS**: desenhado em 3 fases (docs, backend com alias de rota, frontend com migração da chave de `localStorage`), escopado para outra sprint no replanejamento de 31/07. Alcance arquivo por arquivo em [[VMS]].
+- ~~**Renomear "Video Wall" para VMS**~~: saiu dos candidatos em 10/08, virou as três fases comprometidas da [[Attlas - Sprint 28]] (cards a criar no ClickUp). Alcance arquivo por arquivo em [[VMS]].
 - **Gerenciamento global do videowall externo**: absorvido pelo RF-7 do 2201.
 - **Dono explícito do device de analítico**: o Attlas 25 ou a produção seguem carimbando o `source_id` e não tenho SSH em nenhum dos dois. Detalhe em [[Carga desnecessária nas câmeras - reconciler do analítico e conexões duplicadas]].
 - **Extrair o intersection-picker do `camera-creation-settings-step`** (cerca de 700 linhas, já tem `TODO(refactor)`), acordado no review da #1137.

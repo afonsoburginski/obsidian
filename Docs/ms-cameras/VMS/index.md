@@ -13,19 +13,27 @@ aliases:
   - "vms"
   - "00 - Video Wall"
   - "Video Wall (ms-cameras)"
-atualizado: 2026-07-31
+atualizado: 2026-08-13
 ---
 
 # VMS - Video Monitoring System (ms-cameras)
 
 > Submódulo do [[ms-cameras]]. Backend: **MOD-006 video-wall** (layouts + cenas) e **MOD-008 bandwidth-monitoring** (banda). Frontend: **MOD-001-videowall**. Canvas: [[06 - MOD-006 VMS.excalidraw|diagrama]].
 
-> [!important] Nomenclatura decidida na daily de 31/07
-> Esta tela, o mosaico de feeds ao vivo no browser, passa a se chamar **VMS (Video Monitoring
-> System)**. O termo **videowall** fica reservado ao painel físico externo de Quito, o processador
-> NovaStar H9: [[Videowall externo (NovaStar H9)]]. Código, rotas, contratos e i18n ainda dizem
-> `video-wall`/`videowall`; o renome é card próprio e está escopado abaixo.
-> Ver [[Attlas - Sprint 27]], que registra as considerações da daily.
+> [!important] Nomenclatura: VMS é o interno, videowall é o externo
+> A regra é essa e não tem meio-termo. **VMS é o que temos internamente**: esta tela, o mosaico de
+> feeds ao vivo que o Attlas desenha no browser do operador. **Videowall é o externo**: o painel
+> físico da sala de controle de Quito, comandado pelo processador NovaStar H9, que não é nosso e que o
+> Attlas apenas dirige por API ([[Videowall externo (NovaStar H9)]]). Desde 10/08 esse painel é um
+> **alvo de exibição deste VMS**, submódulo dele, o que não afrouxa a regra de nomenclatura: continuam
+> sendo o sistema e uma das saídas dele, com nomes diferentes justamente para não se confundirem.
+>
+> Decidido na daily de 31/07 e formalizado na spec CROSS-045, aplicada em 10/08 nas PRs
+> [#1438](https://github.com/atmanadmin/attlas-2026/pull/1438),
+> [#1439](https://github.com/atmanadmin/attlas-2026/pull/1439) e
+> [#1440](https://github.com/atmanadmin/attlas-2026/pull/1440). O renome atinge o que é observável
+> (rota, tela, i18n, ícones); pasta, classes e contratos do backend continuam dizendo `video-wall`
+> de propósito, ver a seção do renome abaixo.
 
 O VMS compõe e exibe **N feeds simultâneos** em um mosaico configurável. O backend é a **fonte de
 verdade de layouts, cenas e do consumo agregado de banda**; a renderização do mosaico, a rotação
@@ -35,21 +43,69 @@ secundário via [[Streaming]].
 > [!abstract] O que o backend faz
 > Guarda e serve **layouts** (templates de grade) e **cenas** (conjunto de câmeras posicionadas num layout, ativáveis com uma ação), oferece o **picker** de câmeras elegíveis para montar a cena, e calcula um **snapshot de banda** da sessão. Não renderiza vídeo, não roda a rotação, não mantém sessão PTZ.
 
-## Renome para VMS: o que muda
+## Alvos de exibição: o videowall é submódulo do VMS (10/08)
 
-Nada disso foi aplicado ainda. É o escopo do card de renome, e a rota muda junto:
+Decisão do user em 10/08, e ela muda a arquitetura da frente seguinte. Uma cena diz qual câmera fica em
+qual posição. **Onde ela aparece é um alvo de exibição**, e o VMS tem dois:
 
-| Hoje | Alvo |
+| Alvo | O que faz | Onde |
+| --- | --- | --- |
+| Sessão no browser | O mosaico deste documento. Ativar cena é gravar o estado ativo | `src/video-wall/targets/browser-session/` |
+| Videowall externo | Espelha no painel físico de Quito a tela da sessão do operador, como fonte única em tela cheia | `src/video-wall/targets/novastar-h9/` |
+
+O que sustenta um alvo em cima do outro é o espelho **nascer de uma sessão de VMS**. O painel não recebe
+câmera nem cena, recebe a superfície que o operador está vendo, e quem compõe essa superfície continua
+sendo o VMS. Não existe um segundo modelo de cena porque não existe cena nenhuma do lado do equipamento,
+só uma fonte e uma janela em tela cheia, e é por isso que o painel cabe aqui e não em módulo irmão.
+
+> [!warning] Revisão de 13/08: o propósito do alvo mudou
+> Até 12/08 o painel projetava a cena, traduzindo célula em fonte IPC, camada e preset, e o containment se
+> justificava pela célula já ser geometria proporcional sobre um `customGrid` virtual, o que tornava a
+> projeção uma multiplicação pela resolução do painel. Isso caiu junto com a projeção. O containment
+> sobrevive pelo argumento acima, que é mais forte: antes o painel era uma segunda saída do mesmo modelo,
+> agora ele é uma segunda saída da mesma sessão.
+
+Três consequências que valem lembrar: a superfície inteira fica sob `/api/vms`, com o equipamento em
+`/api/vms/videowall/*`; o gesto do painel é **tomar e liberar o espelho**, com dono exclusivo, e ativar
+cena com o alvo videowall passa a ser recusa definitiva; e o espelhamento é de **mão única**, porque
+composição montada direto no equipamento não tem representação do lado da plataforma. Detalhe do desenho,
+incluindo o strategy por transporte e a resolução de tenancy do RF-7, em
+[[Videowall externo (NovaStar H9)]]. O material de hardware que sustentou a escolha de transporte está em
+[[Pesquisa - transporte do espelhamento de tela]].
+
+## Renome para VMS: o que mudou (aplicado em 10/08)
+
+Executado nas três PRs abaixo, sob a spec CROSS-045. A fronteira que a spec estabelece é **renomear o
+que é observável e não renomear implementação nem valor serializado**.
+
+| Categoria | De | Para |
+| --- | --- | --- |
+| Rotas REST de cenas e layouts | `/api/video-wall/*` | `/api/vms/*` |
+| Rota REST do picker | `/api/cameras/video-wall` | `/api/cameras/vms` |
+| Rota Kong | `ms-cameras-video-wall-route` | `ms-cameras-vms-route`, com os dois paths |
+| Rota do front | `/cameras/videowall` | `/cameras/vms`, com redirect por prefixo |
+| Namespace i18n | `videowall.json` e chave raiz `videowall` | `vms.json` e chave raiz `vms` |
+| Chaves de ícone | `videowall.*` no `ui-icons` | `vms.*` |
+| Rótulo de navegação | `camera.navbar.videowall` | `camera.navbar.vms`, valor `VMS` |
+| `localStorage` | `videowall.lastSceneBySystem` | `vms.lastSceneBySystem`, com migração de leitura única |
+
+### O que continua dizendo video-wall, de propósito
+
+Isto **não é dívida esquecida, é decisão medida**. A primeira versão da PR de backend movia a pasta
+para `src/vms/` e migrava os contratos para `lib/vms/`: deu **98 arquivos, 91 sem nada observável**, e
+foi cortada para 7.
+
+| Fica | Motivo |
 | --- | --- |
-| Módulo backend `apps/ms-cameras/src/video-wall/` | `src/vms/` |
-| Rotas REST `/api/video-wall/layouts`, `/api/video-wall/scenes*` | `/api/vms/...` |
-| Rota Kong `ms-cameras-video-wall-route` (`paths: ['/api/video-wall']`) | path e nome novos |
-| Picker `GET /api/cameras/video-wall` | `GET /api/cameras/vms` |
-| Contratos `libs/contracts/src/lib/videowall/` + `camera/video-wall.validation.ts` | `lib/vms/` |
-| Front `apps/web-attlas/src/app/modules/videowall/` e rota `/cameras/videowall` | `modules/vms`, `/cameras/vms` |
-| i18n `locales/<locale>/videowall.json`, chave de menu `camera.navbar.videowall` | `vms.json`, `camera.navbar.vms` |
-| Tabelas `VideoWallLayout` / `VideoWallScene` / `VideoWallSceneCell` | renome opcional (custa migration, pode ficar para depois) |
-| Specs UC-014/015/016, MOD-006, MOD-008, MOD-001-videowall | renomear ID e título junto |
+| Pasta `apps/ms-cameras/src/video-wall/` e as classes `VideoWall*` | os models Prisma que elas persistem continuam `VideoWall*`, porque nome de tabela é valor persistido. Renomear as classes em volta produzia um `VmsScenesRepository` operando em `prisma.videoWallScene`, ou seja dois vocabulários no mesmo arquivo |
+| Contratos `lib/videowall/`, `lib/camera/video-wall.validation.ts` e os símbolos `IVideoWall*` | nome de símbolo não aparece na tela, na URL, no payload nem no banco. Migrar exigia 22 aliases obsoletos no `@attlas/contracts` mais um card só para removê-los |
+| Tabelas `VideoWallLayout` / `VideoWallScene` / `VideoWallSceneCell` | renome de tabela custa migration; vai junto da migration do cadastro do processador H9, numa janela só |
+| Valores de `EnumVideowallLayout` e os `errorCode` `VIDEOWALL_*` | valor serializado e contrato estável |
+| IDs e slugs de spec (`MOD-006-video-wall`, UC-014/015/016, `MOD-001-videowall`, `RF-VW-*`) | imutáveis depois de `in-review`, exigido pelo SPEC-GUIDE |
+| Pasta `modules/videowall/` do front, selectors `app-videowall-*`, classes CSS, tokens de z-index | diff mecânico grande sem ganho funcional; card do dono do módulo |
+
+Se a implementação for renomeada um dia, vai junto da migration das tabelas, num card só, para schema e
+código nunca ficarem em vocabulários diferentes.
 
 > [!success] Colisão de sigla: resolvida em 31/07
 > A tela fica com **VMS**. Quem muda de nome é o outro: o sistema externo de gravação deixa de ser
@@ -61,26 +117,18 @@ Nada disso foi aplicado ainda. É o escopo do card de renome, e a rota muda junt
 > ocorrências em testes NTCIP/SNMP. Regra dura das PRs do renome: **nenhuma toca `apps/ms-pmv/**` nem
 > `apps/ms-connector-*/**`**, e o CI do `ms-pmv` verde é a prova de que nada vazou.
 
-### Estratégia do renome (3 PRs, sprint a definir)
+### As três PRs (10/08)
 
-Desenhada no planejamento da Sprint 27 e escopada para outra sprint no replanejamento de 31/07, que
-deixou a 27 com foco único no analítico desacoplado.
+| Card | PR | Conteúdo | Tamanho |
+| --- | --- | --- | --- |
+| [[SOFTWARE-2431 - Renome para VMS - fase 0 terminologia\|2431]] | [#1438](https://github.com/atmanadmin/attlas-2026/pull/1438) | Spec CROSS-045 e todo o markdown: prosa dos docs, glossário, conteúdo de MOD-006, UC-014/015/016, MOD-011 e do `SPEC.md`; de carona a dependência quebrada do UC-028 | 18 arquivos |
+| [[SOFTWARE-2438 - Renome para VMS - fase 1 API e contratos\|2438]] | [#1439](https://github.com/atmanadmin/attlas-2026/pull/1439) | Só o caminho público: os dois controllers atendem `vms` além de `video-wall`, Kong publica `/api/vms`, testes provam as duas rotas | 7 arquivos |
+| [[SOFTWARE-2439 - Renome para VMS - fase 2 rota e i18n\|2439]] | [#1440](https://github.com/atmanadmin/attlas-2026/pull/1440) | Rota do front com redirect, i18n nos 4 locales, ícones, `localStorage` com migração, e a deleção dos 4 bundles monolíticos órfãos | 43 arquivos |
 
-Regra que governa as três: **renomeia símbolo, arquivo, rota e namespace; não renomeia valor
-serializado.** Ficam de fora de propósito os nomes de tabela e constraint Prisma, os valores string de
-`EnumVideowallLayout` (as 16 chaves de ícone estão acopladas a eles) e o payload do `localStorage`.
-Assim nenhuma PR consegue corromper dado.
+Ordem de merge obrigatória, 1438 depois 1439 depois 1440: o front só funciona em runtime com `/api/vms`
+já no gateway, e o teste unitário não pega essa dependência. O prefixo antigo sai numa sprint, em card
+de limpeza de três linhas, porque não há camada de compatibilidade para desmontar.
 
-| Fase | Card | Conteúdo |
-| --- | --- | --- |
-| 0 | `[Back]` terminologia | Só docs: gravador externo vira NVR, glossário ganha VMS (a tela) e videowall (o painel físico), aviso no MOD do Lucas. |
-| 1 | `[Back]` API e contratos | `src/video-wall/` vira `src/vms/`, controller vira `@Controller('vms')`, contratos migram para `lib/vms/` **mantendo alias de tipo no barrel** (senão a compilação quebra entre a PR de back e a de front), Kong com `paths: ['/api/vms', '/api/video-wall']` e o Nest mantendo o prefixo antigo por uma sprint, porque front e Kong deployam em pipelines separados e sem alias qualquer ordem de deploy dá 404 na tela. Specs MOD-006 e UC-014/015/016 renomeados, e de carona a referência quebrada do UC-028 corrigida. |
-| 2 | `[Front]` rota e i18n | Rota `vms` com redirect `prefix` do `videowall` (preserva o deep link `/:viewId`), menu, `videowall.json` vira `vms.json` nos 4 locales **mais os bundles monolíticos que duplicam o namespace** (se dessincronizar, a tela sai metade traduzida e nenhum teste pega), ícones, e a chave de `localStorage` com migração de leitura única, senão todo operador perde a última cena por sistema. |
-
-Fora da semana, de propósito: renomear as tabelas Prisma (vai junto da migration do videowall externo,
-uma janela só) e mover a pasta do módulo Angular mais renumerar os 25 UF, que é diff mecânico gigante e
-conflita com a branch do H9. Os UF são do Lucas: card no nome dele, dependente da fase 2, e a
-renumeração é decisão do dono (a pasta já tem UF-013, UF-019 e UF-020 duplicados).
 
 ## Mapa de código
 
@@ -99,19 +147,21 @@ renumeração é decisão do dono (a pasta já tem UF-013, UF-019 e UF-020 dupli
 ## Superfície HTTP
 
 Todas sob o prefixo global `/api`. Layouts e cenas escopados pela **organização do JWT**; o picker pelo
-**`system-id` do header**; a banda pelos `cameraIds` recebidos.
+**`system-id` do header**; a banda pelos `cameraIds` recebidos. Os mesmos caminhos sob `/api/video-wall`
+e `/api/cameras/video-wall` respondem igual durante a janela de transição de uma sprint; os nomes de
+handler continuam `VideoWall*` de propósito, ver a seção do renome acima.
 
 | Método + rota | UC | Handler | O que faz |
 | --- | --- | --- | --- |
-| `GET /video-wall/layouts` | UC-015 | `ListVideoWallLayoutsHandler` | Templates de layout da org mais os globais |
-| `POST /video-wall/scenes` | UC-016 | `CreateVideoWallSceneHandler` | Cria cena (`layoutId` **XOR** `customGrid` + `cells`) |
-| `GET /video-wall/scenes` | UC-016 | `ListVideoWallScenesHandler` | Lista cenas da org (forma slim + contadores) |
-| `GET /video-wall/scenes/:id` | UC-016 | `GetVideoWallSceneHandler` | Detalhe: layout + células enriquecidas com metadados da câmera |
-| `PATCH /video-wall/scenes/:id` | UC-016 | `UpdateVideoWallSceneHandler` | Atualiza nome/layout/células (células = substituição total) |
-| `DELETE /video-wall/scenes/:id` | UC-016 | `DeleteVideoWallSceneHandler` | Remove cena (204) |
-| `POST /video-wall/scenes/:id/activate` | UC-016 | `SetVideoWallSceneActiveHandler` | `isActive = true` (200) |
-| `POST /video-wall/scenes/:id/deactivate` | UC-016 | `SetVideoWallSceneActiveHandler` | `isActive = false` (200) |
-| `GET /cameras/video-wall` | UC-014 | `ListVideoWallCamerasHandler` | Picker paginado de câmeras elegíveis (filtros `q`, `cameraType`, `lifecycleState`) |
+| `GET /vms/layouts` | UC-015 | `ListVideoWallLayoutsHandler` | Templates de layout da org mais os globais |
+| `POST /vms/scenes` | UC-016 | `CreateVideoWallSceneHandler` | Cria cena (`layoutId` **XOR** `customGrid` + `cells`) |
+| `GET /vms/scenes` | UC-016 | `ListVideoWallScenesHandler` | Lista cenas da org (forma slim + contadores) |
+| `GET /vms/scenes/:id` | UC-016 | `GetVideoWallSceneHandler` | Detalhe: layout + células enriquecidas com metadados da câmera |
+| `PATCH /vms/scenes/:id` | UC-016 | `UpdateVideoWallSceneHandler` | Atualiza nome/layout/células (células = substituição total) |
+| `DELETE /vms/scenes/:id` | UC-016 | `DeleteVideoWallSceneHandler` | Remove cena (204) |
+| `POST /vms/scenes/:id/activate` | UC-016 | `SetVideoWallSceneActiveHandler` | `isActive = true` (200) |
+| `POST /vms/scenes/:id/deactivate` | UC-016 | `SetVideoWallSceneActiveHandler` | `isActive = false` (200) |
+| `GET /cameras/vms` | UC-014 | `ListVideoWallCamerasHandler` | Picker paginado de câmeras elegíveis (filtros `q`, `cameraType`, `lifecycleState`) |
 | `GET /dashboard/bandwidth?cameraIds=` | UC-019 | `GetBandwidthSnapshotHandler` | Snapshot de banda da sessão (ou da rede sem `cameraIds`) |
 
 Handlers CQRS (query/command bus) em `src/video-wall/handlers/…` e `src/dashboard/bandwidth/handlers/…`;

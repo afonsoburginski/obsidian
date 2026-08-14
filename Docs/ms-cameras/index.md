@@ -35,6 +35,10 @@ Cada domínio é uma pasta em `Docs/ms-cameras/` com notas ricas (visão geral �
 | VMS, ex Video Wall (+ banda) | layouts e cenas, ativação, escopo por org, monitoramento de banda | [[VMS]] | `src/video-wall/`, `src/dashboard/bandwidth/` |
 | Eventos, incidentes e alarmes | log de eventos, correlação (incidentes), emissão de alarme | [[Eventos, incidentes e alarmes]] | `src/cameras/` |
 
+O módulo [[Analítico]] (Virtual Loop, ATSPM) **não é domínio deste serviço**: é módulo próprio, dependente
+de Câmeras. Hoje o caminho embarcado dele mora provisoriamente em `src/analytics-realtime/`, dentro deste
+serviço, só porque os serviços dedicados ainda não saíram do scaffold.
+
 Canvases por domínio em [[#Diagramas]].
 
 ## Superfície HTTP (resumo)
