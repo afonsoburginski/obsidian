@@ -25,12 +25,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Reports/2026-08-20.md",
+                "file": "Sem título.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "2026-08-20"
+              "title": "Sem título"
             }
           }
         ],
@@ -224,6 +224,8 @@
   },
   "active": "bdea67b811a3ede5",
   "lastOpenFiles": [
+    "Reports/2026-08-21.md",
+    "Reports/2026-08-20.md",
     "Sprint/29/SOFTWARE-2562 - Layout da tela do painel físico.md",
     "Sem título.md",
     "attlas-vl-atspm.pdf",
@@ -251,7 +253,6 @@
     "Sprint/29/SOFTWARE-2477 - Lançador radial do alvo de exibição.md",
     "Sprint/29/SOFTWARE-2476 - Brilho do painel no frontend.md",
     "Sprint/29/SOFTWARE-2475 - Janelas e presets no frontend.md",
-    "Sprint/29/SOFTWARE-2474 - Câmeras e página web como fontes no frontend.md",
     "Sprint/28/SOFTWARE-2434 - Câmeras como fontes IPC.md.tmp.11463.07e290afc379",
     "Sprint/29",
     "Sprint/28/Attlas - Sprint 28.md.tmp.191712.aa836fd17026",
