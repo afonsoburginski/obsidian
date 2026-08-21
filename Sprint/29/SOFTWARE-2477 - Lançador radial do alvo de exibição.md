@@ -10,9 +10,9 @@ clickup: https://app.clickup.com/t/86ajypa18
 titulo: "[Front] VMS: lançador radial do alvo de exibição"
 frente: Videowall externo (NovaStar H9)
 tamanho: 2 pts
-status: backlog na Sprint 28. Front; execução pelo dev de backend só com confirmação. Semântica revisada em 13/08 pelo replanejamento do [[SOFTWARE-2201 - Integração videowall externo (NovaStar H9)|2201]]: a estrutura fica, os gestos mudam.
-sprint: "[[Attlas - Sprint 28]]"
-atualizado: 2026-08-13
+status: Closed em 17/08 pela [#1662](https://github.com/atmanadmin/attlas-2026/pull/1662) (base develop, worktree separado): só o débito de copy que a UF-030 já sinalizava (rótulo "Projetar"→"Espelhar" + texto de motivo, 4 locales) e remoção de 2 chaves i18n órfãs. A lógica de disabled já estava correta, a investigação confirmou que "preset" nem existe mais no arco; sem mudança de componente Angular.
+sprint: "[[Attlas - Sprint 29]]"
+atualizado: 2026-08-19
 ---
 
 # SOFTWARE-2477 - Lançador radial do alvo de exibição

@@ -9,9 +9,9 @@ clickup: https://app.clickup.com/t/86ajycew3
 titulo: "[Back] Videowall externo: cadastro do processador H9"
 frente: Videowall externo (NovaStar H9)
 tamanho: 3 pts
-status: em execução na PR #1529, junto com o 2477 (to do no ClickUp).
+status: Fechado em 17/08 no ClickUp. PR #1529 mergeada em 13/08 (CRUD do processador H9 completo, global, cifra e mascaramento de pId).
 sprint: "[[Attlas - Sprint 28]]"
-atualizado: 2026-08-13
+atualizado: 2026-08-17
 ---
 
 # SOFTWARE-2432 - Cadastro do processador H9

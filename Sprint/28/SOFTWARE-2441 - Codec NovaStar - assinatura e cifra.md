@@ -9,9 +9,9 @@ clickup: https://app.clickup.com/t/86ajycedc
 titulo: "[Back] Videowall externo: codec NovaStar, assinatura e cifra"
 frente: Videowall externo (NovaStar H9)
 tamanho: 2 pts
-status: comprometido da Sprint 28 (to do no ClickUp), último da escada; se a semana escorregar, é ele que cede.
+status: Fechado em 17/08 no ClickUp (estava in progress, PR #1598 mergeada em 14/08, golden vectors no CI).
 sprint: "[[Attlas - Sprint 28]]"
-atualizado: 2026-08-10
+atualizado: 2026-08-17
 ---
 
 # SOFTWARE-2441 - Codec NovaStar - assinatura e cifra

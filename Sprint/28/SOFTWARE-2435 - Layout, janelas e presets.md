@@ -9,9 +9,9 @@ clickup: https://app.clickup.com/t/86ajycf5k
 titulo: "[Back] Videowall externo: layout, janelas e presets"
 frente: Videowall externo (NovaStar H9)
 tamanho: 3 pts
-status: entregue na PR #1453, mergeada em 12/08, mas com conteúdo diferente do título. O que entrou foi a porta do alvo de exibição, o seletor, a factory e o adaptador do browser, mais o `target` na ativação de cena. Camadas e presets no equipamento não entraram, e deixaram de fazer sentido com o replanejamento de 13/08. Em 14/08 marcado para reabrir e reescopar: volta como as camadas derivadas da cena, sem preset.
+status: Fechado em 17/08 no ClickUp. Confirmado no SOFTWARE-2201 como entregue: composição de camadas/presets passou a ser operação do próprio equipamento no modelo de espelhamento, não da plataforma; o que faltava do escopo original deixou de ser desejado.
 sprint: "[[Attlas - Sprint 28]]"
-atualizado: 2026-08-14
+atualizado: 2026-08-17
 ---
 
 # SOFTWARE-2435 - Layout, janelas e presets

@@ -10,9 +10,9 @@ clickup: https://app.clickup.com/t/86ajyp9um
 titulo: "[Front] Videowall externo: câmeras e página web como fontes"
 frente: Videowall externo (NovaStar H9)
 tamanho: 3 pts
-status: reescopado em 13/08 pelo replanejamento do [[SOFTWARE-2201 - Integração videowall externo (NovaStar H9)|2201]]: era a aba de fontes, passou a ser a captura da tela e a sessão de espelho. Segue em backlog na Sprint 28. Renomeado no ClickUp para "[Front] Videowall externo: captura da tela e sessão de espelho". Em 14/08: segue com a captura de tela; a tela de fontes de câmera volta encolhida em card novo.
-sprint: "[[Attlas - Sprint 28]]"
-atualizado: 2026-08-14
+status: Closed em 19/08. O código foi entregue em 14/08 pelo commit 16a48fa105, que trouxe a captura da aba pelo getDisplayMedia, a publicação do espelho e a sessão com dono. O card ficou parado em backlog por quase uma semana e a auditoria do board contra a develop pegou isso. O preview de vídeo continua proibido pela spec, com teste verde afirmando que nenhum elemento de vídeo é renderizado em nenhum estado.
+sprint: "[[Attlas - Sprint 29]]"
+atualizado: 2026-08-19
 ---
 
 # SOFTWARE-2474 - Captura da tela e sessão de espelho
@@ -44,6 +44,23 @@ atualizado: 2026-08-14
 
 Aba de fontes: publicar uma câmera do Attlas como fonte de vídeo no equipamento, reusando o perfil de
 stream que o módulo já conhece.
+
+> [!check] Auditoria de 18/08: o card já está entregue e fecha sem código novo
+> Antes de implementar, o código foi conferido. A captura pelo browser, a validação de que a superfície
+> escolhida é a própria tela, o estado de captura concedida, o envio com tomada, a publicação, a liberação, a
+> recusa do diálogo de compartilhamento, o encerramento pelo controle do browser e a liberação na troca de
+> sistema já existem, e a view cobre os sete estados, tomada administrativa com confirmação nomeando o dono
+> incluída.
+>
+> A única dúvida era o preview de vídeo, que o desenho original prometia e que não está na tela. **Ele não é
+> lacuna, é proibição**, e a razão é estrutural: a captura é da própria aba onde a view roda, então renderizar
+> o stream num elemento de vídeo desenha a aba dentro da aba, recursivamente, sem nada de novo para o operador
+> ver. A revisão de 14/08 da `UF-031` removeu a promessa, existe teste verde afirmando que nenhum elemento de
+> vídeo é renderizado em nenhum estado, e o critério de aceite exige isso. A consciência de exposição vem da
+> frase de exposição mais o indicador nativo de compartilhamento do browser.
+>
+> Escopo remanescente: nenhum. Fica de fora, e não é deste card, a verificação de acessibilidade nos dois
+> temas: o `axe-core` não está ligado ao `web-attlas`, o que vale para a frente inteira.
 
 ## Sem campo de endereço, e isso é decisão
 

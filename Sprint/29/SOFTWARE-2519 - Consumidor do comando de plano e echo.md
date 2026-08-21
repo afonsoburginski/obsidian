@@ -9,9 +9,10 @@ clickup: https://app.clickup.com/t/86ak0tepc
 titulo: "[Back] Videowall externo: consumidor do comando de plano e echo idempotente"
 frente: Videowall externo (NovaStar H9)
 tamanho: 2 pts
-status: criado em 14/08 na lista da Sprint 28, em backlog, depois da citação da cláusula 16.13 do contrato de Quito.
-sprint: "[[Attlas - Sprint 28]]"
-atualizado: 2026-08-14
+status: code review. Sai intacta do refactor de contrato: o listener é do `ms-cameras`, importa só de `@attlas/contracts` e espelha o listener de PTZ, então zero linha de adaptação. Oito arquivos. É a menor PR da pilha e a que fecha verde sem acesso ao equipamento.
+pr: "[#1761](https://github.com/atmanadmin/attlas-2026/pull/1761)"
+sprint: "[[Attlas - Sprint 29]]"
+atualizado: 2026-08-19
 ---
 
 # SOFTWARE-2519 - Consumidor do comando de plano e echo

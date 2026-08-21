@@ -5,7 +5,7 @@ tags:
   - server
 aliases:
   - "Server e CI"
-atualizado: 2026-08-14
+atualizado: 2026-08-19
 ---
 
 # Server e CI
@@ -18,6 +18,7 @@ atualizado: 2026-08-14
 - [[Acessos SSH - Infra Attlas]] - runbook dos acessos: sumo, EC2 dev 26, VM do runner, VMs 1 a 7. Tem credenciais, não versionar.
 - [[Observabilidade CI - plano (stack completa)]] - plano da stack de observabilidade do CI e as camadas de higiene dos runners.
 - [[Consultar câmera Hikvision via ISAPI]] - comandos para interrogar uma câmera Hikvision pelo terminal, e como separar "ONVIF desabilitado no firmware" de credencial errada.
+- [[Infraestrutura de CI - trabalho sem card]] - as sete pull requests mergeadas desde 01/07 que não citam card nenhum, cinco delas a mesma frente da fila de integração, com o que cada rodada corrigiu e o que ficou pendente.
 
 ## O que ainda não está aqui
 

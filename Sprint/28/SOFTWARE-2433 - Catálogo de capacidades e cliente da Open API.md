@@ -9,9 +9,9 @@ clickup: https://app.clickup.com/t/86ajycf0j
 titulo: "[Back] Videowall externo: catálogo de capacidades e cliente da Open API"
 frente: Videowall externo (NovaStar H9)
 tamanho: 3 pts
-status: fila da Sprint 28 (to do no ClickUp). **Entregue em 14/08 na PR #1609**, empilhada sobre a #1592.
+status: Fechado em 17/08 no ClickUp (estava code review, PR #1609 já mergeada desde 14/08). Troca de presumido por confirmado fica para quando o acesso ao H9 real chegar, fora do escopo deste card.
 sprint: "[[Attlas - Sprint 28]]"
-atualizado: 2026-08-14
+atualizado: 2026-08-17
 ---
 
 # SOFTWARE-2433 - Catálogo de capacidades e cliente da Open API

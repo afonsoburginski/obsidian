@@ -10,9 +10,9 @@ clickup: https://app.clickup.com/t/86ajyp9kb
 titulo: "[Front] Videowall externo: cadastro do processador"
 frente: Videowall externo (NovaStar H9)
 tamanho: 3 pts
-status: backlog na Sprint 28. Front; execução pelo dev de backend só com confirmação.
+status: Fechado em 17/08 no ClickUp (estava backlog, formulário entregue na PR #1529 e reaproveitado como view no dialog compartilhado da PR #1592).
 sprint: "[[Attlas - Sprint 28]]"
-atualizado: 2026-08-13
+atualizado: 2026-08-17
 ---
 
 # SOFTWARE-2472 - Cadastro do processador no frontend

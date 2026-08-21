@@ -10,8 +10,8 @@ titulo: "[Back] Renome VMS - fase 3, remove o path legado /api/video-wall"
 frente: Renome VMS (CROSS-045)
 tamanho: a pontuar (diff de poucas linhas)
 status: backlog na lista da Sprint 28; só abre depois do deploy do renome em todos os ambientes.
-sprint: "[[Attlas - Sprint 28]]"
-atualizado: 2026-08-11
+sprint: "[[Attlas - Sprint 29]]"
+atualizado: 2026-08-17
 ---
 
 # SOFTWARE-2481 - Renome VMS - fase 3, remove o path legado

@@ -10,8 +10,8 @@ titulo: "[Front] Videowall externo: fontes de câmera do painel"
 frente: Videowall externo (NovaStar H9)
 tamanho: 2 pts
 status: criado em 14/08 na lista da Sprint 28, em backlog, depois da citação da cláusula 16.13 do contrato de Quito.
-sprint: "[[Attlas - Sprint 28]]"
-atualizado: 2026-08-14
+sprint: "[[Attlas - Sprint 29]]"
+atualizado: 2026-08-17
 ---
 
 # SOFTWARE-2520 - Fontes de câmera do painel no frontend

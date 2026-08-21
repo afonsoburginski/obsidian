@@ -10,9 +10,9 @@ clickup: https://app.clickup.com/t/86ajycf8u
 titulo: "[Front] Videowall externo: contratos, serviço e casca da configuração"
 frente: Videowall externo (NovaStar H9)
 tamanho: 3 pts
-status: backlog na Sprint 28. Front; execução pelo dev de backend só com confirmação. Reescopado em 10/08, abas reduzidas em 13/08 e, no mesmo dia, a rota virou dialog compartilhado.
+status: Fechado em 17/08 no ClickUp (estava backlog, entregue desde a PR #1592 de 14/08: contratos, serviço REST do processador, dialog compartilhado, i18n nos quatro idiomas).
 sprint: "[[Attlas - Sprint 28]]"
-atualizado: 2026-08-13
+atualizado: 2026-08-17
 ---
 
 # SOFTWARE-2437 - Contratos, serviço e casca da configuração do videowall
@@ -37,7 +37,7 @@ Primeira fatia do videowall externo no frontend, e a que fixa a arquitetura das 
 > e as de janelas e presets deixaram de existir, porque compor a parede voltou a ser operação da interface
 > do equipamento. Sobram **processador, brilho e estado**. Os cards das abas retiradas são o
 > [[SOFTWARE-2474 - Câmeras e página web como fontes no frontend|2474]], reescopado para a captura da tela,
-> e o [[SOFTWARE-2475 - Janelas e presets no frontend|2475]], fechado. Os pontos deste card não mudam: a
+> e o [[SOFTWARE-2475 - Prévia da geometria projetada|2475]], fechado. Os pontos deste card não mudam: a
 > fundação é a mesma, com menos abas para montar.
 
 ## Escopo (1 PR)

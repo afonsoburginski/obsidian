@@ -9,9 +9,9 @@ clickup: https://app.clickup.com/t/86ajyce9r
 titulo: "[Back] Videowall externo: requisitos em docs/modules (videowall.md)"
 frente: Videowall externo (NovaStar H9)
 tamanho: 2 pts
-status: absorvido pelo [[SOFTWARE-2201 - Integração videowall externo (NovaStar H9)|2201]] em 13/08, que passou a carregar o replanejamento inteiro e escreveu os requisitos junto com a revisão do MOD e das atômicas. Estava comprometido da Sprint 28 (to do no ClickUp).
+status: Fechado em 17/08 no ClickUp como absorvido pelo [[SOFTWARE-2201 - Integração videowall externo (NovaStar H9)|2201]] em 13/08, que passou a carregar o replanejamento inteiro e escreveu os requisitos junto com a revisão do MOD e das atômicas. Não haverá execução separada deste card.
 sprint: "[[Attlas - Sprint 28]]"
-atualizado: 2026-08-13
+atualizado: 2026-08-17
 ---
 
 # SOFTWARE-2440 - Requisitos do videowall externo em arquivo próprio

@@ -9,8 +9,8 @@ lista_clickup: Sprint 28 (10/8/26 - 16/8/26), movido em 10/08
 titulo: "[Back] Videowall externo: especificação do módulo (NovaStar H9)"
 sprint: "[[Attlas - Sprint 28]]"
 tamanho: 3 pts
-status: comprometido na Sprint 28 (10/08 a 16/08, to do no ClickUp). Em 13/08 passou a carregar o replanejamento da regra de negócio do videowall, que deixa de projetar cena e passa a espelhar a tela da aplicação, e absorveu o 2440. Requisitos levantados em 15/07; daily de 31/07 acrescentou o RF-7 (gerenciamento global), o renome do mosaico para VMS e a confirmação do modelo H9 por foto; revisão de 10/08 fez o painel virar alvo de exibição do VMS; acesso ao equipamento (VM) segue a requisitar. Saiu do sem prazo em 10/08. **Em 14/08 passou a carregar a reconciliação com a cláusula 16.13 do contrato de Quito**: citação literal em `cameras.md`, tabela das doze obrigações, dois modos de exibição no painel, e RF-VW-14 e RF-VW-15 saindo de não atendidos.
-atualizado: 2026-08-14
+status: Fechado em 17/08 no ClickUp. PR #1592 mergeada em 14/08 (clausula 16.13 citada em `cameras.md`, backend do tomar/liberar o espelho persistido e testado, ingestao no MediaMTX, frontend no dialog compartilhado). Escrita real no equipamento H9 segue como no-op, pendente de acesso a maquina real (rastreado nos cards 2434/2514).
+atualizado: 2026-08-17
 ---
 
 # SOFTWARE-2201 - Integração videowall externo (NovaStar H9)

@@ -9,9 +9,10 @@ clickup: https://app.clickup.com/t/86ak0tenx
 titulo: "[Back] Planos de execução: despacho de comando de videowall"
 frente: Videowall externo (NovaStar H9)
 tamanho: 3 pts
-status: criado em 14/08 na lista da Sprint 28, em backlog, depois da citação da cláusula 16.13 do contrato de Quito.
-sprint: "[[Attlas - Sprint 28]]"
-atualizado: 2026-08-14
+status: code review, reescrita em 19/08. A [PR #1617](https://github.com/atmanadmin/attlas-2026/pull/1617) do igor64BR mergeou em 18/08 às 17:35 e removeu os seis arquivos em que a task se apoiava, 35 minutos antes de a [#1735](https://github.com/atmanadmin/attlas-2026/pull/1735) ser aberta. A implementação foi refeita sobre a tripla de roteamento, com o videowall entrando como dispositivo novo e serviço dono único no registry de ações, no molde do PMV. As três armadilhas que a nota listava deixaram de existir na forma nova, e a descrição do card no ClickUp foi corrigida.
+pr: "[#1760](https://github.com/atmanadmin/attlas-2026/pull/1760)"
+sprint: "[[Attlas - Sprint 29]]"
+atualizado: 2026-08-19
 ---
 
 # SOFTWARE-2518 - Despacho de comando de videowall no motor de planos

@@ -6,8 +6,8 @@ tags:
 card: SOFTWARE-2504
 frente: Infra / deploy dev
 sprint: Sprint 28 (10/8/26 - 16/8/26)
-status: Em revisão (PR aberta em 14/08)
-atualizado: 2026-08-14
+status: Fechado em 17/08 no ClickUp. PR #1607 mergeada em 14/08, ambiente dev restaurado e validado.
+atualizado: 2026-08-17
 pr: https://github.com/atmanadmin/attlas-2026/pull/1607
 ---
 

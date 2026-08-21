@@ -10,8 +10,9 @@ titulo: "[Back] Videowall externo: projetar e liberar cena pelo alvo VIDEOWALL"
 frente: Videowall externo (NovaStar H9)
 tamanho: 3 pts
 status: criado em 14/08 na lista da Sprint 28, em backlog, depois da citação da cláusula 16.13 do contrato de Quito.
-sprint: "[[Attlas - Sprint 28]]"
-atualizado: 2026-08-14
+pr: "[#1757](https://github.com/atmanadmin/attlas-2026/pull/1757)"
+sprint: "[[Attlas - Sprint 29]]"
+atualizado: 2026-08-19
 ---
 
 # SOFTWARE-2517 - Projetar e liberar cena pelo alvo VIDEOWALL

@@ -10,9 +10,9 @@ titulo: "[Back] Permissões de usuário nas rotas de câmeras: mapa das 86 rotas
 frente: Permissões de câmeras
 tamanho: a estimar
 status: to do. Movido da lista da Sprint 26 para a Sprint 27 no ClickUp em 03/08, e da Sprint 27 para a Sprint 28 em 10/08 (a 27 encerrou em 09/08 sem o card ser tocado; fica fora do foco único do videowall/VMS desta semana, mas precisa de lista ativa).
-lista_clickup: Sprint 28 (10/8/26 - 16/8/26)
-sprint: "[[Attlas - Sprint 28]]"
-atualizado: 2026-08-12
+lista_clickup: Sprint 29 (17/8/26 - 23/8/26), movido em 17/08
+sprint: "[[Attlas - Sprint 29]]"
+atualizado: 2026-08-17
 ---
 
 # Permissões nas rotas de câmeras — mapa das 86 rotas

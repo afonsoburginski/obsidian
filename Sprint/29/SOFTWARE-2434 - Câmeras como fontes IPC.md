@@ -9,9 +9,9 @@ clickup: https://app.clickup.com/t/86ajycf3k
 titulo: "[Back] Videowall externo: a tela espelhada como fonte do painel"
 frente: Videowall externo (NovaStar H9)
 tamanho: 3 pts
-status: fila da Sprint 28 (to do no ClickUp). Reescopado em 13/08 pelo replanejamento do 2201: era publicar câmeras como fontes IPC, e passou a ser publicar o caminho do espelho como fonte única. Em 14/08 ficou restrito ao modo espelho: as fontes de câmera da projeção nativa vão para um card novo.
-sprint: "[[Attlas - Sprint 28]]"
-atualizado: 2026-08-14
+status: Closed em 18/08. As duas PRs empilhadas mergearam: [#1659](https://github.com/atmanadmin/attlas-2026/pull/1659) em 17/08 (colunas mirrorSourceId/mirrorLayerId, repositório, payloads presumidos) e [#1661](https://github.com/atmanadmin/attlas-2026/pull/1661) em 18/08 (adaptador NovastarVideowallMirrorEquipmentPort real no lugar do no-op, leitura autenticada do H9 no mediamtx via usuário estático, enforcement de H.264 por poll+kick, testes de integração contra fake mediamtx + fake H9). As duas pendências sinalizadas nas PRs entraram na develop e continuam a cobrar: a migration foi escrita à mão (sem Postgres local para rodar o CLI) e a credencial do leitor não está propagada por `docker-compose.yml`/`setup-env.sh` para o container do mediamtx, só o `.env.example` documenta as envs novas.
+sprint: "[[Attlas - Sprint 29]]"
+atualizado: 2026-08-19
 ---
 
 # SOFTWARE-2434 - A tela espelhada como fonte do painel

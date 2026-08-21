@@ -10,9 +10,10 @@ clickup: https://app.clickup.com/t/86ajyp9yf
 titulo: "[Front] Videowall externo: brilho do painel"
 frente: Videowall externo (NovaStar H9)
 tamanho: 1 pt
-status: backlog na Sprint 28. Front; execução pelo dev de backend só com confirmação.
-sprint: "[[Attlas - Sprint 28]]"
-atualizado: 2026-08-13
+status: code review na [PR #1721](https://github.com/atmanadmin/attlas-2026/pull/1721), junto com a 2473, com correção pedida em 18/08. As duas views consomem o mesmo componente de controle em overlay, hoje atenuado na develop.
+pr: "[#1759](https://github.com/atmanadmin/attlas-2026/pull/1759)"
+sprint: "[[Attlas - Sprint 29]]"
+atualizado: 2026-08-19
 ---
 
 # SOFTWARE-2476 - Brilho do painel no frontend

@@ -10,9 +10,9 @@ clickup: https://app.clickup.com/t/86ajyp9j8
 titulo: "[Front] Primitivo compartilhado de menu radial"
 frente: Videowall externo (NovaStar H9)
 tamanho: 3 pts
-status: backlog na Sprint 28. Front; execução pelo dev de backend só com confirmação.
+status: Fechado em 17/08 no ClickUp (estava backlog, entregue na PR #1529 de 13/08: z-radial-menu funcional de ponta a ponta em ui-shared).
 sprint: "[[Attlas - Sprint 28]]"
-atualizado: 2026-08-10
+atualizado: 2026-08-17
 ---
 
 # SOFTWARE-2471 - Primitivo compartilhado de menu radial
