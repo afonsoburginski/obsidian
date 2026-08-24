@@ -17,7 +17,7 @@ atualizado: 2026-07-13
 
 # Ciclo de vida de sessões de streaming e telemetria de banda por câmera
 
-> Task grande, **três fases**. Origem: [[Incidente - vazamento de sessões de stream (banda das câmeras)]] — `ms-cameras` está **parado** no EC2 dev por causa disto. Mesma área da [[SOFTWARE-1923 - Bitrate histórico + TTFF]].
+> Task grande, **três fases**. Origem: [[Incidentes - Streaming (ms-cameras)#Incidente - vazamento de sessões de stream drenando a banda das câmeras|Incidente - vazamento de sessões de stream (banda das câmeras)]] — `ms-cameras` está **parado** no EC2 dev por causa disto. Mesma área da [[SOFTWARE-1923 - Bitrate histórico + TTFF]].
 >
 > - **Fase 1** — fix do ciclo de vida das sessões (reaper + lease).
 > - **Fase 2** — telemetria de banda por câmera pelo bitrate **configurado** (ONVIF/VAPIX 24/7 + real oportunístico). Passo a passo: [[Plano - Banda por câmera (bitrate configurado ONVIF + VAPIX)]].

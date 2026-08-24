@@ -31,7 +31,7 @@ Origem do escopo: backlog levantado ao validar o ambiente em dev (03/07) + repas
 
 ## Incidentes relacionados
 
-- [[Incidente - vazamento de sessões de stream (banda das câmeras)]] - origem da tarefa 1. `ms-cameras` está **parado** no EC2 dev até termos o fix.
+- [[Incidentes - Streaming (ms-cameras)#Incidente - vazamento de sessões de stream drenando a banda das câmeras|Incidente - vazamento de sessões de stream (banda das câmeras)]] - origem da tarefa 1. `ms-cameras` está **parado** no EC2 dev até termos o fix.
 
 ## A fazer no planejamento
 

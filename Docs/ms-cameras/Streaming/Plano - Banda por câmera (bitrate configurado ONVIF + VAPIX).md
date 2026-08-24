@@ -17,13 +17,13 @@ gancho: "[[SOFTWARE-1923 - Bitrate histórico + TTFF]]"
 
 # Plano - Banda por câmera: bitrate configurado (ONVIF/VAPIX) 24/7 + real oportunístico
 
-> Decisão de arquitetura (03/07) para medir banda por câmera **sem puxar vídeo 24/7**, escalável a milhares de câmeras. Substitui/ancora a coleta de bitrate hoje acoplada ao streaming. **Executado como Parte B da [[SOFTWARE-2003 - Ciclo de vida de sessões de streaming e telemetria de banda por câmera]]** (junto com o fix do ciclo de vida das sessões, Parte A). Relacionado: [[Incidente - vazamento de sessões de stream (banda das câmeras)]], [[SOFTWARE-1923 - Bitrate histórico + TTFF]], [[VMS - Banda e alertas]], [[Saúde e monitoramento]].
+> Decisão de arquitetura (03/07) para medir banda por câmera **sem puxar vídeo 24/7**, escalável a milhares de câmeras. Substitui/ancora a coleta de bitrate hoje acoplada ao streaming. **Executado como Parte B da [[SOFTWARE-2003 - Ciclo de vida de sessões de streaming e telemetria de banda por câmera]]** (junto com o fix do ciclo de vida das sessões, Parte A). Relacionado: [[Incidentes - Streaming (ms-cameras)#Incidente - vazamento de sessões de stream drenando a banda das câmeras|Incidente - vazamento de sessões de stream (banda das câmeras)]], [[SOFTWARE-1923 - Bitrate histórico + TTFF]], [[VMS - Banda e alertas]], [[Saúde e monitoramento]].
 
 ## 1. Problema
 
 - O bitrate hoje só existe **quando há stream ativo**: o sampler (`availability-window-sampler.service.ts`) lê o delta de `bytesReceived` do **mediamtx**, que só tem dados enquanto um ffmpeg relay está puxando o vídeo. Fora disso → `null` 24/7.
 - O card de banda do VMS (`bandwidth-monitoring.service.ts`) usa o `bitrateKbps` **estático** do perfil no DB (chute, pode estar defasado).
-- Puxar vídeo 24/7 só para medir **satura o uplink das câmeras** - foi exatamente o [[Incidente - vazamento de sessões de stream (banda das câmeras)|incidente]] (11 relays órfãs drenando banda).
+- Puxar vídeo 24/7 só para medir **satura o uplink das câmeras** - foi exatamente o [[Incidentes - Streaming (ms-cameras)#Incidente - vazamento de sessões de stream drenando a banda das câmeras|incidente]] (11 relays órfãs drenando banda).
 - Precisamos de uma métrica de banda **por câmera, 24/7, com custo ~zero no device**, para planejar capacidade de milhares de câmeras.
 
 ## 2. Pesquisa (VAPIX / ONVIF / RTSP)

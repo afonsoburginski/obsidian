@@ -7,7 +7,7 @@ tags:
 aliases:
   - "Streaming"
   - "00 - Streaming"
-atualizado: 2026-07-03
+atualizado: 2026-08-24
 ---
 
 # Streaming de câmeras (ms-cameras)
@@ -27,11 +27,12 @@ e o diagnóstico do travamento que só acontece no WebRTC.
 - [[Streaming - Codecs e fallbacks]] - estratégia de codec no ffmpeg (copy, hvc1, transcode) mais as 3 camadas de fallback, com exemplos ponta a ponta.
 - [[Streaming - Fluxos e SLA]] - use cases, ciclo de vida da sessão e SLA.
 - [[Streaming - Diagnóstico de travamento no WebRTC]] - causa raiz e como medir (PR 566).
+- [[Streaming - Diagnóstico de oscilação WHEP-HLS no videowall]] - player preso reconectando WebRTC sem back-off, reproduzido ao vivo no EC2 dev (24/08).
 
 Registro histórico (não é referência do comportamento atual):
 
 - [[Pesquisa - codec, protocolo e latência]] - as duas investigações de julho/2026 que definiram H264 baseline, H265 oportunístico e ABR por substream.
-- [[Incidente - vazamento de sessões de stream (banda das câmeras)]] - sessões que não fechavam e drenavam banda das câmeras.
+- [[Incidentes - Streaming (ms-cameras)]] - registro consolidado dos incidentes de streaming, separado por responsabilidade: vazamento de sessão (ms-cameras, 03/07) e saturação de banda de saída da EC2 sob carga concorrente de visualização (infra + ms-cameras, 24/08, confirmado via dados de healthcheck no banco).
 - [[Plano - Banda por câmera (bitrate configurado ONVIF + VAPIX)]] - a decisão que virou o bitrate device-truth.
 
 Visual: [[04 - MOD-004 hls-streaming-pipeline.excalidraw|Diagrama - pipeline (Excalidraw)]] · [[09 - Streaming - estratégia de codec.excalidraw|estratégia de codec]].
