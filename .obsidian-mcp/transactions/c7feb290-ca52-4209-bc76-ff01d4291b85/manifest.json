@@ -1,0 +1,21 @@
+{
+  "id": "c7feb290-ca52-4209-bc76-ff01d4291b85",
+  "state": "committed",
+  "createdAt": "2026-08-24T12:41:02.990Z",
+  "snapshots": [
+    {
+      "path": "Docs/ms-cameras/index.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "66bf9fc88473233d2aef661902bedbfe4217cc1feb683499c76c7f022a9e3919",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33204,
+      "etag": "3943a8b40ccd783cdd170e62845cebb5375cee7eb10c4c54748456de0dd677cb",
+      "snapshot": "0.bin",
+      "committedEtag": "66bf9fc88473233d2aef661902bedbfe4217cc1feb683499c76c7f022a9e3919"
+    }
+  ],
+  "completedAt": "2026-08-24T12:41:02.995Z"
+}

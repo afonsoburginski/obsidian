@@ -1,0 +1,21 @@
+{
+  "id": "45659c8e-960d-4dbe-b661-f450479559c6",
+  "state": "committed",
+  "createdAt": "2026-08-24T12:23:36.198Z",
+  "snapshots": [
+    {
+      "path": "Docs/ms-cameras/Saúde e monitoramento/index.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "1950cf1dafd39de1f40de47284ed2dda2447bca3981430957bbde5f411ab6833",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33204,
+      "etag": "10d16f2597015c2b97bf075f685cbbf3dafca54ddad41baa3a742e04ab80a109",
+      "snapshot": "0.bin",
+      "committedEtag": "1950cf1dafd39de1f40de47284ed2dda2447bca3981430957bbde5f411ab6833"
+    }
+  ],
+  "completedAt": "2026-08-24T12:23:36.211Z"
+}

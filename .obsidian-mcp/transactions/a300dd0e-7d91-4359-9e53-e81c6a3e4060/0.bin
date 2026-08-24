@@ -1,0 +1,29 @@
+---
+tags:
+  - report
+date: 2026-08-24
+---
+```
+Report Diário - 24/08/2026
+
+Revisei tres pull requests da mesma sequencia de trabalho no monitoramento de prioridade seletiva, todas no frontend.
+
+Revisões:
+Na primeira PR, cobrindo glifos, tokens de cor e chaves de traducao dos marcadores, nao encontrei nada a corrigir. Na segunda, sobre a geometria de tela e o estado ao vivo dos elementos do mapa, apontei que o enum novo de tipo de concessao usa valores em minusculo, fora do padrao dos demais enums do modulo, sem necessidade tecnica para isso. Na terceira, sobre a fabrica de marcadores e a busca por nome, apontei que uma comparacao voltou a usar o texto literal da concessao em vez do enum criado para evitar justamente esse tipo de comparacao, alem de uma linha de import acima do limite de caracteres do projeto. Nenhum dos apontamentos impede o merge.
+
+Revisei mais tres pull requests do modulo de planos de execucao, tambem no frontend. Na PR das duas primitivas de campo compartilhadas, apontei dois comentarios que ficaram desatualizados depois da propria mudanca no codigo. Na PR que restringe a lista de alvos aos dispositivos capazes de executar a acao, nao encontrei nada a corrigir. Na terceira, sobre usabilidade da tela de parametrizacao, apontei um cast de tipo enganoso num campo que passou a aceitar tanto input quanto textarea. Nenhum dos apontamentos impede o merge.
+
+PRs em andamento:
+(nenhuma)
+
+PRs mergeadas:
+(nenhuma)
+
+PRs revisadas:
+- 1914 - Glifos, cores e palavras dos marcadores de prioridade (aprovada)
+- 1915 - Legibilidade em pixels de tela e estado ao vivo do veiculo (aprovada)
+- 1916 - Fabrica de marcadores e busca do mapa de prioridade (aprovada)
+- 1899 - Conserta os dois campos compartilhados que a parametrizacao expos (aprovada)
+- 1900 - Lista so o dispositivo capaz de executar a acao (aprovada)
+- 1901 - Acerta tres campos da parametrizacao que liam como defeito (aprovada)
+```

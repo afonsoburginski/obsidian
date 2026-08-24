@@ -6,7 +6,7 @@ tags:
   - streaming
 aliases:
   - "Streaming - Estratégias de entrega (Strategy)"
-atualizado: 2026-07-03
+atualizado: 2026-08-24
 ---
 
 # Streaming - Estratégias de entrega
@@ -18,6 +18,11 @@ o **Strategy** de entrega HLS (headers de cache/CDN sem ramificar o controller) 
 **estratégia de concorrência de sessão** (uma sessão viva reaproveitada por N viewers, sem
 guerra de publishers). Fonte: `apps/ms-cameras/src/streaming/strategies/`, `.../pipes/`,
 `.../streaming.controller.ts`, `.../services/stream-session-registry.service.ts`.
+
+> [!info] Codec por request (INT-008)
+> A chave de sessão descrita abaixo (`cameraId:quality`) é hoje `cameraId:quality:codec` - desde
+> INT-008 o codec é negociado por request, não fixo pelo perfil. Detalhe em
+> [[Streaming - Codecs e fallbacks]].
 
 ## Strategy de entrega HLS
 
@@ -72,7 +77,7 @@ divergirem.
 
 ## Estratégia de concorrência de sessão
 
-O objetivo é: **uma câmera/qualidade = um processo ffmpeg = uma path no mediamtx**, servida
+O objetivo é: **uma câmera/qualidade/codec = um processo ffmpeg = uma path no mediamtx**, servida
 para N operadores. Dois publishers na mesma path se expulsam em loop ("closing existing
 publisher" - a "publisher war"). Três mecanismos garantem isso.
 
@@ -116,14 +121,17 @@ eventos em [[Streaming - Fluxos e SLA]].
 ## Cliente mediamtx (best-effort)
 
 `services/mediamtx.client.ts` (`MediamtxClient`) é o ponto único de leitura da API de controle
-do mediamtx (`MEDIAMTX_API_URL`) para diagnóstico e telemetria futura (PROJ-006):
+do mediamtx (`MEDIAMTX_API_URL`):
 
 - `getJson<T>(path)` com `AbortSignal.timeout(MEDIAMTX_DIAG_TIMEOUT_MS)` (default 2000ms).
 - Retorna `null` em **qualquer** falha (timeout, não-2xx, exceção) → um chamador nunca trava
   nem falha o próprio request quando o mediamtx está lento/indisponível. `fetch` não tem
   timeout default (B13), então o `AbortSignal` é a única proteção contra socket travado.
 
-Consumido pelo `stream-diagnostics.service.ts`. A poll de readiness do ffmpeg
-(`waitForStreamReady`) usa fetch próprio com deadline separado - ver [[Streaming - Fluxos e SLA]].
+Consumido pelo `stream-diagnostics.service.ts` **e**, desde 03/08, pelo `TelemetryPathReconciler`
+e pelo `AvailabilityWindowSampler` para a telemetria de bitrate 24/7 (PROJ-006, já entregue - não
+é mais "telemetria futura") - ver [[Bitrate medido 24-7 - telemetria always-on]]. A poll de
+readiness do ffmpeg (`waitForStreamReady`) usa fetch próprio com deadline separado - ver
+[[Streaming - Fluxos e SLA]].
 
 Visual: [[04 - MOD-004 hls-streaming-pipeline.excalidraw|diagrama]].

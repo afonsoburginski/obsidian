@@ -6,7 +6,7 @@ tags:
   - realtime
 aliases:
   - "Status em tempo real - Arquitetura e estratégias"
-atualizado: 2026-07-03
+atualizado: 2026-08-24
 servico: ms-cameras
 fonte: apps/ms-cameras/src/cameras/realtime
 ---
@@ -51,20 +51,55 @@ Só o de **status** refaz o payload completo e persiste no cache. PTZ e event-lo
 
 ## Distinção do gateway de streaming
 
-O `streaming/streaming.gateway.ts` (namespace `/cameras`) é **outro** gateway:
+> [!success] Corrigido em 24/08: o gateway de streaming ganhou JWT, deixou de ser público
+> Esta seção dizia "público, sem `WsAuthGuard`" - conferido direto em
+> `apps/ms-cameras/src/streaming/streaming.gateway.ts` em 24/08, isso **não é mais verdade**. O gateway
+> mudou de namespace (`/cameras` → `cameras-stream`, path dedicado `/api/cameras/stream/realtime`,
+> mesmo motivo do `cameras-status`: dar ao Kong uma rota própria) e as duas mensagens do cliente,
+> `camera.join`/`camera.leave`, agora levam `@UseGuards(WsAuthGuard)` - mesmo guard, mesmo padrão do
+> `cameras-status` acima. Não há data no código para quando isso mudou; não confirmado se há PR/spec
+> própria para o endurecimento (`INT-005-kong-jwt-authentication.md` no repo também ficou desatualizado
+> nesse ponto - corrigido junto nesta revisão).
 
-- **Público** (sem `WsAuthGuard`) - streaming é servido como `@Public()`.
+O `streaming/streaming.gateway.ts` (namespace `cameras-stream`) é **outro** gateway:
+
+- **JWT em `camera.join`/`camera.leave`** (`WsAuthGuard`, igual ao `cameras-status`) - `handleConnection`
+  em si não exige token, só as duas mensagens de sala.
 - Fonte por `@OnEvent` do **EventEmitter** (`CAMERA_STATUS_CHANGED_EVENT`, `HLS_STREAM_EVENT`), não pelo **EventBus** do CQRS.
 - Emite ciclo de vida de mídia: `status.changed`, `stream.started/stopped/reconnecting/error`.
 
-Ou seja: mesmo modelo de sala (`camera:<id>`), propósitos e canais diferentes. Detalhe em [[Streaming]].
+Ou seja: mesmo modelo de sala (`camera:<id>`) e mesmo guard, propósitos e canais diferentes. Detalhe em [[Streaming]].
 
-## Limitação de escala (pré-requisito para escalar)
+## Escala horizontal - adapter Redis entregue (CROSS-043)
 
-> [!warning] Broadcast não cruza réplicas
-> Cada réplica do `ms-cameras` tem seu próprio adapter Socket.IO **em memória** e só conhece os sockets conectados **a ela**. Um `server.to('camera:<id>').emit(...)` roda em **um pod só** e alcança só os sockets daquele pod. Se o cliente está ligado na réplica A e o evento nasce na réplica B, **o cliente não recebe**. Enquanto há uma réplica, não aparece; quando o KEDA escala, aparece.
+> [!success] Estado em 24/08: o que a seção abaixo descrevia como bloqueante foi entregue em 31/07
+> `SOFTWARE-2009` (PR [#1175](https://github.com/atmanadmin/attlas-2026/pull/1175), SOFTWARE-2356) entregou
+> exatamente a peça que faltava aqui — este parágrafo ficou três semanas contradizendo aquele card sem
+> ninguém reconciliar. Confirmado no código hoje: `apps/ms-cameras/src/main.ts` monta um
+> `RedisIoAdapter` (`libs/core-messaging/src/socketio/redis-io.adapter.ts`, `@socket.io/redis-adapter` +
+> `ioredis`) e chama `connectToRedis()` **antes** de `useWebSocketAdapter(wsAdapter)` — o Redis do
+> `ms-cameras` já está provisionado (não é mais "só config de cache"), e o mesmo adapter é reusado por
+> `ms-controllers`/`ms-execution-plans`. Se `REDIS_HOST` não estiver setado, degrada para adapter em
+> memória (single-replica, mesmo comportamento de antes); se estiver setado mas o Redis estiver
+> inalcançável, loga **ERROR** (não WARN) e segue sem broadcast cross-réplica — condição que precisa
+> alertar, não passar em silêncio.
 
-Para escalar com segurança é preciso o **adapter Redis do Socket.IO** (`@socket.io/redis-adapter` via `IoAdapter` custom no `main.ts`) - e antes disso **provisionar o Redis do `ms-cameras`**, que hoje existe só como config de cache. Detalhe, teste no cluster e plano em `kubernetes/docs/06-PROBLEMAS-IDENTIFICADOS.md` (Problema 2). Impacta RNF-CAM-01 (ver [[Status em tempo real - Requisitos e SLA]]).
+Com o adapter ligado, `server.to('camera:<id>').emit(...)` alcança sockets em **qualquer** réplica, não só
+na que originou o evento — o problema de "cliente na réplica A, evento nasce na réplica B" que a seção
+original descrevia está coberto para este gateway (`cameras-status`) e para os demais gateways do
+`ms-cameras`.
+
+> [!warning] Exceção deliberada: `camera:health:live` fica local-only
+> O push de bitrate/viewers ao vivo (`PROJ-016`, evento `camera:health:live`) usa
+> `server.local.to(room)`/`emitToCameraLocal` **de propósito**, não cruza réplicas mesmo com o adapter
+> Redis ligado. A contagem de assinantes e os baselines de contador de bytes são por processo; emitir
+> cluster-wide faria N réplicas entregarem N leituras divergentes do mesmo tick. Não é a mesma limitação
+> da seção anterior — é uma escolha de design para esse canal específico, e só para ele.
+
+**Gap documental encontrado junto**: `CROSS-043` é citado em três atômicas do repo
+(`PROJ-012`, `PROJ-016`, `PROJ-017`) como a spec do adapter, mas não existe arquivo
+`CROSS-043-*.md` em `docs/specs/cross-service/` — é uma decisão sem spec formal própria. Vale o
+registro; não é para criar a spec a partir desta nota.
 
 ## Decisões
 
@@ -72,4 +107,6 @@ Para escalar com segurança é preciso o **adapter Redis do Socket.IO** (`@socke
 - **Cache write-before-broadcast.** Grava Redis antes de emitir, para que um assinante recém-chegado leia o mesmo estado que os já conectados acabaram de receber.
 - **PTZ e event-log não tocam Redis.** São efêmeros; a posição PTZ persiste no `operationalSnapshot` e o log tem seu próprio armazenamento - cachear seria custo sem ganho.
 - **Cache best-effort com DB como verdade.** Redis fora nunca derruba a leitura de status; degrada para query no banco.
-- **Autorização por mensagem, não no handshake.** JWT é validado no `subscribe`/`unsubscribe`, mantendo o handshake barato e o token fora da URL.
+- **Autorização por mensagem, não no handshake.** JWT é validado no `subscribe`/`unsubscribe` (e, hoje, também no `camera.join`/`camera.leave` do gateway de streaming), mantendo o handshake barato e o token fora da URL.
+- **Adapter Redis do Socket.IO entregue via CROSS-043 (31/07).** Ver seção "Escala horizontal" acima; a
+  exceção `camera:health:live` local-only é intencional, não uma lacuna.

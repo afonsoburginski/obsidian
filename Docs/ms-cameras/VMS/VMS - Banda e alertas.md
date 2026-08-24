@@ -7,7 +7,7 @@ tags:
   - vms
 aliases:
   - "Video Wall - Banda e alertas"
-atualizado: 2026-07-31
+atualizado: 2026-08-24
 ---
 
 # VMS - Banda e alertas
@@ -72,13 +72,38 @@ mecanismos:
 Ou seja: o snapshot de banda do VMS **não** consome `bytesReceived` do mediamtx. Banda medida em tempo
 real segue sendo evolução pendente (plugar o sampler na agregação).
 
+> [!success] Confirmado em 24/08 - ressalva acima continua correta, mesmo depois da telemetria always-on de 03/08
+> A entrega de [[Bitrate medido 24-7 - telemetria always-on]] (03/08, PR #1318) criou uma série medida
+> por device físico via `TelemetryPathReconciler`/`CameraBitrateSample`, mas essa série **não** foi
+> plugada neste snapshot - `BandwidthMonitoringService.buildSnapshot()` continua somando só
+> `CameraStreamProfile.bitrateKbps` (device-truth provisionado, PROJ-008), sem tocar
+> `CameraBitrateSample`/`avgBitrateMbps`. As duas entregas ficaram desconectadas de propósito ou por
+> falta de priorização - não há indício de decisão registrada dizendo qual.
+>
+> Achado adicional na conferência: **o frontend do módulo videowall ainda não consome este endpoint**.
+> Não há nenhuma referência a `bandwidth`/`totalKbps`/`alertLevel`/`usageRatio` em
+> `apps/web-attlas/src/app/modules/videowall/**` hoje - o chip "Banda: X%" que a UC-019 descreve como
+> consumidor não está implementado na tela. O `streamQuality` que existe no `camera-stream-player`
+> compartilhado é o rótulo de qualidade do HLS.js (ex. "720p30"), não o bitrate do MOD-008.
+
 ## Fronteira com o dashboard de câmeras
 
 O dashboard tem os seus próprios endpoints de banda (`/api/dashboard/bandwidth-consumption`,
 `bandwidth-by-area`, `bandwidth-comparison`, série histórica em UC-038, `BandwidthSeriesService`). Eles
 **não** são a sessão do VMS: o único ponto compartilhado é a regra de seleção de perfil
 (`pickPreferredProfile`), reusada de propósito para o snapshot ao vivo e a série histórica não
-divergirem. Ver as notas do dashboard de câmeras.
+divergirem.
+
+> [!info] O dashboard de câmeras já mistura medido + provisionado
+> `bandwidth-series.repository.ts` lê tanto os perfis provisionados (`findActiveProfiles` →
+> `CameraStreamProfile.bitrateKbps`) quanto as janelas/rollups medidos
+> (`CameraAvailabilityWindow`/`CameraAvailabilityDailyRollup.avgBitrateMbps`, PROJ-005/006):
+> `bandwidth-series.aggregator.ts` soma o provisionado numa linha "disponível" e processa o medido numa
+> linha "consumido". É a prova de que plugar a série medida no snapshot do VMS é viável - só não foi
+> feito lá. Consumidor no front: `apps/web-attlas/src/app/modules/cameras-dashboard/`, não o videowall.
+
+Ver as notas do dashboard de câmeras (lote próprio, ainda não escrito no vault - ver
+[[Plano - atualização da documentação do vault]]).
 
 ## Configuração (`bandwidth.config.ts`)
 
@@ -105,10 +130,10 @@ de `(0,1)` vira `0.8`.
 
 ## RF-VW-06 / RNF-CAM-12: estado
 
-- **Total da sessão + nível de alerta**: backend (este endpoint).
+- **Total da sessão + nível de alerta**: backend (este endpoint), sem consumidor no front do videowall ainda (ver callout acima).
 - **Consumo por câmera**: o snapshot não traz breakdown; o front usa o status por câmera (`streamQuality.bitrate`, também provisionado) no detalhe.
 - **Alerta proativo**: o backend classifica um snapshot pontual (pull); a proatividade (polling, aviso ao aproximar do limite) é do **frontend**. Não há push nem evento de banda no backend.
 
 ## Relacionados
 
-[[VMS]] · [[VMS - Arquitetura e estratégias]] · [[VMS - Fluxos]] · [[Plano - Banda por câmera (bitrate configurado ONVIF + VAPIX)]] · [[Streaming]] · [[Saúde e monitoramento]]
+[[VMS]] · [[VMS - Arquitetura e estratégias]] · [[VMS - Fluxos]] · [[Plano - Banda por câmera (bitrate configurado ONVIF + VAPIX)]] · [[Bitrate medido 24-7 - telemetria always-on]] · [[Streaming]] · [[Saúde e monitoramento]]

@@ -4,7 +4,7 @@ tags:
   - ms-cameras
   - cameras
   - crud
-atualizado: 2026-07-03
+atualizado: 2026-08-24
 servico: ms-cameras
 fonte: apps/ms-cameras/src/cameras
 ---
@@ -12,6 +12,10 @@ fonte: apps/ms-cameras/src/cameras
 # Cameras - Arquitetura e estratégias
 
 > Parte do domínio [[Cameras]] · [[ms-cameras]]. Ver também [[Cameras - Fluxos]] e [[Cameras - Requisitos e SLA]]. Diagrama: [[01 - MOD-001 cameras-crud.excalidraw|diagrama]].
+>
+> [!info] Nota de 24/08: só a seção "Topologia de produção" abaixo foi conferida contra o código nesta
+> passada (parte do lote de streaming/codec/VMS/câmeras). O resto da nota segue datado de 03/07 - o
+> Lote 6 (Cameras) completo do [[Plano - atualização da documentação do vault]] continua em aberto.
 
 Como o CRUD e o ciclo de vida da câmera estão construídos, e as decisões por trás.
 
@@ -52,6 +56,29 @@ Projeção `Command → CameraCreateInput` centralizada em `CameraMapper.toCreat
 O escopo de tenant vem **sempre** do header `System-Id`, nunca do body/query. `@SystemId()` é fail-closed (400 se ausente/UUID inválido). O controller sobrescreve `query.systemId`/`query.bearer` **após** a validação, para que qualquer `?systemId=` que o cliente mandar seja descartado. Aplicado em create (todo o batch sob o tenant), list, get-by-id, validate e batch-get.
 
 **Caveat de segurança (documentado no controller)**: o header garante presença/validade do UUID, mas **não autoriza pertencimento** ao sistema - é client-controlled. A autorização multidimensional é do módulo Permissões (RF-INT-06); esta camada só aplica o escopo de leitura/escrita.
+
+### Topologia de produção: a mesma câmera física, uma linha `Camera` por tenant
+
+> [!success] Confirmado no código em 24/08
+> Em produção (EC2), a mesma câmera física é cadastrada **uma vez por tenant** - hoje **6
+> sistemas-tenant**. O comentário no código é literal:
+> `apps/ms-cameras/src/health/utils/device-stream-group.util.ts` - *"the same camera is registered
+> once per tenant (6 systems today)"*. Efeito prático: ~12 devices físicos reais hoje geram até 72
+> linhas `Camera` (6 tenants × device), e qualquer mecanismo que trate device físico (healthcheck,
+> telemetria, analytics) precisa dedupar por `streamUrl`/host, não por linha - ver
+> `groupByDeviceStream()` e [[Saúde e monitoramento - Arquitetura e estratégias]]. A PTZ Atman
+> (`10.1.1.79`, AXIS Q6135-LE) está `OPERATIONAL` nos 6 sistemas simultaneamente.
+>
+> Mesma topologia sustenta o fan-out 1:N de analytics por `deviceAnalyticId`
+> (`apps/ms-cameras/docs/atomic/PROJ-013-analytics-multi-camera-fanout.md`,
+> `MOD-014-analytics-pipeline-resilience.md`) e a telemetria de bitrate por device físico
+> (`PROJ-006-bitrate-ttff-telemetry.md`, BR-TELE-006/007).
+>
+> **Não confundir com o seed de dev** (`apps/ms-cameras/src/database/seed.ts`): o seed local usa **um
+> único** `SYSTEM_ID` para todas as câmeras de teste (PTZ Atman `10.1.1.79`, demo `10.1.1.78`,
+> Hikvision real `192.168.210.80` via ISAPI) - é sandbox de desenvolvimento, não reflete a replicação
+> por tenant de produção. A câmera do analítico embarcado (`10.11.20.101`) é a única com o app ATMAN
+> Traffic Edge de fato instalado (ver [[Integração com dispositivo]]).
 
 ## Máquina de estados do ciclo de vida
 

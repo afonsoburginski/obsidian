@@ -1,0 +1,21 @@
+{
+  "id": "b8c86b12-ebad-4c6c-8af8-37da55db8c18",
+  "state": "committed",
+  "createdAt": "2026-08-24T12:21:39.169Z",
+  "snapshots": [
+    {
+      "path": "Docs/ms-cameras/Streaming/Streaming - Codecs e fallbacks.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "990d692fd1848e1bdb150d5c8ebb57f8e63741fe79c3f4535eebe0e956a61124",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33204,
+      "etag": "d54c74dd992031efff6c8db2e29bdc30c9f7a61caa3b095290d94ad35a71d14d",
+      "snapshot": "0.bin",
+      "committedEtag": "990d692fd1848e1bdb150d5c8ebb57f8e63741fe79c3f4535eebe0e956a61124"
+    }
+  ],
+  "completedAt": "2026-08-24T12:21:39.178Z"
+}

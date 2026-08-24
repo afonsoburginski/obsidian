@@ -1,0 +1,21 @@
+{
+  "id": "9eb3152d-da7e-44b1-a290-b8803a785655",
+  "state": "committed",
+  "createdAt": "2026-08-24T12:39:18.959Z",
+  "snapshots": [
+    {
+      "path": "Docs/Plano - atualização da documentação do vault.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "21d253fe4dedf5ce9978aa468d911f40269b9fb18f133f9c5c1e0ace518e9db9",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33204,
+      "etag": "4b9b3967397aaf3d766603f6714845c8e16bcfdedac70f5a2b2a06d6b97a57f2",
+      "snapshot": "0.bin",
+      "committedEtag": "21d253fe4dedf5ce9978aa468d911f40269b9fb18f133f9c5c1e0ace518e9db9"
+    }
+  ],
+  "completedAt": "2026-08-24T12:39:18.969Z"
+}

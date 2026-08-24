@@ -1,0 +1,21 @@
+{
+  "id": "3959106f-77ec-437c-ad46-46c5392034db",
+  "state": "committed",
+  "createdAt": "2026-08-24T12:15:27.530Z",
+  "snapshots": [
+    {
+      "path": "Docs/ms-cameras/VMS/VMS - Banda e alertas.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "be9f552ce71f93627b596912c8c3d3b8f2729d1dc55d51cb63bbd02b51a318bb",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33204,
+      "etag": "10e425fce596beb4c753a3c7492794daec4b1268c91cb8ae2d0e4971a8d8c9d7",
+      "snapshot": "0.bin",
+      "committedEtag": "be9f552ce71f93627b596912c8c3d3b8f2729d1dc55d51cb63bbd02b51a318bb"
+    }
+  ],
+  "completedAt": "2026-08-24T12:15:27.537Z"
+}

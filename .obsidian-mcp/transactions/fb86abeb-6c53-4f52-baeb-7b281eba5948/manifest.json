@@ -1,0 +1,21 @@
+{
+  "id": "fb86abeb-6c53-4f52-baeb-7b281eba5948",
+  "state": "committed",
+  "createdAt": "2026-08-24T12:40:19.413Z",
+  "snapshots": [
+    {
+      "path": "Docs/ms-cameras/Status em tempo real/Status em tempo real - Requisitos e SLA.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "cb1b75d12c7fc9e5a3e4f11207f6a9d927caedd42c811c2d9474a7a060cb2593",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33204,
+      "etag": "d65492cf309eb4b8c798d0fc6ddf1fd91ff9dfa9ec50526d25231054903ac4f3",
+      "snapshot": "0.bin",
+      "committedEtag": "cb1b75d12c7fc9e5a3e4f11207f6a9d927caedd42c811c2d9474a7a060cb2593"
+    }
+  ],
+  "completedAt": "2026-08-24T12:40:19.418Z"
+}

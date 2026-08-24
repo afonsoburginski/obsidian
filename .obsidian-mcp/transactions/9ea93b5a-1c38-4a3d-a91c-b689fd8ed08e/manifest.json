@@ -1,0 +1,21 @@
+{
+  "id": "9ea93b5a-1c38-4a3d-a91c-b689fd8ed08e",
+  "state": "committed",
+  "createdAt": "2026-08-24T12:18:41.862Z",
+  "snapshots": [
+    {
+      "path": "Docs/ms-cameras/VMS/index.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "8d687c6d1bae3a7cf004711537747fab7479552ec9f5ac47d9b7f4db9cc76e7a",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33204,
+      "etag": "50486085cd6c67dbb3a5dde61e3a8d03f814abbe178ea4abfc1ca30aa1cb88ec",
+      "snapshot": "0.bin",
+      "committedEtag": "8d687c6d1bae3a7cf004711537747fab7479552ec9f5ac47d9b7f4db9cc76e7a"
+    }
+  ],
+  "completedAt": "2026-08-24T12:18:41.869Z"
+}

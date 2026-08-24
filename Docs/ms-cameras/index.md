@@ -6,7 +6,7 @@ tags:
 aliases:
   - "ms-cameras"
   - "ms-cameras - visão geral"
-atualizado: 2026-07-03
+atualizado: 2026-08-24
 servico: ms-cameras
 fonte: apps/ms-cameras
 ---
@@ -19,7 +19,7 @@ Microsserviço NestJS **híbrido** (REST + consumidor Kafka + Socket.IO) do mono
 > Centraliza o ciclo de vida das câmeras IP da rede de trânsito: cadastro técnico, monitoramento de conectividade/saúde, controle PTZ, streaming ao vivo + VMS (mosaico, ex Video Wall), e log de eventos/incidentes. A câmera é um **dispositivo de captura e transmissão, não de armazenamento** - gravação é do VMS externo; a analítica de vídeo é encaminhada ao módulo de Analytics. Integra o hardware **diretamente** (ONVIF obrigatório, RTSP, VAPIX/Axis) - não há connector dedicado: o serviço é ao mesmo tempo serviço de negócio e ponto de integração de hardware.
 > Fontes de verdade no repo: `apps/ms-cameras/docs/SPEC.md` (spec técnica) e `docs/modules/cameras.md` (contexto de negócio, RF-*/RNF-*).
 
-Bootstrap: `apps/ms-cameras/src/main.ts` (prefixo global `/api`, `ValidationPipe` + `ClassSerializerInterceptor` + `AllExceptionsFilter`; microserviço Kafka só conecta com `KAFKA_BROKERS`). Wiring: `apps/ms-cameras/src/app.module.ts`.
+Bootstrap: `apps/ms-cameras/src/main.ts` (prefixo global `/api`, `ValidationPipe` + `ClassSerializerInterceptor` + `AllExceptionsFilter`; adapter Redis do Socket.IO ligado antes do WS subir (CROSS-043); microserviço Kafka só conecta com `KAFKA_BROKERS`). Wiring: `apps/ms-cameras/src/app.module.ts`.
 
 ## Mapa de domínios
 
@@ -43,12 +43,14 @@ Canvases por domínio em [[#Diagramas]].
 
 ## Superfície HTTP (resumo)
 
-Prefixo `/api`. JWT no Kong, exceto `@Public()` (streaming + thumbnail).
+Prefixo `/api`. JWT no Kong, exceto `@Public()` (streaming/hls/thumbnail - ver [[Streaming]]); o gateway
+WebSocket de streaming (`cameras-stream`) também passou a exigir JWT em `camera.join`/`camera.leave`
+desde a correção de 24/08 - achado no código, sem PR/data identificada.
 
-- **Cameras** (`cameras`): `POST /cameras` (batch), `GET /cameras` (filtros topologia/tenant), `GET /cameras/video-wall`, `GET /cameras/incidents[/:id]`, `GET /cameras/bulk-template`, `GET /cameras/manufacturers[/:id/models]`, `GET /cameras/:id/thumbnail` (público), `GET/PATCH/DELETE /cameras/:id`, `GET /cameras/:id/status`, `GET /cameras/:id/events[/:eventId]`, `PATCH /cameras/:id/{safe-mode,state}`, `POST /cameras/:id/replace`, `POST /cameras/{validate-credentials,validate,batch-get}`, PTZ (`/ptz`, `/ptz/absolute`, `/ptz/continuous`, `/ptz/stop`), presets (`/presets…`), automações (`/automations…`).
+- **Cameras** (`cameras`): `POST /cameras` (batch), `GET /cameras` (filtros topologia/tenant), `GET /cameras/vms`, `GET /cameras/incidents[/:id]`, `GET /cameras/bulk-template`, `GET /cameras/manufacturers[/:id/models]`, `GET /cameras/:id/thumbnail` (público), `GET/PATCH/DELETE /cameras/:id`, `GET /cameras/:id/status`, `GET /cameras/:id/events[/:eventId]`, `PATCH /cameras/:id/{safe-mode,state}`, `POST /cameras/:id/replace`, `POST /cameras/{validate-credentials,validate,batch-get}`, PTZ (`/ptz`, `/ptz/absolute`, `/ptz/continuous`, `/ptz/stop`), presets (`/presets…`), automações (`/automations…`).
 - **Health**: `GET /cameras/health[/:cameraId]` (snapshot), `GET /cameras/:id/health?period=7d|30d|90d` (métricas, UC-026).
 - **Streaming** (público): `GET/DELETE /cameras/:id/hls`, `GET /cameras/:id/hls/:quality/index.m3u8` + `/:segment`, `GET /cameras/:id/stream-diagnostics` (UC-027).
-- **VMS** (`video-wall`, rota vai virar `vms`): `GET /video-wall/layouts`, `GET/POST /video-wall/scenes`, `GET/PATCH/DELETE /video-wall/scenes/:id`, `POST /video-wall/scenes/:id/{activate,deactivate}`.
+- **VMS** (`vms` - o path legado `video-wall` foi removido em `c9766ab960`, 18/08, confirmado em 24/08): `GET /vms/layouts`, `GET/POST /vms/scenes`, `GET/PATCH/DELETE /vms/scenes/:id`, `POST /vms/scenes/:id/{activate,deactivate}`.
 - **Dashboard**: `GET /dashboard/bandwidth?cameraIds=`.
 
 ## CQRS
@@ -76,7 +78,7 @@ Constantes: `libs/contracts/src/lib/camera/cameras-topics.constant.ts` (+ `alarm
 Schema multi-arquivo em `src/database/schema/`; client gerado em `database/generated/prisma`.
 
 - **Núcleo:** `Camera` (hub), `CameraCredential` (1:1 ONVIF/VAPIX), `CameraManufacturer` (catálogo, `code` único), `CameraStreamProfile` (perfil por papel PRIMARY/SECONDARY/TERTIARY).
-- **Saúde:** `CameraOperationalSnapshot` (1:1 snapshot atual), `CameraHeartbeatHistory` (série de pings), `CameraAvailabilityWindow` (janela 5 min, único `(cameraId, windowStart)`), `CameraAvailabilityDailyRollup` (dia, único `(cameraId, date)`, horizonte 90d), `CameraTtffSample` (abertura de stream).
+- **Saúde:** `CameraOperationalSnapshot` (1:1 snapshot atual), `CameraHeartbeatHistory` (série de pings), `CameraAvailabilityWindow` (janela 5 min, único `(cameraId, windowStart)`), `CameraAvailabilityDailyRollup` (dia, único `(cameraId, date)`, horizonte 90d), `CameraTtffSample` (abertura de stream), `CameraBitrateSample` (bitrate medido 24/7 por device físico, PROJ-006).
 - **Eventos:** `CameraEventLog`, `CameraIncident`, `CameraIncidentEvent` (único `(incidentId, eventLogId)` = idempotência).
 - **PTZ:** `CameraPtzPreset`, `CameraPtzTour`, `CameraPtzTourStep`.
 - **VMS (ex Video Wall):** `VideoWallLayout`, `VideoWallScene`, `VideoWallSceneCell`.
@@ -87,7 +89,7 @@ Schema multi-arquivo em `src/database/schema/`; client gerado em `database/gener
 - **ms-organization** (HTTP) - `cameras/clients/permissions.client.ts`: `assertAllowed('cameras:ptz')` antes de todo PTZ.
 - **Hardware** - ONVIF (`hardware/drivers/onvif/`), VAPIX/Axis (`cameras/utils/vapix-*`, `health/utils/digest-auth`), estratégias RTSP/ONVIF (`hardware/communication/`).
 - **mediamtx** - servidor de mídia (`streaming/services/mediamtx.client.ts`, `ffmpeg-session.service.ts`).
-- **Redis** - cache de status (`redis/redis.module.ts`, `camera:status:<id>`).
+- **Redis** - cache de status (`redis/redis.module.ts`, `camera:status:<id>`) + adapter do Socket.IO para escala horizontal (CROSS-043, `main.ts`).
 
 ## Diagramas
 

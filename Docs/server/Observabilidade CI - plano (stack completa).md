@@ -3,18 +3,21 @@ tags:
   - doc
   - ci-cd
   - infra
-atualizado: 2026-07-24
+atualizado: 2026-08-24
 ---
 
 # Observabilidade do CI - plano da stack completa
 
-**Status: planejado, não implementado.** Decisão de 24/07/2026: primeiro resolver a higiene dos runners (hooks nativos pós-job, PR #1040), observabilidade fica para uma PR futura. Este documento guarda o desenho completo para quando for a hora.
+**Status: planejado, não implementado (confirmado em 24/08 - sem `deploy/ci-observability/` no repo, sem Prometheus/Grafana/Pushgateway em nenhum workflow ou script de CI).** Decisão de 24/07/2026: primeiro resolver a higiene dos runners (hooks nativos pós-job, PR #1040), observabilidade fica para uma PR futura. Este documento guarda o desenho completo para quando for a hora.
+
+> [!info] Estado em 24/08 - o que mudou desde a última revisão (24/07)
+> A VM ci-runner cresceu de 16 vCPU/32 GB para **32 vCPU/40 GiB** (agosto/2026) para caber 3 vagas de integração sem swap, e a integração deixou de ser serializada 1 a 1: hoje corre por um **semáforo de arquivo com N vagas** (`INTEGRATION_SLOTS`, igual ao número de runners `heavy`, hoje 3), não por um `concurrency` group do GitHub. Detalhe completo em `docs/architecture/ci-remote-cache.md` (seções "Topologia de runners" e "Serialização da integração na sumo"). Os números e a premissa de "serializado" abaixo estavam datados de 24/07 e foram corrigidos nesta revisão.
 
 Objetivo: enxergar o CI como se fosse a Nx Cloud (fila, duração, taxa de sucesso, cache hit, saúde das máquinas), sem Kubernetes, sem SaaS pago, rodando na própria VM de CI.
 
 ## Onde roda
 
-Tudo via docker compose **na VM ci-runner da sumo** (16 vCPU, 31 GB de RAM). Nada roda no host sumo raiz: a RAM do host está saturada (cerca de 109 de 125 GB usados). No EC2 entra só 1 container minúsculo (node_exporter, ~30 MB).
+Tudo via docker compose **na VM ci-runner da sumo** (32 vCPU, 40 GiB de RAM - cresceu de 16 vCPU/32 GB em agosto/2026). Nada roda no host sumo raiz: a RAM do host está saturada (cerca de 109 de 125 GB usados). No EC2 entra só 1 container minúsculo (node_exporter, ~30 MB).
 
 Fonte de verdade no repo: `deploy/ci-observability/` (compose + configs + dashboards versionados).
 
@@ -29,7 +32,7 @@ Fonte de verdade no repo: `deploy/ci-observability/` (compose + configs + dashbo
 | node_exporter (VM e EC2) | CPU/RAM/disco/swap das máquinas | 32 MB cada |
 | Poller do GitHub (script bash + gh CLI, timer de 2 min) | fila, espera, duração, sucesso/falha | irrisório |
 
-Total na VM: cerca de 1,1 GB de RAM e 5,5 GB de disco. Cabe no orçamento atual (jobs de integração usam ~7 GB e são serializados). Ajuste acoplado: subir a reserva de RAM do governor de 4 para 6 GB para descontar a stack.
+Total na VM: cerca de 1,1 GB de RAM e 5,5 GB de disco. Cabe no orçamento atual - a VM cresceu para 32 vCPU/40 GiB e hoje roda até 3 integrações concorrentes por semáforo de vagas (`INTEGRATION_SLOTS`), não mais 1 job serializado por vez como em 24/07. Ajuste acoplado: subir a reserva de RAM do governor de 4 para 6 GB para descontar a stack.
 
 ## Métricas do GitHub Actions (sem precisar de admin)
 
@@ -87,4 +90,4 @@ Pré-requisitos que hoje bloqueiam:
 
 Tradeoffs mapeados: container privileged (equivalente ao acesso que o runner já tem hoje), boot de 20 a 40s por job, e o job zumbi continua precisando de um TTL externo (o problema muda de lugar, não desaparece). Por isso a decisão foi hooks primeiro: sem credencial nova e reversível com 1 linha, e a migração para efêmero só se os dados justificarem.
 
-Referências: runbook em `docs/architecture/ci-remote-cache.md` no repo (camadas de higiene atuais), [[Acessos SSH - Infra Attlas]] (como entrar nas máquinas), [[Kubernetes e infra]] (o cluster e o deploy).
+Referências: runbook em `docs/architecture/ci-remote-cache.md` no repo (camadas de higiene atuais, topologia de runners e orçamento de disco - fonte de verdade mais recente e mais detalhada que este plano), [[Acessos SSH - Infra Attlas]] (como entrar nas máquinas), [[Kubernetes e infra]] (o cluster e o deploy).

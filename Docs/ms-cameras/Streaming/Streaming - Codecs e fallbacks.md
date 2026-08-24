@@ -4,7 +4,7 @@ tags:
   - ms-cameras
   - cameras
   - streaming
-atualizado: 2026-07-31
+atualizado: 2026-08-24
 ---
 
 # Streaming - Codecs e fallbacks
@@ -24,6 +24,11 @@ Fonte: `apps/ms-cameras/src/streaming/services/ffmpeg-session.service.ts` e `...
 > - e o resolver injeta `videocodec` conforme o request (o `requestedCodec` sobrepõe o codec do perfil),
 > com fallback H264 no mesmo path. O fallback server-side HEVC→H264 abaixo continua valendo. Detalhe em
 > `apps/ms-cameras/docs/atomic/INT-008-codec-negotiation.md` e MOD-004 seção 13.
+>
+> **Câmera com analítico embarcado ativo força H264 (achado em 24/08, não datado no código).** Se o
+> cliente pede `h265` mas a câmera tem analítico embarcado ativo
+> (`resolver.isEmbeddedAnalyticsActive`), `negotiateEffectiveCodec()` força `H264` mesmo assim - o
+> encoder da câmera não sustenta H265 e detecção simultâneos. Ver [[Analítico - Arquitetura e estratégias]].
 
 ## Codec no ingest (ffmpeg)
 
@@ -40,6 +45,18 @@ As flags de baixa latência de entrada (`+nobuffer+flush_packets`, `low_delay`, 
 500000`, `-reorder_queue_size 64`, e a ausência proposital de `-discardcorrupt`) estão
 detalhadas em [[Streaming - Arquitetura]]. `FFMPEG_LOG_LEVEL` (default `warning`) controla a
 verbosidade; subir para `verbose`/`debug` expõe "Non-monotonous DTS" e pacotes corrompidos.
+
+> [!success] Estado em 24/08: fix de 19/08 no jitter buffer e no shaping da telemetria 24/7
+> `72815a9db5` (19/08) fez duas correções na mesma leva:
+> 1. **Restaurou o jitter buffer do ffmpeg** - `-max_delay 500000`/`-reorder_queue_size 64` tinham saído
+>    de algum ponto do pipeline e voltaram, para tolerar a variação normal de chegada do RTSP sem
+>    travar a cada pacote reordenado (ver a seção de flags de baixa latência acima e em
+>    [[Streaming - Arquitetura]]).
+> 2. **Corrigiu o shaping do pull de telemetria 24/7** para câmeras provisionadas via ONVIF
+>    (`/onvif-media/`): a lista de paths "downscalable" do `TelemetryPathReconciler` não reconhecia esse
+>    padrão de URL e rodava a telemetria na resolução nativa em vez de 320x180@5fps - dobrando a carga
+>    real de RTSP no device só para manter o path always-on de bitrate vivo. Ver
+>    [[Bitrate medido 24-7 - telemetria always-on]].
 
 ## Parâmetros VAPIX (câmeras Axis)
 
@@ -141,6 +158,18 @@ seguem anexados à mesma sessão e acompanham a recuperação pelos eventos WebS
 Independente dos fallbacks de servidor acima, o player faz sua própria degradação: tenta
 **WebRTC/WHEP** primeiro e, se a conexão ICE falhar ou travar, cai **uma vez** para **HLS**.
 Isso é do lado do frontend e está descrito em [[Streaming - WebRTC e WHEP]] e [[Streaming - HLS]].
+
+## Guarda contra stampede de downgrade adaptativo (front, 19/08)
+
+> [!success] `947da10900` (19/08) - contenção de CPU/GPU confundida com degradação de rede
+> O mosaico do VMS decide qualidade por tile via `ITileQualityState`/`videowall-stream-session.store.ts`
+> (ver [[VMS - Arquitetura e estratégias]]): cada tile tem downgrade/upgrade adaptativo com cooldown
+> próprio (`adaptiveCooldownUntil`). Quando o browser fica sem CPU/GPU para decodificar N streams
+> simultâneos, os players reportam estol de forma parecida com perda de rede, e todos os tiles
+> disparavam downgrade adaptativo **ao mesmo tempo** - uma queda em massa de qualidade sem relação com
+> a rede real. O fix introduz um limite **global** (`ADAPTIVE_STAMPEDE_THRESHOLD`/`WINDOW_MS`, em
+> `stream-quality-ladder.constants.ts`) que trava novos downgrades adaptativos quando muitos tiles
+> pedem ao mesmo tempo dentro da janela - sinal de que o problema é local (browser), não de rede.
 
 ## Pesquisa e medições
 

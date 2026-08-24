@@ -6,12 +6,19 @@ tags:
   - streaming
 aliases:
   - "01-Arquitetura-streaming"
-atualizado: 2026-07-03
+atualizado: 2026-08-24
 ---
 
 # Streaming - Arquitetura
 
 Volta para [[Streaming]].
+
+> [!info] Codec por request, não mais fixo pelo perfil (INT-008)
+> Esta nota descreve o pipeline em termos de "o codec do perfil"; desde INT-008 (07/2026) o codec é
+> **negociado por request** pelo player (H265 só com decode por hardware, senão H264) e o backend
+> mantém sessões H264/H265 coexistentes para a mesma câmera. Detalhe completo, com os fixes de 19/08
+> (jitter buffer, shaping da telemetria ONVIF) em [[Streaming - Codecs e fallbacks]] e
+> [[Pesquisa - codec, protocolo e latência]].
 
 ## O problema que o pipeline resolve
 
@@ -43,7 +50,8 @@ Detalhes que importam:
 
 - Flags de baixa latência na entrada: `-fflags +nobuffer+flush_packets`, `-flags low_delay`,
   `-max_delay 500000`, `-reorder_queue_size 64`. Toleram a variação normal de chegada (jitter)
-  do RTSP sem travar a cada pacote reordenado.
+  do RTSP sem travar a cada pacote reordenado. Essas duas últimas flags saíram do pipeline em
+  algum ponto e foram restauradas em `72815a9db5` (19/08) - ver [[Streaming - Codecs e fallbacks]].
 - **Não usa `-discardcorrupt`**, de propósito: descartar pacote corrompido quebra o bitstream
   H.264 e congela o decoder até o próximo keyframe. Deixar o decoder esconder o erro recupera
   mais suave.
@@ -57,7 +65,9 @@ Detalhes que importam:
 
 `docker/mediamtx.yml`. Recebe o RTSP do ffmpeg numa "path" por câmera e qualidade
 (ex. `cam123-primary`), e expõe a mesma origem em WebRTC e HLS ao mesmo tempo. Uma origem,
-muitos espectadores.
+muitos espectadores. Desde a telemetria always-on (PROJ-006, 03/08) o mediamtx também mantém
+uma path por device físico com `sourceOnDemand: false` só para medir bitrate 24/7, mesmo sem
+espectador - ver [[Bitrate medido 24-7 - telemetria always-on]].
 
 - Versão LL-HLS habilitada, segmentos de 2s, partes de 100ms.
 - WebRTC na porta HTTP 8889 (negociação) e UDP 8189 (mídia).
@@ -72,8 +82,8 @@ muitos espectadores.
 - `streaming.controller.ts`: `GET /api/cameras/:id/hls` sobe (ou reaproveita) a sessão e
   devolve `{ url, hlsUrl, status, quality }`. `url` é o WebRTC WHEP, `hlsUrl` é o fallback HLS.
   Há trava de concorrência para não subir dois ffmpeg na mesma path (dois publishers se
-  expulsam em loop).
-- `stream-session-registry.service.ts`: registro em memória de `cameraId:quality -> estado`,
+  expulsam em loop). Aceita `?codec=` desde INT-008 - ver [[Streaming - Codecs e fallbacks]].
+- `stream-session-registry.service.ts`: registro em memória de `cameraId:quality:codec -> estado`,
   com contagem de espectadores e período de graça antes de derrubar a sessão ociosa.
 - `streaming.gateway.ts`: WebSocket Socket.IO que avisa o frontend em tempo real
   (`stream.started`, `stream.reconnecting`, `stream.error`, `stream.stopped`).

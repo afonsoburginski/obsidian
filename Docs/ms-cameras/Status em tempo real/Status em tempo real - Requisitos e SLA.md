@@ -6,7 +6,7 @@ tags:
   - realtime
 aliases:
   - "Status em tempo real - Requisitos e SLA"
-atualizado: 2026-07-03
+atualizado: 2026-08-24
 servico: ms-cameras
 fonte: apps/ms-cameras/src/cameras/realtime
 ---
@@ -37,13 +37,13 @@ O operador vê o estado corrente da câmera em tempo real. Abaixo, cada atributo
 
 | Critério (domínio) | Estado |
 | --- | --- |
-| A rede de câmeras cresce sem interrupção do serviço nem redesign da plataforma; o realtime entrega o status a todos os operadores conectados independentemente de quantas réplicas o serviço tenha | **Em risco / pré-requisito pendente** - ver nota abaixo |
+| A rede de câmeras cresce sem interrupção do serviço nem redesign da plataforma; o realtime entrega o status a todos os operadores conectados independentemente de quantas réplicas o serviço tenha | **Atendido** - ver nota abaixo (corrigido em 24/08; esta linha dizia "em risco / pré-requisito pendente") |
 
 ## Nota de escala e latência
 
 - **Latência.** O push é in-process: worker de saúde → EventBus → handler → `emit`. Não há salto por Kafka, então a latência é baixa (limitada pela cadência do worker de saúde, não pelo transporte). O snapshot cacheado no Redis dá o primeiro frame rápido ao assinar; leitura best-effort com fallback ao DB.
-- **Escala (regra dura).** O broadcast **não cruza réplicas**: cada pod só conhece seus próprios sockets e `server.to(sala).emit()` roda em um pod só. Com o `ms-cameras` já configurado para escalar (KEDA), um evento nascido na réplica B não chega ao cliente ligado na réplica A. Enquanto há 1 réplica não aparece; ao escalar, aparece.
-- **Pré-requisito para escalar com segurança.** Ligar o **adapter Redis do Socket.IO** (`@socket.io/redis-adapter` via `IoAdapter` custom no `main.ts`) e, antes, **provisionar o Redis do `ms-cameras`** (hoje só config de cache). Só então o RNF-CAM-01 é atendido para o canal de status. Contexto, teste no cluster e plano completo em `kubernetes/docs/06-PROBLEMAS-IDENTIFICADOS.md` (Problema 2).
+- **Escala - resolvido.** O broadcast **cruza réplicas** desde que o `RedisIoAdapter` (`@socket.io/redis-adapter`, CROSS-043) foi ligado em `main.ts` (PR [#1175](https://github.com/atmanadmin/attlas-2026/pull/1175), SOFTWARE-2356, 31/07) - confirmado no código em 24/08. Antes disso, cada pod só conhecia seus próprios sockets e um evento nascido na réplica B não chegava ao cliente ligado na réplica A; com o adapter, `server.to(sala).emit()` alcança qualquer réplica. Detalhe, incluindo a exceção local-only de `camera:health:live`, em [[Status em tempo real - Arquitetura e estratégias]].
+- **Pré-requisito atendido.** O Redis do `ms-cameras` está provisionado (não é mais "só config de cache") e o adapter está ligado - RNF-CAM-01 atendido para o canal de status. Contexto histórico do problema em `kubernetes/docs/06-PROBLEMAS-IDENTIFICADOS.md` (Problema 2) - documento pode não refletir a resolução, não conferido nesta passada.
 
 ## Relacionados
 

@@ -1,0 +1,39 @@
+{
+  "id": "d28f655d-96aa-4c4e-9876-73264fa5eb4a",
+  "state": "committed",
+  "createdAt": "2026-08-24T14:13:18.394Z",
+  "snapshots": [
+    {
+      "path": ".obsidian-mcp/trash/0341639d-db9c-4128-9aa8-c783f030a7ff.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "f6f7a7ebb8b970140ce5d983f74c1e31742483a6b8e30e5eb365d7ba50bd6dbe",
+      "recoverable": true,
+      "existed": false,
+      "committedEtag": "f6f7a7ebb8b970140ce5d983f74c1e31742483a6b8e30e5eb365d7ba50bd6dbe"
+    },
+    {
+      "path": ".obsidian-mcp/trash/0341639d-db9c-4128-9aa8-c783f030a7ff.json",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "4e6ee774d21c35c99a9d446a6f3f4a7ee447bbccdf4eec6c7670ddd759b4f96c",
+      "recoverable": true,
+      "existed": false,
+      "committedEtag": "4e6ee774d21c35c99a9d446a6f3f4a7ee447bbccdf4eec6c7670ddd759b4f96c"
+    },
+    {
+      "path": "Docs/kubernetes/Kubernetes - Provisionamento (Terraform RKE2).md",
+      "operation": "delete",
+      "entryType": "file",
+      "phase": "applied",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33204,
+      "etag": "f6f7a7ebb8b970140ce5d983f74c1e31742483a6b8e30e5eb365d7ba50bd6dbe",
+      "snapshot": "2.bin"
+    }
+  ],
+  "completedAt": "2026-08-24T14:13:18.408Z"
+}

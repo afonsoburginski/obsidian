@@ -1,0 +1,21 @@
+{
+  "id": "73b48e45-1765-4daf-a3bd-f485fb95e3d2",
+  "state": "committed",
+  "createdAt": "2026-08-24T14:20:53.681Z",
+  "snapshots": [
+    {
+      "path": "Docs/server/Acessos SSH - Infra Attlas.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "5fb3e91f0c3688fc71693fdf4f5f449ef5ebc28f50c87340263844876400c59b",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33204,
+      "etag": "0fd8ed4586c2b763afee1ebf2915ce0864170fb1b8f3853b4fdf0002975b7668",
+      "snapshot": "0.bin",
+      "committedEtag": "5fb3e91f0c3688fc71693fdf4f5f449ef5ebc28f50c87340263844876400c59b"
+    }
+  ],
+  "completedAt": "2026-08-24T14:20:53.690Z"
+}

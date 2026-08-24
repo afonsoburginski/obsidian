@@ -1,0 +1,39 @@
+{
+  "id": "c89da4d1-ef1d-47d2-8e60-09c098b8e974",
+  "state": "committed",
+  "createdAt": "2026-08-24T14:13:18.312Z",
+  "snapshots": [
+    {
+      "path": ".obsidian-mcp/trash/87bcad7c-62db-4fe5-aa8e-b2fa1d82d203.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "eca1d39e360949252bd295d59a067b583811d124da481d42b459621243bf949c",
+      "recoverable": true,
+      "existed": false,
+      "committedEtag": "eca1d39e360949252bd295d59a067b583811d124da481d42b459621243bf949c"
+    },
+    {
+      "path": ".obsidian-mcp/trash/87bcad7c-62db-4fe5-aa8e-b2fa1d82d203.json",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "c337d2db574e5d167f53885dae4bd1d96ed3053b77390fd02583163313f43aee",
+      "recoverable": true,
+      "existed": false,
+      "committedEtag": "c337d2db574e5d167f53885dae4bd1d96ed3053b77390fd02583163313f43aee"
+    },
+    {
+      "path": "Docs/kubernetes/Kubernetes - Bootstrap e KEDA.md",
+      "operation": "delete",
+      "entryType": "file",
+      "phase": "applied",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33204,
+      "etag": "eca1d39e360949252bd295d59a067b583811d124da481d42b459621243bf949c",
+      "snapshot": "2.bin"
+    }
+  ],
+  "completedAt": "2026-08-24T14:13:18.325Z"
+}

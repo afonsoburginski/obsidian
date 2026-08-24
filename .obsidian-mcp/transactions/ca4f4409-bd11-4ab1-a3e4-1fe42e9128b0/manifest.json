@@ -1,0 +1,39 @@
+{
+  "id": "ca4f4409-bd11-4ab1-a3e4-1fe42e9128b0",
+  "state": "committed",
+  "createdAt": "2026-08-24T14:13:18.352Z",
+  "snapshots": [
+    {
+      "path": ".obsidian-mcp/trash/ea516246-f46f-4ae8-a6fe-cc4134ee8ea4.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "e38b83f22fdc3ec6c710be5d7d4bf0798984e2cef8bd7e2c6622ea8cca146da3",
+      "recoverable": true,
+      "existed": false,
+      "committedEtag": "e38b83f22fdc3ec6c710be5d7d4bf0798984e2cef8bd7e2c6622ea8cca146da3"
+    },
+    {
+      "path": ".obsidian-mcp/trash/ea516246-f46f-4ae8-a6fe-cc4134ee8ea4.json",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "9b8a4645f845f8c2cb5ac82a01aa86cd0fbc82dd5356df93b6126f9b9c34326c",
+      "recoverable": true,
+      "existed": false,
+      "committedEtag": "9b8a4645f845f8c2cb5ac82a01aa86cd0fbc82dd5356df93b6126f9b9c34326c"
+    },
+    {
+      "path": "Docs/kubernetes/Kubernetes - Guia operacional.md",
+      "operation": "delete",
+      "entryType": "file",
+      "phase": "applied",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33204,
+      "etag": "e38b83f22fdc3ec6c710be5d7d4bf0798984e2cef8bd7e2c6622ea8cca146da3",
+      "snapshot": "2.bin"
+    }
+  ],
+  "completedAt": "2026-08-24T14:13:18.363Z"
+}

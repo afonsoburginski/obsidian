@@ -1,0 +1,39 @@
+{
+  "id": "ab5ad14e-6edc-41cd-8c5d-68b9559e4919",
+  "state": "committed",
+  "createdAt": "2026-08-24T14:13:18.417Z",
+  "snapshots": [
+    {
+      "path": ".obsidian-mcp/trash/5c37abc6-e8c1-48ba-aa45-2b13f0478d7c.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "5da97bcf59d63269e54df25508177751137e82096ecbd6a9efea2f61344c23ee",
+      "recoverable": true,
+      "existed": false,
+      "committedEtag": "5da97bcf59d63269e54df25508177751137e82096ecbd6a9efea2f61344c23ee"
+    },
+    {
+      "path": ".obsidian-mcp/trash/5c37abc6-e8c1-48ba-aa45-2b13f0478d7c.json",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "7cf376b69efed25311e5907a8bfa7ccd1893f53455faa68d28ccecc27d41c53e",
+      "recoverable": true,
+      "existed": false,
+      "committedEtag": "7cf376b69efed25311e5907a8bfa7ccd1893f53455faa68d28ccecc27d41c53e"
+    },
+    {
+      "path": "Docs/kubernetes/Kubernetes - Regras de escala (ScaledObjects).md",
+      "operation": "delete",
+      "entryType": "file",
+      "phase": "applied",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33204,
+      "etag": "5da97bcf59d63269e54df25508177751137e82096ecbd6a9efea2f61344c23ee",
+      "snapshot": "2.bin"
+    }
+  ],
+  "completedAt": "2026-08-24T14:13:18.427Z"
+}

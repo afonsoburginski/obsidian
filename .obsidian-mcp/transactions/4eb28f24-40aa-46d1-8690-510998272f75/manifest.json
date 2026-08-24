@@ -1,0 +1,21 @@
+{
+  "id": "4eb28f24-40aa-46d1-8690-510998272f75",
+  "state": "committed",
+  "createdAt": "2026-08-24T12:34:08.890Z",
+  "snapshots": [
+    {
+      "path": "Docs/ms-cameras/Status em tempo real/Status em tempo real - Arquitetura e estratégias.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "e872dee59021ddb67d6cbb8ff1a17d6a22ee5609659546feac572395a67fa5a3",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33204,
+      "etag": "dbf5f7b4fe85fbc3bb48b380bd986d04cd7d9f8c77de4e1a37e10d3277cd7194",
+      "snapshot": "0.bin",
+      "committedEtag": "e872dee59021ddb67d6cbb8ff1a17d6a22ee5609659546feac572395a67fa5a3"
+    }
+  ],
+  "completedAt": "2026-08-24T12:34:08.900Z"
+}

@@ -12,7 +12,7 @@ aliases:
   - "cameras"
   - "realtime"
   - "Status em tempo real (push)"
-atualizado: 2026-07-03
+atualizado: 2026-08-24
 servico: ms-cameras
 fonte: apps/ms-cameras/src/cameras/realtime
 ---
@@ -26,7 +26,7 @@ fonte: apps/ms-cameras/src/cameras/realtime
 **Empurrar (push) o estado vivo da câmera ao frontend** assim que ele muda, sem polling: conexão online/offline, qualidade do stream (resolução/fps/bitrate), modo de operação, posição PTZ, presets e geoposicionamento (RF-CAM-04). O canal é um **Socket.IO** guardado por JWT; a fonte das mudanças é o **worker de saúde** (via EventBus in-process), não Kafka. Um snapshot também fica cacheado no Redis (`camera:status:<id>`) para o primeiro frame do cliente e para leitura sob demanda por REST.
 
 > [!info] Não confundir com o Streaming
-> Existem **dois** gateways Socket.IO no `ms-cameras`, em namespaces diferentes. Este submódulo é o `cameras-status` (status/PTZ/eventos, com JWT). O do vídeo é o `/cameras`, coberto em [[Streaming]]. Ver seção [[#Namespaces Socket.IO]].
+> Existem **dois** gateways Socket.IO no `ms-cameras`, em namespaces diferentes. Este submódulo é o `cameras-status` (status/PTZ/eventos, com JWT). O do vídeo é o `cameras-stream`, coberto em [[Streaming]] - também guardado por JWT em `camera.join`/`camera.leave` desde a correção de 24/08 (ver [[Status em tempo real - Arquitetura e estratégias]]). Ver seção [[#Namespaces Socket.IO]].
 
 ## Mapa de código
 
@@ -41,7 +41,7 @@ Tudo em `apps/ms-cameras/src/cameras/realtime/` salvo indicação.
 | Events-handler PTZ | `camera-ptz-position.events-handler.ts` | `@EventsHandler(CameraPtzPositionChangedEvent)` - emite `camera:ptz:position` (sem query, sem Redis). |
 | Events-handler eventos | `camera-event-log.events-handler.ts` | `@EventsHandler(CameraEventLogCreatedEvent)` - emite `camera:event:new` (payload já vem no evento). |
 | Eventos de domínio | `events/*.event.ts` | Classes publicadas no EventBus pelo worker de saúde. |
-| Guard | `guards/ws-auth.guard.ts` | `WsAuthGuard` - valida JWT via `JwtSignerService.verify`. |
+| Guard | `guards/ws-auth.guard.ts` | `WsAuthGuard` - valida JWT via `JwtSignerService.verify`; reusado também pelo gateway de streaming (`cameras-stream`). |
 | Wiring | `camera-status.module.ts` | Registra gateway, service, 3 events-handlers, guard e handlers de query. |
 | Cache | `../../redis/redis.module.ts` | `REDIS_CLIENT` (ioredis, best-effort); chave `camera:status:<id>`, TTL em `cameras/cameras.constants.ts` (`CameraStatusConfig.REDIS_TTL_SECONDS`). |
 
@@ -50,9 +50,9 @@ Tudo em `apps/ms-cameras/src/cameras/realtime/` salvo indicação.
 | Namespace | Gateway | Auth | Fonte dos eventos | Emite |
 | --- | --- | --- | --- | --- |
 | `cameras-status` | `camera-status.gateway.ts` | **JWT** (`WsAuthGuard`) | EventBus CQRS (worker de saúde) | `camera:status:snapshot`, `camera:status:update`, `camera:ptz:position`, `camera:event:new` |
-| `/cameras` | `streaming/streaming.gateway.ts` | Público (sem guard) | `@OnEvent` do EventEmitter (ciclo de vida HLS) | `status.changed`, `stream.started/stopped/reconnecting/error` |
+| `cameras-stream` | `streaming/streaming.gateway.ts` | **JWT** em `camera.join`/`camera.leave` (`WsAuthGuard`, desde a correção de 24/08 - antes era público) | `@OnEvent` do EventEmitter (ciclo de vida HLS) | `status.changed`, `stream.started/stopped/reconnecting/error` |
 
-Os dois usam salas `camera:<id>`, mas são servidores distintos: um cliente que só quer status assina o `cameras-status`; o player de vídeo fala com o `/cameras`. Detalhe do de streaming em [[Streaming]].
+Os dois usam salas `camera:<id>`, mas são servidores distintos: um cliente que só quer status assina o `cameras-status`; o player de vídeo fala com o `cameras-stream`. Detalhe do de streaming em [[Streaming]].
 
 **Mensagens do cliente (`cameras-status`):** `subscribe_camera { cameraId }` → entra na sala e recebe `camera:status:snapshot`; `unsubscribe_camera { cameraId }` → sai da sala. Ambas exigem JWT.
 

@@ -4,7 +4,7 @@ tags:
   - ms-cameras
   - cameras
   - saude
-atualizado: 2026-07-03
+atualizado: 2026-08-24
 ---
 
 # Saúde e monitoramento - Arquitetura e estratégias
@@ -23,12 +23,23 @@ Duas camadas independentes:
 
 ### Worker - `workers/camera-health.worker.ts`
 
-Um cliente por câmera num `Map`, mais estado por câmera (janela de ping, RTT, timers, último status, incidente aberto, causa). Dois canais:
+> [!success] Estado em 24/08: dedupe por device físico (29/07), não mais um cliente por linha `Camera`
+> A mesma câmera física é cadastrada **uma vez por tenant** (6 sistemas hoje — mesma topologia
+> registrada em [[Carga desnecessária nas câmeras - reconciler do analítico e conexões duplicadas]] e
+> em `apps/ms-cameras/src/health/utils/device-stream-group.util.ts`, comentário "the same camera is
+> registered once per tenant"). Um cliente por linha de `Camera` abria 6 conexões VAPIX/ONVIF para o
+> mesmo equipamento físico. `groupByDeviceStream()` dedupa pelo `streamUrl` físico: o worker mantém
+> **um** cliente por device (`Map` chaveado por `canal:host`, não por `cameraId`), e o heartbeat
+> resultante é escrito em leque (fan-out) para todas as linhas/tenants que apontam para aquele device.
+> Efeito medido em campo: 72→12 conexões TCP, PTZ de ~16 req/s para ~2,7 req/s.
+
+Estado por device (janela de ping, RTT, timers, último status, incidente aberto, causa) é compartilhado
+entre as linhas de `Camera` que apontam para ele. Dois canais:
 
 - **Axis VAPIX WebSocket** (primário, `clients/axis-ws.client.ts`) - abre `ws-data-stream` com token de sessão digest, assina tópicos de evento (`SystemReady`, `NetworkLost`, `PTZ*`, `Tampering`, …). Ao conectar, arma o **loop de ping**: `measurePing()` mede o RTT via `ws.ping`/`pong` a cada `PING_INTERVAL_MS` (5s), timeout `PING_TIMEOUT_MS` (3s). Loop **auto-agendado** (próximo tick só no `finally` do anterior - nunca pings concorrentes). Eventos VAPIX também mapeiam `topic → causeCode` (rede perdida, falha de energia, tampering, erro PTZ, falha de HW) com prioridade sobre a causa do ping até a recuperação.
 - **ONVIF PullPoint** (fallback, `clients/onvif-pullpoint.client.ts`) - `CreatePullPointSubscription` + loop de `PullMessages` (long-poll `PT5S`). Cada round-trip bem-sucedido **é** o heartbeat, emitindo `heartbeat(latencyMs)`.
 
-**Processamento do heartbeat** (`processPingResult`): empilha sucesso/falha numa janela deslizante em memória (`PING_WINDOW_SIZE` = 10), insere linha em `CameraHeartbeatHistory`, calcula perda %, roda o evaluator, faz upsert do snapshot (`latencyMs`, `packetLossPercent`, `connectionStatus`) e chama `maybePublishStatusChange`.
+**Processamento do heartbeat** (`processPingResult`): empilha sucesso/falha numa janela deslizante em memória (`PING_WINDOW_SIZE` = 10), insere linha em `CameraHeartbeatHistory` **por tenant afetado pelo fan-out**, calcula perda %, roda o evaluator, faz upsert do snapshot (`latencyMs`, `packetLossPercent`, `connectionStatus`) e chama `maybePublishStatusChange`.
 
 **Mudança de estado** (`maybePublishStatusChange`) - só age quando o status muda:
 - abre/fecha **incidente de conectividade** (BR-EVT-001a): abre na primeira saída de `STABLE`, mantém o início mais antigo através da escalada (degradado → offline = um incidente), fecha ao voltar a `STABLE` anexando `durationMinutes` ao evento de restauração;
@@ -87,4 +98,4 @@ A **escrita** de bitrate e TTFF já existe: o sampler persiste `avgBitrateMbps` 
 avgBitrateMbps: null, ttffMs: null, currentBitrateMbps: null, bitrateLatencyTimeSeries: []
 ```
 
-Ou seja, o dado está persistido mas o read path não o compõe. Fechamento na [[SOFTWARE-1923 - Bitrate histórico + TTFF]] (PR #577, em review).
+Ou seja, o dado está persistido mas o read path não o compõe. Fechamento na [[SOFTWARE-1923 - Bitrate histórico + TTFF]] (PR #577, em review) - não confirmado nesta revisão de 24/08, conferir estado da PR antes de assumir resolvido.

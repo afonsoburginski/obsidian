@@ -4,7 +4,7 @@ tags:
   - attlas
 aliases:
   - "Docs - índice raiz"
-atualizado: 2026-07-31
+atualizado: 2026-08-24
 ---
 
 # Docs - índice raiz
@@ -16,14 +16,13 @@ programação: é a porta de entrada do assunto e não repete o conteúdo das no
 
 - [[ms-cameras]] - o serviço de câmeras inteiro: cadastro, saúde, status em tempo real, streaming, PTZ, eventos, VMS e o videowall externo.
 - [[Analítico]] - módulo de Virtual Loop e ATSPM, dependente de Câmeras mas não parte dela. Hoje quase todo planejamento, com o caminho embarcado provisoriamente dentro do ms-cameras.
-- [[Kubernetes e infra]] - cluster, chart Helm, Terraform, KEDA e o que vive no repo `Developer/kubernetes`.
 - [[Server e CI]] - acessos SSH e observabilidade do CI.
 
 ## Fontes e processo
 
 - [[Convenções de escrita]] - como escrever report, PR, comentário de review e documento de público misto. **Fonte de verdade de estilo**, saiu da memória do Claude em 31/07.
 - [[Edital - Attlas nova definição de módulos]] - o edital do cliente. **Fonte de verdade de requisito**, não se edita.
-- [[Plano - atualização da documentação do vault]] - o que está defasado, com evidência, e em que ordem consertar. Camada de higiene e lote 0 feitos; lotes 1 a 9 em aberto.
+- [[Plano - atualização da documentação do vault]] - o que está defasado, com evidência, e em que ordem consertar.
 
 ## Convenção
 
@@ -35,3 +34,9 @@ programação: é a porta de entrada do assunto e não repete o conteúdo das no
 
 Frontmatter obrigatório: `tags` em lista YAML (`doc` mais domínio mais assunto) e `atualizado` com a data
 da última revisão de **conteúdo**. Prosa sem travessão e sem `§`.
+
+> [!info] Domínio Kubernetes removido em 24/08
+> A pedido do user, o domínio Kubernetes (índice + 8 notas de faceta) saiu deste vault - foi para a
+> trash do MCP (recuperável), não deletado a fio. O repo `Developer/kubernetes` continua sendo a fonte
+> de verdade de infraestrutura fora deste vault; se precisar de novo, ver o skill `attlas-kubernetes`
+> do Claude Code em vez de reescrever a nota aqui.

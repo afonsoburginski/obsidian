@@ -1,0 +1,21 @@
+{
+  "id": "9d6ebc15-c56e-48a0-97f3-8b5cea8ddee0",
+  "state": "committed",
+  "createdAt": "2026-08-24T14:20:31.873Z",
+  "snapshots": [
+    {
+      "path": "Docs/server/Observabilidade CI - plano (stack completa).md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "b6eaad5b61d1d7004509fc98ea81b43951f53128b699cbe17938c662f76a4b29",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33204,
+      "etag": "f2925ba6ede9881f06725775c261c3a423bb60f4581e0f88d2dc9c63bc2c9a78",
+      "snapshot": "0.bin",
+      "committedEtag": "b6eaad5b61d1d7004509fc98ea81b43951f53128b699cbe17938c662f76a4b29"
+    }
+  ],
+  "completedAt": "2026-08-24T14:20:31.880Z"
+}

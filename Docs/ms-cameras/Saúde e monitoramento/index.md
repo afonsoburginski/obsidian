@@ -7,7 +7,7 @@ tags:
 aliases:
   - "Saúde e monitoramento"
   - "00 - Saúde e monitoramento"
-atualizado: 2026-07-03
+atualizado: 2026-08-24
 ---
 
 # Saúde e monitoramento (ms-cameras)
@@ -21,20 +21,22 @@ As **regras de negócio** (SLA, uptime vs reachability, mapa 4→3 estados, jane
 ## Notas deste domínio
 
 **Motor de saúde (healthcheck 24/7):**
-- [[Saúde e monitoramento - Arquitetura e estratégias]] - como funciona: bootstrap, worker, evaluator puro, janelas + rollup, composer.
+- [[Saúde e monitoramento - Arquitetura e estratégias]] - como funciona: bootstrap, worker (dedupe por device físico desde 29/07), evaluator puro, janelas + rollup, composer.
 - [[Saúde e monitoramento - Fluxos]] - use cases e user flow passo a passo.
 - [[Saúde e monitoramento - Requisitos e SLA]] - RF/RNF cobertos, SLA, retenção.
 - [[Bitrate medido 24-7 - telemetria always-on]] - por que o bitrate vem do MediaMTX e não do device, provas de campo e custos por configuração.
 
 **Push em tempo real**: a entrega WebSocket do estado monitorado é assunto vizinho e tem pasta própria,
-[[Status em tempo real]] (Socket.IO `cameras-status`, cache Redis, gateway JWT, limitação de escala).
+[[Status em tempo real]] (Socket.IO `cameras-status`, cache Redis, gateway JWT; adapter Redis de escala
+horizontal entregue via CROSS-043 em 31/07, com uma exceção deliberada local-only para o push de
+bitrate/viewers ao vivo).
 
 ## Mapa de código (`apps/ms-cameras/src/health/`)
 
 | Peça | Arquivo | Papel |
 | --- | --- | --- |
 | Bootstrap | `workers/camera-health-bootstrap.service.ts` | No boot, lista câmeras `OPERATIONAL`/`TESTING` e arma o worker por câmera |
-| Worker | `workers/camera-health.worker.ts` | Estado por câmera: conexão, loop de ping/RTT, reconexão backoff, publica mudança de estado |
+| Worker | `workers/camera-health.worker.ts` | Estado por **device físico** (dedupe por `streamUrl` via `utils/device-stream-group.util.ts`, fan-out do heartbeat para os tenants que apontam pro mesmo device - 6 sistemas hoje): conexão, loop de ping/RTT, reconexão backoff, publica mudança de estado |
 | Evaluator | `evaluator/connectivity-health.evaluator.ts` | **Puro, sem I/O**: score Q (latência+perda) + histerese → `CameraConnectionStatus` |
 | Sampler | `workers/availability-window-sampler.service.ts` | `@Cron` a cada 5 min: consolida heartbeats da janela + bitrate → `CameraAvailabilityWindow` |
 | Rollup | `workers/availability-rollup.service.ts` | `@Cron` 01:00 UTC: janelas do dia → rollup diário; poda janelas finas |
@@ -43,6 +45,7 @@ As **regras de negócio** (SLA, uptime vs reachability, mapa 4→3 estados, jane
 | Handler UC-026 | `handlers/get-camera-health-metrics/` | Query read-only: rollups + janelas do dia → `ICameraHealthMetrics` |
 | Controllers | `camera-health.controller.ts`, `camera-health-metrics.controller.ts` | Snapshot atual (device) e métricas do período |
 | Clients | `clients/axis-ws.client.ts`, `clients/onvif-pullpoint.client.ts` | Canais de heartbeat: Axis VAPIX WebSocket (primário) e ONVIF PullPoint (fallback) |
+| Telemetria always-on (PROJ-006, 03/08) | `workers/telemetry-path-reconciler.service.ts` + `streaming/services/telemetry-path-registry.service.ts` | Mantém um path RTSP 24/7 **por device físico** no mediamtx (`sourceOnDemand: false`), mesmo sem espectador - fonte do bitrate medido; detalhe em [[Bitrate medido 24-7 - telemetria always-on]] |
 | Repositories | `repositories/` | Snapshot, event-log, heartbeat-history, availability (janela + rollup) |
 | Cleanup | `workers/heartbeat-history-cleanup.service.ts` | `@Cron` horário: poda a série fina de heartbeats (~24h) |
 
@@ -67,6 +70,7 @@ As duas rotas não colidem: `cameras/health` é estática (2 segmentos) e `camer
 | `CameraAvailabilityWindow` | 1 por câmera por janela de 5 min | `state` (ONLINE/DEGRADED/OFFLINE), `avgLatencyMs`, `avgBitrateMbps`; único `(cameraId, windowStart)`; retenção fina 7d |
 | `CameraAvailabilityDailyRollup` | 1 por câmera por dia | Contagens por estado + médias; único `(cameraId, date)`; horizonte 90d |
 | `CameraTtffSample` | 1 por abertura de stream | `ttffMs` ("abertura do stream"); escrito pelo streaming, não pelo health |
+| `CameraBitrateSample` | 1 por tick (5s default) | Bitrate medido por device físico, retenção curta (48h default); ver [[Bitrate medido 24-7 - telemetria always-on]] |
 
 ## `connectionStatus` (device) vs `streamStatus` (vídeo)
 

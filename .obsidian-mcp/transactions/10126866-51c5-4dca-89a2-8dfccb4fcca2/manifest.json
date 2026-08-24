@@ -1,0 +1,39 @@
+{
+  "id": "10126866-51c5-4dca-89a2-8dfccb4fcca2",
+  "state": "committed",
+  "createdAt": "2026-08-24T14:13:18.331Z",
+  "snapshots": [
+    {
+      "path": ".obsidian-mcp/trash/f10efec5-5d3a-494c-bb9d-d3fe287bd357.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "399978f9175a555a4a592eab75b63798458fe8b4046a0dd5b0f1b166e55bdbba",
+      "recoverable": true,
+      "existed": false,
+      "committedEtag": "399978f9175a555a4a592eab75b63798458fe8b4046a0dd5b0f1b166e55bdbba"
+    },
+    {
+      "path": ".obsidian-mcp/trash/f10efec5-5d3a-494c-bb9d-d3fe287bd357.json",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "e52ee2221a9ea0f210d46aaea83e75e9b7f3799a1104ca9ba016c4b20d80c7ad",
+      "recoverable": true,
+      "existed": false,
+      "committedEtag": "e52ee2221a9ea0f210d46aaea83e75e9b7f3799a1104ca9ba016c4b20d80c7ad"
+    },
+    {
+      "path": "Docs/kubernetes/Kubernetes - Deploy (Helm chart).md",
+      "operation": "delete",
+      "entryType": "file",
+      "phase": "applied",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33204,
+      "etag": "399978f9175a555a4a592eab75b63798458fe8b4046a0dd5b0f1b166e55bdbba",
+      "snapshot": "2.bin"
+    }
+  ],
+  "completedAt": "2026-08-24T14:13:18.342Z"
+}

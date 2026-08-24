@@ -7,7 +7,7 @@ tags:
 aliases:
   - "Video Wall - Arquitetura e estratégias"
   - "Video Wall - Requisitos e SLA"
-atualizado: 2026-07-31
+atualizado: 2026-08-24
 ---
 
 # VMS - Arquitetura e estratégias
@@ -78,11 +78,15 @@ resolve o stream por conta própria via [[Streaming]].
 
 ## Picker de câmeras elegíveis
 
-`GET /cameras/video-wall` (UC-014, `ListVideoWallCamerasHandler`, no domínio `cameras`) devolve as
+`GET /cameras/vms` (UC-014, `ListVideoWallCamerasHandler`, no domínio `cameras`) devolve as
 câmeras montáveis: paginado, com filtros `q` (texto), `cameraType[]` e `lifecycleState[]`, escopado por
 `systemId` (header). Cada item (`ICameraVideoWallItem`): `id`, `name`, `cameraType`, `lifecycleState`,
 `ptz` (kind PTZ ou capability `ptz`), `status` (conexão), `intersection`, `hasSecondaryStream` (tem
 perfil SECONDARY ativo, o que sinaliza aptidão ao mosaico).
+
+> [!success] Estado em 24/08: rota confirmada `/cameras/vms`
+> O path `/cameras/video-wall` não existe mais desde `c9766ab960` (18/08, mergeado na develop) — só
+> `/cameras/vms` responde. Ver [[VMS]] callout "Estado em 24/08".
 
 ## O frontend (MOD-001-videowall)
 
@@ -90,8 +94,13 @@ O front não é uma casca fina; boa parte do comportamento da tela vive nele
 (`apps/web-attlas/src/app/modules/videowall/`):
 
 - **Vocabulário próprio**: o operador salva **"visualizações"** (`IVideowallView` em `libs/contracts/src/lib/videowall/`), que no backend são **cenas**. Mesmo objeto, dois nomes.
-- **Rota**: `/cameras/videowall` e `/cameras/videowall/:viewId` resolvem o mesmo `VideowallPageComponent`, reaproveitado entre trocas de `:viewId`. `videowallDirtyGuard` (UF-011) abre o diálogo de descarte ao sair com edição pendente.
-- **Mosaico**: `mosaic-board`, `mosaic-tile`, `mosaic-splitter` (tiling redimensionável), mais side panel, layout picker, diálogo de criar view e diálogo de rotação.
+- **Rota**: `/cameras/vms` e `/cameras/vms/:viewId` resolvem o mesmo `VideowallPageComponent`, reaproveitado entre trocas de `:viewId`. `videowallDirtyGuard` (UF-011) abre o diálogo de descarte ao sair com edição pendente. Rota confirmada em 24/08 — não existe mais redirect de `/cameras/videowall`, o path legado foi removido de vez (ver callout acima e [[VMS]]).
+- **Arquitetura em camadas (PR #1884, mergeada)**: a página deixou de guardar estado de domínio; virou
+  casca fina orquestrando componentes filhos e 6 SignalStores próprios em `pages/videowall/`
+  (`videowall-stream-session.store.ts`, `videowall-camera-directory.store.ts`,
+  `videowall-mosaic-scene.store.ts`, `videowall-immersive.store.ts`, `videowall-ptz.store.ts`,
+  `videowall-view-catalog.store.ts`). Detalhe completo em [[VMS]] seção "Arquitetura do frontend".
+- **Mosaico**: `mosaic-board`, `mosaic-tile`, `mosaic-splitter` (tiling redimensionável, `mosaic-tree.util.ts`), mais side panel, layout picker, diálogo de criar view e diálogo de rotação — hoje montados dentro da `videowall-mosaic-scene.store.ts` em vez de estado solto na página.
 - **Presets de grade**: `EnumVideowallLayout` vai de `GRID_1X1` a `GRID_6X6` mais `CUSTOM`. Como o seed só tem até 4x4, `toSceneWrite` mapeia o preset para o `layoutId` seedado quando existe e **cai para `customGrid` quadrado** quando não existe (é assim que 5x5 e 6x6 funcionam).
 - **Coordenadas**: o view model é **0-based**; o contrato HTTP é **1-based**. A conversão acontece no `videowall.service.ts`.
 - **Rotação**: `IRotationConfig` (`items[] {viewId, dwellSeconds}`, `loop`) mora em `@attlas/contracts` porque é serializada na URL, mas **não tem endpoint**: o timer é local, `dwellSeconds` mínimo 5s, presets de 10/20/30/60/120s.
@@ -99,7 +108,8 @@ O front não é uma casca fina; boa parte do comportamento da tela vive nele
 
 > [!warning] Divergência viva entre contrato e implementação
 > `IVideowallView` documenta `version` como valor de `If-Match` num `PUT /api/video-wall/scenes/:id`
-> (locking otimista). O backend só expõe `PATCH`, não tem coluna `version`, e o front **abandonou** o
+> (locking otimista) — path que já não existe mais (ver rota atual acima; o verbo também é `PATCH`, não
+> `PUT`). O backend só expõe `PATCH`, não tem coluna `version`, e o front **abandonou** o
 > locking: não manda `If-Match` e ecoa `version: 0`. O campo sobrevive nos contratos sem semântica.
 > Candidato a limpeza junto com o renome para VMS.
 
@@ -109,11 +119,11 @@ Requisitos de `docs/modules/cameras.md` (8.2 e 9) cruzados com o código:
 
 | ID | Requisito | Onde vive | Estado |
 | --- | --- | --- | --- |
-| RF-VW-01 | Layouts configuráveis | Backend | Predefinidos 1x1 a 4x4 (seed, org global) + custom por org via `GET /video-wall/layouts`; 5x5 e 6x6 chegam como `customGrid` |
+| RF-VW-01 | Layouts configuráveis | Backend | Predefinidos 1x1 a 4x4 (seed, org global) + custom por org via `GET /vms/layouts`; 5x5 e 6x6 chegam como `customGrid` |
 | RF-VW-02 | Gestão de cenas, ativável em ação única | Backend | CRUD completo + `activate` num único POST |
 | RF-VW-03 | Rotação automática | **Frontend** | Backend serve as cenas e o toggle; timer, ordem e `dwellSeconds` são do cliente (`IRotationConfig`) |
-| RF-VW-04 | PTZ inline por célula | **Frontend** | Comandos e estado via [[PTZ e presets]]; estado por célula é do cliente |
-| RF-VW-05 | Popup detalhe / tela cheia | Parcial | Backend dá `GET /video-wall/scenes/:id` + status/detalhe da câmera; o popup é do cliente |
+| RF-VW-04 | PTZ inline por célula | **Frontend** | Comandos e estado via [[PTZ e presets]]; estado por célula vive hoje na `videowall-ptz.store.ts` |
+| RF-VW-05 | Popup detalhe / tela cheia | Parcial | Backend dá `GET /vms/scenes/:id` + status/detalhe da câmera; o popup é do cliente |
 | RF-VW-06 | Monitoramento de banda | Parcial | Backend agrega total + nível de alerta; consumo por câmera e proatividade ficam no front ([[VMS - Banda e alertas]]) |
 | RNF-CAM-04 | Desempenho do mosaico | Parcial | Ver abaixo |
 | RNF-CAM-12 | Alertas de banda | Parcial | Total + `alertLevel` no backend; por câmera e o aviso proativo são do front |
@@ -134,6 +144,7 @@ O backend contribui por **desenho de dados**, não por otimização de vídeo (v
 - **D4** - grade virtual até 1000×1000 para o mosaico percentual; validação O(n²) desacoplada da resolução.
 - **MOD-008 reusa telemetria** - a banda não cria tabela nem worker novos; reusa perfil de stream + snapshot de health (ver [[VMS - Banda e alertas]]).
 - **Locking otimista descartado** no front, sem contrapartida no backend (ver aviso acima).
+- **Página vira casca, estado vira store própria** (PR #1884, mergeada) - ver [[VMS]] seção "Arquitetura do frontend".
 
 ## Relacionados
 

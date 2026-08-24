@@ -1,0 +1,39 @@
+{
+  "id": "2dbe27eb-cafe-416a-905a-9500791ba66a",
+  "state": "committed",
+  "createdAt": "2026-08-24T14:13:18.267Z",
+  "snapshots": [
+    {
+      "path": ".obsidian-mcp/trash/8a1a9f44-bd2a-46f3-9450-82792e256e26.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "941a6faa1d1f9e1c22041ebf1f194f87a39f5e6297fce0c34e41b3f266249c46",
+      "recoverable": true,
+      "existed": false,
+      "committedEtag": "941a6faa1d1f9e1c22041ebf1f194f87a39f5e6297fce0c34e41b3f266249c46"
+    },
+    {
+      "path": ".obsidian-mcp/trash/8a1a9f44-bd2a-46f3-9450-82792e256e26.json",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "6c21cd2e3cdbc548d6bcd841ef678b1b6318b47e1137958cd5f5713555228a0b",
+      "recoverable": true,
+      "existed": false,
+      "committedEtag": "6c21cd2e3cdbc548d6bcd841ef678b1b6318b47e1137958cd5f5713555228a0b"
+    },
+    {
+      "path": "Docs/kubernetes/Kubernetes - Arquitetura.excalidraw.md",
+      "operation": "delete",
+      "entryType": "file",
+      "phase": "applied",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33204,
+      "etag": "941a6faa1d1f9e1c22041ebf1f194f87a39f5e6297fce0c34e41b3f266249c46",
+      "snapshot": "2.bin"
+    }
+  ],
+  "completedAt": "2026-08-24T14:13:18.277Z"
+}

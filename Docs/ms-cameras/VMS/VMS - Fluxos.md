@@ -6,14 +6,19 @@ tags:
   - vms
 aliases:
   - "Video Wall - Fluxos"
-atualizado: 2026-07-31
+atualizado: 2026-08-24
 ---
 
 # VMS - Fluxos
 
-> Parte do [[VMS]] (MOD-006). Fluxos de use case (backend) e o user flow de montar o mosaico. Visual no canvas: [[06 - MOD-006 VMS.excalidraw|diagrama]]. As rotas abaixo são as de hoje (`/video-wall`); o renome para `/vms` está escopado em [[VMS]].
+> Parte do [[VMS]] (MOD-006). Fluxos de use case (backend) e o user flow de montar o mosaico. Visual no canvas: [[06 - MOD-006 VMS.excalidraw|diagrama]].
 
-## UC-015 - Listar layouts (`GET /video-wall/layouts`)
+> [!success] Estado em 24/08: rotas atualizadas para `/vms`
+> Até 31/07 as rotas abaixo eram `/video-wall` com o renome para `/vms` só escopado. Confirmado em
+> 24/08 (`c9766ab960`, 18/08, mergeado na develop): o path `/video-wall` **não existe mais** em nenhum
+> ambiente — só `/vms`/`/cameras/vms` respondem. As tabelas abaixo já usam as rotas atuais.
+
+## UC-015 - Listar layouts (`GET /vms/layouts`)
 
 | # | Passo |
 | --- | --- |
@@ -25,7 +30,7 @@ atualizado: 2026-07-31
 Só existem 1x1, 2x2, 3x3 e 4x4 como predefinidos (seed). Preset 5x5/6x6 escolhido na tela não acha
 layout e vira `customGrid` no save.
 
-## UC-014 - Picker de câmeras (`GET /cameras/video-wall`)
+## UC-014 - Picker de câmeras (`GET /cameras/vms`)
 
 | # | Passo |
 | --- | --- |
@@ -37,7 +42,7 @@ layout e vira `customGrid` no save.
 Elegibilidade segue a mesma regra da cena (existe, não deletada, diferente de `STOCK`, ver
 [[VMS - Arquitetura e estratégias]]).
 
-## UC-016 - Criar cena (`POST /video-wall/scenes`)
+## UC-016 - Criar cena (`POST /vms/scenes`)
 
 | # | Passo |
 | --- | --- |
@@ -48,11 +53,11 @@ Elegibilidade segue a mesma regra da cena (existe, não deletada, diferente de `
 | 5 | `createScene` (transação): resolve/materializa layout (custom → dedup por org), `sortOrder = count(org)`, `isActive = false`, cria células |
 | 6 | Retorna `VideoWallSceneResult` (slim + `allocatedCameraCount`/`onlineCameraCount`) |
 
-`PATCH /video-wall/scenes/:id` segue o mesmo pipeline de validação; `cells` substitui o conjunto inteiro;
+`PATCH /vms/scenes/:id` segue o mesmo pipeline de validação; `cells` substitui o conjunto inteiro;
 trocar layout revalida as células existentes e limpa o layout custom órfão. O front usa PATCH e **não**
 manda `If-Match` (locking otimista descartado).
 
-## UC-016 - Ativar cena em 1 ação (`POST /video-wall/scenes/:id/activate`)
+## UC-016 - Ativar cena em 1 ação (`POST /vms/scenes/:id/activate`)
 
 | # | Passo |
 | --- | --- |
@@ -70,15 +75,15 @@ Passos do operador na tela e o que o backend faz em cada um:
 
 | # | Ação do operador | Backend |
 | --- | --- | --- |
-| 1 | Escolhe um layout (1x1 a 6x6 ou custom) | `GET /video-wall/layouts`; preset sem layout seedado vira `customGrid` no save |
-| 2 | Abre o picker e arrasta câmeras para as células | `GET /cameras/video-wall` (paginado, filtrável) |
+| 1 | Escolhe um layout (1x1 a 6x6 ou custom) | `GET /vms/layouts`; preset sem layout seedado vira `customGrid` no save |
+| 2 | Abre o picker e arrasta câmeras para as células | `GET /cameras/vms` (paginado, filtrável) |
 | 3 | Manda a seleção em lote para a grade | Nada: o front dimensiona o preset e descarta o excedente acima de 6x6 |
-| 4 | Salva o mosaico como visualização (cena) | `POST /video-wall/scenes` (valida grade, sobreposição, elegibilidade) |
-| 5 | Ativa com um clique | `POST /video-wall/scenes/:id/activate` |
+| 4 | Salva o mosaico como visualização (cena) | `POST /vms/scenes` (valida grade, sobreposição, elegibilidade) |
+| 5 | Ativa com um clique | `POST /vms/scenes/:id/activate` |
 | 6 | Vê os feeds ao vivo | Player resolve o **stream secundário** via [[Streaming]] (backend não devolve URL) |
 | 7 | Comanda PTZ inline numa célula | Comandos e estado via [[PTZ e presets]]; estado por célula é do front (RF-VW-04) |
 | 8 | Deixa as visualizações em rotação | Timer no **frontend** (RF-VW-03, `IRotationConfig` na URL); backend só serve as cenas |
-| 9 | Expande uma célula em tela cheia | `GET /video-wall/scenes/:id` + status/detalhe da câmera; popup é do front (RF-VW-05) |
+| 9 | Expande uma célula em tela cheia | `GET /vms/scenes/:id` + status/detalhe da câmera; popup é do front (RF-VW-05) |
 | 10 | Sai da página com edição pendente | Nada: `videowallDirtyGuard` (UF-011) pede confirmação no cliente |
 
 ## Erros e status

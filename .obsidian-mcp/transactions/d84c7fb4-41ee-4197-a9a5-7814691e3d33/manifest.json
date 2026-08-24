@@ -1,0 +1,21 @@
+{
+  "id": "d84c7fb4-41ee-4197-a9a5-7814691e3d33",
+  "state": "committed",
+  "createdAt": "2026-08-24T12:19:32.938Z",
+  "snapshots": [
+    {
+      "path": "Docs/ms-cameras/VMS/VMS - Fluxos.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "6f1c129399294cfe1a4bc0ec62605ec46b377313069c37afe4c6dfa6949ac8c5",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33204,
+      "etag": "a23f3167f3ec65f56206141233f411f3711127541ea89de3b3d5fe3a7e8c9688",
+      "snapshot": "0.bin",
+      "committedEtag": "6f1c129399294cfe1a4bc0ec62605ec46b377313069c37afe4c6dfa6949ac8c5"
+    }
+  ],
+  "completedAt": "2026-08-24T12:19:32.944Z"
+}

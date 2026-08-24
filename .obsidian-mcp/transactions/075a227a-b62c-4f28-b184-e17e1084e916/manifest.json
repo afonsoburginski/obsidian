@@ -1,0 +1,21 @@
+{
+  "id": "075a227a-b62c-4f28-b184-e17e1084e916",
+  "state": "committed",
+  "createdAt": "2026-08-24T12:34:46.809Z",
+  "snapshots": [
+    {
+      "path": "Docs/ms-cameras/Status em tempo real/index.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "a0dd21c5610ae02246aa97dabbed59a2183624eaf62f2e2d2f9a5d1ad4d42386",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33204,
+      "etag": "7012ad7871eba9ef87a491ab2346f24a00ccfdfe8ee45de1daa519879a26ad16",
+      "snapshot": "0.bin",
+      "committedEtag": "a0dd21c5610ae02246aa97dabbed59a2183624eaf62f2e2d2f9a5d1ad4d42386"
+    }
+  ],
+  "completedAt": "2026-08-24T12:34:46.817Z"
+}

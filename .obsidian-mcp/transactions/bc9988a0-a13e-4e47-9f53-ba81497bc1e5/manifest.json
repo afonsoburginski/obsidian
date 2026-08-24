@@ -1,0 +1,21 @@
+{
+  "id": "bc9988a0-a13e-4e47-9f53-ba81497bc1e5",
+  "state": "committed",
+  "createdAt": "2026-08-24T12:20:33.505Z",
+  "snapshots": [
+    {
+      "path": "Docs/ms-cameras/VMS/VMS - Arquitetura e estratégias.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "3946a1f6bd350d15f0184022c99bd64625fc8d40269a7f17d31928a82eb65623",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33204,
+      "etag": "1113e2066338085167fc1433a886f9ce231683358037215e68fb57a4f5ca032e",
+      "snapshot": "0.bin",
+      "committedEtag": "3946a1f6bd350d15f0184022c99bd64625fc8d40269a7f17d31928a82eb65623"
+    }
+  ],
+  "completedAt": "2026-08-24T12:20:33.515Z"
+}

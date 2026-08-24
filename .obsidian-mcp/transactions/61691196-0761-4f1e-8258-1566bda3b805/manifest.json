@@ -1,0 +1,39 @@
+{
+  "id": "61691196-0761-4f1e-8258-1566bda3b805",
+  "state": "committed",
+  "createdAt": "2026-08-24T14:13:18.238Z",
+  "snapshots": [
+    {
+      "path": ".obsidian-mcp/trash/73e62d7c-ef19-40eb-baaf-7648aa0ec5f8.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "dd8945252cfac64f4862d68cd0c921d460cd50608b3617ff4a4710e8fb25f2d8",
+      "recoverable": true,
+      "existed": false,
+      "committedEtag": "dd8945252cfac64f4862d68cd0c921d460cd50608b3617ff4a4710e8fb25f2d8"
+    },
+    {
+      "path": ".obsidian-mcp/trash/73e62d7c-ef19-40eb-baaf-7648aa0ec5f8.json",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "5b010b42dcbb519818087855d998313d7c283f730f53d0e11a3a7321853e2933",
+      "recoverable": true,
+      "existed": false,
+      "committedEtag": "5b010b42dcbb519818087855d998313d7c283f730f53d0e11a3a7321853e2933"
+    },
+    {
+      "path": "Docs/kubernetes/index.md",
+      "operation": "delete",
+      "entryType": "file",
+      "phase": "applied",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33204,
+      "etag": "dd8945252cfac64f4862d68cd0c921d460cd50608b3617ff4a4710e8fb25f2d8",
+      "snapshot": "2.bin"
+    }
+  ],
+  "completedAt": "2026-08-24T14:13:18.253Z"
+}

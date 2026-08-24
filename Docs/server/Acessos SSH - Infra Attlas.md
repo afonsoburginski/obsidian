@@ -5,7 +5,7 @@ tags:
   - attlas
   - runbook
   - ssh
-atualizado: 2026-07-24
+atualizado: 2026-08-24
 ---
 
 # Acessos SSH - Infra Attlas
@@ -15,10 +15,10 @@ Runbook objetivo dos acessos. Aliases `sumo` e `aws-attlas-26` já estão no `~/
 ## Mapa rápido
 
 | Alias / comando                         | Máquina               | Quem é                                                                                        |
-| --------------------------------------- | --------------------- | --------------------------------------------------------------------------------------------- |
+| --------------------------------------- | ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
 | `ssh sumo`                              | `develop@10.1.1.115`  | Host de gestão (sumo raiz). Dentro dele: VM do runner de CI, cluster RKE2, stack MinIO/cache. |
-| `ssh aws-attlas-26`                     | `ubuntu@3.15.199.101` | EC2 dev **26**. Roda a aplicação dev inteira + 1 runner de CI leve (lint/build).              |
-| (via sumo) `ssh ubuntu@192.168.122.66`  | VM `ci-runner`        | Onde o **CI roda** (16 vCPU / 31 GB).                                                         |
+| `ssh aws-attlas-26`                     | `ubuntu@3.15.199.101` | EC2 dev **26**. Roda a aplicação dev inteira (66 containers) + 1 runner de CI leve (lint/build, sem label `heavy`). |
+| (via sumo) `ssh ubuntu@192.168.122.66`  | VM `ci-runner`        | Onde o **CI roda** (32 vCPU / 40 GiB - cresceu de 16 vCPU/32 GB em agosto/2026; 3 runners com label `heavy`, é onde a integração corre). |
 | (via sumo) `ssh ubuntu@10.1.1.120..127` | `attlas-vm-1..7`      | Cluster RKE2 em bridge (LAN).                                                                 |
 
 ---
@@ -33,7 +33,7 @@ ssh sumo
 
 ## 2. VM do runner de CI (dentro da sumo)
 
-É onde o CI de verdade executa (integração, testcontainers). IP interno do libvirt: **192.168.122.66**.
+É onde o CI de verdade executa (integração, testcontainers). IP interno do libvirt: **192.168.122.66**. 32 vCPU / 40 GiB de RAM (cresceu de 16 vCPU/32 GB em agosto/2026, ver `docs/architecture/ci-remote-cache.md` seção "Topologia de runners" no repo), com 3 dos 4 runners self-hosted do projeto (label `heavy`) - o quarto roda no EC2, sem esse label.
 
 **Passo a passo:**
 ```bash
@@ -93,3 +93,4 @@ ssh ubuntu@10.1.1.120     # vm-1  (…121 vm-2, …122 vm-3, …123 vm-4, …124
 - O `~/.ssh/config` já tem `sumo` e `aws-attlas-26`. Os demais (VM do runner, VMs 1..7) entram **pela sumo** (não têm IP público).
 - Nota de segurança: este arquivo tem credenciais - manter só no vault local, não versionar em repo nem compartilhar.
 - O que roda nessas máquinas e como o cluster é montado: [[Kubernetes e infra]].
+- Topologia e higiene dos runners de CI (governor, reaper, disco, cache remoto): `docs/architecture/ci-remote-cache.md` no repo (fonte de verdade) e [[Observabilidade CI - plano (stack completa)]].

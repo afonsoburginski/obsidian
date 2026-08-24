@@ -1,0 +1,39 @@
+{
+  "id": "dd158b7c-9f7a-473f-b124-0c5d923aa1c7",
+  "state": "committed",
+  "createdAt": "2026-08-24T14:13:18.286Z",
+  "snapshots": [
+    {
+      "path": ".obsidian-mcp/trash/08547645-5669-4fa3-a31d-a9ab6196faf1.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "fc4854a42d5ab607f91bba299c6209f27b84c19ce302783e852c055e71ac6cff",
+      "recoverable": true,
+      "existed": false,
+      "committedEtag": "fc4854a42d5ab607f91bba299c6209f27b84c19ce302783e852c055e71ac6cff"
+    },
+    {
+      "path": ".obsidian-mcp/trash/08547645-5669-4fa3-a31d-a9ab6196faf1.json",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "e0a85b4479ebf95346a93b0767668db33be9b3e0531a099e8a3d71b78dab762d",
+      "recoverable": true,
+      "existed": false,
+      "committedEtag": "e0a85b4479ebf95346a93b0767668db33be9b3e0531a099e8a3d71b78dab762d"
+    },
+    {
+      "path": "Docs/kubernetes/Kubernetes - Arquitetura.md",
+      "operation": "delete",
+      "entryType": "file",
+      "phase": "applied",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33204,
+      "etag": "fc4854a42d5ab607f91bba299c6209f27b84c19ce302783e852c055e71ac6cff",
+      "snapshot": "2.bin"
+    }
+  ],
+  "completedAt": "2026-08-24T14:13:18.304Z"
+}
