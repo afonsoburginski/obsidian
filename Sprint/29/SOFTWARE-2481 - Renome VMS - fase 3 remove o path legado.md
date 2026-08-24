@@ -9,9 +9,9 @@ clickup: https://app.clickup.com/t/86ajz08c2
 titulo: "[Back] Renome VMS - fase 3, remove o path legado /api/video-wall"
 frente: Renome VMS (CROSS-045)
 tamanho: a pontuar (diff de poucas linhas)
-status: backlog na lista da Sprint 28; só abre depois do deploy do renome em todos os ambientes.
+status: "**Discrepância achada em 22/08**: o ClickUp marca este card como Closed, mas os quatro pontos do escopo abaixo continuam presentes no código na develop (`cameras.controller.ts:170`, `video-wall.controller.ts:38`, `docker/kong.yml:501-519` com o comentário citando esta task, e nenhum PR fechando-o foi encontrado). Ou foi fechado sem o trabalho ter sido feito, ou foi decidido não fazer — nenhum comentário no ClickUp explica qual. Confirmar com o dono antes de reabrir ou de assumir feito."
 sprint: "[[Attlas - Sprint 29]]"
-atualizado: 2026-08-17
+atualizado: 2026-08-22
 ---
 
 # SOFTWARE-2481 - Renome VMS - fase 3, remove o path legado

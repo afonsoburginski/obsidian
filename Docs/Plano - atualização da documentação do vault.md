@@ -54,10 +54,33 @@ Isso são duas frentes inteiras sem documentação: **dashboard de câmeras** (8
 Um lote por sessão, na ordem abaixo. Cada lote termina com o verificador de wikilinks limpo e
 `atualizado:` no frontmatter das notas tocadas.
 
-### Lote 0 - VMS e videowall externo (FEITO em 31/07)
+### Lote 0 - VMS e videowall externo (FEITO em 31/07, REVISADO em 22/08)
 
 Renome de Video Wall para VMS, nota nova do H9 externo com a foto do equipamento, 5 notas viraram 4,
 banda atualizada para device-truth. Ver [[VMS]] e [[Videowall externo (NovaStar H9)]].
+
+**Revisão de 22/08**: três semanas de código andaram desde 31/07 (espelhar com destino escolhido,
+brilho ao vivo, projeção nativa completa, despacho de plano de resposta até a parede, refactor em
+camadas do frontend) e nenhuma linha do vault tinha sido tocada. As duas notas ganharam callout
+"Estado em DD/MM" no topo, mapa de código atualizado, e dois achados de discrepância real registrados
+(colisão do número de card SOFTWARE-2519 entre duas tasks distintas; SOFTWARE-2481 fechado no ClickUp
+com o código ainda não refletindo o fechamento). **Lição**: um lote "FEITO" não é permanente, sprint que
+entrega rápido pede revisão a cada 2-3 semanas, não só na primeira passada.
+
+### Lote 10 - web-attlas geral (NOVO, aberto em 22/08, ainda não escopado)
+
+**Por que existe**: o vault documenta o `ms-cameras` a fundo, mas não tem domínio nenhum para o
+`web-attlas` além do que mora dentro de `ms-cameras/VMS/` (que é só a fatia de videowall). O padrão de
+camadas página/store/serviço que a PR #1884 aplicou ao VMS (registrado na seção de arquitetura do
+frontend em [[VMS]]) é um padrão do módulo de alarmes, então provavelmente vale para o `web-attlas`
+inteiro — mas isso não foi verificado, só suposto a partir de um exemplo.
+
+**Escopo a decidir numa sessão própria, não aberto ainda**: existe um domínio `web-attlas` inteiro por
+trás disso (traffic-model, PMV, permissions, operations-panel, dezenas de feature modules) que este
+plano nunca diagnosticou. Antes de escrever nota, rodar o mesmo método dos lotes 1-9 (data x commits,
+referência morta, termo sem nota) sobre `apps/web-attlas/`, decidir se cabe uma pasta `Docs/web-attlas/`
+paralela a `ms-cameras/` ou se cada domínio de front fica dentro do domínio de backend que serve
+(seguindo o precedente do VMS). Não fazer de improviso dentro de outro lote.
 
 ### Camada H - higiene e padronização (FEITA em 31/07)
 

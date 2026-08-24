@@ -9,10 +9,20 @@ tags:
 aliases:
   - "Videowall externo (NovaStar H9)"
   - "00 - Videowall externo (NovaStar H9)"
-atualizado: 2026-08-14
+atualizado: 2026-08-22
 ---
 
 # Videowall externo (NovaStar H9)
+
+> [!success] Estado em 22/08 — a maior parte do desenho abaixo já foi entregue
+> Esta nota registra a EVOLUÇÃO das decisões (31/07 a 14/08) e continua valendo como histórico. O que
+> mudou desde então: modo espelho com destino escolhido pelo operador (`UF-034`, PR #1889), brilho ao
+> vivo (`INT-015`/`UF-029`), modo de projeção nativa completo (`UC-051`/`INT-018`, PR #1757), e o
+> caminho de plano de resposta chega à parede fim a fim (`PROJ-004` despacha, `PROJ-020` ecoa, PRs #1760
+> e #1761, 19-21/08). A lacuna de acesso ao equipamento real (seção "Acesso: pendente" abaixo) **segue
+> aberta**: tudo isto roda hoje contra o **painel emulado do playground**
+> (`apps/ms-cameras/src/video-wall/targets/playground/`), não contra o H9 físico. Ver [[VMS]] para o
+> mapa de código completo e a lista de PRs.
 
 > **Videowall é o externo**: o painel físico da sala de controle de Quito, comandado por um processador NovaStar Série H (H9), que não é nosso e que o Attlas apenas dirige por API. **VMS é o que temos internamente**, o mosaico de feeds que o Attlas desenha no browser: [[VMS]]. Card: [[SOFTWARE-2201 - Integração videowall externo (NovaStar H9)]]. Nomenclatura decidida na daily de 31/07 e formalizada na spec CROSS-045.
 >
@@ -22,7 +32,11 @@ atualizado: 2026-08-14
 >
 > **Desde 14/08 o painel tem dois modos, e a cláusula do contrato está versionada.** O user trouxe o texto literal da cláusula **16.13, "Módulo de gestión de videowall"**, que era a lacuna de procedência que a seção 3.2 de `cameras.md` declarava: os requisitos estavam parafraseados a partir do levantamento de 15/07 e do refino de 31/07. A citação entrou literal, em espanhol, com as doze obrigações mapeadas uma a uma, e reabriu a decisão do dia 13: a cláusula exige ação automatizada no painel, vinda de plano de resposta e de operação programada, e sob espelhamento não existe tela para espelhar quando não há operador. O painel passa a ter **modo espelho** (com operador) e **modo de projeção nativa** (sem operador), e nos dois a fonte é servida pela plataforma, nunca puxada da câmera, o que preserva o ganho de domínio da revisão anterior. Plano preempta o operador; exibição programada cede a ele. Sobra uma lacuna declarada só: página web na parede sem operador.
 >
-> **Especificação no repositório, depois da revisão de 13/08**: requisitos na faixa `RF-VW-07` a `RF-VW-20` de `docs/modules/cameras.md` (o merge com a develop renumerou: o 18 da develop, rotação de cenas no painel, entrou como retirado, dono exclusivo virou 19 e exposição virou 20), mais `RNF-CAM-18` e `RNF-CAM-19`; atômicas de backend `UC-049` (cadastro), `INT-011` (codec), `INT-012` (cliente), `INT-016` (a tela como fonte única), `UC-050` (tomar e liberar), `PROJ-019` (expiração de espelho órfão) e `INT-015` (brilho e estado); no frontend, a `UF-031` para a captura da tela. As antigas `INT-013` e `INT-014` foram deletadas. Tabela do que mudou por documento na nota do card.
+> **Especificação no repositório, depois da revisão de 13/08**: requisitos na faixa `RF-VW-07` a `RF-VW-20` de `docs/modules/cameras.md` (o merge com a develop renumerou: o 18 da develop, rotação de cenas no painel, entrou como retirado, dono exclusivo virou 19 e exposição virou 20), mais `RNF-CAM-18` e `RNF-CAM-19`; atômicas de backend `UC-049` (cadastro), `INT-011` (codec), `INT-012` (cliente), `INT-016` (a tela como fonte única), `UC-050` (tomar e liberar), `PROJ-019` (expiração de espelho órfão) e `INT-015` (brilho e estado); no frontend, a `UF-031` para a captura da tela. As antigas `INT-013` e `INT-014` **não foram deletadas, ficaram com `status: superseded`** e ponteiro para as substitutas (`INT-017`, `INT-018`), que é o que o SPEC-GUIDE manda em vez de apagar — correção de 22/08, a versão anterior desta nota dizia "deletadas". Tabela do que mudou por documento na nota do card.
+>
+> **Atualização de 22/08, entregas seguintes**: `UC-051` (projetar/liberar cena pelo alvo `VIDEOWALL`, com
+> a arbitragem entre operador e plano) e `PROJ-020` (o eco do comando de plano, no lado `ms-cameras`) já
+> foram entregues — ver o callout de estado atual no topo da nota.
 
 Exigido pelo contrato de Quito (Módulo de Gestão de Videowall): o Attlas precisa comandar o equipamento
 **direto da consola, por Ethernet/TCP-IP**, sem interface intermediária nem dispositivo dedicado. Hoje
@@ -251,8 +265,9 @@ Três descobertas ao escrever as specs, e nenhuma era óbvia no planejamento:
    do picker, e só o teste de rota protege.
 
 Nenhuma tela trabalha com mock: uma tela que desenha mural presumido é pior que uma tela vazia, porque o
-operador decidiria olhando composição inventada. Oito cards, todos em `backlog` até o backend liberar, na
-[[Attlas - Sprint 28]].
+operador decidiria olhando composição inventada. Dos oito cards que abriram em `backlog` na
+[[Attlas - Sprint 28]], a maioria já fechou (ver o callout de estado atual no topo desta nota); os que
+sobraram rolaram para a [[Attlas - Sprint 29]] no rollover de 17/08.
 
 ## Cuidado com o vocabulário
 

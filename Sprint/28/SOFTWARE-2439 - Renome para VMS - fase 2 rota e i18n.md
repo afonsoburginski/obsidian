@@ -10,9 +10,9 @@ clickup: https://app.clickup.com/t/86ajyce57
 titulo: "[Front] Renome para VMS: fase 2, rota e i18n"
 frente: Renome para VMS
 tamanho: 3 pts
-status: comprometido da Sprint 28, EM CODE REVIEW: PR [#1440](https://github.com/atmanadmin/attlas-2026/pull/1440) aberta em 10/08. Merge somente depois da #1439, porque /api/vms precisa existir no gateway antes do front apontar para la.
+status: Fechado. PR [#1440](https://github.com/atmanadmin/attlas-2026/pull/1440) mergeada em 11/08, depois da #1439. **Pendência real, achada em 22/08**: a rota `/cameras/vms` e o front estão em execução, mas `apps/web-attlas/docs/modules/videowall/MOD-001-videowall.md` nunca teve o corpo (1023 linhas) reconciliado com o renome — continua descrevendo `/cameras/videowall`/`videowall.*` como se fossem o estado corrente. O banner do doc foi corrigido em 22/08 para sinalizar isso; a reconciliação do corpo é trabalho à parte, ainda sem card.
 sprint: "[[Attlas - Sprint 28]]"
-atualizado: 2026-08-10
+atualizado: 2026-08-22
 ---
 
 # SOFTWARE-2439 - Renome para VMS - fase 2 rota e i18n

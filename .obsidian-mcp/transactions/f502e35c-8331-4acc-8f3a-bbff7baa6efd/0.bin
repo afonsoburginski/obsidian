@@ -1,0 +1,26 @@
+---
+tags:
+  - report
+date: 2026-08-22
+---
+```
+Report Diário - 22/08/2026
+
+Concentrei o dia na SOFTWARE-2519: fechei e mergeei o seletor de slot de destino do videowall e segui a fase 2 da reorganização em camadas, também mergeada. Revisei uma PR.
+
+Escolha do slot de destino antes de espelhar (#1889):
+- Apliquei filtro por grupo no seletor de slot, destravei o slider de brilho para refletir a duty real do administrador e mantive o preset e a conexão ao mover uma tela entre slots.
+- Corrigi a rotulagem duplicada de arranjo e layout no catálogo de tradução do videowall.
+
+Videowall do frontend em camadas (#1884):
+- Extraí mais dois stores de página, um para as declarações do painel lateral e outro para o catálogo de cenas e o PTZ, e removi os comentários decorativos de seção que sobravam na página.
+- Corrigi dois defeitos: a tela cheia deixava de responder em navegador sem a Fullscreen API, e uma sessão de vídeo aberta na hora vazava a licença de espectador.
+- Atualizei a documentação dos módulos de videowall para refletir o que já foi entregue desde a última revisão.
+
+PRs mergeadas:
+- `1889 - Videowall: escolher o slot de destino antes de espelhar (SOFTWARE-2519)`
+- `1884 - Videowall do frontend em camadas (SOFTWARE-2519)`
+
+PRs revisadas:
+- `1911 - Piso de legibilidade na célula da matriz de conflitos (aprovada)`
+```

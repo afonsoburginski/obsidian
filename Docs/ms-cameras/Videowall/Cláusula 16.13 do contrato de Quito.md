@@ -120,4 +120,4 @@ mostrando, que é justamente o que `RF-VW-17` exige.
 
 ## Relacionados
 
-[[index|Videowall externo (NovaStar H9)]] · [[Pesquisa - transporte do espelhamento de tela]] · [[SOFTWARE-2201 - Integração videowall externo (NovaStar H9)]] · [[Attlas - Sprint 28]] · [[Edital - Attlas nova definição de módulos]]
+[[Docs/ms-cameras/Videowall/index|Videowall externo (NovaStar H9)]] · [[Pesquisa - transporte do espelhamento de tela]] · [[SOFTWARE-2201 - Integração videowall externo (NovaStar H9)]] · [[Attlas - Sprint 28]] · [[Edital - Attlas nova definição de módulos]]
