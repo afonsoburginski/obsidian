@@ -16,7 +16,7 @@ atualizado: 2026-08-24
 > [!success] Estado em 24/08: rotas atualizadas para `/vms`
 > Até 31/07 as rotas abaixo eram `/video-wall` com o renome para `/vms` só escopado. Confirmado em
 > 24/08 (`c9766ab960`, 18/08, mergeado na develop): o path `/video-wall` **não existe mais** em nenhum
-> ambiente — só `/vms`/`/cameras/vms` respondem. As tabelas abaixo já usam as rotas atuais.
+> ambiente - só `/vms`/`/cameras/vms` respondem. As tabelas abaixo já usam as rotas atuais.
 
 ## UC-015 - Listar layouts (`GET /vms/layouts`)
 

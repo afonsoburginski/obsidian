@@ -74,18 +74,18 @@ Ou seja: mesmo modelo de sala (`camera:<id>`) e mesmo guard, propósitos e canai
 
 > [!success] Estado em 24/08: o que a seção abaixo descrevia como bloqueante foi entregue em 31/07
 > `SOFTWARE-2009` (PR [#1175](https://github.com/atmanadmin/attlas-2026/pull/1175), SOFTWARE-2356) entregou
-> exatamente a peça que faltava aqui — este parágrafo ficou três semanas contradizendo aquele card sem
+> exatamente a peça que faltava aqui - este parágrafo ficou três semanas contradizendo aquele card sem
 > ninguém reconciliar. Confirmado no código hoje: `apps/ms-cameras/src/main.ts` monta um
 > `RedisIoAdapter` (`libs/core-messaging/src/socketio/redis-io.adapter.ts`, `@socket.io/redis-adapter` +
-> `ioredis`) e chama `connectToRedis()` **antes** de `useWebSocketAdapter(wsAdapter)` — o Redis do
+> `ioredis`) e chama `connectToRedis()` **antes** de `useWebSocketAdapter(wsAdapter)` - o Redis do
 > `ms-cameras` já está provisionado (não é mais "só config de cache"), e o mesmo adapter é reusado por
 > `ms-controllers`/`ms-execution-plans`. Se `REDIS_HOST` não estiver setado, degrada para adapter em
 > memória (single-replica, mesmo comportamento de antes); se estiver setado mas o Redis estiver
-> inalcançável, loga **ERROR** (não WARN) e segue sem broadcast cross-réplica — condição que precisa
+> inalcançável, loga **ERROR** (não WARN) e segue sem broadcast cross-réplica - condição que precisa
 > alertar, não passar em silêncio.
 
 Com o adapter ligado, `server.to('camera:<id>').emit(...)` alcança sockets em **qualquer** réplica, não só
-na que originou o evento — o problema de "cliente na réplica A, evento nasce na réplica B" que a seção
+na que originou o evento - o problema de "cliente na réplica A, evento nasce na réplica B" que a seção
 original descrevia está coberto para este gateway (`cameras-status`) e para os demais gateways do
 `ms-cameras`.
 
@@ -94,12 +94,26 @@ original descrevia está coberto para este gateway (`cameras-status`) e para os 
 > `server.local.to(room)`/`emitToCameraLocal` **de propósito**, não cruza réplicas mesmo com o adapter
 > Redis ligado. A contagem de assinantes e os baselines de contador de bytes são por processo; emitir
 > cluster-wide faria N réplicas entregarem N leituras divergentes do mesmo tick. Não é a mesma limitação
-> da seção anterior — é uma escolha de design para esse canal específico, e só para ele.
+> da seção anterior - é uma escolha de design para esse canal específico, e só para ele.
 
-**Gap documental encontrado junto**: `CROSS-043` é citado em três atômicas do repo
-(`PROJ-012`, `PROJ-016`, `PROJ-017`) como a spec do adapter, mas não existe arquivo
-`CROSS-043-*.md` em `docs/specs/cross-service/` — é uma decisão sem spec formal própria. Vale o
-registro; não é para criar a spec a partir desta nota.
+> [!success] `CROSS-043` é só o adapter Redis, e ficou assim em 24/08
+> Este parágrafo mudou duas vezes no mesmo dia, e vale o registro. Primeiro dizia só que `CROSS-043` é
+> citado por três atômicas (`PROJ-012`, `PROJ-016`, `PROJ-017`) como a spec do adapter Redis do Socket.IO
+> sem existir arquivo `CROSS-043-*.md`. Depois a auditoria do analítico achou o outro lado: a PR
+> [#1342](https://github.com/atmanadmin/attlas-2026/pull/1342), em draft, criava um
+> `CROSS-043-container-analytics-video-feed.md` para outra decisão, o que faria o mesmo ID significar duas
+> coisas.
+>
+> **A #1342 foi fechada no reescopo do analítico, no fim do mesmo dia, e isso resolveu a colisão sozinho.**
+> `CROSS-043` volta a significar só o adapter Redis - e a `PROJ-017` inclusive já o nomeia
+> `CROSS-043-socketio-redis-adapter-unification` na lista de dependências dela. Confirmado em `develop`:
+> nenhum arquivo `CROSS-043*` existe e a faixa salta de `CROSS-042` para `CROSS-045`.
+>
+> Fica a dívida menor, de rastreabilidade: o arquivo continua não existindo, então três atômicas mergeadas
+> citam uma spec que ninguém escreveu. E fica uma dívida órfã do fechamento: a #1342 também ia renumerar a
+> `CROSS-032` duplicada, o que agora virou card próprio na [[Attlas - Sprint 30]].
+> Virou card na [[Attlas - Sprint 30]] (o card de destravar as specs da Sprint 27). Não é para criar a
+> spec do adapter a partir desta nota.
 
 ## Decisões
 

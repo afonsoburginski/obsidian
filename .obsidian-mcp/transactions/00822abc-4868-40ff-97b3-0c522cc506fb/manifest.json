@@ -1,0 +1,21 @@
+{
+  "id": "00822abc-4868-40ff-97b3-0c522cc506fb",
+  "state": "committed",
+  "createdAt": "2026-08-24T14:24:29.009Z",
+  "snapshots": [
+    {
+      "path": "Docs/ms-cameras/Cameras/Cameras - Fluxos.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "199570eaa0582f1f82bf2e4bf3bb08372a5b504b8af3137d5339fa6a30106d63",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33204,
+      "etag": "f5005a957a3dca513d6f81f2e7e097d9cba9000beee07cfefe72eb87b88d7c42",
+      "snapshot": "0.bin",
+      "committedEtag": "199570eaa0582f1f82bf2e4bf3bb08372a5b504b8af3137d5339fa6a30106d63"
+    }
+  ],
+  "completedAt": "2026-08-24T14:24:29.014Z"
+}

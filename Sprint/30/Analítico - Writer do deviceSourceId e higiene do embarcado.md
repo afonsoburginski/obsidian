@@ -1,0 +1,71 @@
+---
+tags:
+  - attlas
+  - task
+  - sprint-30
+  - analitico
+card: SOFTWARE-2682
+clickup: https://app.clickup.com/t/86ak5dx7x
+titulo: "[Back] Writer do deviceSourceId e higiene do embarcado"
+frente: Analítico
+tamanho: 3 pts
+status: comprometido na Sprint 30, bug P0 e próximo do caminho crítico. PR
+sprint: "[[Attlas - Sprint 30]]"
+atualizado: 2026-08-25
+---
+
+# Analítico - Writer do deviceSourceId e higiene do embarcado
+
+Bug P0, e é o defeito que sozinho justifica a semana. **`deviceSourceId` não tem nenhum writer no banco.**
+
+## O defeito
+
+`deviceSourceId` é a chave que liga o frame publicado pelo device à câmera cadastrada. Ela é lida em dois
+lugares: `apps/ms-cameras/src/analytics-realtime/device-stream.consumer.ts`, onde chaveia o mapa de
+`bindings` e descarta a câmera com um `if (!caps.deviceSourceId) continue`, e
+`apps/ms-cameras/src/analytics-realtime/camera-regions.controller.ts`.
+
+Nenhum código escreve essa chave no banco. As duas únicas origens hoje são
+`apps/ms-cameras/src/database/seed.ts`, que grava só `{ptz, dai, virtualLoop}` e não inclui
+`deviceSourceId`, e edição manual da linha.
+
+Consequência verificável: **câmera cadastrada pela interface nunca entra no binding do consumer, logo nunca
+recebe detecção ao vivo**. O analítico embarcado está entregue desde 15/07 e funciona apenas para as
+câmeras que o seed criou.
+
+O único writer que existe é `apps/ms-cameras/src/analytics-realtime/atman-device-provisioner.service.ts`,
+e ele escreve no **device** (`PUT /config { source_id }`), não no banco. Falta a contraparte: gravar a
+mesma chave do lado do Attlas, no cadastro.
+
+## Higiene que vem junto: reescrever o que a PR #1355 tinha
+
+A PR **#1355** era do card [[SOFTWARE-2391 - Pendências do analítico embarcado]], era toda markdown e foi
+**fechada em 24/08 no reescopo**, junto com as outras 13. A branch `cameras/docs/SOFTWARE-2391` ficou, então
+o texto é recuperável e serve de ponto de partida. O conteúdo entra neste card:
+
+- Corrige a terminologia morta `deviceAnalyticId` em 4 docs da develop (`INT-010`, `PROJ-011`, `PROJ-013`,
+  `MOD-014`). O campo real é `deviceSourceId`.
+- Reconcilia o status de `INT-009`, `INT-010`, `PROJ-011`, `PROJ-012` e `PROJ-013`, que estão `in-review`
+  e já estão na develop, para `completed`.
+- Reescreve a `UF-033` do `web-attlas`, hoje em `draft` afirmando "persistência em localStorage" e "o
+  backend ainda não existe". As duas afirmações são falsas desde 14/07.
+
+## O que este card deliberadamente não faz
+
+Não corrigir o bug de `kind` invertido como prioridade. O código está intocado desde 14/07, mas o frontend
+**ignora o campo**: `apps/web-attlas/src/app/modules/cameras/services/camera-analytics-store.service.ts`
+nunca lê `event.kind`. O impacto funcional hoje é zero. O que falta ali é teste e spec que digam qual é o
+comportamento correto, não correção às cegas de um campo que ninguém consome.
+
+## DoD
+
+Cadastro de câmera pela interface grava `deviceSourceId` e a câmera passa a aparecer no binding do
+consumer sem edição manual de banco, com teste de integração cobrindo o caminho. PR #1355 mergeada junto,
+com `deviceAnalyticId` zerado da develop e a `UF-033` reescrita.
+
+## Encosta em
+
+- [[Analítico - Requisitos e SLA]], seção "Ciclo de vida do analítico", onde a regra está registrada.
+- [[Analítico - Entidade, persistência de região e unicidade]], que promove essa chave a entidade. Este
+  card conserta o sangramento; o outro tira a chave do `Json`.
+- [[SOFTWARE-2391 - Pendências do analítico embarcado]] e [[Attlas - Sprint 30]].

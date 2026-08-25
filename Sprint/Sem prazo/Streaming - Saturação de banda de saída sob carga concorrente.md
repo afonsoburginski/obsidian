@@ -6,11 +6,12 @@ tags:
   - sem-prazo
   - streaming
   - ms-cameras
-card: a criar no ClickUp
+card: SOFTWARE-2687
+clickup: https://app.clickup.com/t/86ak5e33b
 titulo: "[Back] Saturação de banda de saída da EC2 sob carga concorrente de streaming (mediamtx)"
 frente: Streaming
 tamanho: a estimar
-status: "SEM PRAZO desde 24/08. Achado ao investigar instabilidade de câmeras relatada pelo usuário; causa raiz confirmada via dados de healthcheck no banco (CameraAvailabilityWindow) + sar do host + logs do mediamtx. Backlog de correção documentado, sem card ClickUp ainda."
+status: "SEM PRAZO desde 24/08. Achado ao investigar instabilidade de câmeras relatada pelo usuário; causa raiz confirmada via dados de healthcheck no banco (CameraAvailabilityWindow) + sar do host + logs do mediamtx. Card criado no ClickUp em 24/08, na lista da Sprint 30 (vigente), status backlog; sem pontos (tamanho ainda a estimar)."
 sprint: "[[00 - Sem prazo (backlog)]]"
 atualizado: 2026-08-24
 ---

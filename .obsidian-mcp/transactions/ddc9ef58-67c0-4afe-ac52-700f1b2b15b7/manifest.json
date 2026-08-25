@@ -1,0 +1,29 @@
+{
+  "id": "ddc9ef58-67c0-4afe-ac52-700f1b2b15b7",
+  "state": "committed",
+  "createdAt": "2026-08-25T16:05:56.908Z",
+  "snapshots": [
+    {
+      "path": "Sprint/30/Absorvido - Doc de módulo do Analítico.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "489ffde4070cb1dfed304604721325df3db92f39ef6a1fac7c55dd79b0f93324",
+      "recoverable": true,
+      "existed": false,
+      "committedEtag": "489ffde4070cb1dfed304604721325df3db92f39ef6a1fac7c55dd79b0f93324"
+    },
+    {
+      "path": "Sprint/30/Analítico - Doc de módulo (docs-only).md",
+      "operation": "delete",
+      "entryType": "file",
+      "phase": "applied",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33152,
+      "etag": "489ffde4070cb1dfed304604721325df3db92f39ef6a1fac7c55dd79b0f93324",
+      "snapshot": "1.bin"
+    }
+  ],
+  "completedAt": "2026-08-25T16:05:56.915Z"
+}

@@ -1,0 +1,62 @@
+---
+tags:
+  - attlas
+  - task
+  - sprint-31
+  - analitico
+card: SOFTWARE-2697
+clickup: https://app.clickup.com/t/86ak5njdq
+titulo: "[Back] Laço virtual e ocupação da região"
+frente: Analítico
+tamanho: 2 pts
+status: comprometido na Sprint 31 (planejada em 24/08). Card criado no ClickUp em 25/08.
+sprint: "[[Attlas - Sprint 31]]"
+atualizado: 2026-08-25
+---
+
+# Analítico servidor - Laço virtual e ocupação da região
+
+Caixa vira presença. É o card que transforma detecção de objeto em ocupação de laço, e o que faz o
+analítico servidor finalmente publicar algo que o resto da plataforma entende.
+
+## A regra de contato é escolha desta unidade
+
+Centro do objeto dentro da região, base do objeto dentro da região, ou interseção mínima entre caixa e
+região: as três são defensáveis e **mudam o instante da transição**. Uma caixa alta de caminhão entra pela
+base muito antes de entrar pelo centro.
+
+Por isso a regra escolhida precisa ficar **comentada no código**, com o motivo. É comentário que se
+justifica: sem ele, o próximo leitor tem uma constante geométrica sem saber que ela desloca o tempo de
+acionamento do laço.
+
+## Histerese
+
+Mudança de estado só se confirma depois de uma janela mínima, para que oscilação de detecção em frames
+vizinhos não vire pisca-pisca de ocupação. **A constante da janela tem nome**, não é literal solto no meio
+do cálculo.
+
+## Publica só por transição
+
+Nunca por frame. O evento sai quando o estado da região muda, e é isso que mantém o volume compatível com o
+RLE do contrato de ocupação, que agrega em unidades de `DETECTOR_SAMPLE_DURATION_MS`. Publicar por frame
+inundaria o tópico com repetição.
+
+## Sem banco
+
+Estado de ocupação vive em memória por processo. Zero Postgres, zero Redis. Quem persiste série é o
+`ms-detector-history`, na outra ponta do cano, e ele já está pronto para receber.
+
+## DoD
+
+Ocupação de região publicada no contrato de ocupação, com a regra de contato escolhida e comentada, a
+janela de histerese em constante nomeada e publicação apenas por transição. Teste de integração cobrindo
+entrada e saída de objeto na região, e o caso de oscilação que a histerese precisa absorver sem gerar
+transição.
+
+## Encosta em
+
+- [[Analítico servidor - Detecção de objetos por frame]], que entrega a caixa.
+- [[Analítico servidor - Contrato de ocupação]], que define a forma do evento publicado aqui.
+- [[Analítico - Embarcado x Servidor]], seção do contrato de ocupação, que é a razão de os dois caminhos
+  emitirem a mesma coisa.
+- [[Attlas - Sprint 31]].

@@ -1,0 +1,39 @@
+{
+  "id": "f10407d0-f215-4731-a3ee-c774236cdaf5",
+  "state": "committed",
+  "createdAt": "2026-08-24T16:58:11.291Z",
+  "snapshots": [
+    {
+      "path": ".obsidian-mcp/trash/81fb949f-a36d-4ee9-919a-cb8267b76d79.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "858f4b591d30a7a2c5092e37931ddd5c579e909f4f251e28d75d1ea6fd4158d3",
+      "recoverable": true,
+      "existed": false,
+      "committedEtag": "858f4b591d30a7a2c5092e37931ddd5c579e909f4f251e28d75d1ea6fd4158d3"
+    },
+    {
+      "path": ".obsidian-mcp/trash/81fb949f-a36d-4ee9-919a-cb8267b76d79.json",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "43da35ae1fea3851d07145216fb54219f82e510005788675e498fe83c6226d96",
+      "recoverable": true,
+      "existed": false,
+      "committedEtag": "43da35ae1fea3851d07145216fb54219f82e510005788675e498fe83c6226d96"
+    },
+    {
+      "path": "Docs/ms-cameras/Streaming/Incidente - câmeras instáveis por perda de pacote RTP no caminho até a EC2.md",
+      "operation": "delete",
+      "entryType": "file",
+      "phase": "applied",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33152,
+      "etag": "858f4b591d30a7a2c5092e37931ddd5c579e909f4f251e28d75d1ea6fd4158d3",
+      "snapshot": "2.bin"
+    }
+  ],
+  "completedAt": "2026-08-24T16:58:11.301Z"
+}

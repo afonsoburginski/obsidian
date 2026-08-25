@@ -1,0 +1,39 @@
+{
+  "id": "15dce518-a777-4e56-9b44-d3750c4852c1",
+  "state": "committed",
+  "createdAt": "2026-08-25T16:18:11.609Z",
+  "snapshots": [
+    {
+      "path": ".obsidian-mcp/trash/9d5e0fff-bb50-4490-bff9-e8094c2b98df.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "06d1aa248ac3a1b5bf26b6b6d01e5acf3c572aa3754352966eb362e6a13dc1af",
+      "recoverable": true,
+      "existed": false,
+      "committedEtag": "06d1aa248ac3a1b5bf26b6b6d01e5acf3c572aa3754352966eb362e6a13dc1af"
+    },
+    {
+      "path": ".obsidian-mcp/trash/9d5e0fff-bb50-4490-bff9-e8094c2b98df.json",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "949b01321b3fce04c24e9dfd2157df0900d04dc1beec6519c4cb89f6ca9404c7",
+      "recoverable": true,
+      "existed": false,
+      "committedEtag": "949b01321b3fce04c24e9dfd2157df0900d04dc1beec6519c4cb89f6ca9404c7"
+    },
+    {
+      "path": "Sprint/30/Analítico - Spec dos endpoints de região.md",
+      "operation": "delete",
+      "entryType": "file",
+      "phase": "applied",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33204,
+      "etag": "06d1aa248ac3a1b5bf26b6b6d01e5acf3c572aa3754352966eb362e6a13dc1af",
+      "snapshot": "2.bin"
+    }
+  ],
+  "completedAt": "2026-08-25T16:18:11.619Z"
+}

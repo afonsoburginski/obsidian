@@ -10,10 +10,10 @@ clickup: https://app.clickup.com/t/86ajyp9mk
 titulo: "[Front] Videowall externo: capacidades e estado observável do painel"
 frente: Videowall externo (NovaStar H9)
 tamanho: 2 pts
-status: code review na [PR #1721](https://github.com/atmanadmin/attlas-2026/pull/1721), empilhada sobre a #1720, com a 2476 junto. Teve aprovação do rezendelc e correção pedida pelo otavioassis em 18/08. Conferido em 19/08: o serviço do frontend já tem `setBrightness` chamando a rota de brilho desde o redesenho, mas os controles na tela estão com `zDisabled` fixo e título de motivo, chamando uma rota que ainda não existe no backend. É esse par morto que este card vem ligar.
+status: "mergeado - PR #1758 em 20/08/2026, conferido no GitHub em 25/08"
 pr: "[#1758](https://github.com/atmanadmin/attlas-2026/pull/1758)"
 sprint: "[[Attlas - Sprint 29]]"
-atualizado: 2026-08-19
+atualizado: 2026-08-25
 ---
 
 # SOFTWARE-2473 - Capacidades e estado observável no frontend
@@ -67,3 +67,7 @@ procedência, e nenhum caminho da API do fornecedor no código do frontend.
 ## Referências
 
 - [[Attlas - Sprint 28]], seção da frente de frontend do videowall.
+
+> [!info] Estado em 25/08 - alinhado com o GitHub
+> PR #1758 mergeada (última em 20/08/2026). Nenhuma PR desta task está aberta.
+> O `status` anterior dizia: "code review na [PR #1721](https://github.com/atmanadmin/attlas-2026/pull/1721), empilhada sobre a #1720, com a 2476 junto. Teve aprovação do rezendelc e correção pedida pelo otavioassis em 18/08. Conferido em 19/08: o serviço do frontend já tem `setBrightness` chamando a rota de brilho desde o redes".

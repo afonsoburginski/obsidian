@@ -1,0 +1,79 @@
+---
+tags:
+  - attlas
+  - task
+  - sprint-31
+  - analitico
+card: a criar no ClickUp
+titulo: "[Back] ADR de alimentação + SPEC do ms-virtual-loop"
+frente: Analítico
+tamanho: 3 pts
+status: comprometido na Sprint 31 (planejada em 24/08). Card ainda não criado no ClickUp - planejamento no vault primeiro, decisão de 24/08.
+sprint: "[[Attlas - Sprint 31]]"
+atualizado: 2026-08-24
+---
+
+# Analítico servidor - ADR de alimentação e SPEC do ms-virtual-loop
+
+Duas peças numa PR só, porque a segunda não faz sentido sem a primeira: a SPEC do serviço parte de onde o
+vídeo entra, e é o ADR que fixa isso.
+
+As decisões abaixo **já estão tomadas** e preservadas em [[Analítico - Arquitetura e estratégias]]. Este
+card as transcreve sobre a fundação que a [[Attlas - Sprint 30]] cria, não reabre debate. É por isso que
+cabe em 3 pontos.
+
+## ADR de alimentação de vídeo
+
+O analítico consome **o relay que o `ms-cameras` já mantém no mediamtx, pedindo o substream de menor
+resolução disponível**. As duas alternativas ficam registradas como rejeitadas, com o motivo:
+
+- **Não lê a câmera direto.** Multiplicaria sessão RTSP no equipamento e espalharia a credencial da câmera
+  para mais um processo.
+- **Não usa Kafka para vídeo.** É antipadrão de retenção e de tamanho de mensagem.
+
+Restrições que o ADR precisa declarar, e não só decidir:
+
+- **Disputa de encode em câmera que também roda analítico embarcado.** O hardware da câmera não sustenta
+  dois encodes junto com a inferência. A combinação existe e precisa ser tratada como caso conhecido, não
+  descoberta em campo.
+- **A sessão do analítico precisa de contagem e encerramento próprios**, independentes do contador de
+  espectadores do operador. O precedente é concreto: relay preso mantendo `ffmpeg` vivo porque o
+  `viewerCount` nunca zerava. Se o analítico entrar no mesmo contador, ele nunca desliga.
+- **O teto de câmeras por instância exige medição, não estimativa.** O número sai de
+  [[Analítico servidor - Detecção de objetos por frame]], e o ADR registra que ele é medido.
+
+O ADR nasce com ID novo, alocado por `/spec-id`. Não herda o `CROSS-043`, que segue significando o adapter
+Redis do Socket.IO, conforme [[Analítico - Renumerar a CROSS-032 duplicada]].
+
+## SPEC do `ms-virtual-loop`
+
+Fronteira em uma frase: **entra stream, sai ocupação por região.**
+
+- **Stack**: NestJS sobre o esqueleto que já existe, `ffmpeg` em processo filho para decodificar e
+  inferência nativa embutida no processo Node. Python como serviço separado fica registrado como
+  **alternativa rejeitada**, com cláusula explícita de reabertura se a medição do card de detecção provar a
+  via inviável. Reabrir tira o serviço do gate de lint, teste e build do monorepo, e isso é decisão
+  registrada, não descoberta no CI.
+- **Peso do modelo em object storage**, via `@attlas/core-storage`. **Nunca binário no git.**
+- **`ms-cameras` é o dono da geometria.** O serviço lê a região com cache e recarga sem restart, e não
+  guarda cópia autoritativa.
+- **Fronteira estreita**: não persiste série histórica, não fala com o controlador, não calcula métrica de
+  tráfego e não decide atuação em hardware.
+
+A infraestrutura já está provisionada e vazia: imagem Docker, entrada no `docker-compose.yml` mapeando a
+porta 3302, rota no `docker/kong.yml` e banco criado. Hoje o `app.service.ts` devolve `Hello API`.
+
+## DoD
+
+ADR de alimentação de vídeo e SPEC do `ms-virtual-loop` na `develop`, com o ID do ADR conferido por
+`/spec-id`, as alternativas rejeitadas justificadas nas duas peças, as três restrições do ADR escritas e a
+fronteira do serviço declarada. Sem código de produção.
+
+## Encosta em
+
+- [[Analítico - Arquitetura e estratégias]], que preserva as decisões das PRs fechadas.
+- [[Analítico - Embarcado x Servidor]], que é a fonte do vocabulário e da matriz de execução.
+- [[Analítico - Entidade, persistência de região e unicidade]], que é a fundação de onde a geometria vem.
+- [[Analítico servidor - Serviço, imagem e ingestão do stream]], primeiro card de código a se apoiar nesta
+  spec.
+- [[Attlas - Sprint 31]].

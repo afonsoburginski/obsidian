@@ -1,0 +1,38 @@
+---
+tags:
+  - report
+date: 2026-08-25
+---
+```
+Report Diário - 25/08/2026
+
+Dia de revisão, sem entrega própria. Revisei também 8 pull requests de colegas, listadas abaixo.
+
+PRs mergeadas:
+(nenhuma)
+
+PRs revisadas:
+- 1897 - Resolução de Sistema para Organização e teto do canal in-app (aprovada, com apontamentos)
+- 1949 - Contenção de Percurso passa a valer só para Área (aprovada, com apontamentos)
+- 1950 - Porta de licença de tempo real na escrita de Percurso (aprovada, com apontamentos)
+- 1951 - Métricas de divergência do catálogo de ações do motor de planos (aprovada)
+- 1952 - Encerramento de execução alcança tasks e ações em curso (aprovada)
+- 1953 - Detalhe do plano devolve última execução bem sucedida e modificações (mudanças solicitadas)
+- 1599 - Tópicos de auditoria dedicados para o lote Tier 1 (aprovada)
+- 1608 - Dual-publish de auditoria para o lote Tier 2 (aprovada)
+
+PRs em andamento:
+- 1975 - docs: Renumerar a CROSS-032 duplicada
+- 1976 - docs: Doc de módulo do Analítico
+- 1977 - docs: Spec dos 4 endpoints de região
+- 1978 - docs: Aba Analíticos (UF-033) reflete o backend real, não localStorage
+- 1979 - docs: Writer do deviceSourceId e higiene do embarcado - terminologia e status
+- 1980 - feat: Entidade Analítico + persistência de região + unicidade
+- 1981 - fix: Writer do deviceSourceId e higiene do embarcado
+- 1982 - feat: Compatibilidade por arquitetura de câmera - identificação automática (ARTPEC)
+- 1983 - feat: Compatibilidade por arquitetura de câmera
+- 1984 - feat: Healthcheck do analítico
+- 1985 - feat: Contagem e dedup de incidente DAI
+- 1986 - feat: Preset PTZ com snapshot de região
+- 1987 - feat: Fonte da imagem de evidência
+```

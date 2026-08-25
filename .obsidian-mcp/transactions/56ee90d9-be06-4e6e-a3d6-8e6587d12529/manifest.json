@@ -1,0 +1,21 @@
+{
+  "id": "56ee90d9-be06-4e6e-a3d6-8e6587d12529",
+  "state": "committed",
+  "createdAt": "2026-08-24T14:26:54.612Z",
+  "snapshots": [
+    {
+      "path": "Docs/ms-cameras/Integração com dispositivo/Integração com dispositivo - Requisitos e SLA.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "56814ba3d9a145470da77b7c581ed4612752f565fad34951a9b268a948d10e38",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33204,
+      "etag": "f0649860f59042399667ada31275212518bdd79b8ee75bcdf102e6907ffca40a",
+      "snapshot": "0.bin",
+      "committedEtag": "56814ba3d9a145470da77b7c581ed4612752f565fad34951a9b268a948d10e38"
+    }
+  ],
+  "completedAt": "2026-08-24T14:26:54.617Z"
+}

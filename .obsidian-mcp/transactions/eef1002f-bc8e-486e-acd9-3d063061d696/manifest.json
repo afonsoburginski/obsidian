@@ -1,0 +1,21 @@
+{
+  "id": "eef1002f-bc8e-486e-acd9-3d063061d696",
+  "state": "committed",
+  "createdAt": "2026-08-25T11:33:48.949Z",
+  "snapshots": [
+    {
+      "path": "Sprint/32/SOFTWARE-2398 - Escala do analítico - câmeras por instância.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "a08f8250eb4dc139a79e1afe8b3d4cc40a2295155fdb50beb824207a7e850b15",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33152,
+      "etag": "fa4a4822b6d6cf1967cd0b1bae13b0d654b0eba5e0fe4e6be3aa2eb80c16f8c0",
+      "snapshot": "0.bin",
+      "committedEtag": "a08f8250eb4dc139a79e1afe8b3d4cc40a2295155fdb50beb824207a7e850b15"
+    }
+  ],
+  "completedAt": "2026-08-25T11:33:48.958Z"
+}

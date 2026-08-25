@@ -1,0 +1,21 @@
+{
+  "id": "2dfc75c8-0832-41eb-9ca6-d6d054da6643",
+  "state": "committed",
+  "createdAt": "2026-08-25T11:54:05.946Z",
+  "snapshots": [
+    {
+      "path": "Sprint/Sem prazo/00 - Sem prazo (backlog).md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "0ff4c34d97b9ba9db7085686993708fe91d0f837ba5235d9bc5049e2b2261aaa",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33204,
+      "etag": "79cf67ad244f05347e264d907e559d1d4aee875a07e5dfb3ee18925b293e5404",
+      "snapshot": "0.bin",
+      "committedEtag": "0ff4c34d97b9ba9db7085686993708fe91d0f837ba5235d9bc5049e2b2261aaa"
+    }
+  ],
+  "completedAt": "2026-08-25T11:54:05.952Z"
+}

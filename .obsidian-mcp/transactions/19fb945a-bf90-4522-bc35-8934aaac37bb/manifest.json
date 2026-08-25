@@ -1,0 +1,21 @@
+{
+  "id": "19fb945a-bf90-4522-bc35-8934aaac37bb",
+  "state": "committed",
+  "createdAt": "2026-08-24T14:27:19.526Z",
+  "snapshots": [
+    {
+      "path": "Docs/ms-cameras/Integração com dispositivo/Runbook - câmeras reais para teste.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "ed00261d4aab17f70b23b528434c69b609c23158d569b64e56660f84715ed2b5",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33204,
+      "etag": "179670a5a938025713251ec5bad542d321c195bf8b016e93c37333855b9cb71c",
+      "snapshot": "0.bin",
+      "committedEtag": "ed00261d4aab17f70b23b528434c69b609c23158d569b64e56660f84715ed2b5"
+    }
+  ],
+  "completedAt": "2026-08-24T14:27:19.536Z"
+}

@@ -1,0 +1,60 @@
+---
+tags:
+  - attlas
+  - task
+  - sprint-31
+  - analitico
+card: a criar no ClickUp
+titulo: "[Back] Serviço, imagem e ingestão do stream"
+frente: Analítico
+tamanho: 3 pts
+status: comprometido na Sprint 31 (planejada em 24/08). Card ainda não criado no ClickUp - planejamento no vault primeiro, decisão de 24/08.
+sprint: "[[Attlas - Sprint 31]]"
+atualizado: 2026-08-24
+---
+
+# Analítico servidor - Serviço, imagem e ingestão do stream
+
+**Primeiro card de código da cadeia.** Entrega o cano de vídeo: container de pé, decodificando frame de
+verdade. Sem detecção ainda, e é de propósito, para que a medição do card seguinte não misture custo de
+decode com custo de inferência.
+
+## O que fica de pé
+
+O `ms-virtual-loop` sai do scaffold NX. Ele consome o relay que o `ms-cameras` já mantém no mediamtx, no
+substream de menor resolução, conforme o ADR de
+[[Analítico servidor - ADR de alimentação e SPEC do ms-virtual-loop]]. O decode é `ffmpeg` em processo
+filho, não biblioteca em processo.
+
+**O serviço nunca recebe credencial de câmera.** Isso não é detalhe de implementação, é a razão principal
+de o vídeo vir do relay em vez do equipamento: a credencial fica confinada ao `ms-cameras`, e o analítico
+fala com o mediamtx.
+
+## A guarda que o card precisa implementar
+
+**Não inicia ingestão de câmera que não tem nenhuma região configurada.** Sem região não existe consumidor
+de ocupação, então decodificar aquele stream é CPU gasta para produzir nada. A guarda tem de valer no
+boot e na recarga de geometria, não só na primeira leitura.
+
+## Sessão e reconexão
+
+- **Contagem e encerramento próprios da sessão do analítico**, independentes do contador de espectadores do
+  operador. O motivo está registrado no ADR: relay preso mantendo `ffmpeg` vivo porque o `viewerCount`
+  nunca zerava. Se o analítico entrar no mesmo contador, ele nunca desliga.
+- **Reconexão com recuo progressivo**, com o teto do intervalo nomeado em constante, não literal espalhado.
+  Câmera que cai e volta não pode gerar tempestade de reconexão nem ficar fora para sempre.
+
+## DoD
+
+Container decodificando frame do relay para pelo menos uma câmera real, com a guarda de "sem região, sem
+ingestão" ativa, sessão encerrando sozinha quando a ingestão para, reconexão com recuo progressivo e
+`/health/ready` refletindo o estado da ingestão em vez de responder verde só por processo vivo. Teste de
+integração cobrindo o caso da câmera sem região e o de queda e retorno do relay.
+
+## Encosta em
+
+- [[Analítico servidor - ADR de alimentação e SPEC do ms-virtual-loop]], que é o pré-requisito duro.
+- [[Analítico - Entidade, persistência de região e unicidade]], de onde vem a resposta para "esta câmera
+  tem região?".
+- [[Analítico servidor - Detecção de objetos por frame]], que consome o frame que este card entrega.
+- [[Attlas - Sprint 31]] e [[ms-cameras]].

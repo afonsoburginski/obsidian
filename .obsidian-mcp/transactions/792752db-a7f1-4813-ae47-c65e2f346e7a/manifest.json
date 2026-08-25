@@ -1,0 +1,21 @@
+{
+  "id": "792752db-a7f1-4813-ae47-c65e2f346e7a",
+  "state": "committed",
+  "createdAt": "2026-08-25T12:04:30.781Z",
+  "snapshots": [
+    {
+      "path": "Sprint/31/Analítico servidor - Serviço, imagem e ingestão do stream.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "d555d6ec6cd2f241301e106546038ff394f0875be77c707671b6764ac33b2276",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33204,
+      "etag": "b8309b52253c25b89e2e9bc175942deb54b375adcd1f8c34764cad0bc504964d",
+      "snapshot": "0.bin",
+      "committedEtag": "d555d6ec6cd2f241301e106546038ff394f0875be77c707671b6764ac33b2276"
+    }
+  ],
+  "completedAt": "2026-08-25T12:04:30.787Z"
+}

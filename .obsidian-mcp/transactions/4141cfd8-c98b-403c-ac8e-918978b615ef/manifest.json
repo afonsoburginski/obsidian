@@ -1,0 +1,21 @@
+{
+  "id": "4141cfd8-c98b-403c-ac8e-918978b615ef",
+  "state": "committed",
+  "createdAt": "2026-08-24T15:20:25.816Z",
+  "snapshots": [
+    {
+      "path": "Docs/server/index.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "8ad284b8e784f5f8407b299fd327ea2ea139f027106c488d144a9e19be6c1fa4",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33204,
+      "etag": "09582bdd9d306ee9ffd189409008f4f90205c10f6b83844f3fa6ea699aa44f7c",
+      "snapshot": "0.bin",
+      "committedEtag": "8ad284b8e784f5f8407b299fd327ea2ea139f027106c488d144a9e19be6c1fa4"
+    }
+  ],
+  "completedAt": "2026-08-24T15:20:25.825Z"
+}

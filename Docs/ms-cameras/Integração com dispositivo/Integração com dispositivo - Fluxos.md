@@ -5,7 +5,7 @@ tags:
   - cameras
   - dispositivo
   - hardware
-atualizado: 2026-07-03
+atualizado: 2026-08-24
 ---
 
 # Integração com dispositivo - Fluxos
@@ -31,6 +31,8 @@ Origem: `cameras/services/ptz.service.ts` → `executeOnvifPtz()`. Driver é **p
 
 Erro/timeout em qualquer I/O → `ExternalServiceException('camera-onvif', …)` com `errorCode = CAMERA_UNREACHABLE` (`runWithTimeout`). `DomainException` já lançada (guard) propaga sem reembrulhar.
 
+Vale também para Hikvision: depois que o cadastro ativa o ONVIF automaticamente (INT-020, ver fluxo 6), o PTZ de uma Hikvision passa por este mesmo caminho - não existe um fluxo de PTZ separado por ISAPI.
+
 ## 2. Comando VAPIX (Axis proprietário)
 
 Origem: `ptz.service.ts` → `executeVapixZoom` / `executeVapixAbsolute` / `executeVapixZoomStop`. **Não** passa pela factory nem pelo `OnvifDriver` - chama os utils direto.
@@ -53,9 +55,9 @@ Origem: `streaming/services/camera-stream-source.resolver.ts` → `resolve(camer
 | --- | --- | --- |
 | 1 | Cadeia de fallback | `QUALITY_FALLBACK_CHAIN` (SECONDARY→PRIMARY, TERTIARY→SECONDARY→PRIMARY) |
 | 2 | Lookup | `cameraStreamProfile` (role, ativo) + `camera` + `cameraCredential` em paralelo |
-| 3 | Seleciona estratégia | `selector.select(camera.communicationProtocol)` |
+| 3 | Seleciona estratégia | `selector.select(camera.communicationProtocol)` - hoje `rtsp`, `onvif` ou `isapi` |
 | 4 | Injeta credenciais | `injectRtspCredentials` na URL do perfil (se houver user) |
-| 5 | Params Axis | `appendAxisVapixCodecParams` (só URLs `/axis-media/`: `videocodec`, keyframe, resolução) + `buildAxisFallbackUrl` (H.264 se codec ≠ H.264) |
+| 5 | Params Axis | `appendAxisVapixCodecParams` (só URLs `/axis-media/`: `videocodec`, keyframe, resolução) + `buildAxisFallbackUrl` (H.264 se codec ≠ H.264). Não se aplica à Hikvision - a estratégia ISAPI não anexa parâmetros na URL (INT-007) |
 | 6 | Descritor | `strategy.buildLiveStreamDescriptor(source)` → `ICameraStream` (`protocol: 'RTSP'`, `sourceUrl`, `suggestedCodec`) |
 
 Nenhum profile ativo em toda a cadeia → `BusinessRuleViolationException('STREAM_PROFILE_NOT_CONFIGURED')`. Detalhe do pipeline em [[Streaming|Streaming]].
@@ -70,18 +72,42 @@ Origem: `cameras/services/camera-credential-probe.service.ts` → `probe(item)` 
 | 2 | Enriquece | `Promise.allSettled([deviceInformationInit(), mediaGetProfiles()])` |
 | 3 | Extrai device info | fabricante, modelo, serial, firmware, hardwareId |
 | 4 | Extrai perfis | tokens, resolução, encoding, framerate, bitrate, streamUrl, snapshotUrl; range PTZ → `hasPtz` |
-| 5 | Classifica erro | 401→`CAMERA_CREDENTIALS_INVALID`; timeout/ECONNREFUSED/EHOSTUNREACH→`CAMERA_UNREACHABLE`; resto→`CAMERA_CONNECTION_FAILED` |
+| 5 | Classifica erro | 401→`CAMERA_CREDENTIALS_INVALID`; timeout/ECONNREFUSED/EHOSTUNREACH→`CAMERA_UNREACHABLE`; resto→`CAMERA_CONNECTION_FAILED`; `/onvif/device_service` 404 numa Hikvision→reconhecido como "ONVIF desligado", não como falha de conectividade (ver fluxo 6) |
 
 É a peça que sustenta "cadastrar sem dev por fabricante" (RF-INT-05, RF-CAM-01): a própria câmera declara suas capacidades via ONVIF.
 
-## 5. Heartbeat via WebSocket / PullPoint
+## 5. Heartbeat via WebSocket / PullPoint / ISAPI
 
-Origem: `health/workers/camera-health.worker.ts`; bootstrap em `camera-health-bootstrap.service.ts` (câmeras OPERATIONAL + TESTING). Dois canais (`HealthChannel`):
+Origem: `health/workers/camera-health.worker.ts`; quem decide QUAL device cada réplica monitora (bootstrap + lease Redis) é o `health/leases/device-monitor-coordinator.service.ts` (ver [[Saúde e monitoramento\|Saúde e monitoramento]] para a mecânica de dedupe/lease). Quatro canais (`HealthChannel`):
 
 | Canal | Client | Heartbeat | Notas |
 | --- | --- | --- | --- |
 | `AXIS_WEBSOCKET` | `AxisWsClient` (`health/clients/axis-ws.client.ts`) | `measurePing()` (RTT WS ping/pong) em loop auto-agendado | Token wssession via digest; filtros de tópico (NetworkLost, PTZError, Move, Tampering…); mapeia tópico→`CameraEventCauseCode`; rastreia posição PTZ enquanto `is_moving=1` |
-| `ONVIF_PULLPOINT` | `OnvifPullPointClient` (`health/clients/onvif-pullpoint.client.ts`) | cada `PullMessages` (long-poll `PT5S`) bem-sucedido = 1 heartbeat | Fallback SOAP p/ câmeras sem WebSocket Axis; subscription TTL `PT60S` |
+| `ONVIF_PULLPOINT` | `OnvifPullPointClient` (`health/clients/onvif-pullpoint.client.ts`) | cada `PullMessages` (long-poll `PT5S`) bem-sucedido = 1 heartbeat | Canal para fabricantes sem canal nativo (nem Axis nem Hikvision); subscription TTL `PT60S` |
+| `HIKVISION_ISAPI_ALERT_STREAM` (agosto, INT-019) | `HikvisionAlertStreamClient` (`health/clients/hikvision-alert-stream.client.ts`) | conexão HTTP que nunca fecha; cada parte `EventNotificationAlert` recebida = 1 heartbeat | Único canal Hikvision que entrega o que o device realmente viu (evento real, não só liveness); filtra o keep-alive `videoloss`/`inactive` (~1/s) para não gerar 1 evento/s por câmera; janela de inatividade 30 s |
+| `HIKVISION_ISAPI_POLL` (agosto, INT-018) | `HikvisionIsapiHeartbeatClient` (`health/clients/hikvision-isapi-heartbeat.client.ts`) | poll `GET /ISAPI/System/status` a cada 15 s = 1 heartbeat | Fallback quando a firmware não tem `alertStream` (o próprio client escolhe, não o coordinator); tolera 2 falhas consecutivas antes de reportar offline, para equiparar à tolerância do ping WS/PullPoint |
 
-Fluxo comum: `startMonitoring` → abre client → eventos `connected`/`disconnected`/`error`/`heartbeat` alimentam snapshot + histórico + `EventBus`; reconexão com backoff+jitter. Avaliação de estado (STABLE/UNSTABLE/OFFLINE), incidentes e métricas pertencem a [[Saúde e monitoramento|Saúde e monitoramento]]. Bootstrap hoje fixa `AXIS_WEBSOCKET`; seleção dinâmica de canal por fabricante ainda não está no bootstrap.
-</content>
+Fluxo comum: `startMonitoring` → abre client → eventos `connected`/`disconnected`/`error`/`heartbeat` alimentam snapshot + histórico + `EventBus`; reconexão com backoff+jitter. Avaliação de estado (STABLE/UNSTABLE/OFFLINE), incidentes e métricas pertencem a [[Saúde e monitoramento|Saúde e monitoramento]].
+
+> [!info] Correção - seleção de canal por fabricante já existe (era um "ainda não" até 03/07)
+> A versão anterior desta nota dizia que o bootstrap fixava `AXIS_WEBSOCKET` e que a seleção dinâmica
+> por fabricante "ainda não estava no bootstrap". Isso mudou: `resolveMonitoringOptions` (dentro do
+> `device-monitor-coordinator.service.ts`) escolhe o canal por `manufacturer.code` tanto no bootstrap/
+> reconcile quanto no cadastro (`attachRegisteredCamera`) - `AXIS`→`AXIS_WEBSOCKET`,
+> `HIKVISION`→`HIKVISION_ISAPI_ALERT_STREAM` (com `HIKVISION_ISAPI_POLL` como fallback interno do
+> client), qualquer outro→`ONVIF_PULLPOINT`. A motivação registrada no código (INT-020) é justamente
+> ter corrigido o caso em que uma Hikvision recém-cadastrada abria uma conexão Axis contra um device
+> sem VAPIX nenhum.
+
+## 6. Ativação automática do ONVIF no cadastro (Hikvision, INT-020)
+
+Origem: fluxo de cadastro/validação de credenciais, quando o fabricante é Hikvision e o probe detecta ONVIF desligado (fluxo 4).
+
+| # | Passo | Detalhe |
+| --- | --- | --- |
+| 1 | Detecta ONVIF desligado | `GET /ISAPI/System/Network/Integrate` → `<ONVIF><enable>false</enable></ONVIF>` |
+| 2 | Ativa | `PUT /ISAPI/System/Network/Integrate` só com o bloco ONVIF → `statusCode 1, OK` |
+| 3 | Garante conta ONVIF | `GET`/`POST /ISAPI/Security/ONVIF/users` - contas ONVIF são uma lista separada das contas web/ISAPI; pode estar ligado sem ninguém autenticar |
+| 4 | Confirma | Releitura confirma `enable=true`; ONVIF `GetProfiles` autenticado passa a responder (validado: ~2 s de atraso até responder) |
+
+Validado em campo em 18/08/2026 contra uma DS-2CD1023G0E-I real (192.168.210.80, firmware V5.7.12) - ver [[Runbook - câmeras reais para teste]]. Depois deste passo, PTZ e leitura de perfis de mídia da Hikvision seguem o fluxo 1 (ONVIF comum) como qualquer outro fabricante; ISAPI continua sendo usado só para streaming (fluxo 3) e saúde (fluxo 5).

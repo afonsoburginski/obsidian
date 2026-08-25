@@ -1,0 +1,132 @@
+---
+tags:
+  - doc
+  - analitico
+atualizado: 2026-08-25
+fonte: attlas-vl-atspm.pdf (squad de Visão Computacional, 10/08) + "Anotações sobre Analítico de vídeo" (notas do user) + auditoria de código de 24/08 e 25/08
+---
+
+# Analítico - Embarcado x Servidor
+
+Parte do [[Analítico]]. **A mesma capacidade de produto roda de duas formas**, e quase tudo o que confunde
+neste domínio vem de tratar as duas como se fossem a mesma coisa. Esta nota separa: o que muda, o que não
+pode mudar, e o que a câmera permite.
+
+> [!important] Prazo externo: 18/09/2026, front e backend
+> A entrega do Analítico de vídeo (front e backend) tem prazo externo fechado em 25/08: **18 de setembro
+> de 2026**. Cobertura de sprint em [[Attlas - Sprint 30]], [[Attlas - Sprint 31]] e [[Attlas - Sprint 32]].
+
+## A regra que organiza tudo
+
+> [!important] O que muda por tipo de câmera é **onde** a capacidade roda, nunca a capacidade em si
+> Virtual Loop é Virtual Loop nas duas formas, e ATSPM é ATSPM nas duas. O que a arquitetura da câmera
+> decide é se dá pra rodar dentro dela ou se precisa de servidor. Por isso a matriz abaixo é de
+> **execução**, não de funcionalidade.
+
+## Matriz de compatibilidade por arquitetura de câmera
+
+| Forma de execução | Não-Axis | Axis ARTPEC 7 (antigo) | Axis ARTPEC 8/9 (novo) |
+| --- | --- | --- | --- |
+| VL, app na câmera | Não | Sim | Sim |
+| VL, servidor analítico | Sim | Sim | Sim |
+| VL embutido no ATSPM | Só servidor | Não | Sim (app ou servidor) |
+| ATSPM, app na câmera | Não | Não | Sim |
+| ATSPM, servidor analítico | Sim | Sim | Sim |
+
+Duas restrições resumem a tabela:
+
+1. **Câmera não-Axis nunca executa app embarcado.** Tudo roda em servidor.
+2. **ARTPEC 7 não executa o app de ATSPM**, e por consequência também não alcança o VL embutido do ATSPM
+   dentro da própria câmera.
+
+E uma exclusão que vale só no ARTPEC 8/9: **o app de VL e o app de ATSPM nunca rodam juntos na mesma
+câmera**. Para ter os dois embarcados, instala-se só o ATSPM, que já entrega o VL embutido.
+
+> [!warning] Nada disso é validado no código hoje
+> `ARTPEC` só aparece no repositório em doc de codec de streaming (`MOD-004`), nunca como campo. Nem a
+> `Camera` nem o `CameraManufacturer` têm arquitetura de processador, e `capabilities.dai` /
+> `capabilities.virtualLoop` são duas flags independentes que a auto-detecção do cadastro seta com **o
+> mesmo valor** (a presença do ACAP), sem nenhuma noção de exclusão mútua. Modelar isso é o card de
+> compatibilidade da [[Attlas - Sprint 30]], que em 25/08 ganhou requisito explícito do user: a
+> arquitetura tem que ser **identificada automaticamente pelo backend**, nunca selecionada manualmente no
+> cadastro. `Camera.hardwareId` já é capturado pelo probe ONVIF e hoje é só ignorado - é o candidato
+> natural a um lookup `hardwareId → geração ARTPEC` sem chamada de rede nova; sonda VAPIX nativa via
+> `AxisDigestClient` (o mesmo client que já lê PTZ, zoom e bitrate configurado) fica como fallback para o
+> que não mapear. Detalhe técnico completo na nota do card,
+> [[Analítico - Compatibilidade por arquitetura de câmera]].
+
+## O que muda entre as duas formas
+
+| Eixo | Embarcado (app na câmera) | Servidor (container) |
+| --- | --- | --- |
+| **Onde processa** | No processador da própria câmera | Em instância nossa, fora da câmera |
+| **Câmeras suportadas** | Só Axis, conforme a matriz acima | Qualquer câmera com stream |
+| **Fonte do vídeo** | Nenhuma - o app já está dentro do device | Relay que o `ms-cameras` mantém, no substream de menor resolução (decisão do ADR de alimentação de vídeo, preservada do reescopo - ver [[Attlas - Sprint 31]]) |
+| **Dono da geometria** | O device. `ms-cameras` lê e escreve por proxy HTTP, e resolve `region_id` para índice estável | O `ms-cameras`, que passa a persistir a região em banco. O analítico lê com cache e recarga sem restart |
+| **Custo de encode na câmera** | Disputa: o mesmo hardware codifica o stream e roda a inferência | Zero na câmera; o custo é nosso |
+| **Escala** | Uma câmera, um app | Câmeras por instância é número **medido**, não estimado, com política de saturação |
+| **Unicidade de cadastro** | Um analítico por tipo por câmera. Instalar VL e ATSPM juntos é proibido | Sem essa restrição: a mesma câmera pode ter mais de um vínculo de servidor |
+| **Atuação por ACOM** | Uma placa por caminho | Um analítico servidor pode alimentar **várias** placas ACOM |
+| **Atualização do app** | Precisa de OTA no device (não existe hoje) | Deploy de imagem, como qualquer serviço |
+
+## O que NÃO pode mudar: o contrato de ocupação
+
+Esta é a decisão que impede o domínio de rachar em dois. **Os dois caminhos emitem a mesma forma de
+evento de ocupação**, para o consumidor não precisar saber a origem:
+
+- `attlas.analytics.region-occupancy`, com `IRegionOccupancyEvent` (`cameraId`, `regionIndex`, `symbols`,
+  `counters` em RLE de `DETECTOR_SAMPLE_DURATION_MS`, `sampledAt`, `receivedAt`).
+- O servidor publica direto; o embarcado republica no mesmo tópico, a partir do estado de ocupação que já
+  calcula para o WebSocket.
+- A partir daí o cano é único: `ms-connector-virtual-loop` traduz o endereço, e `ms-detector-history`
+  persiste a série igual ao caminho do laço físico.
+
+O contrato é **greenfield** - `libs/contracts/src/lib/analytics/` não existe hoje. Nasce como card próprio na [[Attlas - Sprint 31]].
+
+## Regras de desenho de região: quem decide é o motor, não o lugar
+
+A geometria permitida depende do **motor de análise**, e é indiferente a onde ele roda:
+
+| Motor | Região permitida |
+| --- | --- |
+| VL puro (app ou servidor de VL) | Padronizada e pequena |
+| VL embutido no ATSPM (app ou servidor de ATSPM) | Pode ser grande, com uma linha |
+| Demais funcionalidades do ATSPM (Tracker, DAI, TPM) | Arbitrária |
+
+> [!warning] O contrato de hoje não suporta essa tabela
+> `IObjectDetectionRegion.points` é `number[][]` (percentuais 0..100), **sem conceito de linha** e sem
+> nenhuma validação - não há classe de validação nem `ValidationPipe` no controller que recebe as regiões.
+> O front desenha sempre o mesmo quadrilátero de quatro vértices, para qualquer motor. Diferenciar
+> geometria por motor é mudança de contrato, não de tela.
+
+## Cardinalidades com ACOM
+
+A ACOM é transporte (contato seco), não capacidade. As regras fechadas em alinhamento:
+
+| Relação | Regra | Estado no código |
+| --- | --- | --- |
+| ACOM ↔ Controlador | **1:1**, por motivo físico (cabeamento) | Hoje é **N:N** via `AcomAssociation` com unique `(acomId, slot, channel)` - a mesma placa pode apontar para 8 controladores |
+| ACOM → analíticos | Até **4** | Não existe relação ACOM ↔ analítico em lugar nenhum |
+| Analítico → laços por câmera | Até **4** | Ver contradição abaixo |
+| Analítico servidor → ACOMs | **Várias** placas por analítico (limitação a manter como regra) | Não existe relação |
+
+> [!warning] "Quatro laços por câmera" contradiz o contrato atual
+> `IVirtualLoopConfig` é hoje **uma configuração única por câmera** (`active`, `classes`,
+> `delaySeconds`), sem geometria própria e sem multiplicidade - o docblock diz literalmente que o laço
+> "não tem geometria própria: compartilha as regiões de detecção de objeto e é uma configuração única,
+> por câmera, não por região". Suportar quatro laços por câmera é **redesenho de contrato**, não uma
+> constante nova - e já está decidido nas notas de alinhamento, não é decisão em aberto. Ficou fora da
+> Sprint 30 e da Sprint 31 por tamanho, como card próprio no sem prazo:
+> [[Analítico - Suportar até 4 laços virtuais por câmera]].
+
+## Convergência: o que o operador vê
+
+Do ponto de vista da tela, a origem do analítico deve ser um detalhe de cadastro, não um modo de operação
+paralelo. O mesmo desenho de região, o mesmo overlay ao vivo, o mesmo healthcheck e a mesma série de
+detector, independente de o processamento estar dentro da câmera ou num container nosso. O que muda é o
+que o fluxo de cadastro oferece, e isso é [[Analítico - Fluxos]].
+
+## Ver também
+
+- [[Analítico]] · [[Analítico - Requisitos e SLA]] · [[Analítico - Arquitetura e estratégias]] · [[Analítico - Fluxos]]
+- [[Attlas - Sprint 30]] · [[Attlas - Sprint 31]] · [[Attlas - Sprint 32]] (o escopo que fecha os buracos acima, contra o prazo de 18/09)

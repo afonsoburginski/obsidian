@@ -1,0 +1,21 @@
+{
+  "id": "701c28bd-6dcc-4776-8b1f-1a01c6a9cc18",
+  "state": "committed",
+  "createdAt": "2026-08-24T16:58:01.986Z",
+  "snapshots": [
+    {
+      "path": "Docs/ms-cameras/Streaming/index.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "c328da6946f861a46cca19192a2b18ad84002779e435defd16a3850bbca60c20",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33204,
+      "etag": "84c2a63b5204be2c9325f340dee790e4afad2443ad9e428814e8e814d155eef3",
+      "snapshot": "0.bin",
+      "committedEtag": "c328da6946f861a46cca19192a2b18ad84002779e435defd16a3850bbca60c20"
+    }
+  ],
+  "completedAt": "2026-08-24T16:58:01.992Z"
+}

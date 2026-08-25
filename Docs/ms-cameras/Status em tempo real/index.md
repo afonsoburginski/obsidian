@@ -7,10 +7,6 @@ tags:
 aliases:
   - "Status em tempo real"
   - "00 - Status em tempo real"
-  - "doc"
-  - "ms-cameras"
-  - "cameras"
-  - "realtime"
   - "Status em tempo real (push)"
 atualizado: 2026-08-24
 servico: ms-cameras
@@ -26,7 +22,7 @@ fonte: apps/ms-cameras/src/cameras/realtime
 **Empurrar (push) o estado vivo da câmera ao frontend** assim que ele muda, sem polling: conexão online/offline, qualidade do stream (resolução/fps/bitrate), modo de operação, posição PTZ, presets e geoposicionamento (RF-CAM-04). O canal é um **Socket.IO** guardado por JWT; a fonte das mudanças é o **worker de saúde** (via EventBus in-process), não Kafka. Um snapshot também fica cacheado no Redis (`camera:status:<id>`) para o primeiro frame do cliente e para leitura sob demanda por REST.
 
 > [!info] Não confundir com o Streaming
-> Existem **dois** gateways Socket.IO no `ms-cameras`, em namespaces diferentes. Este submódulo é o `cameras-status` (status/PTZ/eventos, com JWT). O do vídeo é o `cameras-stream`, coberto em [[Streaming]] - também guardado por JWT em `camera.join`/`camera.leave` desde a correção de 24/08 (ver [[Status em tempo real - Arquitetura e estratégias]]). Ver seção [[#Namespaces Socket.IO]].
+> Existem **dois** gateways Socket.IO no `ms-cameras`, em namespaces diferentes. Este submódulo é o `cameras-status` (status/PTZ/eventos, com JWT). O do vídeo é o `cameras-stream`, coberto em [[Streaming]] - também guardado por JWT em `camera.join`/`camera.leave`; foi a documentação que se corrigiu em 24/08, não o código (ver [[Status em tempo real - Arquitetura e estratégias]]). Ver seção [[#Namespaces Socket.IO]].
 
 ## Mapa de código
 
@@ -50,7 +46,7 @@ Tudo em `apps/ms-cameras/src/cameras/realtime/` salvo indicação.
 | Namespace | Gateway | Auth | Fonte dos eventos | Emite |
 | --- | --- | --- | --- | --- |
 | `cameras-status` | `camera-status.gateway.ts` | **JWT** (`WsAuthGuard`) | EventBus CQRS (worker de saúde) | `camera:status:snapshot`, `camera:status:update`, `camera:ptz:position`, `camera:event:new` |
-| `cameras-stream` | `streaming/streaming.gateway.ts` | **JWT** em `camera.join`/`camera.leave` (`WsAuthGuard`, desde a correção de 24/08 - antes era público) | `@OnEvent` do EventEmitter (ciclo de vida HLS) | `status.changed`, `stream.started/stopped/reconnecting/error` |
+| `cameras-stream` | `streaming/streaming.gateway.ts` | **JWT** em `camera.join`/`camera.leave` (`WsAuthGuard`; a doc é que dizia "público" até 24/08) | `@OnEvent` do EventEmitter (ciclo de vida HLS) | `status.changed`, `stream.started/stopped/reconnecting/error` |
 
 Os dois usam salas `camera:<id>`, mas são servidores distintos: um cliente que só quer status assina o `cameras-status`; o player de vídeo fala com o `cameras-stream`. Detalhe do de streaming em [[Streaming]].
 
@@ -72,7 +68,7 @@ Ver [[Saúde e monitoramento]]. **Status não trafega por Kafka**: `attlas.camer
 
 ## Notas deste domínio
 
-- [[Status em tempo real - Arquitetura e estratégias]] - gateway, JWT, cache Redis, handlers in-process, distinção do streaming, limitação de escala.
+- [[Status em tempo real - Arquitetura e estratégias]] - gateway, JWT, cache Redis, handlers in-process, distinção do streaming, e a escala horizontal já resolvida pelo adapter Redis.
 - [[Status em tempo real - Fluxos]] - do worker até o cliente, e a leitura sob demanda.
 - [[Status em tempo real - Requisitos e SLA]] - RF-CAM-04 e RNF-CAM-01 → estado.
 

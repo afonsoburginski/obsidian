@@ -1,0 +1,21 @@
+{
+  "id": "17e2db8f-0e86-4ef5-8d29-e32070a0fb0a",
+  "state": "committed",
+  "createdAt": "2026-08-24T14:25:38.751Z",
+  "snapshots": [
+    {
+      "path": "Docs/ms-cameras/Integração com dispositivo/Integração com dispositivo - Arquitetura e estratégias.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "52f67ad7716017b054c58d9f6f3de441518c110101b7ae32841b6ce50bece87e",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33204,
+      "etag": "f723456ed8dbc09633593c2cbb94c1691a904454492b7f871a4240f621203ff2",
+      "snapshot": "0.bin",
+      "committedEtag": "52f67ad7716017b054c58d9f6f3de441518c110101b7ae32841b6ce50bece87e"
+    }
+  ],
+  "completedAt": "2026-08-24T14:25:38.761Z"
+}

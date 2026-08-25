@@ -1,0 +1,18 @@
+{
+  "id": "c5ede5e2-003a-4330-8d8a-82246ce3b41c",
+  "state": "committed",
+  "createdAt": "2026-08-25T15:27:41.033Z",
+  "snapshots": [
+    {
+      "path": "Docs/Analítico/Analítico - Frontend do attlas-design.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "1f395ab71fa8cfb1d87150848dfac23fd33a5e8a34c069672356df29265b62f7",
+      "recoverable": true,
+      "existed": false,
+      "committedEtag": "1f395ab71fa8cfb1d87150848dfac23fd33a5e8a34c069672356df29265b62f7"
+    }
+  ],
+  "completedAt": "2026-08-25T15:27:41.043Z"
+}

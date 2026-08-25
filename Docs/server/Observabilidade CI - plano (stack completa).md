@@ -90,4 +90,4 @@ Pré-requisitos que hoje bloqueiam:
 
 Tradeoffs mapeados: container privileged (equivalente ao acesso que o runner já tem hoje), boot de 20 a 40s por job, e o job zumbi continua precisando de um TTL externo (o problema muda de lugar, não desaparece). Por isso a decisão foi hooks primeiro: sem credencial nova e reversível com 1 linha, e a migração para efêmero só se os dados justificarem.
 
-Referências: runbook em `docs/architecture/ci-remote-cache.md` no repo (camadas de higiene atuais, topologia de runners e orçamento de disco - fonte de verdade mais recente e mais detalhada que este plano), [[Acessos SSH - Infra Attlas]] (como entrar nas máquinas), [[Kubernetes e infra]] (o cluster e o deploy).
+Referências: runbook em `docs/architecture/ci-remote-cache.md` no repo (camadas de higiene atuais, topologia de runners e orçamento de disco - fonte de verdade mais recente e mais detalhada que este plano), [[Acessos SSH - Infra Attlas]] (como entrar nas máquinas) e o repo `Developer/kubernetes` (o cluster e o deploy; o domínio saiu do vault em 24/08).

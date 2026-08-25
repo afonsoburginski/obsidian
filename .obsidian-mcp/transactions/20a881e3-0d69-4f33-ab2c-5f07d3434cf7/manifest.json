@@ -1,0 +1,21 @@
+{
+  "id": "20a881e3-0d69-4f33-ab2c-5f07d3434cf7",
+  "state": "committed",
+  "createdAt": "2026-08-24T14:30:04.819Z",
+  "snapshots": [
+    {
+      "path": "Docs/ms-cameras/Eventos, incidentes e alarmes/Eventos, incidentes e alarmes - Requisitos e SLA.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "1c472e7cd422020d6b01225d09de2b6ead1a21cb026a850e523b42215a8d5c78",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33204,
+      "etag": "63c3389110f8c26f9cd3ce750b4f318e3a948e33ed180f9c4a2112e8b3f60812",
+      "snapshot": "0.bin",
+      "committedEtag": "1c472e7cd422020d6b01225d09de2b6ead1a21cb026a850e523b42215a8d5c78"
+    }
+  ],
+  "completedAt": "2026-08-24T14:30:04.826Z"
+}

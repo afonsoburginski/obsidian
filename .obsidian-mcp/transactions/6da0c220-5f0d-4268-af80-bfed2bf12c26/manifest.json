@@ -1,0 +1,21 @@
+{
+  "id": "6da0c220-5f0d-4268-af80-bfed2bf12c26",
+  "state": "committed",
+  "createdAt": "2026-08-24T15:18:13.105Z",
+  "snapshots": [
+    {
+      "path": "Docs/Analítico/Analítico - Requisitos e SLA.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "46aa3b777f75f721140993c9a8aeccea72ac049cca0fb5ae2d7c79f4b1852c28",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33204,
+      "etag": "f4f9c69ad496a037f40550514d046a4f29a3f668548c1389191448e83bbcce9e",
+      "snapshot": "0.bin",
+      "committedEtag": "46aa3b777f75f721140993c9a8aeccea72ac049cca0fb5ae2d7c79f4b1852c28"
+    }
+  ],
+  "completedAt": "2026-08-24T15:18:13.111Z"
+}

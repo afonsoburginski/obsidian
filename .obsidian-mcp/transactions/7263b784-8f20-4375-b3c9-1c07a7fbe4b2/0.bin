@@ -1,0 +1,238 @@
+---
+tags:
+  - attlas
+  - sprint-30
+  - moc
+  - analitico
+sprint: Sprint 30 (24/8/26 - 30/8/26)
+status: ABERTA em 24/08 com planejamento próprio, frente única - analítico de vídeo. Replanejada a partir da auditoria de código de 24/08 (embarcado, servidor, ACOM/ATSPM) cruzada com as notas de alinhamento do user. Comprometido 28 pontos em 10 cards (repontuado de 25 em 25/08, ver seção "Comprometido"), toda a camada de gestão do analítico embarcado. A cadeia do servidor de VL foi para a Sprint 31; ACOM e ATSPM para o sem prazo. As 14 PRs de spec da Sprint 27 foram FECHADAS no reescopo de 24/08. Em 25/08, o user fechou prazo externo de 18/09 para a entrega do Analítico (front + backend) e o requisito de identificação automática de arquitetura ARTPEC no card 4 - ver [[Attlas - Sprint 32]] para o que isso empurrou pra frente. Os 10 cards já foram criados no ClickUp em 24/08, pontos setados em 25/08.
+atualizado: 2026-08-25
+---
+
+# Attlas - Sprint 30
+
+Sprint de **uma frente só: analítico de vídeo**. A semana inteira é a **camada de gestão do analítico
+embarcado**: o que é um analítico, em qual câmera pode existir, se está saudável, onde a geometria mora,
+e o que o operador vê quando algo detecta. A cadeia do analítico servidor é a [[Attlas - Sprint 31]].
+
+Documentação do domínio: [[Analítico]], e principalmente [[Analítico - Embarcado x Servidor]], que separa
+o que muda de uma forma de execução para a outra.
+
+> [!important] Prazo externo fechado em 25/08: 18/09/2026, front e backend
+> O user fechou o prazo de entrega do Analítico de vídeo - **front e backend** - em **18 de setembro de
+> 2026**. Contando 7 dias por sprint a partir desta semana, a data cai dentro da **Sprint 33**
+> (14/9-20/9), duas semanas depois do fim da [[Attlas - Sprint 32]] - ou seja, a 32 é o último checkpoint
+> cheio antes da semana de entrega, não a própria semana de entrega. Dois furos que essa data escancara e
+> que nenhuma das três sprints fecha sozinha:
+>
+> 1. **Frontend nesta sprint e na 31 é só spec (`UF-*`), nunca implementação.** Ver a seção "Processo"
+>    abaixo. Se 18/09 exige tela em produção, não só spec aprovada, a implementação de front precisa de
+>    sprint própria - candidata natural é a [[Attlas - Sprint 32]], mas o escopo ainda não está
+>    dimensionado, porque as specs `UF-*` que ele implementaria ainda não existem.
+> 2. **ATSPM e ACOM seguem fora das três sprints do analítico** (ver "Não entra nesta semana" abaixo). Se
+>    18/09 for só a entrega de Virtual Loop (embarcado + servidor + gestão), as três sprints cobrem o
+>    prazo. Se 18/09 inclui ATSPM/ACOM, faltam pelo menos 28 pontos sem sprint. **Não decidido pelo user
+>    em 25/08** - fica registrado aqui como pergunta aberta, não resposta assumida.
+
+## O reescopo de 24/08
+
+> [!danger] As 14 PRs de spec da Sprint 27 foram fechadas
+> `#1342` a `#1357`, cerca de 1.900 linhas de spec do analítico servidor, abertas em 03/08 e nunca
+> mergeadas, foram **fechadas em 24/08**. Motivo: a auditoria de código do mesmo dia mostrou que elas
+> especificavam o **caminho do dado** sobre uma fundação que não existe - sem entidade Analítico, sem
+> geometria em banco, sem unicidade de cadastro e sem writer do vínculo com o device, o servidor de VL
+> não tem de onde ler a região nem como saber a qual câmera pertence.
+>
+> **As branches `cameras/docs/SOFTWARE-*` não foram deletadas**: o conteúdo segue recuperável, e as
+> decisões estruturais estão preservadas em [[Analítico - Arquitetura e estratégias]]. A Sprint 31
+> reescreve a spec do servidor em cima da fundação que esta semana constrói, aproveitando essas
+> decisões em vez de redescobri-las.
+
+> [!danger] O defeito que sozinho justifica a semana
+> **`deviceSourceId` não tem nenhum writer no banco.** É a chave que liga o frame do device à câmera, e
+> só o seed e edição manual gravam ela. Consequência verificável no código: **câmera cadastrada pela UI
+> nunca entra no binding do consumer, logo nunca recebe detecção ao vivo**. O analítico embarcado está
+> "entregue desde 15/07" e funciona só para as câmeras que o seed criou.
+
+## Comprometido (28 pts, 10 cards)
+
+Ordem é caminho crítico: o card 3 é a pedra angular, e os cards 4, 5 e 8 se apoiam nele.
+
+| # | Card | Pts | Entrega | Dia |
+| --- | --- | --- | --- | --- |
+| 1 | [[Analítico - Doc de módulo (docs-only)\|Doc de módulo do Analítico]] `[Back]` | 2 | `docs/modules/analitico.md`, um dos cinco módulos do edital ainda sem doc de contexto | Seg |
+| 2 | [[Analítico - Writer do deviceSourceId e higiene do embarcado\|Writer do `deviceSourceId` + higiene]] `[Back]` | 3 | Câmera cadastrada pela UI passa a receber detecção; absorve o conteúdo válido da PR fechada #1355 | Seg |
+| 3 | [[Analítico - Entidade, persistência de região e unicidade\|Entidade Analítico + região em banco + unicidade]] `[Back]` | 5 | Model, migration, unicidade por tipo, geometria fora do device | Ter/Qua |
+| 4 | [[Analítico - Compatibilidade por arquitetura de câmera\|Compatibilidade por arquitetura de câmera]] `[Back]` | 5 | Arquitetura do processador **identificada automaticamente** (lookup `hardwareId` + fallback VAPIX, requisito de 25/08) e matriz validada no cadastro | Qua |
+| 5 | [[Analítico - Healthcheck do analítico\|Healthcheck do analítico]] `[Back]` | 3 | Saúde do analítico consultável pelo operador, não só Prometheus | Qui |
+| 6 | [[Analítico - Spec dos endpoints de região\|Spec dos 4 endpoints de região]] `[Back]` | 1 | `GET/PUT object-detection-regions` e `virtual-loops` estão em produção sem spec nenhuma | Qui |
+| 7 | [[Analítico - Contagem e dedup de incidente DAI\|Contagem e dedup de incidente DAI]] `[Back]` | 3 | O incidente deixa de ser lido e descartado; passa a virar evento contável | Qui/Sex |
+| 8 | [[Analítico - Preset PTZ com snapshot de região\|Preset PTZ com snapshot de região]] `[Back]` | 3 | Conjunto de regiões por preset e desenho sobre frame congelado | Sex |
+| 9 | [[Analítico - Fonte da imagem de evidência\|Fonte da imagem de evidência]] `[Back]` | 2 | Decisão registrada de quem gera o pixel da evidência | Sex |
+| 10 | [[Analítico - Renumerar a CROSS-032 duplicada\|Renumerar a `CROSS-032` duplicada]] `[Back]` | 1 | Dívida órfã pelo fechamento da #1342, que carregava essa correção | qualquer dia |
+
+**Por que estes dez.** Nenhum depende do device de campo, que é compartilhado e sobe com o producer
+desligado. Nenhum depende do squad de controladores. E nenhum depende de spec fechada de servidor, que
+acabou de ser reescopada. É a semana mais autocontida possível dentro do domínio.
+
+Os cards 8 e 9 ficaram mais baratos do que a primeira versão do plano estimava, porque a auditoria de
+verificação achou que **captura de snapshot JPEG já existe** (`CameraThumbnailService`, VAPIX
+`axis-cgi/jpg/image.cgi` e ISAPI, servida em `GET /cameras/:id/thumbnail`). Ela é de preview - 320x240,
+`compression=35`, substream secundário, `max-age=5`, sem persistência - mas a metade de buscar o pixel
+no device está pronta. O card 8 caiu de 5 para 3 pts e o card 9 de 3 para 2.
+
+> [!note] Repontuação de 25/08, contra o Guia Geral de Boas Práticas (§3.1)
+> O time tem uma tabela oficial de pontuação por tempo estimado (1 pt <2h, 2 pt 2-4h, 3 pt 4-8h, 5 pt
+> 1-2 dias, 8 pt 2-3 dias, 13 pt 4-5 dias). Conferindo os dez cards contra ela em 25/08, dois subiram: o
+> card 2 (writer + higiene) de 2 para 3 - persistência + teste de integração + higiene em 4 docs +
+> reconciliação de status em 5 atômicas + reescrita de spec passa de 2-4h para 4-8h - e o card 4
+> (compatibilidade) de 3 para 5, porque o requisito de identificação automática fechado no mesmo dia
+> (lookup `hardwareId` + sonda VAPIX a confirmar contra hardware real) passa de 4-8h para 1-2 dias. Total
+> da sprint sobe de 25 para 28 pts. Os demais oito conferem com a faixa de tempo já estimada, sem ajuste.
+
+## Fatiamento: 1 task = 1 PR, pilha de 10 mergeando em cascata
+
+Regra da casa: **mínimo de 8 PRs por sprint** e **uma PR nunca carrega mais de um card** (várias PRs
+podem apontar para o mesmo card, o inverso não). As 10 PRs saem empilhadas, cada uma baseada na anterior,
+e mergeiam em cascata de baixo para cima.
+
+| # | Card | Pts | Base | Por que nesta posição |
+| --- | --- | --- | --- | --- |
+| 1 | Doc de módulo do Analítico | 2 | `develop` | Docs-only, zero risco de conflito, fixa o vocabulário que as nove acima usam |
+| 2 | Spec dos 4 endpoints de região | 1 | PR 1 | Docs-only, e descreve o que já está em produção, então não espera código |
+| 3 | Renumerar a `CROSS-032` duplicada | 1 | PR 2 | Docs-only e mecânica. Sai cedo para não ficar sentada atrás de migration |
+| 4 | **Entidade Analítico + região em banco + unicidade** | 5 | PR 3 | **Pedra angular.** É a primeira com migration, e as cinco acima dela leem a entidade que ela cria |
+| 5 | Writer do `deviceSourceId` + higiene | 3 | PR 4 | Escreve no vínculo que a PR 4 modela |
+| 6 | Compatibilidade por arquitetura de câmera | 5 | PR 5 | Valida no cadastro contra a entidade |
+| 7 | Healthcheck do analítico | 3 | PR 6 | Reporta saúde por analítico, o que exige a entidade existir |
+| 8 | Contagem e dedup de incidente DAI | 3 | PR 7 | Toca o consumer, que a PR 5 já mexeu |
+| 9 | Preset PTZ com snapshot de região | 3 | PR 8 | Liga geometria a preset, e a geometria nasce na PR 4 |
+| 10 | Fonte da imagem de evidência | 2 | PR 9 | **Topo de propósito**: é card de decisão e pode empacar em resposta de produto. No meio da pilha, travaria tudo acima |
+
+### As três lições da pilha da Sprint 29, aplicadas aqui
+
+1. **Card que pode travar vai para o topo.** Na 29 a `2481` foi para o topo porque o critério de início
+   dela era um deploy que não tinha acontecido, e uma PR bloqueada no meio trava tudo acima. Aqui o
+   equivalente é a PR 10, que depende de decisão de produto.
+2. **Rebase da pilha inteira quando a base receber review fix.** Na 29 o topo de uma PR não continha o
+   commit de correção da PR de baixo, então as de cima nunca receberam as correções pedidas. Toda
+   correção na PR 4 (a pedra angular) exige rebasear as seis acima antes de pedir review de novo.
+3. **Migration gerada por CLI não se parte.** Na 29 a migration da `2436` ficou inteira porque partir uma
+   migration gerada exigiria revalidar o ciclo shadow. A migration da PR 4 é uma só, mesmo criando
+   entidade e geometria juntas.
+
+Detalhe de execução: force-push é negado por regra de permissão local, então branch que precisar de
+reescrita de história sai com nome novo e a PR antiga vira draft com comentário apontando a substituta,
+sem fechar, para as threads de review não se perderem.
+
+## Não entra nesta semana
+
+| Frente | Onde foi | Por quê |
+| --- | --- | --- |
+| Cadeia do servidor de VL (spec nova + ingestão + detecção + ocupação + vínculo + tradução de endereço) | [[Attlas - Sprint 31]], 25 pts | Depende da entidade e da geometria em banco que esta semana cria |
+| Fechamento da cadeia (escala, prova de campo) | [[Attlas - Sprint 32]], 4 pts | Depende da Sprint 31 inteira. "Embarcado no contrato comum" e "tradução de endereço" saíram daqui - o primeiro foi promovido pra dentro da própria Sprint 31 (card 3) e o segundo nasceu resolvido como card 8, os dois pra bater o mínimo de 8 PRs sem inflar a escada |
+| Quatro laços por câmera | [[00 - Sem prazo (backlog)]], 5 pts | Requisito já decidido nas notas de alinhamento (não é decisão em aberto), mas é redesenho de contrato de `IVirtualLoopConfig` que não cabia em nenhuma das duas sprints já lotadas |
+| ACOM: 1:1 com controlador, vínculo com analítico, caller da atuação, tela "Periféricos ACOM" | [[00 - Sem prazo (backlog)]], 18 pts | Vive no `ms-controllers`, precisa de alinhamento com outro squad e tem migration com backfill. **Fora das três sprints do analítico** - só entra no prazo de 18/09 se o user confirmar que o escopo da entrega inclui ACOM |
+| ATSPM: unicidade de grupo, snapshot de config, SPEC do `ms-atspm`, decisão do `ms-dai` | [[00 - Sem prazo (backlog)]], 10 pts | `ms-atspm` é scaffold sem uma linha de spec; e o snapshot precisa nascer junto com o schema dele. Mesma ressalva do ACOM acima |
+| OTA do app embarcado | sem card | Depende de o fornecedor do ACAP expor caminho de atualização. Não existe nenhuma gestão de aplicação no device hoje |
+
+## Riscos
+
+1. **A entidade do card 3 é a pedra angular de tudo.** Se ela escorregar, os cards 4, 5 e 8 escorregam
+   juntos, e a Sprint 31 perde o pré-requisito. É o card a proteger na semana.
+2. **Quatro laços por câmera contradiz o contrato atual.** `IVirtualLoopConfig` é configuração única por
+   câmera, sem geometria própria. O requisito já está decidido nas notas de alinhamento - não é decisão
+   em aberto - mas é redesenho de contrato, e ficou fora das duas sprints por tamanho, não por incerteza.
+   Ver [[Analítico - Embarcado x Servidor]].
+3. **Risco de contagem dupla ACP x vídeo, declarado e não mitigado.** A derivação do `ms-controllers`
+   mapeia `MDE + Vehicle` e o módulo `VirtualLoop` do Neo+ para a mesma tecnologia `VIRTUAL_LOOP` que o
+   vídeo vai publicar. Se o laço virtual atuar por ACOM, o histórico soma o mesmo veículo duas vezes
+   **sem erro visível**. A regra existia só nas specs agora fechadas; precisa renascer na Sprint 31.
+4. **Fechar as 14 PRs jogou fora a conferência entre squads que nunca aconteceu.** A spec do contrato de
+   ocupação mandava conferir a forma do evento contra o trabalho de outro squad sobre ocupação de faixa e
+   identidade de detector no `ms-traffic-model`. Essa pendência não desaparece com o fechamento: reaparece
+   na Sprint 31 e continua sendo bloqueio de coordenação.
+5. **Prazo de 18/09 sem sprint de frontend implementada.** Fechado em 25/08, junto com o requisito de
+   identificação automática do card 4. As três sprints do analítico (30, 31, 32) só têm frontend como
+   spec `UF-*`, nunca implementação - ver "Processo" abaixo. Sem uma sprint que implemente essas specs,
+   18/09 chega com backend pronto e tela nenhuma.
+6. **Escopo do prazo de 18/09 não confirmado para ATSPM/ACOM.** Ver o callout de prazo no topo desta nota.
+
+## Dívida colateral
+
+- **A `CROSS-032` está duplicada em `develop`**: existem `CROSS-032-operational-visibility-replaces-view-permissions.md`
+  e `CROSS-032-public-webrtc-turn.md`. A renumeração da de TURN para `CROSS-044` ia de carona na #1342, que
+  foi fechada, então a dívida ficou órfã. É o card 10.
+- **`CROSS-043` volta a ser referência fantasma, e agora sem ambiguidade.** Três atômicas em `develop`
+  (`PROJ-012`, `PROJ-016`, `PROJ-017`) citam o ID, e a `PROJ-017` o nomeia como
+  `CROSS-043-socketio-redis-adapter-unification` na lista de dependências. O arquivo nunca existiu; a
+  faixa de IDs em `develop` salta de `CROSS-042` para `CROSS-045`. Fechar a #1342 **resolveu a colisão**
+  que o plano da manhã registrava: `043` é o adapter Redis e mais nada, e `044` está livre para a de TURN.
+- `docs/architecture/services.md` ainda anuncia `ms-acom` como serviço vivo na porta 3305, e o
+  `docker-compose.yml` ainda sobe o container - os dois contradizem a DD-20, que portou ACOM para o
+  `ms-controllers`. O Kong roteia `/api/acoms` (plural, real) para o `ms-controllers` e `/api/acom`
+  (singular, vazio) para o esqueleto, que nunca recebe tráfego.
+- `attlas.detectors.fault` tem produtor real e **nenhum consumidor**, apesar de `docs/modules/detectors.md`
+  designar o `ms-alarms`. Falha de detector de laço virtual, quando existir, cai no vazio.
+- A terminologia morta `deviceAnalyticId` contamina 4 docs em `develop` (`INT-010`, `PROJ-011`, `PROJ-013`,
+  `MOD-014`); o campo real é `deviceSourceId`. A correção existia na #1355, agora fechada - entra no card 2.
+- `docs/modules/controllers.md`, com mais de mil linhas, não menciona ACOM, ATSPM, DAI nem laço virtual
+  uma única vez.
+
+## Duas coisas que eu tinha marcado como decisão em aberto, e já estavam nas notas
+
+Erro meu na primeira passada: perguntei em vez de reler. As duas ficam registradas aqui como correção,
+não como pergunta.
+
+### 1. `ms-connector-virtual-loop` não existe - resolvido
+
+Eu tinha marcado como pergunta em aberto se o connector sobrevivia como serviço separado. Não precisava:
+`Docs/Analítico/Anotações sobre Analítico de vídeo.md`, seção "Arquitetura de serviços", já lista
+exatamente **quatro** serviços - `ms-cameras`, `ms-atspm`, `ms-dai`, `ms-virtual-loop` - e o connector não
+é um deles. A tradução de endereço e a publicação em `attlas.detectors.raw` vivem dentro do
+`ms-virtual-loop`. `docs/modules/detectors.md`, que designava o connector produtor do protocolo de laço
+virtual, está desatualizado nesse ponto - atualizar o doc é parte do DoD do card 8 da
+[[Attlas - Sprint 31]].
+
+### 2. Quatro laços por câmera - decidido, só não coube na semana
+
+Também não era pergunta: "cada analítico tem um máximo de 4 laços por câmera" está escrito nas notas de
+alinhamento, direto. O que fica em aberto não é a decisão, é o redesenho de `IVirtualLoopConfig` (hoje
+configuração única por câmera, sem geometria própria) para suportar até 4 - isso é trabalho novo de
+tamanho considerável, e as duas sprints já estão cheias. Foi para o sem prazo como card real, não como
+pergunta. Detalhe da contradição em [[Analítico - Embarcado x Servidor]].
+
+## O que segue genuinamente em aberto
+
+### Quem gera a imagem de evidência
+
+Este sim é decisão a tomar, não coisa que as notas já respondem. Virou o card 9, com a pergunta
+reformulada pela auditoria: **não** é "corrigir a qualidade das imagens do Attlas 25", porque no Attlas 26
+o payload do device é 100% metadado e o único snapshot que existe é a thumbnail efêmera de preview. A
+decisão é entre reusar o `CameraThumbnailService` em resolução cheia com armazenamento, capturar frame do
+relay, ou pedir ao fornecedor do ACAP que o device passe a mandar a imagem - cada uma com custo de banda e
+de armazenamento diferente. O card produz a decisão; não a antecipa aqui.
+
+### Existe escape hatch manual para a arquitetura não identificada?
+
+Novo em 25/08, no card 4: se o lookup de `hardwareId` falhar e o fallback VAPIX também não responder, o
+cadastro trava até a tabela ser atualizada, ou o operador pode sobrescrever manualmente como último
+recurso? Não respondido pelo user - ver [[Analítico - Compatibilidade por arquitetura de câmera]].
+
+## Processo
+
+- **Os 10 cards já foram criados no ClickUp em 24/08** (`SOFTWARE-2678` e vizinhos), na lista pela data,
+  tag `squad 2`, prefixo `[Back]` e pontos no campo nativo, repontuados em 25/08 contra o Guia Geral de
+  Boas Práticas (ver o callout na seção "Comprometido").
+- **Os 14 cards da Sprint 27 perderam a PR.** Os cards ClickUp `2385` a `2398`, `2200`, `2389` a `2392`
+  continuam existindo, mas as PRs que os sustentavam foram fechadas. Ver [[00 - Sem prazo (backlog)]]
+  para o destino de cada um.
+- **Escopo de frontend**: as telas entram como spec `UF-*`, não como implementação desta sprint. Ver o
+  risco 5 acima - contra o prazo de 18/09, isso é lacuna, não decisão fechada.
+
+## Ver também
+
+[[Attlas - Sprint 31]] · [[Attlas - Sprint 32]] · [[00 - Sem prazo (backlog)]] · [[Analítico]] ·
+[[Analítico - Embarcado x Servidor]] · [[Analítico - Requisitos e SLA]] ·
+[[Analítico - Arquitetura e estratégias]] · [[Analítico - Fluxos]] · [[Attlas - Sprint 29]] ·
+[[Attlas - Sprint 27]] (o planejamento que este reescopo substitui)

@@ -1,0 +1,18 @@
+{
+  "id": "3b0a8b16-66e6-47e6-ac39-1ef4571572fe",
+  "state": "committed",
+  "createdAt": "2026-08-25T15:28:54.145Z",
+  "snapshots": [
+    {
+      "path": "Sprint/30/Analítico - Desenho de região sobre frame congelado (front).md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "8370306e9da28940687e7bce4d2e1574c48bb46fbfc890ba7acf82d6480e86ae",
+      "recoverable": true,
+      "existed": false,
+      "committedEtag": "8370306e9da28940687e7bce4d2e1574c48bb46fbfc890ba7acf82d6480e86ae"
+    }
+  ],
+  "completedAt": "2026-08-25T15:28:54.152Z"
+}

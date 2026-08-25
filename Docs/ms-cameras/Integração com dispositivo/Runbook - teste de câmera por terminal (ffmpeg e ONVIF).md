@@ -6,14 +6,15 @@ tags:
   - dispositivo
 aliases:
   - "ffmpeg-onvif-camera-testing"
-atualizado: 2026-07-06
+atualizado: 2026-08-24
 ---
 
 # Runbook - teste de câmera por terminal (ffmpeg e ONVIF)
 
-Comandos de referência pra testar as câmeras Axis do Attlas direto do terminal:
-vídeo (ffmpeg/ffprobe), snapshot, ONVIF e PTZ. As câmeras são Axis, então o jeito
-mais simples de PTZ/snapshot é a API VAPIX (HTTP); ONVIF fica como alternativa padrão.
+Comandos de referência pra testar as câmeras do Attlas direto do terminal: vídeo (ffmpeg/ffprobe),
+snapshot, ONVIF, ISAPI e PTZ. As duas câmeras Axis abaixo são o caso mais comum, então o jeito mais
+simples de PTZ/snapshot nelas é a API VAPIX (HTTP); ONVIF fica como alternativa padrão. Desde agosto
+existe também uma Hikvision real de teste (ONVIF desligado de fábrica) - seção própria no fim.
 
 ## Câmeras (via VPN/tailnet)
 
@@ -140,10 +141,41 @@ onvif-cli --host 10.1.1.79 --port 80 -u root -a Sinales123
 # > cmd media GetProfiles
 ```
 
+## Hikvision (ISAPI, ONVIF desligado de fábrica) - chegada de agosto
+
+Câmera real de teste: `192.168.210.80` (rede local, não tailnet), `admin` / `Sinales123`,
+DS-2CD1023G0E-I firmware V5.7.12 - ver [[Runbook - câmeras reais para teste]]. `/onvif/device_service`
+responde 404 até alguém ativar o ONVIF (manualmente ou via INT-020 no cadastro).
+
+```bash
+HKV=192.168.210.80
+HKVCRED=admin:Sinales123
+
+# RTSP - canal principal (101) e sub-stream (102)
+ffprobe -v error -rtsp_transport tcp \
+  -i "rtsp://$HKVCRED@$HKV:554/Streaming/Channels/101" -show_streams -show_format
+
+# Status do device via ISAPI (o mesmo endpoint que o poll de saúde usa) - curl resolve o
+# desafio Digest sozinho com --digest
+curl -s --digest -u $HKVCRED "http://$HKV/ISAPI/System/status"
+curl -s --digest -u $HKVCRED "http://$HKV/ISAPI/System/deviceInfo"
+
+# Bitrate configurado do canal (o que o INT-006/PROJ-008 lê)
+curl -s --digest -u $HKVCRED "http://$HKV/ISAPI/Streaming/channels/101"
+
+# Estado do ONVIF (bloco <ONVIF><enable>) - fica false até alguém ativar
+curl -s --digest -u $HKVCRED "http://$HKV/ISAPI/System/Network/Integrate"
+```
+
+Depois que o ONVIF estiver ativo (`<enable>true</enable>` na resposta acima), o mesmo bloco de
+comandos ONVIF/Python da seção anterior funciona nela como em qualquer outra câmera Profile S -
+troque o IP e a credencial.
+
 ## Onde isso vive no Attlas
 
-- Seed local (dev): `apps/ms-cameras/src/database/seed.ts` - define estas câmeras
-  (demo 10.1.1.78, PTZ 10.1.1.79) com os mesmos RTSP/tokens ONVIF.
+- Seed local (dev): `apps/ms-cameras/src/database/seed.ts` - define as câmeras Axis (demo
+  10.1.1.78, PTZ 10.1.1.79) e a Hikvision (`upsertHikvisionCamera`, 192.168.210.80) com os mesmos
+  RTSP/tokens/credenciais usados aqui.
 - Produção (EC2): a PTZ (10.1.1.79) está OPERATIONAL nos 6 sistemas-tenant; profiles
   PRIMARY `profile_1_h264` (1080p) e SECONDARY `profile0`. O player puxa via WHEP
   (mediamtx) com fallback HLS; o ms-cameras roda o relay ffmpeg RTSP→mediamtx.

@@ -1,0 +1,113 @@
+---
+tags:
+  - doc
+  - ms-cameras
+  - cameras
+  - eventos
+aliases:
+  - "Eventos, incidentes e alarmes"
+  - "00 - Eventos, incidentes e alarmes"
+atualizado: 2026-08-24
+---
+
+# Eventos, incidentes e alarmes (ms-cameras)
+
+> Submódulo do [[ms-cameras]] (MOD-007/MOD-010 camera-events). Código: `apps/ms-cameras/src/events/`. Visual: [[07 - MOD-007 camera-events.excalidraw|diagrama]].
+
+Como o `ms-cameras` registra ocorrências das câmeras (eventos), lê essa rede inteira numa tela dedicada, as agrupa em **incidentes** por correlação (ou por report manual do operador), e emite **alarmes** para o módulo Alarmes. Cobre RF-EVT-01/02/03 e RF-INC-01/02/03/04. As **regras de negócio** (tipos, severidades, SLA, MTTR/MTBF) vivem em `docs/modules/cameras.md` - aqui documentamos **a implementação**.
+
+> [!warning] Divergência corrigida (24/08) - o domínio saiu de `cameras/` e ganhou leitura cross-camera
+> Esta nota (e as outras três da pasta) foi escrita em 03/07. Desde então, 47 commits tocaram o código descrito aqui. Duas mudanças estruturais: **(1)** o código saiu de `apps/ms-cameras/src/cameras/` para `apps/ms-cameras/src/events/` (11/07, SOFTWARE-2006), domínio próprio com subpastas por responsabilidade; **(2)** nasceu uma tela cross-camera (`/cameras/events`, UC-032/040/041/042) e um fluxo de observações + report manual (UC-044) que não existiam antes. Detalhes e mais divergências pontuais nas 3 notas abaixo.
+
+## Notas deste domínio
+
+- [[Eventos, incidentes e alarmes - Arquitetura e estratégias]] - seam de registro (MOD-010, unificado para as 2 fontes), leitura cross-camera, observações/report, correlação, emissão de alarme e as decisões por trás.
+- [[Eventos, incidentes e alarmes - Fluxos]] - use cases e o caminho de um evento até o alarme, + mapa UF→endpoint do frontend.
+- [[Eventos, incidentes e alarmes - Requisitos e SLA]] - RF-EVT e RF-INC cobertos, estado de cada um (RF-INC-01 passou a **Implementado**).
+
+## Pipeline (em prosa)
+
+Um evento nasce de duas fontes, hoje unificadas num único seam (MOD-010). **(1)** O worker de saúde (`src/health/`, ver [[Saúde e monitoramento]]) injeta o mesmo `ICameraEventRecorderToken` do ingest e grava transições de estado/comunicação/energia/PTZ (`HEALTH_ONLINE`/`HEALTH_OFFLINE`/`HEALTH_EVENT`/`CONNECTIVITY_CHANGED`, com `causeCode` VAPIX) com `source: 'health'` - persiste e empurra WebSocket, mas pula revalidação de câmera, dedup e publish Kafka. **(2)** Dispositivos, no-breaks e outros serviços publicam no tópico Kafka `attlas.cameras.event-ingest`; o `CameraEventIngestListener` consome e delega ao mesmo `RecordCameraEventService` com `source: 'ingest'` (default) - o **seam único** de registro, agora com pipeline completo.
+
+O seam valida a câmera (só para `ingest`), normaliza `occurredAt`, deduplica por `correlationId` (só para `ingest`), persiste em `CameraEventLog`, transmite por WebSocket (EventBus) **e**, só para `ingest`, publica em `attlas.cameras.event-logged`. Esse `event-logged` faz **fan-out** para dois consumidores independentes: o worker de **correlação** (UC-021) e o **emissor de alarme** (UC-022).
+
+A correlação agrupa eventos correlacionáveis por `correlationKey = eventType:causeCode` (10 pares hoje, cresceu desde 03/07) dentro de uma janela temporal, criando um `CameraIncident` `TENTATIVE`; quando cruza o limiar (≥2 câmeras ou ≥3 eventos) promove para `DETECTED` e publica `attlas.cameras.incident-created`. O emissor de alarme reage em dois branches: um evento crítico isolado (branch B, via `event-logged`) e um incidente correlacionado (branch A, via `incident-created`) - ambos derivam um `alarmId` determinístico (UUID v5) e publicam `attlas.alarms.alarm-raised`, consumido pelo futuro `ms-alarms`. Um `CameraIncident` também pode nascer **manualmente**: o operador abre a tela de detalhe de um evento e "reporta a ocorrência" (UC-044) - esse caminho nunca passa pela correlação nem pelo emissor de alarme.
+
+Independentemente da fonte, a tela `/cameras/events` (UC-032) lê a rede inteira do tenant - não uma câmera por vez - com filtros de área/subárea (via topologia), origem, status do incidente vinculado e KPIs (UC-040) fixados a uma janela de comparação. Cada evento aberto na tela ganha uma timeline (UC-041, a cadeia do incidente ou um fallback de contexto), uma recorrência (UC-042, série bucketizada na câmera de origem) e uma thread de observações (UC-044).
+
+> [!warning] Nuance de wiring que persiste - o que hoje alimenta correlação/alarme
+> O único produtor de `event-logged` é `RecordCameraEventService` com `source: 'ingest'`. Eventos de `source: 'health'` (worker de saúde) são **persistidos e empurrados por WebSocket, mas não publicados em `event-logged`** - logo não entram no pipeline Kafka de correlação/alarme. O resultado é o mesmo que a nota de 03/07 descrevia; o mecanismo mudou (ver arquitetura seção 2) - antes eram dois caminhos de código, hoje é um seam único com um `source` que gateia os efeitos.
+
+## Mapa de código (`apps/ms-cameras/src/events/`)
+
+| Peça | Arquivo | Papel |
+| --- | --- | --- |
+| Seam de registro | `recording/record-camera-event.service.ts` | Único ponto de escrita (MOD-010): valida, dedup por `correlationId`, persiste, EventBus + publish `event-logged` - efeitos gateados por `source: 'ingest'\|'health'` |
+| Porta do recorder | `recording/camera-event-recorder.interface.ts` | `ICameraEventRecorder` - usada pelo ingest **e** pelo health worker |
+| Ingest Kafka | `recording/camera-event-ingest.listener.ts` | Consome `event-ingest`; cap 4 KiB; drop sem poison-pill (UC-019) |
+| Publisher | `publishing/camera-events.publisher.ts` | `event-logged`, `incident-created`, `alarm-raised` (best-effort) |
+| Categoria | `_shared/derive-camera-event-category.ts` | `(eventType, causeCode)` → `CameraEventCategory` (read-time) + `where` de filtro |
+| Correlação | `consumers/correlate-events/{listener,service,correlation-rules}.ts` | Cluster + housekeeping cron (UC-021) |
+| Emissão de alarme | `consumers/emit-alarm/{listener,service,alarm-mapping}.ts` | Branch A (incidente) + Branch B (evento) (UC-022) |
+| Read: log por câmera | `reading/get-camera-event-log/`, `reading/get-camera-event-detail/` | `GET /cameras/:id/events[/:eventId]` (UC-017/018) |
+| Read: log cross-camera | `reading/list-camera-events/`, `reading/get-cross-camera-event-detail/` | `GET /cameras/events[/:eventId]` (UC-032) |
+| Read: KPIs | `reading/get-camera-events-stats/` | `GET /cameras/events/stats` (UC-040) |
+| Read: timeline do evento | `reading/get-camera-event-timeline/` | `GET /cameras/events/:eventId/timeline` (UC-041) |
+| Read: recorrência do evento | `reading/get-camera-event-recurrence/` | `GET /cameras/events/:eventId/recurrence` (UC-042) |
+| Read: incidentes | `incidents/list-camera-incidents/`, `incidents/get-camera-incident/` | `GET /cameras/incidents[/:id]` (UC-023/024) |
+| Observações + report | `observations/` | `GET`/`POST /cameras/events/:eventId/observations`, `POST /cameras/events/:eventId/report` (UC-044) |
+| Mapeamentos | `incidents/incident-mapping.ts`, `_shared/derive-incident-priority.ts` | `causeCode`/`severity` → tipo/severidade/prioridade; parse `correlationKey` |
+| Repositórios | `recording/camera-event-log.repository.ts`, `incidents/camera-incidents.repository.ts` | Persistência de eventos e incidentes |
+| Constantes | `events.constants.ts` (`CorrelationConfig`, `AlarmEmitConfig`, `CameraEventPeriodConfig`, `CameraEventTimelineConfig`, `CameraEventRecurrenceConfig`) | Janelas, limiares, cron, presets |
+| Bridge WS + dashboard | `realtime/camera-event-log.events-handler.ts` | EventBus → `camera:event:new` na sala `camera:<id>` + invalidação do dashboard (EVENTS/INCIDENTS) |
+
+Wiring: `apps/ms-cameras/src/events/events.module.ts` (controllers `CameraEventIngestListener`, `CorrelateEventsListener`, `EmitAlarmListener`).
+
+## Endpoints (prefixo `/api`)
+
+Todos no `CamerasController` (`apps/ms-cameras/src/cameras/cameras.controller.ts`), tenant-scoped por `@SystemId()`.
+
+| Método | Rota | O que retorna | Origem |
+| --- | --- | --- | --- |
+| `GET` | `/cameras/:id/events` | Página de eventos da câmera (filtros tipo/severidade/categoria/`from`/`to`/busca/`sort`) | UC-017 |
+| `GET` | `/cameras/:id/events/:eventId` | Detalhe do evento (por câmera) + `linkedIncident` `{id,status}` | UC-018 |
+| `GET` | `/cameras/events` | Página cross-camera (filtros + `area`/`subarea`/`origin`/`state`/`status`/`period`) | UC-032 |
+| `GET` | `/cameras/events/stats` | 4 tiles de KPI (total/crítico/aviso/info) + comparação fixa | UC-040 |
+| `GET` | `/cameras/events/:eventId` | Detalhe cross-camera (deep-link só por id) | UC-032 |
+| `GET` | `/cameras/events/:eventId/observations` | Thread de observações (top-level + replies) | UC-044 |
+| `POST` | `/cameras/events/:eventId/observations` | Cria observação ou reply | UC-044 |
+| `POST` | `/cameras/events/:eventId/report` | Abre incidente manual (`DETECTED`) a partir do evento | UC-044 |
+| `GET` | `/cameras/events/:eventId/recurrence` | Série bucketizada (1h/24h/7d/30d) na câmera de origem | UC-042 |
+| `GET` | `/cameras/events/:eventId/timeline` | Cadeia do incidente do evento (ou fallback de contexto) | UC-041 |
+| `GET` | `/cameras/incidents` | Página de incidentes (janela default 7d; `TENTATIVE`/`DROPPED` ocultos) | UC-023 |
+| `GET` | `/cameras/incidents/:id` | Detalhe + timeline ASC (cap 200, flag `timelineTruncated`) | UC-024 |
+
+As rotas literais de 2 segmentos (`incidents`, `events`, `bulk-template`, `manufacturers`) são declaradas **antes** de `@Get(':id')` no controller, senão o segmento literal cairia no `ParseUUIDPipe` de `:id`. Dentro de `events/`, os sub-segmentos literais (`stats`, `:eventId/observations`, `:eventId/report`, `:eventId/recurrence`, `:eventId/timeline`) seguem a mesma regra entre si e com `events/:eventId`.
+
+## Kafka
+
+Constantes: `libs/contracts/src/lib/camera/cameras-topics.constant.ts` e `libs/contracts/src/lib/alarm/alarms-topics.constant.ts`.
+
+| Direção | Tópico | Onde | Payload |
+| --- | --- | --- | --- |
+| Consome | `attlas.cameras.event-ingest` | `events/recording/camera-event-ingest.listener.ts` (UC-019) | `ICameraEventIngestMessage` |
+| Consome | `attlas.cameras.event-logged` | **fan-out**: `events/consumers/correlate-events` **e** `events/consumers/emit-alarm` (Branch B) | `ICameraEventLogEntry` |
+| Consome | `attlas.cameras.incident-created` | `events/consumers/emit-alarm/emit-alarm.listener.ts` (Branch A) | `ICameraIncidentCreatedEvent` |
+| Produz | `attlas.cameras.event-logged` | `RecordCameraEventService`, só `source: 'ingest'` (key = `cameraId`) | `ICameraEventLogEntry` |
+| Produz | `attlas.cameras.incident-created` | `CorrelateEventsService` (só na promoção) | `ICameraIncidentCreatedEvent` |
+| Produz | `attlas.alarms.alarm-raised` | `EmitAlarmService` (key = `sourceId`/câmera) | `IAlarmRaisedEvent` |
+
+Sem broker (`KAFKA_BROKERS` ausente) todos os publishes são suprimidos silenciosamente; o registro/correlação já foi persistido. O report manual (UC-044) nunca publica `incident-created`.
+
+## Persistência (`apps/ms-cameras/src/database/schema/`)
+
+| Modelo | Arquivo | Papel |
+| --- | --- | --- |
+| `CameraEventLog` | `audit/camera_event_log.prisma` | Evento bruto: `eventType`, `subType`, `severity`, `payload` (JSON), `correlationId`, `operatorId`, `occurredAt` (Timestamptz). **Sem coluna `category`** (derivada em read-time) |
+| `CameraEventObservation` | `audit/camera_event_observation.prisma` | Novo (20/07, UC-044): comentário/reply num evento - `authorId`/`authorName`, `text` (VarChar 280), `parentObservationId` (thread de 2 níveis) |
+| `CameraIncident` | `incident/camera_incident.prisma` | Cluster ou report manual: `status`, `priority`, `correlationKey` (VarChar 64, `null` se manual), `detectedAt`/`resolvedAt`; `reportedBy` agora populado de fato para incidentes manuais; `assignedTo`/`workOrderId` nullable (fluxo futuro) |
+| `CameraIncidentEvent` | `incident/camera_incident_event.prisma` | Ligação N:N evento↔incidente; `@@unique([incidentId, eventLogId])` = idempotência forte |
+
+## Relacionados
+
+[[Saúde e monitoramento]] · [[PTZ e presets]] · [[Status em tempo real]] · [[Streaming]]

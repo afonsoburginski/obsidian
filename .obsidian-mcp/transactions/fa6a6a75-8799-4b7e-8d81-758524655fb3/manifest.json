@@ -1,0 +1,21 @@
+{
+  "id": "fa6a6a75-8799-4b7e-8d81-758524655fb3",
+  "state": "committed",
+  "createdAt": "2026-08-24T14:28:00.666Z",
+  "snapshots": [
+    {
+      "path": "Docs/ms-cameras/Integração com dispositivo/Runbook - teste de câmera por terminal (ffmpeg e ONVIF).md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "cf00838354d66ae1dd3d6a366f6fb722a7d80b1b550601f56d9fc6456cd6685f",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33204,
+      "etag": "c56b74ad83e37b20ac76ec4c8afc929891810776400172c3df649c71abadee9b",
+      "snapshot": "0.bin",
+      "committedEtag": "cf00838354d66ae1dd3d6a366f6fb722a7d80b1b550601f56d9fc6456cd6685f"
+    }
+  ],
+  "completedAt": "2026-08-24T14:28:00.672Z"
+}

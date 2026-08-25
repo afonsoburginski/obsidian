@@ -1,0 +1,29 @@
+{
+  "id": "31340cd7-b8a2-4aef-b611-8d9323abfe10",
+  "state": "committed",
+  "createdAt": "2026-08-25T11:33:34.528Z",
+  "snapshots": [
+    {
+      "path": "Sprint/32/SOFTWARE-2200 - Prova de campo do analítico em container.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "dd4fec6d622203c3d10d5d506a84068945b2989c92fc83f1aa5234b4f6d562e1",
+      "recoverable": true,
+      "existed": false,
+      "committedEtag": "dd4fec6d622203c3d10d5d506a84068945b2989c92fc83f1aa5234b4f6d562e1"
+    },
+    {
+      "path": "Sprint/Sem prazo/SOFTWARE-2200 - Prova de campo do analítico em container.md",
+      "operation": "delete",
+      "entryType": "file",
+      "phase": "applied",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33204,
+      "etag": "dd4fec6d622203c3d10d5d506a84068945b2989c92fc83f1aa5234b4f6d562e1",
+      "snapshot": "1.bin"
+    }
+  ],
+  "completedAt": "2026-08-25T11:33:34.537Z"
+}

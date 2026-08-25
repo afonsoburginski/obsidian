@@ -1,0 +1,18 @@
+{
+  "id": "c75c0fbc-d1e1-433b-ad8d-557a9f237509",
+  "state": "committed",
+  "createdAt": "2026-08-25T15:28:36.907Z",
+  "snapshots": [
+    {
+      "path": "Sprint/30/Analítico - Cadastro por arquitetura de câmera (front).md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "0d1ce25797dbf551f13238252952bed3e3b4d7f89b82cecc2653c8c952ac4b4d",
+      "recoverable": true,
+      "existed": false,
+      "committedEtag": "0d1ce25797dbf551f13238252952bed3e3b4d7f89b82cecc2653c8c952ac4b4d"
+    }
+  ],
+  "completedAt": "2026-08-25T15:28:36.921Z"
+}

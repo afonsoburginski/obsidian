@@ -1,0 +1,82 @@
+---
+tags:
+  - attlas
+  - task
+  - sprint-30
+  - analitico
+card: SOFTWARE-2685
+clickup: https://app.clickup.com/t/86ak5dx5b
+titulo: "[Back] Spec dos 4 endpoints de região"
+frente: Analítico
+tamanho: absorvido (sem ponto próprio)
+status: ABSORVIDO em 25/08. Deixou de ser card - não existe task de criar documentação, os docs entram na PR da implementação (SDD). Conteúdo entregue dentro do card 2683, PR
+sprint: "[[Attlas - Sprint 30]]"
+atualizado: 2026-08-25
+---
+
+# Analítico - Spec dos endpoints de região
+
+> [!warning] Este card não existe mais - foi absorvido
+> Reestimativa de 25/08: **não existe task de criar documentação**. Os docs fazem parte de toda
+> PR por causa do SDD, então não ganham card próprio. O conteúdo desta nota foi entregue dentro
+> de [[Analítico - Contagem e dedup de incidente DAI]] (card 2683, PR #2004).
+>
+> São esses 4 endpoints que o handler de dedup usa para sincronizar a geometria, então a spec deles nasce na mesma PR.
+>
+> A nota fica como registro do escopo; o card SOFTWARE-2685 do ClickUp deve ser fechado apontando
+> para o card 2683.
+
+
+Escrever a spec que falta para os **quatro endpoints que já estão em produção sem nenhuma spec**:
+`GET/PUT /cameras/:id/object-detection-regions` e `GET/PUT /cameras/:id/virtual-loops`. Todos servidos por
+`apps/ms-cameras/src/analytics-realtime/camera-regions.controller.ts` e escopados por `@SystemId()`.
+
+Card documental, e o mais barato da semana, porque o comportamento não muda: o que falta é o texto que
+trava o significado do que já roda.
+
+## Que o buraco é real, e não uma spec escondida em outro lugar
+
+A varredura por `object-detection-regions` e `virtual-loops` em toda a árvore de documentação devolve **uma
+única menção**, de passagem, em `apps/ms-cameras/docs/atomic/PROJ-014-analytics-producer-reconciler.md`,
+que cita `PUT /object-detection-regions` só para explicar o caminho feliz do reconciliador. E o `PROJ-014`
+está marcado como `superseded` no próprio código. Ou seja: nenhuma atômica descreve estes endpoints, e a
+única que os toca está aposentada.
+
+## Comportamento real a documentar
+
+Não é o comportamento ideal, é o que o código faz hoje. A spec registra os dois.
+
+- **O GET lê o device de verdade**, e não um cache nosso: devolve o que o equipamento tem configurado
+  naquele instante. **Quando o device está fora, degrada para vazio ou default com só um `logger.warn`.**
+  Consequência a declarar em texto: na tela, "device offline" fica indistinguível de "sem região
+  configurada". A correção dessa semântica é de
+  [[Analítico - Healthcheck do analítico]]; aqui a spec apenas para de deixar o comportamento implícito.
+- **O PUT reconcilia**, não substitui em bloco: relê o `/regions` atual do device, faz `POST /regions` como
+  upsert do conjunto desejado, `DELETE` das regiões que saíram, e **preserva os incidentes DAI que o front
+  não gerencia**.
+- **O PUT termina chamando `enableProducer` do `AtmanDeviceProvisioner`.** É o único ponto de todo o
+  caminho embarcado onde o `source_id` é recarimbado no device e o producer é religado, e isso acontece
+  sempre atrás de um save explícito do operador. Nenhum job faz isso sozinho desde a reversão do
+  `PROJ-014`.
+
+## Buraco de validação a registrar
+
+Não existe `ValidationPipe` nem classe de validação no body que recebe as regiões: o `@Body()` do PUT de
+regiões é tipado como `IObjectDetectionRegion[]` e o do laço virtual como `IVirtualLoopConfig`, e nada
+verifica shape, contagem de vértices ou faixa dos percentuais em tempo de execução. A spec declara a
+lacuna; fechá-la é mudança de contrato e não cabe num card de 1 ponto.
+
+## DoD
+
+Atômica na `develop` cobrindo os quatro endpoints com método, caminho, escopo por sistema, corpo,
+resposta e erros, mais a descrição explícita da degradação silenciosa do GET, da reconciliação do PUT e do
+efeito colateral de religar o producer. A ausência de validação de body fica registrada como lacuna
+conhecida, com o encaminhamento apontado.
+
+## Encosta em
+
+- [[Analítico - Arquitetura e estratégias]], seção do controller de regiões, que é a fonte do
+  comportamento descrito aqui.
+- [[Analítico - Healthcheck do analítico]], que conserta a degradação silenciosa que esta spec documenta.
+- [[Analítico - Embarcado x Servidor]], que explica por que a geometria hoje mora no device.
+- [[Attlas - Sprint 30]] e [[ms-cameras]].

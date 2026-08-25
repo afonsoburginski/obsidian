@@ -9,9 +9,9 @@ clickup: https://app.clickup.com/t/86ajycdue
 titulo: "[Back] Renome para VMS: fase 0, terminologia (docs-only)"
 frente: Renome para VMS
 tamanho: 1 pt
-status: comprometido da Sprint 28, EM CODE REVIEW: PR [#1438](https://github.com/atmanadmin/attlas-2026/pull/1438) aberta em 10/08, leva a spec CROSS-045 e todo o markdown do renome (as tres fases escrevem markdown numa PR so).
+status: "mergeado - PR #1438 em 10/08/2026, conferido no GitHub em 25/08"
 sprint: "[[Attlas - Sprint 28]]"
-atualizado: 2026-08-10
+atualizado: 2026-08-25
 ---
 
 # SOFTWARE-2431 - Renome para VMS - fase 0 terminologia
@@ -40,3 +40,7 @@ Nenhuma. É o primeiro card da semana e destrava as fases 1 e 2.
 
 - [[VMS]], seção "Colisão de sigla: resolvida em 31/07" e a estratégia das 3 fases.
 - [[Attlas - Sprint 28]].
+
+> [!info] Estado em 25/08 - alinhado com o GitHub
+> PR #1438 mergeada (última em 10/08/2026). Nenhuma PR desta task está aberta.
+> O `status` anterior dizia: "comprometido da Sprint 28, EM CODE REVIEW: PR [#1438](https://github.com/atmanadmin/attlas-2026/pull/1438) aberta em 10/08, leva a spec CROSS-045 e todo o markdown do renome (as tres fases escrevem markdown numa PR so).".

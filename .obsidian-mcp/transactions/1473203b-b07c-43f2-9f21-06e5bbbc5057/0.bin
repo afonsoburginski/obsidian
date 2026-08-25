@@ -1,0 +1,148 @@
+---
+tags:
+  - doc
+  - ms-cameras
+  - cameras
+  - eventos
+atualizado: 2026-08-24
+---
+
+# Eventos, incidentes e alarmes - Fluxos
+
+> Submódulo do [[ms-cameras]]. Índice: [[Eventos, incidentes e alarmes]]. Arquitetura: [[Eventos, incidentes e alarmes - Arquitetura e estratégias]]. Visual: [[07 - MOD-007 camera-events.excalidraw|diagrama]].
+
+Use cases (backend) e user flow (frontend `web-attlas`) passo a passo. Sem diagrama - ver o canvas.
+
+> [!info] O que é novo desde 03/07
+> UC-032 (log cross-camera), UC-040 (KPIs), UC-041 (timeline por evento), UC-042 (recorrência por evento) e UC-044 (observações + report) não existiam na revisão anterior - a tela `/cameras/events` (lista + detalhe) nasceu inteira depois disso. UC-017/018/019/021/022/023/024 continuam valendo; só o caminho de código mudou (`cameras/handlers/*` → `events/*`, ver arquitetura).
+
+## UC-019 - Registro de evento
+
+### Fonte A: transição interna (worker de saúde, `source: 'health'`)
+
+1. Worker detecta transição (offline, reconexão, evento VAPIX, PTZError…) - ver [[Saúde e monitoramento]].
+2. Worker injeta `ICameraEventRecorderToken` e chama `recorder.record(message, { source: 'health' })` - **mesmo seam** do ingest (MOD-010), não mais um repositório próprio.
+3. `RecordCameraEventService.record` persiste (sem revalidar câmera, sem dedup) e `eventBus.publish(CameraEventLogCreatedEvent)` → WebSocket `camera:event:new` + invalidação do dashboard (domínio EVENTS).
+4. **Fim.** `source: 'health'` nunca publica em `event-logged` → não dispara correlação/alarme (mesmo comportamento observável da versão anterior, mecanismo diferente - ver arquitetura seção 2).
+
+### Fonte B: ingest Kafka (dispositivos/serviços externos, `source: 'ingest'`)
+
+1. Produtor externo publica `ICameraEventIngestMessage` em `attlas.cameras.event-ingest`.
+2. `CameraEventIngestListener.handle`: valida `cameraId`/`eventType` (drop se faltar) e cap 4 KiB (drop se exceder).
+3. `RecordCameraEventService.record` (`source: 'ingest'`, default):
+   1. Câmera existe e não deletada? Não → `ResourceNotFoundException` → listener dropa com `warn`.
+   2. `parseOccurredAt`: ISO-8601 com offset explícito, senão `InvalidInputException` → listener dropa.
+   3. `correlationId` já gravado? Sim → retorna a linha existente (dedup).
+   4. `repository.insert` (severity default `INFO`); enriquece com categoria derivada.
+   5. `eventBus.publish` (WebSocket) **e** `publisher.publishEventLogged` (Kafka, best-effort).
+4. `event-logged` faz **fan-out** para UC-021 (correlação) e UC-022 (alarme, Branch B).
+
+## UC-021 - Correlação em incidente
+
+Consumidor de `event-logged`. `CorrelateEventsListener.handle` valida o payload (`validateEventLogEntry`; drop se inválido) e chama `CorrelateEventsService.correlate`:
+
+1. Extrai `causeCode`. `isCorrelatable(eventType, causeCode)` falso → retorna.
+2. `eventAlreadyLinked(entry.id)` verdadeiro → skip (idempotência fail-fast).
+3. Monta `correlationKey` e as janelas (`now-60s`, `now-120s`).
+4. `findOpenIncidentByKey`:
+   - **Achou aberto** → `attachEvent`:
+     1. Cria `CameraIncidentEvent` (idempotente via `@@unique`; ignora P2002).
+     2. Recomputa `eventCount` e câmeras distintas.
+     3. `TENTATIVE` e (≥2 câmeras **ou** ≥3 eventos)? → `updateMany` condicional `TENTATIVE→DETECTED`.
+     4. `wasPromoted` → publica `incident-created` + invalida o dashboard (domínio INCIDENTS). Senão só toca `updatedAt`.
+   - **Nenhum aberto** → `createIncidentWithEvent` cria `TENTATIVE` + liga o evento; **não publica**.
+
+**Housekeeping** (`@Cron` a cada minuto, uma réplica via advisory lock):
+
+| Operação | Condição | Efeito |
+| --- | --- | --- |
+| `autoCloseExpiredDetected` | `DETECTED`, `updatedAt` < now-30min | → `RESOLVED` |
+| `dropExpiredTentative` | `TENTATIVE`, `updatedAt` < now-120s | → `DROPPED` |
+| `autoResolveByRecovery` | `DETECTED`, ≥80% das câmeras com `HEALTH_ONLINE` após `detectedAt` | → `RESOLVED` |
+
+## UC-022 - Emissão de alarme (2 branches)
+
+`EmitAlarmListener` consome dois tópicos; erros não-swallowable são relançados (Kafka reentrega).
+
+### Branch A - incidente correlacionado (`incident-created`)
+
+1. Guarda: `affectedCameraIds` vazio → `warn` + drop.
+2. `mapToAlarm({ causeCode, fromCluster: true })`; `null` → não emite.
+3. `alarmId = deriveAlarmId('INCIDENT', incidentId)`; `affectedEntities` = todas as câmeras.
+4. Publica `alarm-raised` (key = `incidentId`).
+
+### Branch B - evento crítico isolado (`event-logged`)
+
+1. `isAlarmableEvent(causeCode, severity)` falso → não emite (`ERROR` sempre; `VAPIX_TAMPERING` sempre; senão não).
+2. `findIncidentByEventLogId` achou ligação → skip (cluster já cobre).
+3. `mapToAlarm({ causeCode, fromCluster: false })`; `null` → não emite.
+4. `alarmId = deriveAlarmId('EVENT', eventLogId)`; `affectedEntities` = a câmera.
+5. Publica `alarm-raised` (key = `cameraId`).
+
+**Incidente reportado manualmente (UC-044) nunca passa por aqui** - `createReportedIncident` não publica `incident-created`.
+
+## UC-017 / UC-018 - Leitura de log e detalhe (por câmera)
+
+- **Log** (`GET /cameras/:id/events`): valida câmera (404), aplica filtros `eventType`/`severity`/`category` (CSV), `search` (em `summary`/`translationKey`), janela `from`/`to` (sobre **`createdAt`**) e `sort` (default `occurredAt desc`; aceita `severity`/`actor`). Paginação `limit` (default 20, máx 100). Categoria derivada por item.
+- **Detalhe** (`GET /cameras/:id/events/:eventId`): evento de outra câmera ou de câmera deletada resolve `null` → 404 sem vazar existência. Inclui `linkedIncident {id, status}` (link mais recente).
+
+## UC-032 - Log cross-camera (rede inteira do tenant) - novo desde 14/07
+
+- **Lista** (`GET /cameras/events`): sem escopo de câmera - varre a rede do `systemId`. Filtros adicionais que o log por câmera não tem: `area`/`subarea` (nome → `trafficElementId` via topologia do ms-traffic-model, resolvido uma vez por request), `origin` (`MANUAL`/`SYSTEM`), `state` (conexão da câmera) e `status` (`OPEN` ou status do incidente vinculado). `period` (`7d`/`30d`/`90d`/`all`/`range`) substitui `from`/`to` como filtro principal (mas `range` ainda aceita `from`/`to` explícitos). Cada linha ganha `eventCode`, `cameraCode`/`cameraName`, `triggerCount` (tamanho do grupo de correlação) e `area`/`subarea`/`origin`/`status`.
+- **Detalhe** (`GET /cameras/events/:eventId`): resolve só por `eventId` (deep-link), mesmas derivações + `cameraLatitude`/`cameraLongitude`, `durationSeconds`, `triggeredActions` (só `INCIDENT` hoje) e `linkedIncident`.
+- Uma indisponibilidade do ms-traffic-model degrada `area`/`subarea` para string vazia, mas não derruba a rota (fail-open na leitura, ao contrário do fail-closed de UC-025 na listagem de câmeras).
+
+## UC-040 - KPIs da tela de Eventos - novo desde 20/07
+
+`GET /cameras/events/stats`: 4 tiles (total/crítico/aviso/info), mesmo `where` da lista (UC-032). `count` segue o período filtrado; a comparação (`trendPct`) é **fixa** aos últimos N dias vs. o período imediatamente anterior, então trocar o filtro de período muda a contagem mas não necessariamente a comparação.
+
+## UC-041 - Timeline do evento (cadeia do incidente) - novo desde 20/07
+
+`GET /cameras/events/:eventId/timeline`:
+
+1. Busca o evento-âncora tenant-scoped; ausente/outro tenant → 404.
+2. Tem `incidentLinks`? Busca **todo** `CameraEventLog` ligado a esse(s) incidente(s) via `CameraIncidentEvent`, ordenado por `occurredAt asc` - pode atravessar câmeras (cluster).
+3. Sem `incidentLinks`? Fallback: eventos da **mesma câmera** numa janela de ±30 min do âncora, cap de 50, ordenado asc.
+
+Distinto da timeline de incidente da UC-024 (que parte de um `incidentId` e já é sempre a cadeia completa) - UC-041 parte de um `eventId` e pode cair no fallback de contexto quando não há correlação.
+
+## UC-042 - Recorrência do evento - novo desde 20/07
+
+`GET /cameras/events/:eventId/recurrence?period=1h|24h|7d|30d` (default `24h`): dois totais bucketizados (todo evento da câmera-origem vs. só os da mesma categoria do âncora) numa janela que termina no `occurredAt` do âncora - não em "agora". Escopo é **só a câmera de origem**, nunca cross-camera.
+
+## UC-044 - Observações e report de ocorrência - novo desde 20/07
+
+- **Observações** (`GET`/`POST /cameras/events/:eventId/observations`): thread de comentários no evento, 2 níveis (observação + replies). Autor sempre do JWT (nunca do body); reply-de-reply é rejeitado com 400 (`PARENT_IS_REPLY`).
+- **Reportar ocorrência** (`POST /cameras/events/:eventId/report`): abre `CameraIncident` manual (`status: 'DETECTED'`, `correlationKey: null`) linkado ao evento. Prioridade derivada da `severity` do evento (não do body). Sem checagem de duplicidade - ver callout na nota de arquitetura.
+
+## UC-023 / UC-024 - Leitura de incidentes
+
+- **Lista** (`GET /cameras/incidents`): sem `from`/`to`, janela default = 7 dias. Status default oculta `TENTATIVE`/`DROPPED` (só `DETECTED`/`INVESTIGATING`/`RESOLVED`). Filtros `severity`/`type`/`status`/`cameraId`; `type` traduzido para sufixos de `correlationKey`. `affectedCameraIds`/`eventCount` agregados à parte (não limitados pela página).
+- **Detalhe** (`GET /cameras/incidents/:id`): status interno (`TENTATIVE`/`DROPPED`) → 404. Timeline ASC (cronológica), cap `MAX_TIMELINE_ITEMS = 200` com flag `timelineTruncated`. Traz `reportedBy`/`assignedTo`/`workOrderId` (nullable; `reportedBy` agora é preenchido de fato quando o incidente vem de UC-044).
+
+## User flow (frontend `web-attlas`, módulo `cameras-events`)
+
+O feature module `apps/web-attlas/src/app/modules/cameras-events/` consome exclusivamente os endpoints acima. Mapa UF → endpoint (backend puro; ver [[Eventos, incidentes e alarmes - Requisitos e SLA]] para o que ainda falta):
+
+| UF | Tela/componente | Endpoint(s) |
+| --- | --- | --- |
+| UF-002/003 | Página `camera-events` (lista) - container + KPIs | UC-032 lista + UC-040 stats |
+| UF-004 | Atalho de severidade nos cards de KPI | UC-040 (filtro compartilhado com a tabela) |
+| UF-005/006/007 | Tabela cross-camera + "Ocultar colunas" | UC-032 lista |
+| UF-008 | Busca da toolbar (debounce) | UC-032 `search` |
+| UF-009 | Painel de filtros (aplicar em lote) | UC-032 (todos os filtros) |
+| UF-010 | Cache stale-while-revalidate da lista/KPIs | client-side (`CameraEventsService`), sem endpoint próprio |
+| UF-011/012 | Drawer de detalhe (aba Geral/Histórico) na própria lista | UC-032 detalhe + UC-041 timeline |
+| UF-013 | Página interna `camera-event-detail` (`/cameras/events/:id`) | UC-032 detalhe |
+| UF-014 | Card "Histórico do Evento" (timeline) | UC-041 |
+| UF-016 | Card "Recorrência do Evento" (gráfico ECharts) | UC-042 |
+| UF-017 | Card "Últimos eventos do dispositivo" | UC-017 (log da câmera de origem) |
+| UF-018 | Card "Observações do evento" | UC-044 observações |
+| UF-019 | Modal "Reportar ocorrência" | UC-044 report |
+
+- **Lista de incidentes / detalhe** (fora do módulo `cameras-events`, ainda não migrados para um UF numerado neste levantamento): `GET /cameras/incidents[/:id]` (UC-023/024), consumidos pela tela de incidentes/atribuição - sem detalhe de UI aqui (pertence às UFs do `web-attlas` daquele fluxo).
+- Push ao vivo por WebSocket (`camera:event:new` na sala `camera:<id>`) alimenta o log por câmera (UC-017) em tempo real. A lista cross-camera (UC-032) e os KPIs (UC-040) **não têm push dedicado**: o frontend cacheia a resposta HTTP com TTL (`TtlLruCache`, padrão stale-while-revalidate, UF-010) e revalida sob ação do operador (filtro, paginação, retry) - não por polling em intervalo fixo. A invalidação que a correlação publica (`DashboardInvalidateDomain.EVENTS`/`INCIDENTS`, ver arquitetura) alimenta o heatmap do módulo **Dashboard** (fora deste domínio), não esta tela.
+
+## Relacionados
+
+[[Saúde e monitoramento]] · [[PTZ e presets]] · [[Status em tempo real]] · [[Streaming]]

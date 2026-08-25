@@ -1,0 +1,21 @@
+{
+  "id": "9902d1d4-2b9e-49db-857f-f264cafc61dc",
+  "state": "committed",
+  "createdAt": "2026-08-24T14:24:31.500Z",
+  "snapshots": [
+    {
+      "path": "Docs/ms-cameras/Integração com dispositivo/index.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "4e61d96e93c78c27e4a09612124518470802421df89ca70c3c51a36812de39e7",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33204,
+      "etag": "a7448cef65c86e6ce368cd63356b67924edbb4dbae7f8ddbff849df3cebdd3e3",
+      "snapshot": "0.bin",
+      "committedEtag": "4e61d96e93c78c27e4a09612124518470802421df89ca70c3c51a36812de39e7"
+    }
+  ],
+  "completedAt": "2026-08-24T14:24:31.508Z"
+}

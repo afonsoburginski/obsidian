@@ -85,7 +85,7 @@ câmeras montáveis: paginado, com filtros `q` (texto), `cameraType[]` e `lifecy
 perfil SECONDARY ativo, o que sinaliza aptidão ao mosaico).
 
 > [!success] Estado em 24/08: rota confirmada `/cameras/vms`
-> O path `/cameras/video-wall` não existe mais desde `c9766ab960` (18/08, mergeado na develop) — só
+> O path `/cameras/video-wall` não existe mais desde `c9766ab960` (18/08, mergeado na develop) - só
 > `/cameras/vms` responde. Ver [[VMS]] callout "Estado em 24/08".
 
 ## O frontend (MOD-001-videowall)
@@ -94,13 +94,13 @@ O front não é uma casca fina; boa parte do comportamento da tela vive nele
 (`apps/web-attlas/src/app/modules/videowall/`):
 
 - **Vocabulário próprio**: o operador salva **"visualizações"** (`IVideowallView` em `libs/contracts/src/lib/videowall/`), que no backend são **cenas**. Mesmo objeto, dois nomes.
-- **Rota**: `/cameras/vms` e `/cameras/vms/:viewId` resolvem o mesmo `VideowallPageComponent`, reaproveitado entre trocas de `:viewId`. `videowallDirtyGuard` (UF-011) abre o diálogo de descarte ao sair com edição pendente. Rota confirmada em 24/08 — não existe mais redirect de `/cameras/videowall`, o path legado foi removido de vez (ver callout acima e [[VMS]]).
+- **Rota**: `/cameras/vms` e `/cameras/vms/:viewId` resolvem o mesmo `VideowallPageComponent`, reaproveitado entre trocas de `:viewId`. `videowallDirtyGuard` (UF-011) abre o diálogo de descarte ao sair com edição pendente. Rota confirmada em 24/08 - não existe mais redirect de `/cameras/videowall`, o path legado foi removido de vez (ver callout acima e [[VMS]]).
 - **Arquitetura em camadas (PR #1884, mergeada)**: a página deixou de guardar estado de domínio; virou
   casca fina orquestrando componentes filhos e 6 SignalStores próprios em `pages/videowall/`
   (`videowall-stream-session.store.ts`, `videowall-camera-directory.store.ts`,
   `videowall-mosaic-scene.store.ts`, `videowall-immersive.store.ts`, `videowall-ptz.store.ts`,
   `videowall-view-catalog.store.ts`). Detalhe completo em [[VMS]] seção "Arquitetura do frontend".
-- **Mosaico**: `mosaic-board`, `mosaic-tile`, `mosaic-splitter` (tiling redimensionável, `mosaic-tree.util.ts`), mais side panel, layout picker, diálogo de criar view e diálogo de rotação — hoje montados dentro da `videowall-mosaic-scene.store.ts` em vez de estado solto na página.
+- **Mosaico**: `mosaic-board`, `mosaic-tile`, `mosaic-splitter` (tiling redimensionável, `mosaic-tree.util.ts`), mais side panel, layout picker, diálogo de criar view e diálogo de rotação - hoje montados dentro da `videowall-mosaic-scene.store.ts` em vez de estado solto na página.
 - **Presets de grade**: `EnumVideowallLayout` vai de `GRID_1X1` a `GRID_6X6` mais `CUSTOM`. Como o seed só tem até 4x4, `toSceneWrite` mapeia o preset para o `layoutId` seedado quando existe e **cai para `customGrid` quadrado** quando não existe (é assim que 5x5 e 6x6 funcionam).
 - **Coordenadas**: o view model é **0-based**; o contrato HTTP é **1-based**. A conversão acontece no `videowall.service.ts`.
 - **Rotação**: `IRotationConfig` (`items[] {viewId, dwellSeconds}`, `loop`) mora em `@attlas/contracts` porque é serializada na URL, mas **não tem endpoint**: o timer é local, `dwellSeconds` mínimo 5s, presets de 10/20/30/60/120s.
@@ -108,7 +108,7 @@ O front não é uma casca fina; boa parte do comportamento da tela vive nele
 
 > [!warning] Divergência viva entre contrato e implementação
 > `IVideowallView` documenta `version` como valor de `If-Match` num `PUT /api/video-wall/scenes/:id`
-> (locking otimista) — path que já não existe mais (ver rota atual acima; o verbo também é `PATCH`, não
+> (locking otimista) - path que já não existe mais (ver rota atual acima; o verbo também é `PATCH`, não
 > `PUT`). O backend só expõe `PATCH`, não tem coluna `version`, e o front **abandonou** o
 > locking: não manda `If-Match` e ecoa `version: 0`. O campo sobrevive nos contratos sem semântica.
 > Candidato a limpeza junto com o renome para VMS.

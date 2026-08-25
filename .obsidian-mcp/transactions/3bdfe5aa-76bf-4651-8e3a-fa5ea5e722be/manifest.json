@@ -1,0 +1,18 @@
+{
+  "id": "3bdfe5aa-76bf-4651-8e3a-fa5ea5e722be",
+  "state": "committed",
+  "createdAt": "2026-08-25T15:28:17.886Z",
+  "snapshots": [
+    {
+      "path": "Sprint/30/Analítico - Galeria de mídia de evidência (front).md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "8713e1e7fff4dbbd7ea2810c2dd60089f5add5fbd4a327e5f5179a39143aec48",
+      "recoverable": true,
+      "existed": false,
+      "committedEtag": "8713e1e7fff4dbbd7ea2810c2dd60089f5add5fbd4a327e5f5179a39143aec48"
+    }
+  ],
+  "completedAt": "2026-08-25T15:28:17.893Z"
+}

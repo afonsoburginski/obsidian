@@ -11,11 +11,12 @@ tamanho: Pequena (cross, shared/)
 pr: 630
 pr_url: https://github.com/atmanadmin/attlas-2026/pull/630
 branch: shared/fix/mediamtx-llhls-segment-count
-status: OPEN
+status: "mergeado - PR #630 em 03/07/2026, conferido no GitHub em 25/08"
 clickup_status: code review
 merged: null
 clickup: https://app.clickup.com/t/86ajc10v0
 sprint: "[[Attlas - Sprint 22]]"
+atualizado: 2026-08-25
 ---
 
 # SOFTWARE-1990 — Streaming público (LL-HLS + watchdog WHEP→HLS)
@@ -37,3 +38,8 @@ A cadeia FORWARD do iptables tinha perdido o jump do Docker por causa do Tailsca
 ## Aberto
 
 - [ ] Review + merge da PR #630.
+
+> [!info] Estado em 25/08 - alinhado com o GitHub
+> PR #630 mergeada (última em 03/07/2026). Nenhuma PR desta task está aberta.
+> O `status` anterior dizia: "OPEN".
+> O `clickup_status` continua "code review" - o ClickUp não é verificável daqui, conferir lá.

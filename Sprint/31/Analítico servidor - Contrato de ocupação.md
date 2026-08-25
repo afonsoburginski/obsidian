@@ -1,0 +1,73 @@
+---
+tags:
+  - attlas
+  - task
+  - sprint-31
+  - analitico
+card: SOFTWARE-2693
+clickup: https://app.clickup.com/t/86ak5njag
+titulo: "[Back] Contrato de ocupação da região"
+frente: Analítico
+tamanho: 2 pts
+status: comprometido na Sprint 31 (planejada em 24/08). Card criado no ClickUp em 25/08.
+sprint: "[[Attlas - Sprint 31]]"
+atualizado: 2026-08-25
+---
+
+# Analítico servidor - Contrato de ocupação
+
+É o contrato que faz embarcado e servidor convergirem. Sem ele, os dois caminhos de execução viram dois
+pipelines com formatos diferentes, e o consumidor passa a precisar saber a origem do dado.
+
+## Greenfield de verdade
+
+`libs/contracts/src/lib/analytics/` **não existe hoje**. A varredura por `region-occupancy`,
+`analytics-topics` e `IRegionOccupancyEvent` na árvore inteira, em `libs` e `apps`, volta zero. Não há
+nada para estender: o domínio nasce inteiro neste card.
+
+## O que criar
+
+O domínio `analytics` em `libs/contracts/src/lib/`, com a constante de tópico e o evento de ocupação de
+região. O evento carrega:
+
+- `cameraId`.
+- O índice da região, na mesma convenção de índice estável que o caminho embarcado já usa.
+- Símbolos e contadores em RLE, na unidade de `DETECTOR_SAMPLE_DURATION_MS`, que já existe em
+  `libs/contracts/src/lib/detectors/detector-sample-unit.constant.ts` e vale 100 ms. Não se cria unidade
+  nova.
+- Os dois instantes: o de amostragem e o de recebimento.
+
+Chave de partição por câmera, para que a ordem das transições de uma mesma câmera seja preservada.
+
+## Por que domínio próprio e não dentro de `camera`
+
+Colocar o tópico em `camera` bateria no teste que trava a lista de tópicos de câmeras. Domínio separado é o
+caminho barato e também o mais correto de vocabulário: ocupação de região é assunto do analítico, e o
+consumidor final dela é a cadeia de detectores, não a de câmeras.
+
+A constante de tópico entra no `KafkaTopicRegistry` como qualquer outra, e `docker/kafka-topics.list` é
+regerado por `npm run generate:kafka-topics`. **A lista não se edita à mão**, o guard reprova.
+
+## Pendência de coordenação herdada
+
+Este é o único ponto do card que não é decisão nossa. A spec fechada mandava **conferir a forma do evento
+contra o trabalho de outro squad** sobre ocupação de faixa e identidade de detector no `ms-traffic-model`,
+antes de congelar o contrato. Fechar a PR não resolveu isso.
+
+É bloqueio de coordenação, não técnico: dá para escrever a interface, mas congelá-la antes da conferência
+arrisca criar a segunda gramática que este card existe para evitar. Enum e interface de `@attlas/contracts`
+só aceitam mudança aditiva depois de publicados, então errar aqui é caro.
+
+## DoD
+
+Domínio `analytics` na `develop` com o tópico e o evento de ocupação, unidade de RLE reusando
+`DETECTOR_SAMPLE_DURATION_MS`, tópico registrado no `KafkaTopicRegistry` e `docker/kafka-topics.list`
+regerado pelo script. A conferência com o outro squad registrada como feita ou como pendência explícita
+antes do merge.
+
+## Encosta em
+
+- [[Analítico - Embarcado x Servidor]], seção "O que NÃO pode mudar: o contrato de ocupação".
+- [[Analítico servidor - Laço virtual e ocupação da região]], que é o primeiro produtor deste evento.
+- [[Analítico servidor - Tradução de endereço e publicação do detector raw]], que é o primeiro consumidor.
+- [[Attlas - Sprint 31]], risco 4.

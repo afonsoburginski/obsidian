@@ -9,9 +9,9 @@ aliases:
 card: SOFTWARE-2532
 clickup: https://app.clickup.com/t/86ak1k6t9
 titulo: "[Back] Hikvision - telemetria/status incorretos e sem preview (ONVIF desabilitado de fábrica)"
-status: em code review. Fechou em 17/08 pela parte 1 e reabriu em 19/08 quando a parte 2 subiu. Só fecha quando a [#1738](https://github.com/atmanadmin/attlas-2026/pull/1738) mergear.
+status: "mergeado - PR #1738 em 19/08/2026, conferido no GitHub em 25/08"
 sprint: "[[Attlas - Sprint 29]]"
-atualizado: 2026-08-19
+atualizado: 2026-08-25
 ---
 
 # SOFTWARE-2532 - Hikvision: telemetria/status incorretos e sem preview
@@ -66,3 +66,7 @@ em `apps/ms-cameras/docs/atomic/`.
 capabilities, teste ONVIF ligado/desligado, RTSP via ffprobe).
 
 [[Saúde e monitoramento - Arquitetura e estratégias]] · [[Attlas - Sprint 29]]
+
+> [!info] Estado em 25/08 - alinhado com o GitHub
+> PR #1738 mergeada (última em 19/08/2026). Nenhuma PR desta task está aberta.
+> O `status` anterior dizia: "em code review. Fechou em 17/08 pela parte 1 e reabriu em 19/08 quando a parte 2 subiu. Só fecha quando a [#1738](https://github.com/atmanadmin/attlas-2026/pull/1738) mergear.".

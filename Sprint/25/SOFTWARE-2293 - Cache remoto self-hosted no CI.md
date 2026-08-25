@@ -6,8 +6,8 @@ tags:
   - ci-cd
 card: SOFTWARE-2293
 pr: "#964"
-status: em andamento - cofre no ar + PR aberta + paliativo aplicado; pendente escalar runners (aguardando 3 registration tokens do gestor)
-atualizado: 2026-07-22
+status: "mergeado - PR #964 em 23/07/2026, conferido no GitHub em 25/08"
+atualizado: 2026-08-25
 ---
 
 # SOFTWARE-2293 - Cache remoto self-hosted no CI
@@ -50,3 +50,7 @@ Rodar 2 PRs seguidos e comparar o "% de cache NX" no resumo do CI e o wall-clock
 ## Ferramenta auxiliar
 
 Fiz também um auditor de CI fora do repo em `~/Área de trabalho/Developer/attlas-observability/obs.py` (merge pela metade, arquivo perdido, CI vermelho, veredito bug-real vs branch-desatualizada).
+
+> [!info] Estado em 25/08 - alinhado com o GitHub
+> PR #964 mergeada (última em 23/07/2026). Nenhuma PR desta task está aberta.
+> O `status` anterior dizia: "em andamento - cofre no ar + PR aberta + paliativo aplicado; pendente escalar runners (aguardando 3 registration tokens do gestor)".

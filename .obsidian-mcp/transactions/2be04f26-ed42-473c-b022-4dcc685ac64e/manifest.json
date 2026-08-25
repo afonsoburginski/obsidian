@@ -1,0 +1,39 @@
+{
+  "id": "2be04f26-ed42-473c-b022-4dcc685ac64e",
+  "state": "committed",
+  "createdAt": "2026-08-24T16:58:10.057Z",
+  "snapshots": [
+    {
+      "path": ".obsidian-mcp/trash/efbedfe5-554a-4b3c-9679-9fd921f132cd.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "6b0c1516eaf8c61f67e210814aa9e1922132db454e629e1a3836faada65d25d6",
+      "recoverable": true,
+      "existed": false,
+      "committedEtag": "6b0c1516eaf8c61f67e210814aa9e1922132db454e629e1a3836faada65d25d6"
+    },
+    {
+      "path": ".obsidian-mcp/trash/efbedfe5-554a-4b3c-9679-9fd921f132cd.json",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "a4d909c2fef7d2be86dacd452ceeab2c2de235e7426b7b0ad4cacded2a03880d",
+      "recoverable": true,
+      "existed": false,
+      "committedEtag": "a4d909c2fef7d2be86dacd452ceeab2c2de235e7426b7b0ad4cacded2a03880d"
+    },
+    {
+      "path": "Docs/ms-cameras/Streaming/Incidente - vazamento de sessões de stream (banda das câmeras).md",
+      "operation": "delete",
+      "entryType": "file",
+      "phase": "applied",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33204,
+      "etag": "6b0c1516eaf8c61f67e210814aa9e1922132db454e629e1a3836faada65d25d6",
+      "snapshot": "2.bin"
+    }
+  ],
+  "completedAt": "2026-08-24T16:58:10.069Z"
+}

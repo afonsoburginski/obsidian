@@ -24,7 +24,7 @@ Duas camadas independentes:
 ### Worker - `workers/camera-health.worker.ts`
 
 > [!success] Estado em 24/08: dedupe por device físico (29/07), não mais um cliente por linha `Camera`
-> A mesma câmera física é cadastrada **uma vez por tenant** (6 sistemas hoje — mesma topologia
+> A mesma câmera física é cadastrada **uma vez por tenant** (6 sistemas hoje - mesma topologia
 > registrada em [[Carga desnecessária nas câmeras - reconciler do analítico e conexões duplicadas]] e
 > em `apps/ms-cameras/src/health/utils/device-stream-group.util.ts`, comentário "the same camera is
 > registered once per tenant"). Um cliente por linha de `Camera` abria 6 conexões VAPIX/ONVIF para o

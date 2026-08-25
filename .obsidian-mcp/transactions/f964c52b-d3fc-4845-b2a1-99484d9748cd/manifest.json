@@ -1,0 +1,21 @@
+{
+  "id": "f964c52b-d3fc-4845-b2a1-99484d9748cd",
+  "state": "committed",
+  "createdAt": "2026-08-25T11:52:31.357Z",
+  "snapshots": [
+    {
+      "path": "Sprint/31/Analítico servidor - Tradução de endereço e publicação do detector raw.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "f9d8c6368ef52c2e15beab4efbf40d542bcfcfa8963a06abcee97dbbf2131efb",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33204,
+      "etag": "93a0d0a3fc10f77fc9d5c6436bceef736ddaf463e23aaa796fda7b0b922608c4",
+      "snapshot": "0.bin",
+      "committedEtag": "f9d8c6368ef52c2e15beab4efbf40d542bcfcfa8963a06abcee97dbbf2131efb"
+    }
+  ],
+  "completedAt": "2026-08-25T11:52:31.362Z"
+}

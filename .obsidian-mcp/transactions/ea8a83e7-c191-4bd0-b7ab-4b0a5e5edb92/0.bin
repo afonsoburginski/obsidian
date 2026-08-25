@@ -1,0 +1,216 @@
+---
+tags:
+  - attlas
+  - sprint-30
+  - moc
+  - analitico
+sprint: Sprint 30 (24/8/26 - 30/8/26)
+status: ABERTA em 24/08 com planejamento próprio, frente única - analítico de vídeo. Replanejada a partir da auditoria de código de 24/08 (embarcado, servidor, ACOM/ATSPM) cruzada com as notas de alinhamento do user. Comprometido 16 pontos em 6 cards; fila de 62 pontos em 20 cards, ordenada por dependência. Cards ainda NÃO criados no ClickUp - decisão de 24/08 foi planejar só no vault primeiro.
+atualizado: 2026-08-24
+---
+
+# Attlas - Sprint 30
+
+Sprint de **uma frente só: analítico de vídeo**, embarcado e servidor. Diferente da Sprint 27, que também
+foi frente única de analítico e fechou sem entrega, esta parte de uma auditoria de código feita em 24/08 e
+de um escopo fechado: todas as features das notas de alinhamento estão colocadas, ou na semana ou na fila.
+
+Documentação do domínio, reescrita hoje: [[Analítico]], e principalmente
+[[Analítico - Embarcado x Servidor]], que é a nota que separa o que muda de forma para forma.
+
+## O diagnóstico que reorganizou o plano
+
+A Sprint 27 especificou o **caminho do dado** com competência: 14 PRs, cerca de 1.900 linhas de spec
+cobrindo `stream → detecção → ocupação → evento de detector → histórico`, internamente consistente, com
+as decisões estruturais fechadas e alternativas confrontadas. Nada mergeou, mas nada disso precisa ser
+reescrito.
+
+O que ela **não** cobriu, deliberadamente, é a **gestão do analítico**: o que é um analítico, em qual
+câmera ele pode existir, se está saudável, por qual placa ele atua. É exatamente o que as notas de
+alinhamento pedem, e é o que esta sprint ataca primeiro - porque o caminho do dado não tem onde se
+apoiar sem isso.
+
+> [!danger] O defeito que sozinho justifica a semana
+> **`deviceSourceId` não tem nenhum writer no banco.** É a chave que liga o frame do device à câmera, e
+> só o seed e edição manual gravam ela. Consequência verificável no código: **câmera cadastrada pela UI
+> nunca entra no binding do consumer, logo nunca recebe detecção ao vivo**. O analítico embarcado está
+> "entregue desde 15/07" e funciona só para as câmeras que o seed criou. É maior que o bug de `kind` que
+> a Sprint 27 registrou - e esse, aliás, tem impacto funcional zero hoje, porque o frontend ignora o
+> campo.
+
+## Comprometido (16 pts)
+
+Ordem é caminho crítico: o card 3 é a pedra angular e os cards 4 e 5 se apoiam nele.
+
+| # | Card | Pts | Entrega | Dia |
+| --- | --- | --- | --- | --- |
+| 1 | [[Analítico - Doc de módulo (docs-only)\|Doc de módulo do Analítico]] `[Back]` | 2 | `docs/modules/analitico.md`, o único módulo do edital sem doc de contexto | Seg |
+| 2 | [[Analítico - Writer do deviceSourceId e higiene do embarcado\|Writer do `deviceSourceId` + higiene]] `[Back]` | 2 | Câmera cadastrada pela UI passa a receber detecção; absorve a #1355 | Seg PM |
+| 3 | [[Analítico - Entidade, persistência de região e unicidade\|Entidade Analítico + região em banco + unicidade]] `[Back]` | 5 | Model, migration, unicidade por tipo, geometria fora do device | Ter/Qua |
+| 4 | [[Analítico - Compatibilidade por arquitetura de câmera\|Compatibilidade por arquitetura de câmera]] `[Back]` | 3 | Arquitetura do processador + matriz, validada no cadastro | Qui |
+| 5 | [[Analítico - Healthcheck do analítico\|Healthcheck do analítico]] `[Back]` | 3 | Saúde do analítico consultável pelo operador, não só Prometheus | Sex |
+| 6 | [[Analítico - Destravar as specs da Sprint 27\|Destravar as 3 specs de fundação]] `[Back]` | 1 | 2385, 2386 e 2387 saem de draft; colisão de `CROSS-043` resolvida | Seg, em paralelo |
+
+**Por que estes seis.** Nenhum depende do device de campo, que é compartilhado e sobe com o producer
+desligado - a Sprint 27 já tinha listado isso como risco de meio dia perdido. Nenhum depende do squad de
+controladores. E os cinco primeiros são pré-requisito de tudo que está na fila: sem entidade não há
+unicidade, sem unicidade não há healthcheck por analítico, e sem geometria em banco o servidor de VL não
+tem de onde ler a região.
+
+O card 6 é barato de propósito: review não consome dia de implementação, e destravar as specs devolve a
+cadeia do servidor para o estado de "pronto para codar" sem custo de semana.
+
+## Fila (62 pts, 20 cards)
+
+Não é sobra de sprint, é o resto do escopo fechado, na ordem em que as dependências permitem.
+
+### Bloco 1 - fechar a cadeia do servidor de VL (22 pts)
+
+As specs já existem em draft. O que falta é 100% do código.
+
+| Card | Pts | Espera o quê |
+| --- | --- | --- |
+| [[SOFTWARE-2394 - Analítico em container - serviço, imagem e ingestão\|2394]] serviço, imagem e ingestão do stream | 3 | specs mergeadas (card 6) |
+| [[SOFTWARE-2395 - Analítico em container - detecção por frame\|2395]] detecção de objetos por frame | 3 | 2394 |
+| [[SOFTWARE-2396 - Analítico em container - laço virtual e ocupação\|2396]] laço virtual e ocupação da região | 2 | 2395 |
+| [[SOFTWARE-2397 - Analítico em container - publicar ocupação no Kafka\|2397]] contrato e publicação da ocupação | 2 | 2396; cria `libs/contracts/src/lib/analytics/` do zero |
+| [[SOFTWARE-2398 - Escala do analítico - câmeras por instância\|2398]] escala: câmeras por instância | 2 | 2397, para medir com o analítico real |
+| [[SOFTWARE-2389 - Vínculo região da câmera para endereço de detector\|2389]] vínculo região para endereço de detector | 3 | **rescopado**: senta sobre a entidade do card 3 em vez de criar a persistência sozinho |
+| [[SOFTWARE-2390 - Connector de laço virtual - ocupação vira evento de detector\|2390]] connector traduz endereço | 3 | 2397 e 2389 |
+| [[SOFTWARE-2388 - Analítico embarcado no mesmo contrato de ocupação\|2388]] embarcado no mesmo contrato | 2 | 2397 |
+| [[SOFTWARE-2200 - Prova de campo do analítico em container\|2200]] prova de campo até a timeline | 2 | toda a cadeia; é o elo que cede primeiro se apertar |
+
+### Bloco 2 - ACOM, dentro de Controladores (18 pts)
+
+Fora do `ms-cameras`, e o único bloco que precisa de alinhamento com o squad de controladores.
+
+| Card | Pts | O que muda |
+| --- | --- | --- |
+| ACOM 1:1 com controlador + remover associações | 5 | Hoje é N:N: a mesma placa pode apontar para 8 controladores. Coluna `controllerId` única direto na `Acom`, migration com backfill, e a feature de associações inteira sai (cerca de 10 arquivos deletados, 15 tocados, 4 docs reescritos) |
+| Vínculo ACOM ↔ analítico com os tetos | 3 | A relação **não existe hoje**. Até 4 analíticos por ACOM, e várias ACOMs por analítico servidor |
+| Caller da atuação | 5 | CRUD, TCP, codec e pollers existem e são testados. Falta quem pega o evento de laço virtual e fecha o contato seco - nenhum consumer Kafka no `AcomModule` |
+| Tela "Periféricos ACOM" `[Front, UF-*]` | 5 | **Não existe tela nenhuma de ACOM** no `web-attlas`. Nomenclatura nova, e a lógica de saída (AND/OR/inversão, já pronta no backend) entra como configuração avançada |
+
+### Bloco 3 - ATSPM e métricas avançadas (10 pts)
+
+| Card | Pts | O que muda |
+| --- | --- | --- |
+| Unicidade grupo de movimento ↔ grupo semafórico | 2 | O campo existe mas é ordinal `SmallInt [1,8]` sem unique nenhuma. Precisa de unique parcial (por causa do soft-delete), migration com dedup e invariante de domínio |
+| Snapshot da configuração do grupo semafórico | 3 | Não existe nenhum snapshot de config semafórica no monorepo. Precisa nascer junto com o schema do `ms-atspm` |
+| SPEC do `ms-atspm` | 3 | Zero linha de spec hoje. Escopo: métricas avançadas de fato, sub-produtos (Tracker, DAI, TPM, VL embutido), associação com grupo semafórico |
+| Decisão sobre `ms-dai` | 2 | Serviço próprio ou sub-produto do ATSPM exibido por ele. Hoje "DAI" só existe como flag de capacidade e como UX de desenho de região |
+
+### Bloco 4 - o que falta no embarcado (12 pts)
+
+| Card | Pts | O que muda |
+| --- | --- | --- |
+| Preset PTZ com snapshot de região | 5 | Conjunto de regiões por preset, e desenho sobre frame congelado. **Ponto de partida é zero**: não existe captura de snapshot em lugar nenhum do repo, e o front desenha SVG sobre vídeo ao vivo |
+| Imagem de evidência: decidir quem gera o pixel | 3 | Pesquisa mais decisão. No Attlas 26 **não existe imagem de evidência de origem nenhuma** - o payload do device é 100% metadado. A pergunta original ("a baixa qualidade vem do Attlas ou da câmera?") não se aplica: é escolher a fonte, não corrigir qualidade |
+| Contagem e dedup de incidente DAI | 3 | Hoje o incidente é lido do frame e **descartado**. Não vira evento, não vira alarme, não é contado |
+| Spec dos 4 endpoints de região | 1 | `GET/PUT object-detection-regions` e `virtual-loops` estão em produção **sem nenhuma spec** |
+
+### Fora do escopo desta rodada, com motivo
+
+- **OTA do app embarcado** (5 pts estimados): não existe nenhuma gestão de aplicação no device, e a
+  decisão depende de o fornecedor do ACAP expor caminho de atualização. Fica sem card até haver essa
+  resposta.
+- **Quatro laços por câmera**: contradiz o contrato atual (`IVirtualLoopConfig` é configuração única por
+  câmera, sem geometria própria). É redesenho de contrato, e precisa de decisão de produto antes de
+  virar card de código. Registrado em [[Analítico - Embarcado x Servidor]].
+- **Detecção de pedestre e tracking entre frames**: segundo eixo, declarado nas specs da Sprint 27 como
+  posterior à presença de veículo.
+
+## Riscos
+
+1. **O card 3 colide com a PR #1352 em draft.** A 2389 cria a persistência de região junto com o vínculo
+   de detector. O card 3 cria a entidade e a persistência. Decisão tomada: **o card 3 vem primeiro e a
+   2389 é rescopada** para só o vínculo, sentando sobre a entidade. Se a ordem inverter, nasce um segundo
+   modelo de região.
+2. **Colisão de ID em `CROSS-043`.** Três atômicas já mergeadas (`PROJ-012`, `PROJ-016`, `PROJ-017`) citam
+   `CROSS-043` como a decisão do adapter Redis do Socket.IO, que nunca ganhou arquivo. A PR #1342, em
+   draft, cria `CROSS-043-container-analytics-video-feed.md`. Se ela mergear como está, o mesmo ID
+   significa duas coisas. Como as citações já estão na develop e o ADR não, **o mais barato é renumerar o
+   ADR dentro da #1342**. Entra no card 6. De carona: a #1342 também renomeia `CROSS-032` para
+   `CROSS-044`, e a faixa 039-042 segue sem explicação registrada.
+3. **O contrato de ocupação tem uma conferência entre squads que nunca aconteceu.** A própria spec da
+   #1350 manda conferir a forma do `IRegionOccupancyEvent` contra o trabalho de outro squad sobre
+   ocupação de faixa e identidade de detector no `ms-traffic-model`, antes de congelar. Como a PR nunca
+   mergeou, essa conferência provavelmente não foi feita. É bloqueio de coordenação, não técnico.
+4. **Risco de contagem dupla declarado e não mitigado.** A derivação do `ms-controllers` mapeia
+   `MDE + Vehicle` e o módulo `VirtualLoop` do Neo+ para a mesma tecnologia `VIRTUAL_LOOP` que o vídeo
+   publica. Se o laço virtual atuar por ACOM, o histórico soma o mesmo veículo duas vezes **sem erro
+   visível**. A regra existe só em spec draft, do lado do connector; nada no `ms-controllers` implementa o
+   espelho.
+5. **Bloco 2 depende de outro squad.** ACOM vive no `ms-controllers`. A mudança de cardinalidade tem
+   backfill de dados e mexe em código testado que não é nosso por origem.
+
+## Dívida colateral encontrada na auditoria
+
+Pequena, mas some se não for anotada:
+
+- `docs/architecture/services.md` ainda anuncia `ms-acom` como serviço vivo na porta 3305, e o
+  `docker-compose.yml` ainda sobe o container. Os dois contradizem a DD-20, que portou ACOM para o
+  `ms-controllers`. O Kong roteia `/api/acoms` (plural, real) para o `ms-controllers` e `/api/acom`
+  (singular, vazio) para o esqueleto - que nunca recebe tráfego.
+- `attlas.detectors.fault` tem produtor real e **nenhum consumidor**, apesar de `docs/modules/detectors.md`
+  designar o `ms-alarms`. Falha de detector de laço virtual, quando existir, cai no vazio.
+- A terminologia morta `deviceAnalyticId` contamina 8 docs na develop; o campo real é `deviceSourceId`. A
+  correção existe só na PR #1355, em draft - entra no card 2.
+- `docs/modules/controllers.md`, com mais de mil linhas, não menciona ACOM, ATSPM, DAI nem laço virtual
+  uma única vez.
+
+## Processo
+
+- **Cards ainda não criados no ClickUp.** Decisão de 24/08: planejar no vault primeiro. Quando forem
+  criados, seguem o padrão da lista pela data, tag `squad 2`, prefixo `[Back]`/`[Front]` e pontos no campo
+  nativo. Os cards da fila que já existem (2385 a 2398, 2200) só precisam mudar de lista e de status.
+- **Escopo de frontend**: as telas entram como spec `UF-*`, não como implementação desta sprint.
+- Os 14 cards da Sprint 27 seguem com PR em draft e continuam válidos. Ver
+  [[00 - Sem prazo (backlog)]] para o mapa card ↔ PR.
+
+## Ver também
+
+[[Analítico]] · [[Analítico - Embarcado x Servidor]] · [[Analítico - Requisitos e SLA]] ·
+[[Analítico - Arquitetura e estratégias]] · [[Analítico - Fluxos]] · [[Attlas - Sprint 29]] ·
+[[Attlas - Sprint 27]] (o planejamento anterior desta mesma frente)
+
+## Decisões em aberto, herdadas das notas de alinhamento
+
+Três pontos que o escopo precisa fechar e que não dá para decidir sozinho no código.
+
+### 1. `ms-connector-virtual-loop` está no desenho ou não?
+
+As notas de alinhamento listam a arquitetura de serviços do analítico como **quatro**: `ms-cameras`,
+`ms-atspm`, `ms-dai` e `ms-virtual-loop`. O connector **não aparece** nessa lista.
+
+Mas ele é peça de dois lugares que já estão escritos: `docs/modules/detectors.md` o designa como o
+**produtor de `attlas.detectors.raw` para o protocolo de laço virtual** (a reversão de 30/07 passou só o
+caminho ACP para o `ms-controllers`, e o texto é explícito que UNE e laço virtual continuam com os seus
+connectors), e a Sprint 27 escreveu SPEC e atômica para ele (PRs #1345 e #1353), com uma decisão de
+design própria: ele **não** reimplementa a reconciliação de janela do caminho físico, porque o problema
+que ela resolve não existe do lado do vídeo.
+
+Duas saídas honestas:
+
+- **Manter o connector** como serviço separado, e a lista das notas de alinhamento estava só resumindo os
+  serviços de produto, não a topologia inteira. É o caminho que preserva as duas specs já escritas.
+- **Dobrar a tradução de endereço dentro do `ms-virtual-loop`**, que passaria a publicar direto em
+  `attlas.detectors.raw`. Ganha um serviço a menos; custa contrariar `docs/modules/detectors.md` e jogar
+  fora as PRs #1345 e #1353.
+
+Não decidir também é uma decisão ruim aqui: os cards 2387, 2390 e o teste de campo 2200 assumem o
+connector existindo.
+
+### 2. Quatro laços por câmera
+
+Contradiz `IVirtualLoopConfig`, que hoje é configuração única por câmera, sem geometria própria (o laço
+reaproveita a região de detecção de objeto). Suportar quatro é redesenho de contrato. Precisa de decisão
+de produto antes de virar card de código - detalhe em [[Analítico - Embarcado x Servidor]].
+
+### 3. Quem gera a imagem de evidência
+
+Não é "corrigir a qualidade da imagem do Attlas 25": no Attlas 26 **não existe imagem nenhuma**, porque o
+payload do device é 100% metadado e não há captura de snapshot em lugar nenhum do repositório. A decisão
+é escolher a fonte do pixel - snapshot VAPIX/ISAPI sob demanda, frame do relay, ou pedir ao fornecedor do
+ACAP que o device passe a mandar a imagem - e cada uma tem custo de banda e de armazenamento diferente.
+Está na fila como card de pesquisa e decisão (Bloco 4).

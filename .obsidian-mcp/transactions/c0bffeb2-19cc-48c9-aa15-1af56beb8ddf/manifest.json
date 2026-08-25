@@ -1,0 +1,21 @@
+{
+  "id": "c0bffeb2-19cc-48c9-aa15-1af56beb8ddf",
+  "state": "committed",
+  "createdAt": "2026-08-25T12:04:42.420Z",
+  "snapshots": [
+    {
+      "path": "Sprint/31/Analítico servidor - Detecção de objetos por frame.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "5a25c06e0bbe526c666613ffbeea77e3acc2678311ccbcfa2063b51f282feaa3",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33204,
+      "etag": "0b930dbfede3378cd79fd3944d7d3d498dfcd0399d8c2fdc91f8b40833f09b92",
+      "snapshot": "0.bin",
+      "committedEtag": "5a25c06e0bbe526c666613ffbeea77e3acc2678311ccbcfa2063b51f282feaa3"
+    }
+  ],
+  "completedAt": "2026-08-25T12:04:42.426Z"
+}

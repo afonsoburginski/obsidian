@@ -1,0 +1,134 @@
+---
+tags:
+  - attlas
+  - sprint-31
+  - moc
+  - analitico
+sprint: Sprint 31 (31/8/26 - 6/9/26)
+status: PLANEJADA em 24/08, junto com a Sprint 30, como a segunda metade da frente do analítico. Frente única - a cadeia do analítico servidor (Virtual Loop em container), respecificada do zero depois do fechamento das 14 PRs da Sprint 27. Comprometido 21 pontos em 8 cards (mínimo de 8 PRs por sprint). Depende inteira da fundação que a Sprint 30 entrega. Cards ainda não criados no ClickUp.
+atualizado: 2026-08-24
+---
+
+# Attlas - Sprint 31
+
+Segunda semana da frente do analítico, e a primeira que escreve o **analítico servidor**: o Virtual Loop
+rodando em container nosso, capaz de olhar câmera comum, em vez do app embarcado que só roda em Axis.
+
+A [[Attlas - Sprint 30]] constrói a camada de gestão (entidade, geometria em banco, unicidade,
+compatibilidade, healthcheck). Esta constrói o caminho do dado em cima dela.
+
+## Por que esta sprint reescreve spec em vez de mergear a que existia
+
+As 14 PRs da Sprint 27 foram **fechadas em 24/08** no reescopo. Elas especificavam exatamente esta cadeia,
+com cerca de 1.900 linhas internamente consistentes, mas assumiam uma fundação que não existia. Fechar foi
+decisão de escopo, não descarte de conhecimento:
+
+- As **branches `cameras/docs/SOFTWARE-*` não foram deletadas** - o texto integral segue recuperável.
+- As **decisões estruturais estão preservadas** em [[Analítico - Arquitetura e estratégias]]: relay do
+  `ms-cameras` no substream de menor resolução como fonte de vídeo, NestJS com `ffmpeg` em processo filho
+  e inferência nativa, `ms-cameras` como dono da geometria, fronteira estreita do serviço, e convergência
+  de forma entre embarcado e servidor.
+
+Ou seja: os cards de spec abaixo **transcrevem decisões já tomadas** sobre a fundação nova, não reabrem
+debate. É por isso que os dois cards docs-only somam 5 pontos, não os 15 de reescrever do zero.
+
+> [!success] Resolvido ao reler as notas: não existe `ms-connector-virtual-loop`
+> A versão anterior desta nota tinha isso como decisão em aberto, pedindo resposta do user - e não
+> precisava. `Docs/Analítico/Anotações sobre Analítico de vídeo.md`, seção "Arquitetura de serviços", já
+> lista exatamente **quatro** serviços: `ms-cameras`, `ms-atspm`, `ms-dai`, `ms-virtual-loop`. O connector
+> não é um deles.
+>
+> A tensão com `docs/modules/detectors.md` (que designa `ms-connector-virtual-loop` produtor do protocolo
+> de laço virtual) é real, mas é o doc de domínio que ficou atrás da decisão de produto, não o contrário -
+> o mesmo doc já registra uma reversão parecida em 30/07 para o caminho ACP. **A tradução de endereço e a
+> publicação em `attlas.detectors.raw` passam a viver dentro do `ms-virtual-loop`.** O card que era
+> condicional ("Bootstrap SDD do connector") foi substituído pelo card 8 abaixo, que já nasce sem
+> condicional nenhuma.
+
+## Comprometido (21 pts, 8 cards)
+
+Escada: cada card de código se apoia no anterior. Os dois primeiros são spec e saem em paralelo na
+segunda.
+
+| # | Card | Pts | Entrega | Dia |
+| --- | --- | --- | --- | --- |
+| 1 | [[Analítico servidor - ADR de alimentação e SPEC do ms-virtual-loop\|ADR de alimentação + SPEC do `ms-virtual-loop`]] `[Back]` | 3 | Fonte do vídeo decidida e o serviço especificado, sobre a fundação da Sprint 30, já sem serviço connector | Seg |
+| 2 | [[Analítico servidor - Contrato de ocupação\|Contrato de ocupação da região]] `[Back]` | 2 | Domínio `analytics` novo em `libs/contracts`, tópico e evento | Seg/Ter |
+| 3 | [[Analítico servidor - Embarcado no contrato de ocupação comum\|Embarcado no contrato de ocupação comum]] `[Back]` | 2 | O embarcado passa a publicar a mesma forma de ocupação que o servidor | Ter |
+| 4 | [[Analítico servidor - Serviço, imagem e ingestão do stream\|Serviço, imagem e ingestão do stream]] `[Back]` | 3 | Container de pé decodificando frame do relay, sem credencial da câmera | Ter/Qua |
+| 5 | [[Analítico servidor - Detecção de objetos por frame\|Detecção de objetos por frame]] `[Back]` | 3 | Inferência com caixa e classe, com o custo por resolução medido | Qua/Qui |
+| 6 | [[Analítico servidor - Laço virtual e ocupação da região\|Laço virtual e ocupação da região]] `[Back]` | 2 | Caixa vira presença, com histerese, publicando só por transição | Qui |
+| 7 | [[Analítico servidor - Vínculo região para endereço de detector\|Vínculo região para endereço de detector]] `[Back]` | 3 | Sobre a entidade da Sprint 30, com unicidade por endereço de detector | Sex |
+| 8 | [[Analítico servidor - Tradução de endereço e publicação do detector raw\|Tradução de endereço e publicação do detector raw]] `[Back]` | 3 | O `ms-virtual-loop` resolve o endereço via o vínculo do card 7 e publica `attlas.detectors.raw` | Sex |
+
+**Regra de fatiamento: mínimo de 8 PRs por sprint**, e 1 card = 1 PR. O card 3 é o promovido de propósito
+para bater o mínimo sem inflar a escada: depende só do card 2 (o contrato), então pode sair em paralelo no
+meio da semana em vez de esperar o fim da escada.
+
+**O sumidouro já está pronto e não entra na conta.** `ms-detector-history` é o serviço mais maduro da
+cadeia (10 módulos, 5 relatórios de teste de campo executados) e `detection.service.ts` já chama
+`deriveDetectorId({controllerId, index})` - aceita o evento do laço virtual **sem nenhuma mudança**. Os
+contratos de detector também existem inteiros: `IDetectorRawEvent`, `DetectorTechnology.VIRTUAL_LOOP`,
+`DETECTOR_SAMPLE_DURATION_MS` de 100 ms e `deriveDetectorId`.
+
+**A infraestrutura do `ms-virtual-loop` já está pronta.** Imagem Docker, entrada no `docker-compose.yml`,
+rota no `docker/kong.yml` (porta 3302) e banco provisionado. O que falta é 100% do domínio: hoje é
+scaffold NX, com o `app.service.ts` devolvendo `Hello API`. O `ms-connector-virtual-loop` segue existindo
+como scaffold no repo e no compose (porta 3303), mas fica fora do escopo desta frente - descontinuar ou
+não é decisão de infraestrutura à parte, e não bloqueia nada aqui.
+
+## Fatiamento: 1 task = 1 PR, pilha de 8 mergeando em cascata
+
+Mesma regra da [[Attlas - Sprint 30]]: **mínimo de 8 PRs por sprint**, uma PR nunca carrega mais de um
+card, e as 8 saem empilhadas mergeando em cascata.
+
+| # | Card | Pts | Base | Por que nesta posição |
+| --- | --- | --- | --- | --- |
+| 1 | ADR de alimentação + SPEC do `ms-virtual-loop` | 3 | `develop` | Docs-only. Nenhum card de código começa antes dela |
+| 2 | Contrato de ocupação da região | 2 | PR 1 | `libs/contracts`, consumido por tudo acima e pelo embarcado |
+| 3 | Embarcado no contrato de ocupação comum | 2 | PR 2 | Só precisa do contrato, então merge cedo em vez de esperar a escada de código |
+| 4 | Serviço, imagem e ingestão do stream | 3 | PR 3 | Primeiro card de código do serviço novo |
+| 5 | Detecção de objetos por frame | 3 | PR 4 | Precisa do frame decodificado |
+| 6 | Laço virtual e ocupação da região | 2 | PR 5 | Precisa da caixa detectada |
+| 7 | Vínculo região para endereço de detector | 3 | PR 6 | No `ms-cameras`, sobre a entidade da Sprint 30 |
+| 8 | Tradução de endereço e publicação do detector raw | 3 | PR 7 | **Topo por dependência real**, não por incerteza: precisa da ocupação (PR 6) e do vínculo (PR 7) para ter o que traduzir |
+
+O risco de escada é real e já está mapeado: do 4 ao 8 cada um depende do anterior. Se escorregar, quem
+cede é a PR 8, e a semana fecha com ocupação publicada sem chegar ao detector - o que ainda é entrega
+útil, porque o embarcado (PR 3) já estará no contrato comum e o `ms-detector-history` não precisa de
+nenhuma mudança para receber quando a PR 8 mergear depois.
+
+## Fica para depois desta semana
+
+Vai para [[00 - Sem prazo (backlog)]], porque só faz sentido com a cadeia acima de pé (2 cards, 4 pts):
+
+| Card | Pts | Espera o quê |
+| --- | --- | --- |
+| Escala do analítico: câmeras por instância e distribuição | 2 | O card 5, para medir com o analítico real em vez de estimar |
+| Prova de campo ponta a ponta até a timeline do detector | 2 | Toda a cadeia. É o elo que cede primeiro se a semana apertar |
+
+## Riscos
+
+1. **Inferência é custo desconhecido.** Sem o número do card 5 por resolução, o teto de câmeras por
+   instância é chute - e é por isso que a escala saiu da semana em vez de entrar com número inventado.
+2. **Escada de cinco cards de código.** Do 4 ao 8 cada um depende do anterior. Se escorregar, quem cede
+   é o card 8, e a semana fecha com ocupação sendo publicada sem chegar ao detector.
+3. **Runtime fora do trilho comum.** A decisão preservada é NestJS com inferência nativa embutida no
+   processo Node, com Python registrado como alternativa rejeitada e cláusula de reabertura se a medição
+   do card 5 provar a via inviável. Se reabrir, o serviço sai do gate de lint, test e build do monorepo, e
+   isso precisa de decisão registrada, não de descoberta no CI.
+4. **A conferência entre squads sobre a forma do evento continua pendente.** A spec fechada mandava
+   conferir o contrato de ocupação contra o trabalho de outro squad sobre ocupação de faixa e identidade
+   de detector no `ms-traffic-model`. Fechar a PR não resolveu isso: o card 2 herda a pendência, e é
+   bloqueio de coordenação, não técnico.
+5. **Contagem dupla ACP x vídeo.** A derivação do `ms-controllers` mapeia `MDE + Vehicle` e o módulo
+   `VirtualLoop` do Neo+ para a mesma tecnologia `VIRTUAL_LOOP` que esta cadeia vai publicar. A regra que
+   impedia a soma dobrada existia nas specs fechadas e precisa renascer no card 8.
+6. **O device de campo é compartilhado.** Vale para comparar o nosso analítico com o embarcado: o
+   `10.11.20.101` continua sem dono explícito e outro writer segue carimbando o `source_id`. Validar ao
+   vivo pode consumir meio dia esperando.
+
+## Ver também
+
+[[Attlas - Sprint 30]] · [[00 - Sem prazo (backlog)]] · [[Analítico]] ·
+[[Analítico - Embarcado x Servidor]] · [[Analítico - Arquitetura e estratégias]] · [[Analítico - Fluxos]]

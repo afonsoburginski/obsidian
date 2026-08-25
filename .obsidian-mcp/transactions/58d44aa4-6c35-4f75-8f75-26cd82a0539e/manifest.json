@@ -1,0 +1,21 @@
+{
+  "id": "58d44aa4-6c35-4f75-8f75-26cd82a0539e",
+  "state": "committed",
+  "createdAt": "2026-08-25T11:52:14.632Z",
+  "snapshots": [
+    {
+      "path": "Sprint/31/Analítico servidor - Vínculo região para endereço de detector.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "7defd55dc97966a62ade4844d6c9d34ba9e0b35d6f3b8a18d101b4e488e56979",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33204,
+      "etag": "8a56328c28b31538bd871b87ebdbd7bf064f59683156822560ead87bb7480f6d",
+      "snapshot": "0.bin",
+      "committedEtag": "7defd55dc97966a62ade4844d6c9d34ba9e0b35d6f3b8a18d101b4e488e56979"
+    }
+  ],
+  "completedAt": "2026-08-25T11:52:14.638Z"
+}

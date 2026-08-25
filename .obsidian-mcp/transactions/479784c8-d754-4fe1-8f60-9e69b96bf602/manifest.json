@@ -1,0 +1,21 @@
+{
+  "id": "479784c8-d754-4fe1-8f60-9e69b96bf602",
+  "state": "committed",
+  "createdAt": "2026-08-24T14:26:24.715Z",
+  "snapshots": [
+    {
+      "path": "Docs/ms-cameras/Integração com dispositivo/Integração com dispositivo - Fluxos.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "a12df6047ef909d7102ec796bb1034736dc2de6b96e49e6ebe423ad9c630632d",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33204,
+      "etag": "b6d862d7e451f15a58d43d2c48027bd3e6eb4895e538bb7f382a871b7f955b21",
+      "snapshot": "0.bin",
+      "committedEtag": "a12df6047ef909d7102ec796bb1034736dc2de6b96e49e6ebe423ad9c630632d"
+    }
+  ],
+  "completedAt": "2026-08-24T14:26:24.720Z"
+}

@@ -1,0 +1,5 @@
+# App local do "segundo cérebro" (UI de consulta do vault) - código e deps não entram no backup
+.brain/
+
+# Artefatos de automação de browser (capturas, snapshots, logs de console)
+.playwright-mcp/

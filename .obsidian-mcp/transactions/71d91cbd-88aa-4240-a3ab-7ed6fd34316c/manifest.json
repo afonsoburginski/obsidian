@@ -1,0 +1,21 @@
+{
+  "id": "71d91cbd-88aa-4240-a3ab-7ed6fd34316c",
+  "state": "committed",
+  "createdAt": "2026-08-24T16:57:43.954Z",
+  "snapshots": [
+    {
+      "path": "Sprint/23/SOFTWARE-2003 - Ciclo de vida de sessões de streaming e telemetria de banda por câmera.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "33a1af7c9145497d6b715c549ea447c62d219d77e8b46885752913fe51ad75da",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33204,
+      "etag": "2da1803e7eaef9de94276f6aabbea1c378f4f2733d7f36225bbfe1441ef995c7",
+      "snapshot": "0.bin",
+      "committedEtag": "33a1af7c9145497d6b715c549ea447c62d219d77e8b46885752913fe51ad75da"
+    }
+  ],
+  "completedAt": "2026-08-24T16:57:43.975Z"
+}

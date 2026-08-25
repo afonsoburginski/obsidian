@@ -1,0 +1,21 @@
+{
+  "id": "e9e78426-9982-4746-869d-b76b55f8054f",
+  "state": "committed",
+  "createdAt": "2026-08-24T17:30:31.370Z",
+  "snapshots": [
+    {
+      "path": "Docs/ms-cameras/Streaming/Incidentes - Streaming (ms-cameras).md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "9d484a9fa6aedcd4100aeb70521254d105239f4fff4f0ff520a720ace52daa40",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33152,
+      "etag": "3f7a85e5ef1737475469274bbb993bc20b42756bb2a8daf12ecc65b8d5dffabd",
+      "snapshot": "0.bin",
+      "committedEtag": "9d484a9fa6aedcd4100aeb70521254d105239f4fff4f0ff520a720ace52daa40"
+    }
+  ],
+  "completedAt": "2026-08-24T17:30:31.378Z"
+}

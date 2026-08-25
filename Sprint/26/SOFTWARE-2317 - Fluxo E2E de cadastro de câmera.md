@@ -10,9 +10,9 @@ clickup: https://app.clickup.com/t/86ajpntyc
 titulo: "[QA] Fluxo E2E de câmera — cadastro, validação, player e edição (dados vs banco)"
 frente: Cadastro/CRUD
 tamanho: a estimar
-status: validado; PR #1137 recebeu changes-requested em 29/07, 5 bloqueantes corrigidos no mesmo dia, aguardando re-review
+status: "mergeado - PR #1137 em 29/07/2026, conferido no GitHub em 25/08"
 sprint: "[[Attlas - Sprint 26]]"
-atualizado: 2026-07-29
+atualizado: 2026-08-25
 ---
 
 # Fluxo E2E de cadastro de câmera
@@ -168,3 +168,7 @@ Ficaram em aberto os 🟡 não-impeditivos. Os mais relevantes: **A2** (reativa�
 `CameraStreamProfile`/PTZ/snapshot da encarnação anterior — câmera reativada pode aparecer online
 antes do primeiro heartbeat) e **A4** (autocomplete de interseção inoperável por teclado, o `blur`
 fecha o painel antes do foco alcançar as opções). Candidatos a card próprio.
+
+> [!info] Estado em 25/08 - alinhado com o GitHub
+> PR #1137 mergeada (última em 29/07/2026). Nenhuma PR desta task está aberta.
+> O `status` anterior dizia: "validado; PR #1137 recebeu changes-requested em 29/07, 5 bloqueantes corrigidos no mesmo dia, aguardando re-review".

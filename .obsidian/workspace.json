@@ -8,47 +8,20 @@
         "type": "tabs",
         "children": [
           {
-            "id": "f25928207caa2436",
-            "type": "leaf",
-            "state": {
-              "type": "pdf",
-              "state": {
-                "file": "attlas-vl-atspm.pdf"
-              },
-              "icon": "lucide-file-text",
-              "title": "attlas-vl-atspm"
-            }
-          },
-          {
-            "id": "bdea67b811a3ede5",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Sem título.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "Sem título"
-            }
-          },
-          {
             "id": "0a201a8563f55e4e",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Reports/2026-08-14.md",
+                "file": "Sprint/31/Analítico servidor - ADR de alimentação e SPEC do ms-virtual-loop.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "2026-08-14"
+              "title": "Analítico servidor - ADR de alimentação e SPEC do ms-virtual-loop"
             }
           }
-        ],
-        "currentTab": 2
+        ]
       }
     ],
     "direction": "vertical"
@@ -107,7 +80,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 493.70781326293945
+    "width": 314.9140625
   },
   "right": {
     "id": "7f39f37a7b274764",
@@ -236,45 +209,46 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "a025b9b6a66377fd",
+  "active": "0a201a8563f55e4e",
   "lastOpenFiles": [
-    "Reports/2026-08-24.md",
-    "Reports/2026-08-22.md",
-    "Reports/2026-08-11.md",
-    "Reports/2026-08-10.md",
-    "Reports/2026-08-12.md",
-    "Reports/2026-08-14.md",
-    "Reports/2026-08-18.md",
-    "Reports/2026-08-19.md",
-    "Reports/2026-08-21.md",
-    "Reports/Templates/Report diário.md",
-    "Docs/ms-cameras/Streaming/Streaming - Estratégias de entrega.md",
-    "Docs/ms-cameras/Streaming/Streaming - Diagnóstico de travamento no WebRTC.md",
-    "Docs/ms-cameras/Streaming/Streaming - Codecs e fallbacks.md",
-    "Docs/ms-cameras/Streaming/Streaming - Arquitetura.md",
-    "Docs/ms-cameras/Streaming/Plano - Banda por câmera (bitrate configurado ONVIF + VAPIX).md",
-    "Docs/ms-cameras/Streaming/Pesquisa - codec, protocolo e latência.md",
-    "Docs/ms-cameras/Streaming/Incidente - vazamento de sessões de stream (banda das câmeras).md",
-    "Docs/ms-cameras/Videowall/index.md",
-    "Docs/ms-cameras/Videowall/Pesquisa - transporte do espelhamento de tela.md",
-    "Docs/ms-cameras/Videowall/videowall-h9-quito.png",
-    "Docs/ms-cameras/Videowall/Cláusula 16.13 do contrato de Quito.md",
-    "Docs/server/Observabilidade CI - plano (stack completa).md",
-    "Docs/ms-cameras/VMS/index.md.tmp.419919.44c45f5da3df",
-    "Docs/server/Infraestrutura de CI - trabalho sem card.md",
-    "Docs/server/index.md",
-    "Docs/server/Consultar câmera Hikvision via ISAPI.md",
-    "Docs/server/Acessos SSH - Infra Attlas.md",
+    "Docs/Analítico/Analítico - Visão do produto.md",
+    "Reports/2026-08-25.md",
+    "Docs/index.md",
+    "Docs/Plano - atualização da documentação do vault.md",
+    "Docs/Edital - Attlas nova definição de módulos.md",
     "Docs/Convenções de escrita.md",
-    "attlas-vl-atspm.pdf",
+    "Sprint/31/Analítico servidor - Contrato de ocupação.md",
+    "Sprint/32/SOFTWARE-2200 - Prova de campo do analítico em container.md",
+    "Reports/2026-07-20.md",
+    "Reports/2026-07-12.md",
+    "Sprint/30/Analítico - Writer do deviceSourceId e higiene do embarcado.md",
+    "graph-01.png",
+    "Sprint/30/Analítico - Spec dos endpoints de região.md",
+    "Sprint/30/Analítico - Renumerar a CROSS-032 duplicada.md",
+    "Sprint/30/Analítico - Preset PTZ com snapshot de região.md",
+    "Sprint/30/Analítico - Healthcheck do analítico.md",
+    "Sprint/30/Analítico - Galeria de mídia de evidência (front).md",
+    "Sprint/30/Analítico - Fonte da imagem de evidência.md",
+    "Sprint/30/Analítico - Fila de incidentes (front).md",
+    "Sprint/30/Analítico - Entidade, persistência de região e unicidade.md",
+    "Sprint/30/Analítico - Desenho de região sobre frame congelado (front).md",
+    "Sprint/30/Analítico - Contagem e dedup de incidente DAI.md",
+    "Sprint/30/Analítico - Compatibilidade por arquitetura de câmera.md",
+    "Sprint/30/Analítico - Cadastro por arquitetura de câmera (front).md",
+    "Sprint/30/Absorvido - Doc de módulo do Analítico.md",
+    "Sprint/30/index.md",
+    "Sprint/30/Attlas - Sprint 31.md",
+    "Sprint/32",
+    "Sprint/31",
+    "Docs/Analítico/attlas-vl-atspm.pdf",
+    "Docs/ms-cameras/Dashboard de câmeras",
+    "Sprint/30",
+    "Docs/ms-cameras/Videowall/videowall-h9-quito.png",
+    "Docs/ms-cameras/VMS/index.md.tmp.419919.44c45f5da3df",
     "Sprint/29/SOFTWARE-2532 - Hikvision - telemetria e preview.md.tmp.82700.20de609be91b",
     "Reports/2026-08-17.md.tmp.42836.f8d931f43fc9",
     "Sprint/28/SOFTWARE-2434 - Câmeras como fontes IPC.md.tmp.11463.07e290afc379",
     "Sprint/29",
-    "Sprint/28/Attlas - Sprint 28.md.tmp.191712.aa836fd17026",
-    "Sprint/28/SOFTWARE-2477 - Lançador radial do alvo de exibição.md.tmp.191712.f568117210cb",
-    "Sprint/28/SOFTWARE-2440 - Requisitos do videowall externo em arquivo próprio.md.tmp.191712.9ec5b1dcfedd",
-    "Docs/ms-cameras/Videowall externo/index.md.tmp.191712.427e60b341a3",
     "Sem título 1.canvas",
     "Sem título.canvas",
     "Docs/ms-cameras/VMS/videowall-h9-quito.png",

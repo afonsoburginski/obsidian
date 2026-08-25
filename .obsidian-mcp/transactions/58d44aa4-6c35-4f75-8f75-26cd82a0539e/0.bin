@@ -1,0 +1,64 @@
+---
+tags:
+  - attlas
+  - task
+  - sprint-31
+  - analitico
+card: a criar no ClickUp
+titulo: "[Back] Vínculo região para endereço de detector"
+frente: Analítico
+tamanho: 3 pts
+status: comprometido na Sprint 31 (planejada em 24/08). Card ainda não criado no ClickUp - planejamento no vault primeiro, decisão de 24/08.
+sprint: "[[Attlas - Sprint 31]]"
+atualizado: 2026-08-24
+---
+
+# Analítico servidor - Vínculo região para endereço de detector
+
+Último elo da semana. Mora no `ms-cameras` e **senta sobre a entidade Analítico que a Sprint 30 cria**: este
+card não recria persistência de região, e é essa a diferença em relação ao desenho da PR fechada, que
+trazia o vínculo e a persistência de geometria no mesmo modelo.
+
+## A unicidade é pelo endereço de detector
+
+Não é pelo par câmera e região, e a distinção importa:
+
+- **Região sem vínculo é estado válido.** Uma região desenhada para contagem ou para incidente não
+  precisa alimentar nenhum detector.
+- **Duas regiões apontando para o mesmo endereço de detector nunca é válido.** Seriam duas fontes
+  escrevendo na mesma identidade de detector, e a série histórica passaria a somar presença de dois lugares
+  diferentes.
+
+A violação devolve erro de conflito próprio, com `errorCode` estável, não um P2002 cru vazando do Prisma.
+
+## A regra que impede contagem dupla, e que precisa renascer aqui
+
+Esta é a parte que existia nas specs fechadas e que morreria junto com elas se não entrasse neste card.
+
+**Se um endereço de detector já tem vínculo de câmera registrado, esse mesmo endereço não pode ao mesmo
+tempo ser publicado como presença física pelo caminho ACP.** O motivo está no código:
+`apps/ms-controllers/src/detector-raw/derivation/derive-detector-identity.ts` mapeia `MDE + Vehicle` e o
+módulo `VirtualLoop` do Neo+ para a **mesma** tecnologia `VIRTUAL_LOOP` que o caminho de vídeo vai
+publicar. O docblock do arquivo é explícito sobre isso, porque a ACOM é transporte, não tecnologia.
+
+Sem essa regra, o histórico soma o mesmo veículo duas vezes **sem erro visível**: as duas fontes são
+legítimas, as duas produzem `VIRTUAL_LOOP`, e nada no caminho reclama. Falha silenciosa em série histórica
+é o pior tipo de defeito deste domínio, porque só aparece quando alguém desconfia do número.
+
+## DoD
+
+Vínculo entre região e endereço de detector persistido no `ms-cameras`, sobre a entidade Analítico da
+Sprint 30, com unicidade por endereço de detector no banco e no domínio, erro de conflito próprio quando o
+endereço já está vinculado, e a regra contra contagem dupla ACP e vídeo aplicada e documentada. Teste de
+integração cobrindo região sem vínculo como caso válido, duplicidade de endereço como conflito, e a
+tentativa de vincular endereço já publicado pelo caminho físico.
+
+## Encosta em
+
+- [[Analítico - Entidade, persistência de região e unicidade]], que é a fundação e a razão de este card ter
+  escopo reduzido.
+- [[Analítico servidor - Tradução de endereço e publicação do detector raw]], que é quem resolve este vínculo em tempo de
+  execução.
+- [[Analítico - Requisitos e SLA]], seção da ACOM, onde a cardinalidade e a natureza de transporte estão
+  registradas.
+- [[Attlas - Sprint 31]], risco 5, e [[Attlas - Sprint 30]], risco 3.

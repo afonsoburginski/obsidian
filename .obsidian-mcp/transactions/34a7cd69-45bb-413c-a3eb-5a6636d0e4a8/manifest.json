@@ -1,0 +1,39 @@
+{
+  "id": "34a7cd69-45bb-413c-a3eb-5a6636d0e4a8",
+  "state": "committed",
+  "createdAt": "2026-08-25T16:18:07.041Z",
+  "snapshots": [
+    {
+      "path": ".obsidian-mcp/trash/a0934bbe-76ae-4b54-8148-f2da42c2d97a.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "479b2e88408fbab402bbc6a3050035035a3d75d723971ad719050f37bce553fc",
+      "recoverable": true,
+      "existed": false,
+      "committedEtag": "479b2e88408fbab402bbc6a3050035035a3d75d723971ad719050f37bce553fc"
+    },
+    {
+      "path": ".obsidian-mcp/trash/a0934bbe-76ae-4b54-8148-f2da42c2d97a.json",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "fab2ad6453046d2a2458fcd20c2e48f0ec6e9798486de4fdbac8bcd8a8b521ba",
+      "recoverable": true,
+      "existed": false,
+      "committedEtag": "fab2ad6453046d2a2458fcd20c2e48f0ec6e9798486de4fdbac8bcd8a8b521ba"
+    },
+    {
+      "path": "Sprint/30/Absorvido - Doc de módulo do Analítico.md",
+      "operation": "delete",
+      "entryType": "file",
+      "phase": "applied",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33152,
+      "etag": "479b2e88408fbab402bbc6a3050035035a3d75d723971ad719050f37bce553fc",
+      "snapshot": "2.bin"
+    }
+  ],
+  "completedAt": "2026-08-25T16:18:07.051Z"
+}

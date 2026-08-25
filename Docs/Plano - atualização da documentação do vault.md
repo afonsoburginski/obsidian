@@ -4,235 +4,124 @@ tags:
   - attlas
   - plano
 atualizado: 2026-08-24
-status: lote 0 e camada de higiene FEITOS em 31/07, revisados 22/08 e 24/08; lote 4 (saude) e lote 5 (streaming) parcialmente executados em 24/08; dominio kubernetes removido em 24/08 (a pedido); lotes 1, 2, 3, 6, 7, 8 (conteudo) em aberto
+status: TODOS os lotes de conteúdo executados em 24/08 (0 revisado, 1 a 8 feitos, 9 removido a pedido). Domínio Dashboard de câmeras criado do zero. Lote 10 (web-attlas geral) segue aberto e não escopado. O plano vira registro de método e de lições, não mais fila de trabalho.
 ---
 
 # Plano - atualização da documentação do vault
 
-As notas de domínio do `ms-cameras` foram escritas em **03/07** e o código andou muito desde então.
-Este plano diz **quais notas estão defasadas, com que evidência, e em que ordem consertar**.
-
-> [!info] Domínio Kubernetes removido em 24/08
-> A pedido do user, o lote 9 (Kubernetes) e as 9 notas que ele cobria saíram do vault - foram para a
-> trash do MCP (recuperável). A linha e a seção correspondentes abaixo foram removidas junto; a coluna
-> "Kubernetes" do diagnóstico original não se aplica mais.
+As notas de domínio do `ms-cameras` foram escritas em **03/07** e o código andou muito desde então. Este
+plano nasceu em 31/07 para dizer **quais notas estavam defasadas, com que evidência, e em que ordem
+consertar**. Em 24/08 a fila inteira foi executada; o que sobra aqui é o **método** (reutilizável na
+próxima defasagem) e as **lições** que cada rodada deixou.
 
 ## Método (para não virar achismo)
 
-Três medidas objetivas, todas rodadas em 31/07 contra `origin/develop`:
+Três medidas objetivas, aplicadas contra `origin/develop`:
 
-1. **Data da nota x commits no código que ela descreve**: `git log --since=2026-07-03` restrito aos caminhos citados pela nota. Muito commit em caminho que a nota descreve = nota provavelmente defasada.
-2. **Referência morta**: todo caminho de repo citado entre backticks foi testado com `exists()`. Nas notas de `ms-cameras` não há nenhuma morta; as de Kubernetes citavam `infra/...`, que vive em outro repo (domínio removido em 24/08, ver acima).
-3. **Termo do código sem menção no vault**: rota, domínio ou campo que existe hoje e não aparece em nenhuma nota. É o sinal mais forte, porque indica assunto **inexistente**, não só desatualizado.
+1. **Data da nota x commits no código que ela descreve**: `git log --since=<data da nota>` restrito aos
+   caminhos citados pela nota. Muito commit em caminho descrito pela nota = nota provavelmente defasada.
+2. **Referência morta**: todo caminho de repo citado entre backticks testado com `exists()`.
+3. **Termo do código sem menção no vault**: rota, domínio ou campo que existe hoje e não aparece em nota
+   nenhuma. É o sinal mais forte, porque indica assunto **inexistente**, não só desatualizado.
 
-## Diagnóstico
+Na rodada de 24/08 entrou uma quarta medida, que se provou a mais produtiva: **auditar o código com
+pergunta fechada e aceitar "NÃO EXISTE" como resposta válida**. Perguntar "existe healthcheck do
+analítico?" e receber "não, só três métricas Prometheus" vale mais que ler a nota antiga e presumir.
 
-| Assunto | Notas | Editado | Commits no código desde 03/07 | Veredito |
-| --- | --- | --- | --- | --- |
-| Cameras | 4 | 03/07, seção de topologia em **24/08** | **79** | reescrever (topologia de produção já corrigida; resto do lote 6 em aberto) |
-| Eventos, incidentes e alarmes | 4 | 03/07 | **47** | reescrever |
-| Saúde e monitoramento | 8 | 03/07, **parcial em 24/08** | **40** | dedupe por device físico e contradição do adapter Redis corrigidos; consolidação das 8 notas em duas famílias de nome ainda não feita |
-| Streaming | 10 | 03 a 07/07, **parcial em 24/08** | **27** | fixes de codec/telemetria de 19/08 incorporados + cross-refs a INT-008; decisão de fundir/manter Arquitetura×Estratégias de entrega ainda não tomada |
-| Dashboard de câmeras | **0** | - | **54** | **criar** |
-| Analítico de vídeo ao vivo | **0** | - | domínio `analytics-realtime` inteiro (14/07) | **criar** |
-| Integração com dispositivo | 4 | 03/07 | 6 | revisar |
-| PTZ e presets | 4 | 03 e 31/07 | 0 | só terminologia, já feito |
-| VMS (ex Video Wall) | 4 | **31/07, revisado 22/08 e 24/08** | 0 | feito no lote 0, revisado duas vezes |
-| Videowall externo (H9) | 1 | **31/07** | - | feito no lote 0 |
-| CI-CD (observabilidade) | 1 | 24/07 | PRs #964 e #1142 | atualizar |
-| Acessos SSH / infra | 1 | 24/07 | - | conferir contra a realidade |
+## Estado por assunto (24/08)
 
-### Assuntos que existem no código e não existem no vault
+| Assunto | Notas | Estado |
+| --- | --- | --- |
+| Cameras | 4 | **Feito.** Topologia de produção, `media-profiles` (UC-031), escopo por `systemId` completo, PR #1137 (IP duplicado + reativação de soft-deleted). Achado forte: o cadastro passou a provisionar `CameraStreamProfile` e `CameraCredential` inline (SOFTWARE-2226), o que as 3 notas negavam - RF-CAM-06 promovido de Parcial para Implementado |
+| Eventos, incidentes e alarmes | 4 | **Feito.** O domínio inteiro mudou de `src/cameras/` para `src/events/` (11/07) e nenhuma nota sabia. Superfície cross-câmera nova (`/cameras/events*`, stats, timeline, recorrência, observações, reportar), model `CameraEventObservation`, RF-INC-01 virou Implementado. Gap achado e registrado: reporte manual sem guarda de idempotência |
+| Saúde e monitoramento | 8 | **Feito** (dedupe por device físico, contradição do adapter Redis). Pendente de forma: consolidar as 8 notas em duas famílias de nome |
+| Streaming | 10 | **Feito** (fixes de 19/08, cross-refs de INT-008, telemetria always-on). Pendente de decisão: fundir ou manter `Streaming - Arquitetura` x `Streaming - Estratégias de entrega` |
+| Dashboard de câmeras | **3, novas** | **Criado do zero.** 7 controllers, 16 rotas REST + 1 canal WS, **zero tabela Prisma própria** - todo widget é agregação read-time sobre Saúde, Eventos e Integração |
+| Analítico | **5** | **Reescrito.** Ver seção própria abaixo |
+| Integração com dispositivo | 6 | **Feito.** Gap real fechado: integração nativa Hikvision via ISAPI (PR #1738) não estava em nota nenhuma |
+| PTZ e presets | 4 | Sem mudança desde 31/07 (0 commits no código) |
+| VMS e videowall externo | 5 | **Feito**, revisado duas vezes (22/08 e 24/08) |
+| CI-CD e acessos | 2 | **Feito.** Runner do sumo cresceu para 32 vCPU / 40 GiB; a integração deixou de ser serializada e virou semáforo de até 3 vagas |
+| Kubernetes | - | **Removido do vault em 24/08 a pedido do user** (9 notas para a trash do MCP, recuperável). O repo `Developer/kubernetes` segue como fonte de verdade fora daqui |
 
-Termos com **zero** menção em qualquer nota:
+## A rodada do Analítico (24/08)
 
-`analytics-realtime`, `virtual-loops`, `object-detection-regions`, `media-profiles`, `events/stats`,
-`events/:id/recurrence`, `events/:id/observations`, `events-heatmap`, `dashboard/kpis`,
-`connectivity-gauge`, `type-distribution`, `analytic-capacity`.
+Foi a maior da série e teve método próprio: três auditorias de código em paralelo (embarcado, servidor,
+ACOM/ATSPM) antes de escrever uma linha. O resultado mudou o plano da frente inteira, não só a
+documentação - ver [[Attlas - Sprint 30]].
 
-Isso são duas frentes inteiras sem documentação: **dashboard de câmeras** (8 controllers, ~17 rotas) e
-**analítico de vídeo ao vivo** (gateway WS, provisionamento de device, regiões e laços virtuais).
+Notas: [[Analítico]], [[Analítico - Embarcado x Servidor]] (nova, é a central),
+[[Analítico - Requisitos e SLA]], [[Analítico - Arquitetura e estratégias]], [[Analítico - Fluxos]].
 
-## Lotes
+Três achados que só apareceram porque a pergunta foi fechada:
 
-Um lote por sessão, na ordem abaixo. Cada lote termina com o verificador de wikilinks limpo e
-`atualizado:` no frontmatter das notas tocadas.
+1. **`deviceSourceId` não tem writer no banco** - câmera cadastrada pela UI nunca recebe detecção ao
+   vivo. O analítico embarcado está "entregue desde 15/07" e funciona só para as câmeras do seed.
+2. **Não existe imagem de evidência de detecção de origem nenhuma** no Attlas 26 - o payload do device é
+   100% metadado. A pergunta original das notas de alinhamento ("a baixa qualidade vem do Attlas ou da
+   câmera?") não se aplica: é escolher a fonte, não corrigir qualidade.
+3. **Colisão de ID em `CROSS-043`** - três atômicas já mergeadas citavam o ID como a decisão do adapter
+   Redis, e uma PR em draft criava o mesmo ID para o ADR de alimentação de vídeo. Resolvida no fim do dia
+   pelo fechamento daquela PR no reescopo do analítico; sobrou a duplicação de `CROSS-032`, que ia de
+   carona nela e virou card.
 
-### Lote 0 - VMS e videowall externo (FEITO em 31/07, REVISADO em 22/08 e 24/08)
+## Lote 10 - web-attlas geral (aberto em 22/08, ainda não escopado)
 
-Renome de Video Wall para VMS, nota nova do H9 externo com a foto do equipamento, 5 notas viraram 4,
-banda atualizada para device-truth. Ver [[VMS]] e [[Videowall externo (NovaStar H9)]].
+Único lote que sobra. O vault documenta o `ms-cameras` a fundo, mas não tem domínio para o `web-attlas`
+além do que mora dentro de `ms-cameras/VMS/`. O padrão de camadas página/store/serviço que a PR #1884
+aplicou ao VMS vem do módulo de alarmes, então provavelmente vale para o `web-attlas` inteiro - mas isso
+não foi verificado, só suposto a partir de um exemplo.
 
-**Revisão de 22/08**: três semanas de código andaram desde 31/07 (espelhar com destino escolhido,
-brilho ao vivo, projeção nativa completa, despacho de plano de resposta até a parede, refactor em
-camadas do frontend) e nenhuma linha do vault tinha sido tocada. As duas notas ganharam callout
-"Estado em DD/MM" no topo, mapa de código atualizado, e dois achados de discrepância real registrados
-(colisão do número de card SOFTWARE-2519 entre duas tasks distintas; SOFTWARE-2481 fechado no ClickUp
-com o código ainda não refletindo o fechamento). **Lição**: um lote "FEITO" não é permanente, sprint que
-entrega rápido pede revisão a cada 2-3 semanas, não só na primeira passada.
+Antes de escrever nota, rodar as quatro medidas do método sobre `apps/web-attlas/`, e decidir se cabe uma
+pasta `Docs/web-attlas/` paralela a `ms-cameras/` ou se cada domínio de front fica dentro do domínio de
+backend que serve, seguindo o precedente do VMS. Não fazer de improviso dentro de outro trabalho.
 
-**Revisão de 24/08**: confirmado no código (`git merge-base --is-ancestor` contra `origin/develop` +
-grep direto) que a PR #1884 mergeou (6 stores, não 4 - a versão de 22/08 desta nota tinha contado
-errado) e que `c9766ab960` (18/08) já tinha removido o path `video-wall` **antes** da revisão de 22/08
-ser escrita - o achado "rota dupla ainda viva" ficou obsoleto assim que registrado. Mais 3 fixes de
-UF-034 do mesmo 22/08 (corrida/falha silenciosa no espelho, mover-sem-arrastar, layout sem chamar
-backend antes da 1ª tela) incorporados. `VMS - Arquitetura e estratégias`, `VMS - Fluxos` e
-`VMS - Banda e alertas` (que tinham ficado só no índice atualizado, não nas 3 notas de faceta) também
-foram atualizadas. **Lição repetida**: nem todo `index.md` atualizado significa que as notas de faceta
-da mesma pasta também estão - conferir as duas coisas juntas.
+## Regras de execução (valem para a próxima rodada)
 
-### Lote 4 - Saúde e monitoramento (parcial em 24/08)
-
-**Feito**: a dedupe por device físico (72→12 conexões, `deviceMonitors` por `canal:host`) entrou em
-`Saúde e monitoramento - Arquitetura e estratégias` e no mapa de código do índice; a contradição entre
-`Status em tempo real - Arquitetura e estratégias` (dizia "falta adapter Redis") e `SOFTWARE-2009`
-(dizia "entregue") foi resolvida a favor do código (adapter **entregue**, CROSS-043/PR #1175,
-confirmado em `main.ts`), com a exceção local-only de `camera:health:live` documentada. Também corrigido
-um achado que **não** estava no escopo original do lote: o gateway de streaming (`cameras-stream`)
-ganhou JWT em `camera.join`/`camera.leave` e deixou de ser público - as duas notas de "Status em tempo
-real" e os docs de repo `MOD-004`/`INT-005` estavam desatualizados nesse ponto.
-
-**Ainda em aberto**: consolidar as 8 notas em duas famílias de nome ("Saúde e monitoramento - X" e
-"Status em tempo real - X") continua pendente, e as notas de Fluxos/Requisitos e SLA de ambas as pastas
-não foram conferidas nesta passada.
-
-### Lote 5 - Streaming (parcial em 24/08)
-
-**Feito**: os dois fixes de 19/08 (`72815a9db5` jitter buffer + shaping da telemetria ONVIF,
-`947da10900` guarda de stampede adaptativo) entraram em `Streaming - Codecs e fallbacks`; cross-refs a
-INT-008 adicionadas em `Streaming - Arquitetura` e `Streaming - Estratégias de entrega` (que citavam o
-codec do perfil como fixo); `MediamtxClient` deixou de ser descrito como "telemetria futura" (PROJ-006
-já entregue em 03/08).
-
-**Ainda em aberto**: ciclo de vida de sessão e fechamento de sala em 30s (2003), WHEP atrás do nginx no
-dev da AWS, fundação TURN (CROSS-032, conferida nesta passada e **sem mudança** - segue consistente e
-bloqueada atrás da auth pública), e a decisão de fundir ou manter `Streaming - Arquitetura` ×
-`Streaming - Estratégias de entrega` continuam sem tocar.
-
-### Lote 10 - web-attlas geral (NOVO, aberto em 22/08, ainda não escopado)
-
-**Por que existe**: o vault documenta o `ms-cameras` a fundo, mas não tem domínio nenhum para o
-`web-attlas` além do que mora dentro de `ms-cameras/VMS/` (que é só a fatia de videowall). O padrão de
-camadas página/store/serviço que a PR #1884 aplicou ao VMS (registrado na seção de arquitetura do
-frontend em [[VMS]]) é um padrão do módulo de alarmes, então provavelmente vale para o `web-attlas`
-inteiro — mas isso não foi verificado, só suposto a partir de um exemplo.
-
-**Escopo a decidir numa sessão própria, não aberto ainda**: existe um domínio `web-attlas` inteiro por
-trás disso (traffic-model, PMV, permissions, operations-panel, dezenas de feature modules) que este
-plano nunca diagnosticou. Antes de escrever nota, rodar o mesmo método dos lotes 1-8 (data x commits,
-referência morta, termo sem nota) sobre `apps/web-attlas/`, decidir se cabe uma pasta `Docs/web-attlas/`
-paralela a `ms-cameras/` ou se cada domínio de front fica dentro do domínio de backend que serve
-(seguindo o precedente do VMS). Não fazer de improviso dentro de outro lote.
-
-### Camada H - higiene e padronização (FEITA em 31/07)
-
-Camada de forma, não de conteúdo, aplicada em varredura única sobre todo o `Docs/`. É pré-requisito dos
-lotes abaixo: nota reescrita a partir daqui já nasce no padrão final.
-
-- **Padrão de nome**: `index.md` para o índice da pasta (estilo `index` de programação, com alias do assunto), `<Assunto> - <Faceta>` para faceta, `<Tipo> - <assunto>` para registro histórico (`Incidente`, `Plano`, `Pesquisa`, `Runbook`). Português com acento, sem prefixo numérico e sem inglês.
-- **Renomes**: 5 notas numeradas de Streaming, 3 diagramas (acento e rótulo do VMS), 7 notas de Kubernetes (domínio removido em 24/08), o edital e 2 runbooks. Todo renome deixou `aliases` com o nome antigo e teve os wikilinks reescritos.
-- **Estrutura**: `Status em tempo real/` virou pasta própria com índice; a raiz do `ms-cameras` ficou só com a visão geral e a nota do analítico; as 2 notas de pesquisa de codec foram consolidadas em [[Pesquisa - codec, protocolo e latência]] e os 2 runbooks de device foram para `Integração com dispositivo/`.
-- **Frontmatter**: bloco padrão (`tags` em lista YAML, `atualizado`) nas 55 notas de `Docs/`. O `atualizado` recebeu a data real da última revisão de conteúdo, não a data da higiene.
-- **Vocabulário de tag** fechado: `doc` mais domínio (`ms-cameras`, `ci-cd`, `infra`) mais assunto (`vms`, `streaming`, `eventos`, `saude`, `realtime`, `ptz`, `crud`, `dispositivo`, `videowall`).
-- **Símbolos**: travessão, en-dash e `§` fora da prosa em todo `Docs/` menos o edital. O que sobrou está dentro de bloco de código ou é nome real de câmera (`ATMN – DEMO`).
-- **Navegação**: todo índice virou `index.md` da sua pasta, com H1 do assunto, alias do assunto e seção `## Notas deste domínio` (faltava em Eventos, Streaming e Kubernetes; PTZ e Integração tinham com outro nome). Criados [[Docs - índice raiz|o índice raiz de Docs]] e o índice de `server/`. Zero link quebrado e zero nota órfã.
-- **Fora de `Docs/`**: 2 canvas vazios apagados, a captura sem título virou [[Ideias soltas - captura de testes e achados]], o template do report foi para `Templates/`, `Sprint/sem prazo` virou `Sprint/Sem prazo`, 5 cards da Sprint 25 passaram a link, e a nota de regras de negócio de saúde saiu de `Sprint/22` para o domínio.
-- **Config**: `attachmentFolderPath` passou a `./` (anexo ao lado da nota, que é o que já acontecia) e o grafo ganhou grupo para `Templates`.
-
-### Lote 1 - Eventos, incidentes e alarmes (P0, tamanho G)
-
-**Por que agora**: 47 commits e a tela de eventos foi toda validada em 27 e 28/07. É o assunto com
-maior distância entre nota e produto.
-
-**Checar no código**: rotas de evento no `cameras.controller` (`events`, `events/stats`,
-`events/:id/observations` GET e POST, `events/:id/report`, `events/:id/recurrence`,
-`events/:id/timeline`), models `CameraEventLog` / `CameraEventObservation` / `CameraIncidentEvent`,
-enums de tipo e severidade, e a cadeia do incidente (2294) contra o que a nota descreve.
-
-**O que muda**: tabela de rotas, modelo de dados, regra de recorrência, timeline pela cadeia do
-incidente, observações com resposta, "reportar" condicional, e o que é front (side card, drawer).
-
-### Lote 2 - Dashboard de câmeras (P0, tamanho G, nota nova)
-
-**Por que agora**: 54 commits, front já ligado ao backend real (#1058) e validado. Nada disso está no
-vault.
-
-**Checar no código**: `src/dashboard/{connectivity,connectivity-tables,distribution,heatmap,map,uptime,bandwidth}`,
-o resolver de período-escopo (2212) e a rota Kong `/api/dashboard/*`.
-
-**O que muda**: pasta nova `Docs/ms-cameras/Dashboard/` com índice, arquitetura (agregação read-time,
-reuso de telemetria) e fluxos. Registrar a pendência conhecida: o `ms-cameras` ocupa `/api/dashboard`
-na raiz, sem prefixo próprio.
-
-### Lote 3 - Analítico de vídeo ao vivo (P0, tamanho M, nota nova)
-
-**Por que agora**: a frente de analíticos **começa na semana de 03/08** (daily de 31/07). Documentar
-antes de mexer, não depois.
-
-**Checar no código**: `src/analytics-realtime/` (gateway `camera-analytics.gateway.ts`,
-`device-stream.consumer.ts`, `atman-device-provisioner.service.ts`, `camera-regions.controller.ts`,
-`atman-endpoint.resolver.ts`), o contrato do WS `camera:analytics:detection` e o que sobrou depois da
-remoção do reconciler PROJ-014.
-
-**O que muda**: nota nova de domínio, absorvendo [[Carga desnecessária nas câmeras - reconciler do analítico e conexões duplicadas]]
-como seção de histórico. Registrar o que segue aberto: device de campo sem dono explícito, outro
-writer carimbando o `source_id`.
-
-### Lote 6 - Cameras (P1, tamanho M)
-
-**Checar no código**: `media-profiles` (2008), escopo por `systemId` (1920 e 2007), toolkit
-`list-query` na listagem, substituição de equipamento e reativação de soft-deleted (fixes da #1137).
-
-**Feito em 24/08, fora de ordem**: a topologia de produção (6 sistemas-tenant, câmera replicada por
-device físico) entrou em `Cameras - Arquitetura e estratégias` como parte do lote de streaming/
-codec/VMS/câmeras - o resto do checklist acima continua em aberto.
-
-### Lote 7 - Integração com dispositivo (P2, tamanho S)
-
-**Checar no código**: deduplicação de conexão VAPIX por device, leitura de bitrate configurado
-(ONVIF universal e VAPIX nas Axis), digest do device de analítico.
-
-### Lote 8 - CI/CD e acessos (P2, tamanho S)
-
-Atualizar [[Observabilidade CI - plano (stack completa)]] com o cache remoto self-hosted (#964) e o
-orçamento de disco (#1142, mecanismos por tamanho, guard graduado, `ci-disk-watch`, correção do
-`ci-runner-governor`). Conferir [[Acessos SSH - Infra Attlas]] contra a realidade (VMs 1 a 7, runner
-`ci-sumo`, EC2 26).
-
-## Regras de execução
-
-- **Código é fonte de verdade.** Nota que discorda do código é bug da nota. Regra de negócio vem de `docs/modules/` e do edital, não do código.
-- Cada afirmação sai de um arquivo lido, com caminho citado. Sem "provavelmente" e sem herdar afirmação da versão antiga da nota.
-- Divergência entre contrato e implementação vira **callout explícito**, não é escondida (o `version`/`If-Match` do VMS é o modelo).
+- **Código é fonte de verdade.** Nota que discorda do código é bug da nota. Regra de negócio vem de
+  `docs/modules/` e do edital, não do código.
+- Cada afirmação sai de um arquivo lido, com caminho citado. Sem "provavelmente" e sem herdar afirmação
+  da versão antiga da nota.
+- Divergência entre contrato e implementação vira **callout explícito**, não é escondida.
 - Toda nota tocada recebe `atualizado:` no frontmatter.
-- Renome de nota mantém `aliases` com o nome antigo, e os wikilinks que apontavam para ela são reescritos no mesmo lote.
-- **3 a 4 notas por assunto**: `00 - <assunto>` (índice, não repete conteúdo das filhas), Arquitetura e estratégias, Fluxos, mais uma temática quando o assunto pedir.
-- Não tocar em [[Edital - Attlas nova definição de módulos]] (edital) nem reescrever `Reports/` antigos: são registro histórico.
+- Renome de nota mantém `aliases` com o nome antigo, e os wikilinks que apontavam para ela são reescritos
+  no mesmo lote.
+- **3 a 4 notas por assunto**: `index.md` (não repete conteúdo das filhas), Arquitetura e estratégias,
+  Fluxos, mais uma temática quando o assunto pedir. O Analítico ganhou a quinta
+  ([[Analítico - Embarcado x Servidor]]) porque a distinção era o assunto.
+- Não tocar em [[Edital - Attlas nova definição de módulos]] nem reescrever `Reports/` antigos: são
+  registro histórico.
+
+## Lições acumuladas
+
+- **31/07**: nota de 03/07 com 40+ commits no caminho que descreve está defasada por construção, não por
+  azar.
+- **22/08**: um lote "FEITO" não é permanente. Sprint que entrega rápido pede revisão a cada 2-3 semanas.
+- **24/08, manhã**: `index.md` atualizado **não** significa que as notas de faceta da mesma pasta também
+  estão. No VMS, o índice foi a 22/08 e as três facetas ficaram em 31/07. Conferir as duas coisas juntas.
+- **24/08, manhã**: achado registrado numa nota de incidente não se propaga sozinho para a nota de
+  arquitetura do domínio. A dedupe de conexão VAPIX ficou três semanas documentada só no incidente.
+- **24/08, tarde**: auditar antes de escrever muda o plano, não só o texto. Os três achados do analítico
+  acima teriam passado despercebidos numa revisão que partisse da nota antiga.
 
 ## Pendências de forma que sobraram
 
-- **Diagramas/**: 10 excalidraw. O `06` foi renomeado para VMS, mas o repo tem **duas MOD-004** (`hls-streaming-pipeline` e `ptz-presets`) e o vault espelha essa colisão; faltam diagramas de MOD-005 e MOD-009 a MOD-014. A renumeração é trabalho de repo, não de vault.
-- **IDs de spec ambíguos no repo**: três UC-019 (`get-bandwidth-monitoring`, `get-cameras-batch`, `record-camera-event`), dois UC-011, UC-015 e UC-018. Ao citar spec nas notas, usar id mais slug. O `00 - Eventos, incidentes e alarmes` ainda cita "UC-019" solto, o que se resolve no lote 1.
-- **Sprint/24** tem duas notas para o card 2134 (a do card e "Decisão técnica e fluxo"). A segunda é conteúdo de domínio e migra para a nota nova de analítico no lote 3.
-
-## Estado atual (31/07)
-
-Lote 0 e camada H concluídos. Verificação da camada H, os três scripts limpos:
-
-- **Zero link quebrado** no vault (eram 9 antes do trabalho de hoje; 5 apontavam para relatórios de validação E2E que nunca chegaram ao vault, 1 para um relatório da Fase 3 que não está em lugar nenhum, 1 para a nota nunca criada do card 2016, 1 para "Próxima sprint - candidatos" e 1 usava título antigo da 2220).
-- **Zero pendência de frontmatter** nas notas de `Docs/` (o edital é exceção declarada: só o nome do arquivo mudou).
-- **Zero nota órfã** em `Docs/`.
-- **Raiz do vault sem arquivo solto.**
-
-Vale repetir a varredura ao fim de cada lote: renomear nota sem reescrever quem aponta para ela é a
-forma mais fácil de recriar esse tipo de furo.
-
-## Estado em 24/08
-
-Sessão focada em streaming/codec/VMS/câmeras (não em ordem de prioridade dos lotes - pedido específico
-do user). Tocou lote 0 (revisão), lote 4 e lote 5 (parciais, ver seções acima) e uma seção do lote 6
-fora de ordem (topologia de produção). Também corrigidos dois achados de repo fora do vault
-(`MOD-004-hls-streaming-pipeline.md` e `INT-005-kong-jwt-authentication.md` desatualizados quanto ao
-JWT no gateway de streaming). Domínio Kubernetes (lote 9 + 9 notas) removido do vault a pedido do user.
-Segunda rodada da mesma sessão: lotes 1, 2, 3, 6 (resto), 7 e 8 entram em execução para fechar o que
-faltava - ver o topo de cada lote acima para o resultado.
+- **Diagramas/**: 10 excalidraw. O repo tem **duas MOD-004** (`hls-streaming-pipeline` e `ptz-presets`) e
+  o vault espelha a colisão; faltam diagramas de MOD-005 e MOD-009 a MOD-014. Renumeração é trabalho de
+  repo, não de vault. O Analítico também não tem canvas nenhum.
+- **IDs de spec ambíguos no repo**: três UC-019, dois UC-011, UC-015 e UC-018, mais a colisão de
+  `CROSS-043` achada em 24/08. Ao citar spec nas notas, usar id mais slug.
+- **Consolidação de nomes em Saúde**: duas famílias ("Saúde e monitoramento - X" e "Status em tempo real -
+  X") para o mesmo domínio.
+- **Verificação de 24/08 rodada e fechada.** A rodada criou 11 notas (1 do Analítico, 3 do Dashboard, a
+  da Sprint 30 e 6 de card) e removeu 9 (Kubernetes). Uma passada de verificação em cinco dimensões
+  (wikilinks, frontmatter, estilo, fatos contra o código, contradições entre notas) achou 16 defeitos
+  confirmados, todos corrigidos: dois `aliases` poluídos com nomes de tag, um frontmatter com YAML
+  inválido, dois `updated:` defasados em doc do repo, 22 travessões e 3 símbolos de seção em prosa nova,
+  e **dois erros factuais de peso** - a afirmação de que não existia captura de snapshot no repo (existe:
+  `CameraThumbnailService`) e a de que o bug de `kind` tinha impacto zero (o campo é renderizado no log
+  ao vivo da aba Analíticos). Zero link quebrado e zero frontmatter inválido ao fim.
+- **Lição da verificação**: auditoria de código feita por agente também erra por varredura incompleta.
+  As duas afirmações falsas acima nasceram de um grep que concluiu "não existe" cedo demais. Afirmação
+  categórica de ausência ("não existe em lugar nenhum do repo") merece segunda passada antes de virar
+  premissa de decisão de escopo - as duas viraram, e uma delas dimensionava um card em 5 pontos.

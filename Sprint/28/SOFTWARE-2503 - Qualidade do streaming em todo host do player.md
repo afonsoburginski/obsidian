@@ -6,8 +6,8 @@ tags:
 card: SOFTWARE-2503
 frente: Streaming / player compartilhado
 sprint: Sprint 28 (10/8/26 - 16/8/26)
-status: Em revisão (PR aberta em 14/08)
-atualizado: 2026-08-14
+status: "mergeado - PR #1607 em 14/08/2026, conferido no GitHub em 25/08"
+atualizado: 2026-08-25
 pr: https://github.com/atmanadmin/attlas-2026/pull/1607
 ---
 
@@ -65,3 +65,7 @@ seria fiação para um controle que não é renderizado.
 - [[SOFTWARE-2504 - Queda do ms-cameras por env ausente e smoke test cego]], o outro card da mesma PR.
   No ambiente publicado o efeito era total de qualquer forma, porque com o serviço caído toda abertura
   de sessão respondia 503.
+
+> [!info] Estado em 25/08 - alinhado com o GitHub
+> PR #1607 mergeada (última em 14/08/2026). Nenhuma PR desta task está aberta.
+> O `status` anterior dizia: "Em revisão (PR aberta em 14/08)".

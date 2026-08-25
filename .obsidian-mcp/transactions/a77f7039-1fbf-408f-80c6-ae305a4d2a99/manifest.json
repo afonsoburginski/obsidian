@@ -1,0 +1,18 @@
+{
+  "id": "a77f7039-1fbf-408f-80c6-ae305a4d2a99",
+  "state": "committed",
+  "createdAt": "2026-08-24T15:13:53.197Z",
+  "snapshots": [
+    {
+      "path": "Sprint/30/Analítico - Writer do deviceSourceId e higiene do embarcado.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "89ee12c21ae264f74025332cc0c46a49c4a603a343640a52c97bc6d5ad6112a1",
+      "recoverable": true,
+      "existed": false,
+      "committedEtag": "89ee12c21ae264f74025332cc0c46a49c4a603a343640a52c97bc6d5ad6112a1"
+    }
+  ],
+  "completedAt": "2026-08-24T15:13:53.207Z"
+}

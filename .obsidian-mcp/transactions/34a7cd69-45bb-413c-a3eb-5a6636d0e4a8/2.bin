@@ -1,0 +1,89 @@
+---
+tags:
+  - attlas
+  - task
+  - sprint-30
+  - analitico
+card: SOFTWARE-2680
+clickup: https://app.clickup.com/t/86ak5dx6v
+titulo: "[Back] Doc de módulo do Analítico"
+frente: Analítico
+tamanho: absorvido (sem ponto próprio)
+status: ABSORVIDO em 25/08. Deixou de ser card - não existe task de criar documentação, os docs entram na PR da implementação (SDD). Conteúdo entregue dentro do card 2677, PR
+sprint: "[[Attlas - Sprint 30]]"
+atualizado: 2026-08-25
+---
+
+# Analítico - Doc de módulo (docs-only)
+
+> [!warning] Este card não existe mais - foi absorvido
+> Reestimativa de 25/08: **não existe task de criar documentação**. Os docs fazem parte de toda
+> PR por causa do SDD, então não ganham card próprio. O conteúdo desta nota foi entregue dentro
+> de [[Analítico - Entidade, persistência de região e unicidade]] (card 2677, PR #2000).
+>
+> O doc fixa o vocabulário da entidade que essa PR cria, então nasce junto com ela.
+>
+> A nota fica como registro do escopo; o card SOFTWARE-2680 do ClickUp deve ser fechado apontando
+> para o card 2677.
+
+
+Escrever `docs/modules/analitico.md`, que não existe. O Analítico é módulo oficial do edital - está em
+`docs/architecture/modules.md`, na categoria **Dependente**, como "Analítico - Tratamento e análise de
+dados de tráfego, níveis de serviço, predições" - e é **um dos cinco módulos da tabela sem doc de contexto
+próprio**: os outros quatro são Nobreaks, Emergências, Relatórios e Dashboard global.
+
+Hoje ele só existe como dependência dos outros: `docs/modules/cameras.md`, `alarms.md`,
+`traffic-model.md`, `detectors.md`, `operations-panel.md`, `selective-priority.md` e `execution-plans.md`
+citam analítico, e `controllers.md` e `simulation.md` o citam de passagem, sem que exista o documento que
+diz o que ele é. Nove docs no total - `permissions.md` **não** conta, porque o que ele chama de "operações
+analíticas" é uma classe de operação do motor de autorização, outro conceito.
+
+## Por que este card vem antes do código
+
+O domínio tem três distinções que hoje se usam trocadas, e cada troca vira decisão errada de modelo mais
+adiante. O doc é o lugar de fixá-las antes que a entidade e a migration de
+[[Analítico - Entidade, persistência de região e unicidade]] congelem o vocabulário no schema.
+
+### VL x ATSPM
+
+Não são dois nomes para a mesma coisa. ATSPM é um **pacote de quatro sub-produtos** - Tracker, DAI, TPM e
+VL embutido - e o Virtual Loop puro é um produto sozinho. A consequência prática já está na matriz de
+[[Analítico - Embarcado x Servidor]]: quem quer os dois embarcados instala só o ATSPM, porque ele já
+entrega o VL.
+
+### Embarcado x servidor
+
+O que muda entre as duas formas é **onde** a capacidade roda, nunca a capacidade em si. Virtual Loop é
+Virtual Loop nas duas. Escrever isso é o que impede o cadastro nascer com "analítico embarcado" e
+"analítico servidor" como dois tipos distintos em vez de duas formas de execução do mesmo tipo.
+
+### ACOM é transporte, não capacidade
+
+A regra já está escrita no código, em `libs/contracts/src/lib/detectors/detector-technology.enum.ts`:
+"A virtual loop delivered via a camera's native module OR via an ACOM board is VIRTUAL_LOOP in both cases
+- ACOM is transport, not technology." Ela vive num docblock de enum e em nenhum documento de contexto.
+
+## Escopo (docs-only)
+
+Um arquivo novo, `docs/modules/analitico.md`, seguindo a regra do repositório: `docs/modules/` carrega
+responsabilidade, limite, regra de negócio e requisito funcional e não funcional, **nunca implementação**.
+Nada de model, rota, tópico ou nome de serviço como decisão - isso é spec, e vive em `apps/<service>/docs`.
+
+## Achado de carona a registrar
+
+`docs/modules/controllers.md` tem mais de mil linhas e não menciona ACOM, ATSPM, DAI nem laço virtual uma
+única vez - cita "Analítico" só como módulo vizinho, na fronteira de cálculo adaptativo. Não é escopo deste
+card reescrever o doc de outro módulo, mas o buraco fica anotado aqui, porque é onde a atuação por contato
+seco deveria estar descrita.
+
+## DoD
+
+`docs/modules/analitico.md` na develop, com VL x ATSPM, embarcado x servidor e ACOM como transporte
+definidos em texto, e a entrada do Analítico em `docs/modules/README.md`. Zero regra de implementação no
+arquivo.
+
+## Encosta em
+
+- [[Analítico]] e [[Analítico - Embarcado x Servidor]], que são a fonte do conteúdo.
+- [[Analítico - Entidade, persistência de região e unicidade]], que consome o vocabulário fixado aqui.
+- [[Attlas - Sprint 30]].

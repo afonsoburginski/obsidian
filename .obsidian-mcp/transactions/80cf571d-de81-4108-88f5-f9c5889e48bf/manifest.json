@@ -1,0 +1,21 @@
+{
+  "id": "80cf571d-de81-4108-88f5-f9c5889e48bf",
+  "state": "committed",
+  "createdAt": "2026-08-24T15:16:23.326Z",
+  "snapshots": [
+    {
+      "path": "Sprint/30/Analítico - Doc de módulo (docs-only).md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "705da81fa4e43fd361e69447180d32a8c56e1db09fa8ec17a6e3f5a5eb71a0f9",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33152,
+      "etag": "314937ec991d7b87cb7bc9b2126e1f8f8c2d3dcc55ebf10d965a353b8c950d5b",
+      "snapshot": "0.bin",
+      "committedEtag": "705da81fa4e43fd361e69447180d32a8c56e1db09fa8ec17a6e3f5a5eb71a0f9"
+    }
+  ],
+  "completedAt": "2026-08-24T15:16:23.333Z"
+}

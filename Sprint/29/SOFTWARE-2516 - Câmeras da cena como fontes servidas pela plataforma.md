@@ -9,10 +9,10 @@ clickup: https://app.clickup.com/t/86ak0ten8
 titulo: "[Back] Videowall externo: câmeras da cena como fontes servidas pela plataforma"
 frente: Videowall externo (NovaStar H9)
 tamanho: 3 pts
-status: criado em 14/08 na lista da Sprint 28, em backlog, depois da citação da cláusula 16.13 do contrato de Quito.
+status: "mergeado - PR #1756 em 20/08/2026, conferido no GitHub em 25/08"
 pr: "[#1756](https://github.com/atmanadmin/attlas-2026/pull/1756)"
 sprint: "[[Attlas - Sprint 29]]"
-atualizado: 2026-08-19
+atualizado: 2026-08-25
 ---
 
 # SOFTWARE-2516 - Câmeras da cena como fontes servidas pela plataforma
@@ -38,3 +38,7 @@ Prefixo próprio, nível próprio.
 ## Relacionados
 
 [[Attlas - Sprint 28]] · [[Videowall externo (NovaStar H9)]] · [[Cláusula 16.13 do contrato de Quito]]
+
+> [!info] Estado em 25/08 - alinhado com o GitHub
+> PR #1756 mergeada (última em 20/08/2026). Nenhuma PR desta task está aberta.
+> O `status` anterior dizia: "criado em 14/08 na lista da Sprint 28, em backlog, depois da citação da cláusula 16.13 do contrato de Quito.".

@@ -92,5 +92,5 @@ ssh ubuntu@10.1.1.120     # vm-1  (…121 vm-2, …122 vm-3, …123 vm-4, …124
 
 - O `~/.ssh/config` já tem `sumo` e `aws-attlas-26`. Os demais (VM do runner, VMs 1..7) entram **pela sumo** (não têm IP público).
 - Nota de segurança: este arquivo tem credenciais - manter só no vault local, não versionar em repo nem compartilhar.
-- O que roda nessas máquinas e como o cluster é montado: [[Kubernetes e infra]].
+- O que roda nessas máquinas e como o cluster é montado: repo `Developer/kubernetes` (o domínio Kubernetes saiu do vault em 24/08).
 - Topologia e higiene dos runners de CI (governor, reaper, disco, cache remoto): `docs/architecture/ci-remote-cache.md` no repo (fonte de verdade) e [[Observabilidade CI - plano (stack completa)]].

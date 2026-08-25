@@ -10,12 +10,12 @@ clickup: https://app.clickup.com/t/86ajc6v3u
 titulo: "[Back] API: revisar uso de systemId nas rotas"
 frente: API / Multi-tenant
 tamanho: a estimar
-status: implementado (fases 0-3 no PR, falta fase 4)
+status: "mergeado - PR #711 em 12/07/2026, conferido no GitHub em 25/08"
 branch: cameras/refactor/SOFTWARE-2007
 pr: https://github.com/atmanadmin/attlas-2026/pull/711
 spec: MOD-011-tenant-scoping
 sprint: "[[Attlas - Sprint 23]]"
-atualizado: 2026-07-12
+atualizado: 2026-08-25
 ---
 
 # Revisar uso de systemId em rotas de API
@@ -50,3 +50,7 @@ Auditar as rotas de API e garantir que todas que precisam de escopo por `systemI
 ## Riscos
 
 - ~~Rota que hoje não escopa pode estar sendo usada assim pelo front; mapear antes de fechar para não quebrar consumo existente.~~ Resolvido no levantamento: o `SystemIdInterceptor` do web-attlas manda o header `System-Id` em toda chamada `/api/*`, e as rotas de snapshot de saúde nem têm consumidor no front. Escopar não quebra consumo legítimo.
+
+> [!info] Estado em 25/08 - alinhado com o GitHub
+> PR #711 mergeada (última em 12/07/2026). Nenhuma PR desta task está aberta.
+> O `status` anterior dizia: "implementado (fases 0-3 no PR, falta fase 4)".

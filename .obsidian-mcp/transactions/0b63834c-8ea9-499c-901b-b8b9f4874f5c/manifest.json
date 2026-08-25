@@ -1,0 +1,21 @@
+{
+  "id": "0b63834c-8ea9-499c-901b-b8b9f4874f5c",
+  "state": "committed",
+  "createdAt": "2026-08-24T16:52:12.679Z",
+  "snapshots": [
+    {
+      "path": "Docs/ms-cameras/Streaming/Incidente - câmeras instáveis por perda de pacote RTP no caminho até a EC2.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "858f4b591d30a7a2c5092e37931ddd5c579e909f4f251e28d75d1ea6fd4158d3",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33152,
+      "etag": "eab418040702285575f611c872e0ca4e09e39d9730d5ca37c8d6b08e058d1a6f",
+      "snapshot": "0.bin",
+      "committedEtag": "858f4b591d30a7a2c5092e37931ddd5c579e909f4f251e28d75d1ea6fd4158d3"
+    }
+  ],
+  "completedAt": "2026-08-24T16:52:12.688Z"
+}

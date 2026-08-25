@@ -1,0 +1,21 @@
+{
+  "id": "b1e8b62a-3bce-49ad-9388-1234ff4d8fb5",
+  "state": "committed",
+  "createdAt": "2026-08-25T11:51:13.661Z",
+  "snapshots": [
+    {
+      "path": "Sprint/31/Analítico servidor - Contrato de ocupação.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "495ee605d12ef7dcaafda6d088c81f371a93d0fc6b1452bbce971dfb74e22e17",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33204,
+      "etag": "1cde769276392ec87ed15978b6265a6e0ab19e6bd690e298e858f1d311074ef5",
+      "snapshot": "0.bin",
+      "committedEtag": "495ee605d12ef7dcaafda6d088c81f371a93d0fc6b1452bbce971dfb74e22e17"
+    }
+  ],
+  "completedAt": "2026-08-25T11:51:13.670Z"
+}

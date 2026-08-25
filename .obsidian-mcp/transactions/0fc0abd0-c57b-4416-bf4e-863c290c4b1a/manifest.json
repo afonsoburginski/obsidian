@@ -1,0 +1,21 @@
+{
+  "id": "0fc0abd0-c57b-4416-bf4e-863c290c4b1a",
+  "state": "committed",
+  "createdAt": "2026-08-24T14:25:15.086Z",
+  "snapshots": [
+    {
+      "path": "Docs/ms-cameras/Cameras/Cameras - Requisitos e SLA.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "6d99682ff78f91bff0e9e1cc710fb0b51a61ec3fa58bb3f112c463612f84ebeb",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33204,
+      "etag": "e579bfcf715ecb07cb80254d486ab6571309c2fa8efa569c0e177c247ca30d04",
+      "snapshot": "0.bin",
+      "committedEtag": "6d99682ff78f91bff0e9e1cc710fb0b51a61ec3fa58bb3f112c463612f84ebeb"
+    }
+  ],
+  "completedAt": "2026-08-24T14:25:15.097Z"
+}

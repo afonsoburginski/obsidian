@@ -12,11 +12,12 @@ tamanho: Média
 pr: 577
 pr_url: https://github.com/atmanadmin/attlas-2026/pull/577
 branch: cameras/feat/SOFTWARE-1923
-status: OPEN
+status: "mergeado - PR #577 em 03/07/2026, conferido no GitHub em 25/08"
 clickup_status: code review
 merged: null
 clickup: https://app.clickup.com/t/86aj9aw6n
 sprint: "[[Attlas - Sprint 22]]"
+atualizado: 2026-08-25
 ---
 
 # SOFTWARE-1923 — Bitrate histórico + TTFF
@@ -58,3 +59,8 @@ Câmera aparecia "Operacional/Estável" enquanto o stream travava (dev.v2, SNL 1
 - [ ] **Filtro de busca por "uptime" na saúde de câmeras** — ainda pendente, vai entrar aqui na #577 (não é próxima sprint). Hoje só existe `uptimePercent` como métrica (1922/1924), não há filtro de listagem.
 - [x] Resolver merge conflict da #577 contra `develop` (feito 03/07: conflito em `PROJ-005-availability-window-sampler.md`, "índice único"; merge commitado `ad5fd9de2` e pushado; CI rodando).
 - [ ] Review + merge da PR #577 (aprovada por `neto-atman`; round do Claude resolvido).
+
+> [!info] Estado em 25/08 - alinhado com o GitHub
+> PR #577 mergeada (última em 03/07/2026). Nenhuma PR desta task está aberta.
+> O `status` anterior dizia: "OPEN".
+> O `clickup_status` continua "code review" - o ClickUp não é verificável daqui, conferir lá.

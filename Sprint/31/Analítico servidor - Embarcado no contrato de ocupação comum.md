@@ -1,0 +1,72 @@
+---
+tags:
+  - attlas
+  - task
+  - sprint-31
+  - analitico
+card: SOFTWARE-2694
+clickup: https://app.clickup.com/t/86ak5njba
+titulo: "[Back] Analítico embarcado publica no contrato de ocupação comum"
+frente: Analítico
+tamanho: 2 pts
+status: comprometido na Sprint 31 (planejada em 24/08). Card criado no ClickUp em 25/08.
+sprint: "[[Attlas - Sprint 31]]"
+atualizado: 2026-08-25
+---
+
+# Analítico servidor - Embarcado no contrato de ocupação comum
+
+O caminho embarcado passa a publicar a **mesma forma de ocupação** que o servidor de Virtual Loop. É o
+card que impede o domínio de rachar em dois pipelines com formatos diferentes.
+
+Herdeiro do card ClickUp `SOFTWARE-2388`, cuja PR (`#1354`) foi fechada em 24/08 no reescopo. A branch
+`cameras/docs/SOFTWARE-2388` ficou, então o texto da spec antiga serve de ponto de partida.
+
+## Por que é o oitavo card da pilha, e não da fila
+
+Duas razões, e a primeira é de processo: a regra da casa é **mínimo de 8 PRs por sprint**, e a semana
+fechava com sete. Este foi promovido da fila porque é a promoção mais barata que existia.
+
+A segunda é técnica: ele **depende só do contrato de ocupação** (card 3 da pilha), não da escada de
+código do serviço novo. Então pode ser revisado e mergeado no meio da semana, em paralelo, em vez de
+esperar a sexta. Numa semana cuja escada de quatro cards é o risco declarado, ter uma entrega que não
+depende dela é o que garante que a semana fecha com algo útil mesmo se o card 7 ceder.
+
+## O que muda no código
+
+Producer **novo pendurado no consumer que já existe**, não um consumer novo:
+
+- `apps/ms-cameras/src/analytics-realtime/device-stream.consumer.ts` já calcula o estado de ocupação por
+  região para emitir no WebSocket. O producer reusa esse estado, monta o evento de ocupação e publica no
+  mesmo tópico que o `ms-virtual-loop` usa.
+- **Fan-out por câmera real.** O device físico é cadastrado uma vez por sistema-tenant (6 hoje), e o
+  binding por `source_id` já resolve todas as linhas de `Camera` que compartilham aquele device. Um frame
+  vira N eventos de ocupação, um por câmera, não um só.
+- **Não toca o caminho WebSocket.** `camera:analytics:detection` e `camera:analytics:frame` seguem
+  idênticos, então o overlay ao vivo do frontend não tem regressão. É adição, não refactor.
+
+## O que este card deliberadamente não faz
+
+- Não traduz endereço de detector: isso é o card 7 (vínculo) mais o connector.
+- Não corrige o bug de `kind` invertido nem o furo do writer de `deviceSourceId`: os dois são cards da
+  [[Attlas - Sprint 30]] e precisam estar fechados antes desta semana.
+- Não persiste série: a ocupação é publicada, e quem persiste é o `ms-detector-history`, que já está
+  pronto para receber.
+
+## Dependência dura
+
+O contrato de ocupação (card 3) precisa estar mergeado. Sem `libs/contracts/src/lib/analytics/`, este
+card não tem forma para publicar - e a pasta é greenfield, não existe hoje.
+
+## DoD
+
+O caminho embarcado publica ocupação no contrato comum, com fan-out por tenant coberto por teste de
+integração, e o WebSocket comprovadamente inalterado. Com este card e o card 3 mergeados, embarcado e
+servidor ficam indistinguíveis para o consumidor da ocupação - que é o critério de convergência descrito
+em [[Analítico - Embarcado x Servidor]].
+
+## Encosta em
+
+- [[Analítico servidor - Contrato de ocupação]], que define a forma que este card usa.
+- [[Analítico - Embarcado x Servidor]], seção do contrato de ocupação, que é a razão de existir do card.
+- [[Attlas - Sprint 31]] e [[Attlas - Sprint 30]] (os cards de fundação que precisam vir antes).

@@ -1,0 +1,93 @@
+---
+tags:
+  - doc
+  - analitico
+atualizado: 2026-08-12
+servico: ms-virtual-loop, ms-atspm, ms-connector-virtual-loop, ms-dai (planejados, todos scaffold hoje)
+fonte: "Anotações sobre Analítico de vídeo.md" (notas do user, alinhamento de produto) + attlas-vl-atspm.pdf (squad de Visão Computacional, 10/08)
+---
+
+# Analítico - Requisitos e SLA
+
+Regras de negócio consolidadas das duas fontes de alinhamento, cruzadas com o código. Ainda não existe
+`docs/modules/analitico.md` no repo (o módulo Analítico é citado como dependência de Câmeras, Controladores
+e Modelo de Tráfego, mas nunca ganhou doc de contexto próprio), então os IDs abaixo são de trabalho, não
+oficiais. Detalhe de implementação em [[Analítico - Arquitetura e estratégias]].
+
+## Compatibilidade por arquitetura de câmera (fonte: PDF do squad de CV)
+
+Regra central: o que muda por tipo de câmera é **onde** cada capacidade pode rodar, nunca a capacidade em
+si.
+
+| Forma de execução | Não-Axis | Axis processador antigo (ARTPEC 7) | Axis processador novo (ARTPEC 8/9) |
+| --- | --- | --- | --- |
+| VL, app na câmera | Não | Sim | Sim |
+| VL, servidor analítico | Sim | Sim | Sim |
+| VL embutido no ATSPM, app ou servidor | Sim, só servidor | Não | Sim |
+| ATSPM, app na câmera | Não | Não | Sim |
+| ATSPM, servidor analítico | Sim | Sim | Sim |
+
+Duas restrições resumem a tabela: câmera não-Axis nunca executa app embarcado, tudo roda em servidor; e o
+processador antigo (ARTPEC 7) não executa o app ATSPM, então também não tem acesso ao VL embutido do ATSPM
+na própria câmera. No processador novo (ARTPEC 8/9), o app de VL e o app de ATSPM nunca rodam juntos na
+mesma câmera: para ter os dois, instala-se só o app ATSPM, que já entrega o VL embutido.
+
+**Estado no código**: nada disso é validado hoje. Nem `Camera` nem o catálogo de fabricantes têm campo de
+arquitetura de processador, e `capabilities.dai`/`capabilities.virtualLoop` no contrato da câmera são duas
+flags independentes, sem noção de exclusão mútua nem de onde a análise roda. A proposta de modelagem
+(enum de arquitetura + tabela de compatibilidade) está em [[Analítico - Arquitetura e estratégias]].
+
+## Regras de desenho de região (fonte: PDF do squad de CV)
+
+A forma que o operador pode desenhar depende do **motor de análise**, nunca de onde ele roda:
+
+| Motor | Região permitida |
+| --- | --- |
+| VL puro (app ou servidor VL) | Padronizada e pequena |
+| VL do ATSPM (app ou servidor ATSPM) | Pode ser grande, com uma linha |
+| Demais funcionalidades do ATSPM (Tracker, DAI, TPM) | Arbitrária |
+
+**Estado no código**: não implementado. A aba de Analíticos desenha o mesmo quadrilátero de quatro
+vértices para toda região, sem diferenciar motor, e não existe conceito de "linha" na geometria do
+contrato (`IObjectDetectionRegion.points` é só uma lista de pontos).
+
+## Regras de negócio das notas de alinhamento
+
+Legenda de estado: ✅ já satisfeito pelo código de hoje · 🟡 parcialmente satisfeito · ❌ nada existe ainda.
+
+| Regra                                               | Descrição                                                                                                                                                         | Estado                                                                              |
+| --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| Sub-produtos do ATSPM                               | Cada funcionalidade do pacote (Tracker, DAI, TPM, VL embutido) tratada como sub-produto endereçável, para exibição e possivelmente licenciamento                  | ❌                                                                                   |
+| Ativação de laço                                    | Toggle que ativa o Virtual Loop                                                                                                                                   | ✅ (campo `active` de `IVirtualLoopConfig`)                                          |
+| Associação grupo de movimento e grupo semafórico    | Relação 1 para 1 entre os dois, garantida no cadastro                                                                                                             | 🟡 (o campo existe, `trafficSignalGroupId`, mas a unicidade inversa não é validada) |
+| Um movimento pertence a um único grupo de movimento | -                                                                                                                                                                 | ✅ (relação de chave estrangeira já garante)                                         |
+| Snapshot da configuração do grupo semafórico        | Guardar como estava a configuração no momento de uma métrica calculada, não só o valor atual                                                                      | ❌                                                                                   |
+| Listar features e arquitetura da câmera no cadastro | Ver seção de compatibilidade acima                                                                                                                                | ❌                                                                                   |
+| Presets com snapshot de região                      | Câmera PTZ com mais de um preset guarda um conjunto de regiões por preset, e o operador desenha sobre o frame congelado daquele preset, não sobre o vídeo ao vivo | ❌                                                                                   |
+| Unicidade do analítico embarcado por câmera         | Não é possível cadastrar dois analíticos do mesmo tipo embarcados na mesma câmera; a exceção é o analítico servidor                                               | ❌ (não existe entidade "Analítico" persistida hoje, é tudo um campo livre)          |
+| Healthcheck da conexão analítico-câmera             | Estado de saúde consultável pelo operador, não só métrica de infraestrutura                                                                                       | 🟡 (só métrica Prometheus hoje)                                                     |
+| Atualização remota do app embarcado                 | OTA do app na câmera pelo próprio Attlas                                                                                                                          | ❌                                                                                   |
+| Contagem de detecções de incidente com dedup        | Um mesmo incidente pode aparecer mais de uma vez e precisa ser contado corretamente                                                                               | ❌                                                                                   |
+| Qualidade da imagem de evidência                    | Investigar se a baixa qualidade das imagens do histórico do Attlas 25 vem do lado Attlas ou do lado da câmera, antes de propor correção                           | Pesquisa, não é regra                                                               |
+
+### ACOM (cardinalidade e nomenclatura)
+
+Regras fechadas em alinhamento direto, porque as notas originais tinham duas frases que pareciam
+contraditórias:
+
+- Um analítico do tipo **servidor** (o mesmo que "desacoplado", na terminologia do user) pode alimentar
+  várias placas ACOM ao mesmo tempo. Isso é uma limitação do sistema hoje e deve ser mantida como regra.
+- Uma ACOM agrega até **quatro analíticos**, e cada analítico tem no máximo **quatro laços por câmera**.
+  As duas regras acima não competem: são dois eixos diferentes da mesma relação, uma de muitos para um
+  (analítico servidor para ACOMs), outra de um para até quatro (ACOM para analíticos).
+- A relação entre ACOM e Controlador é **1 para 1**, mas por um motivo físico diferente: é o cabeamento.
+  Uma placa ACOM está ligada a um único controlador. O que precisa sair é a possibilidade, que existe hoje
+  no contrato de associação, de uma mesma ACOM apontar para controladores diferentes.
+- A configuração de ACOM deve se chamar "Periféricos ACOM" na interface, e a lógica de saída (como o
+  contato seco se comporta) entra como configuração avançada dentro dessa tela, não como opção de
+  primeiro nível. Isso ainda não foi aplicado em nenhuma tela.
+
+## Ver também
+
+- [[Analítico]] · [[Analítico - Arquitetura e estratégias]] · [[Analítico - Fluxos]]
+- [[PTZ e presets - Requisitos e SLA]] (padrão de tabela de rastreabilidade usado aqui) · [[ms-cameras]]

@@ -10,9 +10,9 @@ clickup: https://app.clickup.com/t/86aju2wgv
 titulo: "[Front] Interseção na edição de câmera, cards de eventos e export do dashboard"
 frente: Câmeras (frontend)
 tamanho: a estimar
-status: code review — PR #1237 com 11 commits em 31/07. Review dividido: otavioassis pediu mudanças às 16:28, os achados foram aplicados no commit da altura do skeleton e do desabilitar, e danielfaria aprovou às 16:54. O veredito agregado do GitHub segue CHANGES_REQUESTED até o otavio reavaliar, e o job de Lint estava pending no último push.
+status: "mergeado - PR #1237 em 31/07/2026, conferido no GitHub em 25/08"
 sprint: "[[Attlas - Sprint 26]]"
-atualizado: 2026-07-31
+atualizado: 2026-08-25
 ---
 
 # Interseção na edição, cards de eventos e export do dashboard
@@ -178,3 +178,7 @@ cada spec; a única quebra encontrada foi colateral do meu `zDisabled` e já sai
   interseção.
 - Preencher a coluna free-text `Camera.intersection` que o side-detail lê (hoje sempre "—"). Backend.
 - Endpoint de export server-side, para o recorte passar do teto de 100 linhas por família.
+
+> [!info] Estado em 25/08 - alinhado com o GitHub
+> PR #1237 mergeada (última em 31/07/2026). Nenhuma PR desta task está aberta.
+> O `status` anterior dizia: "code review — PR #1237 com 11 commits em 31/07. Review dividido: otavioassis pediu mudanças às 16:28, os achados foram aplicados no commit da altura do skeleton e do desabilitar, e danielfaria aprovou às 16:54. O veredito agregado do GitHub segue CHANGES_REQUESTED até o otavio reavaliar, e o job de ".

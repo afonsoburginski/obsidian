@@ -1,0 +1,21 @@
+{
+  "id": "1aa2dca1-d5e3-4b08-b8b4-74b0d5e5926e",
+  "state": "committed",
+  "createdAt": "2026-08-25T11:34:55.584Z",
+  "snapshots": [
+    {
+      "path": "Sprint/32/SOFTWARE-2200 - Prova de campo do analítico em container.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "773a0f5c6e305d3b33d523017774bc44896a09ffd9aaba9fed757b5cad1494ed",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33152,
+      "etag": "dd4fec6d622203c3d10d5d506a84068945b2989c92fc83f1aa5234b4f6d562e1",
+      "snapshot": "0.bin",
+      "committedEtag": "773a0f5c6e305d3b33d523017774bc44896a09ffd9aaba9fed757b5cad1494ed"
+    }
+  ],
+  "completedAt": "2026-08-25T11:34:55.594Z"
+}

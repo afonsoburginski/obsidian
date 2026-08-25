@@ -7,10 +7,6 @@ tags:
 aliases:
   - "VMS"
   - "00 - VMS"
-  - "doc"
-  - "ms-cameras"
-  - "cameras"
-  - "vms"
   - "00 - Video Wall"
   - "Video Wall (ms-cameras)"
 atualizado: 2026-08-24
@@ -48,14 +44,14 @@ atualizado: 2026-08-24
 > - **Projeção nativa de cena pelo alvo VIDEOWALL** (`UC-051`/`INT-018`): PR [#1757](https://github.com/atmanadmin/attlas-2026/pull/1757) mergeada.
 > - **Comando de plano de resposta chega à parede**: despacho no motor de planos (`PROJ-004`,
 >   PR [#1760](https://github.com/atmanadmin/attlas-2026/pull/1760)) e eco/recusa idempotente no
->   `ms-cameras` (`PROJ-020`, PR [#1761](https://github.com/atmanadmin/attlas-2026/pull/1761)) — os dois
+>   `ms-cameras` (`PROJ-020`, PR [#1761](https://github.com/atmanadmin/attlas-2026/pull/1761)) - os dois
 >   mergeados em 19-21/08.
 > - **Refactor em três camadas do frontend do VMS** (página/store/serviço, como o módulo de alarmes) em
 >   PR [#1884](https://github.com/atmanadmin/attlas-2026/pull/1884), com review em andamento **(nota de
 >   24/08: já mergeada, ver callout acima)**.
 >
 > [!warning] Colisão de número achada em 22/08, ainda sem resolver
-> A PR #1884 (e a #1889, pelo título) citam **SOFTWARE-2519** como task — mas o ClickUp `SOFTWARE-2519`
+> A PR #1884 (e a #1889, pelo título) citam **SOFTWARE-2519** como task - mas o ClickUp `SOFTWARE-2519`
 > real (`86ak0tepc`) é **outra tarefa, já fechada**: "[Back] Videowall externo: consumidor do comando de
 > plano e echo idempotente" (PR #1761, seção acima). O trabalho de frontend de espelhar-com-destino e do
 > refactor em camadas parece não ter task própria vinculada, ou a task certa nunca foi identificada nas
@@ -174,7 +170,7 @@ código nunca ficarem em vocabulários diferentes.
 Ordem de merge obrigatória, 1438 depois 1439 depois 1440: o front só funciona em runtime com `/api/vms`
 já no gateway, e o teste unitário não pega essa dependência. O prefixo antigo saiu no card de limpeza
 [[SOFTWARE-2481 - Renome VMS - fase 3 remove o path legado|2481]] pelo commit `c9766ab960` (18/08,
-mergeado na develop) — **confirmado em 24/08**: o path `video-wall` não existe mais em
+mergeado na develop) - **confirmado em 24/08**: o path `video-wall` não existe mais em
 `cameras.controller.ts`, `video-wall.controller.ts` nem `docker/kong.yml`; só `/api/vms` responde. O
 achado de 22/08 que registrava a rota dupla como ainda viva ficou obsoleto antes mesmo de ser escrito
 nesta nota (ver callout "Estado em 24/08" no topo).
@@ -193,7 +189,7 @@ nesta nota (ver callout "Estado em 24/08" no topo).
 | Contrato de banda | `libs/contracts/src/lib/camera/i-bandwidth-monitoring-payload.ts`, `bandwidth-alert-level.enum.ts` |
 | Validação de cena | `libs/contracts/src/lib/camera/video-wall.validation.ts` |
 | Frontend (mosaico do VMS) | `apps/web-attlas/src/app/modules/videowall/` (mosaico, side panel, layout picker, rotação, dirty guard) |
-| Alvo videowall externo (backend) | `apps/ms-cameras/src/video-wall/targets/` (`novastar-h9/` client+codec+capabilities+mirror+projection, `processor/`, `state/` brilho e estado, `group/`, `browser-session/`, `playground/` emulação sem hardware) — ver [[Videowall externo (NovaStar H9)]] |
+| Alvo videowall externo (backend) | `apps/ms-cameras/src/video-wall/targets/` (`novastar-h9/` client+codec+capabilities+mirror+projection, `processor/`, `state/` brilho e estado, `group/`, `browser-session/`, `playground/` emulação sem hardware) - ver [[Videowall externo (NovaStar H9)]] |
 | Alvo videowall externo (front) | `apps/web-attlas/src/app/modules/videowall/display-target/` (dialog compartilhado: espelhar com slot picker, processador, brilho, estado) |
 | Despacho de plano → videowall | `libs/contracts/src/lib/execution-plans/videowall-command-action.type.ts`, `apps/ms-execution-plans/src/infrastructure/actions/videowall-actions.service.ts`, eco em `apps/ms-cameras/src/events/consumers/execution-plans-videowall-command/` |
 
@@ -201,7 +197,7 @@ nesta nota (ver callout "Estado em 24/08" no topo).
 
 Todas sob o prefixo global `/api`. Layouts e cenas escopados pela **organização do JWT**; o picker pelo
 **`system-id` do header**; a banda pelos `cameraIds` recebidos. Desde `c9766ab960` (18/08) só os
-caminhos `/api/vms` e `/api/cameras/vms` respondem — o path `/api/video-wall` não existe mais; os nomes
+caminhos `/api/vms` e `/api/cameras/vms` respondem - o path `/api/video-wall` não existe mais; os nomes
 de handler continuam `VideoWall*` de propósito, ver a seção do renome acima.
 
 | Método + rota | UC | Handler | O que faz |
@@ -253,14 +249,14 @@ escopado por **`systemId`** (header `system-id`, `@SystemId()`), não pelo JWT.
 - Contexto de negócio: `docs/modules/cameras.md` (3.2, 8.2, 9) - RF-VW-01 a RF-VW-20, RNF-CAM-04, RNF-CAM-12, RNF-CAM-14 a RNF-CAM-19.
 - Specs backend (mosaico): UC-014 (picker), UC-015 (layouts, SOFTWARE-1368), UC-016 (cenas, SOFTWARE-1370), UC-019 (banda), UC-030 (banda device-truth), UC-038 (série histórica de banda), PROJ-008 (coletor de banda provisionada), MOD-006, MOD-008.
 - Specs backend (videowall externo): `MOD-016-videowall-display-target` (nível Alto), UC-049 (cadastro), UC-050 (tomar/liberar), UC-051 (projetar/liberar cena), UC-052 (grupos/shares), UC-053 (atualizar processador), INT-014 (janelas/presets, `superseded`), INT-015 (brilho/estado), PROJ-019 (expira espelho órfão), PROJ-020 (eco do comando de plano); despacho em `PROJ-004` no `ms-execution-plans`.
-- Spec frontend: `apps/web-attlas/docs/modules/videowall/MOD-001-videowall.md` — **[DEFASADO 22/08]** o corpo ainda descreve o estado pré-renome (`/cameras/videowall`), não reconciliado com a SOFTWARE-2439; ver banner do próprio doc. Também não reflete, ainda em 24/08, os 3 fixes de UF-034 do callout do topo. Atômicas do mosaico: UF-001 a UF-022 (views, rotação, dirty guard UF-011). Atômicas do videowall externo: UF-023 a UF-034 (`UF-024` dialog compartilhado, `UF-029` brilho, `UF-031` espelhar com preview, `UF-034` escolher slot de destino).
+- Spec frontend: `apps/web-attlas/docs/modules/videowall/MOD-001-videowall.md` - **[DEFASADO 22/08]** o corpo ainda descreve o estado pré-renome (`/cameras/videowall`), não reconciliado com a SOFTWARE-2439; ver banner do próprio doc. Também não reflete, ainda em 24/08, os 3 fixes de UF-034 do callout do topo. Atômicas do mosaico: UF-001 a UF-022 (views, rotação, dirty guard UF-011). Atômicas do videowall externo: UF-023 a UF-034 (`UF-024` dialog compartilhado, `UF-029` brilho, `UF-031` espelhar com preview, `UF-034` escolher slot de destino).
 - BRs citadas no código: `BR-VWL-*`, `BR-VWS-*`, `BR-BW-*`, `BR-VWM-*` (mirror).
 
 ## Arquitetura do frontend: página vira casca, estado vira store própria (PR #1884)
 
 A PR [#1884](https://github.com/atmanadmin/attlas-2026/pull/1884) reorganizou `videowall.page.ts` de
 2023 para ~1180 linhas, aplicando ao módulo do VMS o padrão de camadas que o módulo de alarmes já usa
-no `web-attlas` — vale como referência para qualquer feature module grande do front, não só este.
+no `web-attlas` - vale como referência para qualquer feature module grande do front, não só este.
 **Confirmado mergeada na develop em 24/08** (commit de merge `ce32d03135`).
 
 - **Página** só reage a gesto do operador e orquestra os componentes filhos; não guarda estado de
@@ -272,21 +268,21 @@ no `web-attlas` — vale como referência para qualquer feature module grande do
   (diretório de câmeras do painel), `videowall-mosaic-scene.store.ts` (cena do mosaico),
   `videowall-immersive.store.ts` (modo imersivo), `videowall-ptz.store.ts` (PTZ) e
   `videowall-view-catalog.store.ts` (catálogo de visualizações). Cada uma tem o spec ao lado.
-- **Serviço** só fala HTTP — sem lógica de decisão, sem estado.
+- **Serviço** só fala HTTP - sem lógica de decisão, sem estado.
 - **Componentização**: cada aba/grade que antes era markup solto na página virou componente próprio
   (`videowall-cameras-tab`, `videowall-views-tab`, `videowall-responsive-grid`, `videowall-toolbar`),
   cada um levando junto a folha de estilo e o spec.
 
-**Achado do review desta PR, registrado em 22/08 (ver comentários do PR) — não reverificado nesta
+**Achado do review desta PR, registrado em 22/08 (ver comentários do PR) - não reverificado nesta
 revisão de 24/08 se foi corrigido antes do merge**: mover markup pra um componente novo sem mover 100%
 do CSS/spec junto foi o erro que se repetiu em três componentes extraídos (`videowall-responsive-grid`,
-`videowall-views-tab`, `videowall-cameras-tab` — este último com regressão real de paleta de cor).
+`videowall-views-tab`, `videowall-cameras-tab` - este último com regressão real de paleta de cor).
 Padrão a repetir em qualquer extração de componente futura: ao mover markup, conferir classe por classe
 que o CSS de origem tem equivalente na folha nova, e que o `.spec.ts` velho não ficou testando seletor
 que não existe mais no componente filho.
 
 O submódulo `display-target/` (painel físico externo, ver [[Videowall externo (NovaStar H9)]]) tem seus
-próprios services/components e não faz parte deste refactor de 6 stores — é onde vivem os 3 fixes de
+próprios services/components e não faz parte deste refactor de 6 stores - é onde vivem os 3 fixes de
 UF-034 do callout "Estado em 24/08" no topo desta nota (`videowall-stage.store.ts`,
 `videowall-mirror.service.ts`, `videowall-mirror-view.component.ts`, `videowall-panel-stage.component.ts`,
 `videowall-streams-table.component.ts`).

@@ -1,0 +1,21 @@
+{
+  "id": "697726f5-8709-4ae1-80aa-2d6abf7afe4e",
+  "state": "committed",
+  "createdAt": "2026-08-25T11:51:27.640Z",
+  "snapshots": [
+    {
+      "path": "Sprint/31/Analítico servidor - Embarcado no contrato de ocupação comum.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "f21b60e3a6b6da7d08848567a8d5891982f02aaa866798a4e32c22afbc33aaa1",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33204,
+      "etag": "32a07bf4ba3ad38e249a6a43c1011cac4b29e04359a4e1e6f8f9ab281aa0df28",
+      "snapshot": "0.bin",
+      "committedEtag": "f21b60e3a6b6da7d08848567a8d5891982f02aaa866798a4e32c22afbc33aaa1"
+    }
+  ],
+  "completedAt": "2026-08-25T11:51:27.647Z"
+}

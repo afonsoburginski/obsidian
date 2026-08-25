@@ -1,0 +1,21 @@
+{
+  "id": "ea8a83e7-c191-4bd0-b7ab-4b0a5e5edb92",
+  "state": "committed",
+  "createdAt": "2026-08-24T15:19:43.741Z",
+  "snapshots": [
+    {
+      "path": "Sprint/30/Attlas - Sprint 30.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "2101590103b87ac39c03f34bacfcae02677a5dfe2bf9e5fb71e39cd48b2118f4",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33152,
+      "etag": "04a6511a99401b7ccecbb5a873f27526ef651159208a4d86c261b59fb9b1d622",
+      "snapshot": "0.bin",
+      "committedEtag": "2101590103b87ac39c03f34bacfcae02677a5dfe2bf9e5fb71e39cd48b2118f4"
+    }
+  ],
+  "completedAt": "2026-08-24T15:19:43.749Z"
+}

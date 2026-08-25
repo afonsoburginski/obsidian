@@ -9,7 +9,7 @@ aliases:
   - "Sem prazo"
 tipo: índice
 escopo: cards meus (squad 2) sem data de entrega, espalhados por várias listas do ClickUp
-atualizado: 2026-08-24
+atualizado: 2026-08-25
 ---
 
 # Sem prazo (backlog)
@@ -35,76 +35,59 @@ semana, **in progress** = pegando agora.
 | [SOFTWARE-2315](https://app.clickup.com/t/86ajpntp1) | Comparativo Attlas 25x26: video wall | backlog | Sprint 27 (movido de Sprint 26 em 03/08) | [[SOFTWARE-2315 - Comparativo Attlas 25x26 - video wall]] |
 | [SOFTWARE-2316](https://app.clickup.com/t/86ajpntuq) | Comparativo Attlas 25x26: hardware e streaming | backlog | Sprint 27 (movido de Sprint 26 em 03/08) | [[SOFTWARE-2316 - Comparativo Attlas 25x26 - arquitetura de hardware e streaming]] |
 | ~~[SOFTWARE-2201](https://app.clickup.com/t/86ajj1zdg)~~ | Saiu do sem prazo em 10/08: virou o card da especificação do alvo videowall, submódulo do VMS, comprometido na Sprint 28 (nota movida para a pasta 28) | to do | Sprint 28 | [[SOFTWARE-2201 - Integração videowall externo (NovaStar H9)]] |
-| [SOFTWARE-2200](https://app.clickup.com/t/86ajj1xv4) | Prova de campo do analítico em container até a timeline do detector | backlog | Sprint 28 (voltou ao sem prazo em 10/08; em 24/08 entrou na fila do Bloco 1 da [[Attlas - Sprint 30]]) | [[SOFTWARE-2200 - Prova de campo do analítico em container]] |
+| ~~[SOFTWARE-2200](https://app.clickup.com/t/86ajj1xv4)~~ | Saiu do sem prazo em 25/08: comprometido na [[Attlas - Sprint 32]] (nota movida para a pasta 32), pontos (2) setados no ClickUp | backlog | Sprint 29 (confirmado por leitura direta em 25/08 - nunca chegou a mudar de lista) | [[SOFTWARE-2200 - Prova de campo do analítico em container]] |
 | [SOFTWARE-2134](https://app.clickup.com/t/86ajh9v5j) | Analítico de vídeo ao vivo (detecção + bounding boxes) | Closed em 31/07 (entregue em 15/07; resíduo no SOFTWARE-2391) | Sprint 23 | [[SOFTWARE-2134 - Analítico de vídeo ao vivo (detecção + bounding boxes)]] (fica na pasta 24) |
 | [SOFTWARE-2009](https://app.clickup.com/t/86ajc71x6) | ms-cameras: escalabilidade horizontal em Kubernetes | backlog | Sprint 28 (home movida da Sprint 23 em 10/08; sobra na lista da 27 removida) | [[SOFTWARE-2009 - Escalabilidade horizontal do ms-cameras em Kubernetes]] |
 | ~~[SOFTWARE-2005](https://app.clickup.com/t/86ajc6uzx)~~ | Saiu do sem prazo: rescopado em 31/07 para permissões nas rotas de câmeras (não transferido para o squad 3, ver decisão abaixo), movido para a lista da 27 em 03/08 | to do | Sprint 27 | [[SOFTWARE-2005 - Permissões nas rotas de câmeras - mapa das 86 rotas]] |
 | [SOFTWARE-1263](https://app.clickup.com/t/86ah842t3) | Unificar pastas do Prisma e Database | backlog, prioridade baixa | Quito | sem nota |
 | [SOFTWARE-1363](https://app.clickup.com/t/86aha9whm) | Plano de escalabilidade de streaming em HLS + Cloudflare | em teste (data de 11/05, vencida) | Quito | sem nota |
-| a criar no ClickUp | Saturação de banda de saída da EC2 sob carga concorrente de streaming (mediamtx) | backlog (sem card ainda) | achado em 24/08, investigação de instabilidade de câmeras relatada pelo usuário (causa raiz + oscilação WHEP↔HLS no videowall como achado relacionado) | [[Streaming - Saturação de banda de saída sob carga concorrente]] |
+| [SOFTWARE-2687](https://app.clickup.com/t/86ak5e33b) | Saturação de banda de saída da EC2 sob carga concorrente de streaming (mediamtx) | backlog | criado em 24/08 na lista da Sprint 30 (vigente); achado em 24/08, investigação de instabilidade de câmeras relatada pelo usuário (causa raiz + oscilação WHEP↔HLS no videowall como achado relacionado) | [[Streaming - Saturação de banda de saída sob carga concorrente]] |
+| [SOFTWARE-2686](https://app.clickup.com/t/86ak5e32x) | Suportar até 4 laços virtuais por câmera | backlog | criado em 24/08 na lista da Sprint 30 (vigente); requisito decidido nas notas de alinhamento, fora da Sprint 30/31 por tamanho. Pontos (5) setados em 25/08 | [[Analítico - Suportar até 4 laços virtuais por câmera]] |
 
-## Frente do analítico em container: saiu do sem prazo em 24/08
+## Frente do analítico em container: reescopada em 24/08, ClickUp reconciliado em 25/08
 
-> [!success] Deixou de ser sem-prazo: virou a frente única da [[Attlas - Sprint 30]] (24 a 30/08)
+> [!success] Deixou de ser sem-prazo: virou a frente do Analítico nas Sprints 30, 31 e 32
 > Esta seção registrava desde 10/08 que os 14 cards da frente tinham voltado ao sem prazo, depois de a
 > Sprint 27 fechar em 09/08 **sem nenhuma entrega** (semana de folga) e a Sprint 28 ir para o renome do
 > VMS e o videowall externo. Em **24/08** isso mudou: uma auditoria de código do domínio (embarcado,
-> servidor, ACOM/ATSPM) reorganizou o escopo e a frente virou a **frente única da Sprint 30**, com
-> planejamento próprio. E no fim do mesmo dia as **14 PRs foram fechadas** no reescopo: elas especificavam o caminho do dado
-> sobre uma fundação que não existe. As branches `cameras/docs/SOFTWARE-*` ficaram, então o conteúdo é
-> recuperável, e as decisões estruturais estão preservadas em [[Analítico - Arquitetura e estratégias]].
+> servidor, ACOM/ATSPM) reorganizou o escopo, e a frente virou a frente do Analítico nas
+> [[Attlas - Sprint 30]], [[Attlas - Sprint 31]] e [[Attlas - Sprint 32]]. No mesmo dia, as spec das 14
+> PRs foram declaradas **fechadas no vault** no reescopo - o que era verdade para as PRs no GitHub
+> (fechadas de fato), mas **não** para os cards de ClickUp que sustentavam elas.
 
-O que aconteceu com cada card:
+> [!danger] Correção de 25/08: os 12 cards de ClickUp NUNCA saíram da Sprint 29, e precisam ser deletados
+> Checagem direta contra a API do ClickUp em 25/08 achou os 12 cards (`SOFTWARE-2385` a `2392`, `2394` a
+> `2397`) ainda abertos, em `backlog`, todos na lista da **Sprint 29** (17/8-23/8) - nunca migrados pra
+> lista nenhuma, muito menos fechados. A nota anterior desta seção presumia que "fechar a PR" também
+> fechava o card do ClickUp; não fechava. **11 desses 12 são duplicados do trabalho que já foi recriado
+> como cards novos** nas Sprints 31/32 (mapa abaixo) e precisam ser deletados do ClickUp - ficaram
+> pendentes de permissão (classificador do Claude Code bloqueou `delete_task` em 25/08, tanto via MCP
+> quanto via REST). O 12º (`2392`, recorte da atuação via ACOM) **não tem substituto** e continua sem
+> prazo, não deve ser deletado.
 
-- **2389** (vínculo região da câmera para endereço de detector): **rescopado**. Não cria mais a
-  persistência de região sozinho - senta sobre a entidade Analítico que a Sprint 30 cria antes dele. Se a
-  ordem invertesse, nasceriam dois modelos de região.
-- **2391** (pendências do analítico embarcado): **absorvido** pelo card de writer do `deviceSourceId` da
-  Sprint 30, junto com a correção da terminologia morta `deviceAnalyticId` que a #1355 já traz escrita.
-- **2385, 2386 e 2387** (as três specs de fundação): a PR de cada um foi fechada, e o conteúdo renasce
-  como spec nova na [[Attlas - Sprint 31]] (cards 1 e 2 da pilha), agora escrita sobre a fundação que a
-  Sprint 30 entrega. O card de "destravar as specs" que existia no plano da manhã deixou de ter objeto.
-- **2394, 2395, 2396, 2397 e 2389**: viraram cards da [[Attlas - Sprint 31]], na pilha de 8 PRs.
-- **2388** (embarcado no contrato comum): promovido para a Sprint 31 como o terceiro card da pilha, para
-  a semana bater o mínimo de 8 PRs - é a promoção mais barata, porque depende só do contrato de ocupação.
-- **2390** (connector traduz endereço): **resolvido, não fica sem prazo.** As notas de alinhamento listam
-  só quatro serviços de analítico (`ms-cameras`, `ms-atspm`, `ms-dai`, `ms-virtual-loop`) - o
-  `ms-connector-virtual-loop` nunca devia ter existido como serviço à parte. O escopo do 2390 nasceu
-  resolvido dentro do `ms-virtual-loop`, como o oitavo card (topo da pilha) da
-  [[Attlas - Sprint 31]].
-- **2398** (escala) e **2200** (prova de campo): ficam aqui, sem prazo, porque só fazem sentido com a
-  cadeia da Sprint 31 de pé.
-- **2392** (recorte da atuação via ACOM): o assunto virou o bloco de ACOM, que segue sem prazo - vive no
-  `ms-controllers`, depende do squad de controladores e tem migration com backfill.
-- **Novo, sem card de origem na Sprint 27**: "4 laços por câmera" (notas de alinhamento) virou
-  [[Analítico - Suportar até 4 laços virtuais por câmera]]. É requisito decidido, não em aberto - ficou
-  no sem prazo por tamanho (redesenho de contrato), não por incerteza.
+O que aconteceu com cada card, e o card novo que o substitui:
 
-Status ClickUp de todos até 24/08: `backlog` na lista da Sprint 28. Os cards da Sprint 30 ainda não
-foram criados no ClickUp - a decisão de 24/08 foi planejar no vault primeiro, e os que já existem só
-precisam mudar de lista e de status.
+| Card antigo (Sprint 29, ainda aberto) | Substituto criado em 25/08 | Ação |
+| --- | --- | --- |
+| **2385** (como o vídeo chega no analítico) | [[Analítico servidor - ADR de alimentação e SPEC do ms-virtual-loop]] (`SOFTWARE-2692`) | deletar |
+| **2386** (spec do analítico em container) | `SOFTWARE-2692` (mesma spec, ADR + SPEC juntos) | deletar |
+| **2387** (spec do connector de laço virtual) | resolvido sem substituto - não existe mais serviço connector separado (ver [[Attlas - Sprint 31]]) | deletar |
+| **2388** (embarcado no contrato comum) | [[Analítico servidor - Embarcado no contrato de ocupação comum]] (`SOFTWARE-2694`) | deletar |
+| **2389** (vínculo região-detector) | [[Analítico servidor - Vínculo região para endereço de detector]] (`SOFTWARE-2698`), rescopado sobre a entidade da Sprint 30 | deletar |
+| **2390** (connector: ocupação vira evento) | [[Analítico servidor - Tradução de endereço e publicação do detector raw]] (`SOFTWARE-2699`) | deletar |
+| **2391** (pendências do embarcado) | absorvido pelo [[Analítico - Writer do deviceSourceId e higiene do embarcado]] (`SOFTWARE-2682`, Sprint 30) | deletar |
+| **2392** (recorte da atuação via ACOM) | sem substituto - segue sem prazo, vive no `ms-controllers` | **manter** |
+| **2394** (serviço, imagem, ingestão) | [[Analítico servidor - Serviço, imagem e ingestão do stream]] (`SOFTWARE-2695`) | deletar |
+| **2395** (detecção por frame) | [[Analítico servidor - Detecção de objetos por frame]] (`SOFTWARE-2696`) | deletar |
+| **2396** (laço virtual e ocupação) | [[Analítico servidor - Laço virtual e ocupação da região]] (`SOFTWARE-2697`) | deletar |
+| **2397** (publicar ocupação no Kafka) | [[Analítico servidor - Contrato de ocupação]] (`SOFTWARE-2693`) | deletar |
+| 2398 (escala) | mantido com o mesmo ID, comprometido na [[Attlas - Sprint 32]], pontos (2) setados | manter, sem ação |
+| 2200 (prova de campo) | mantido com o mesmo ID, comprometido na [[Attlas - Sprint 32]], pontos (2) setados | manter, sem ação |
 
-| Card | Título | PR (fechada em 24/08) | Nota |
-| --- | --- | --- | --- |
-| [SOFTWARE-2385](https://app.clickup.com/t/86aju62ta) | Como o vídeo chega no analítico em container | [#1342](https://github.com/atmanadmin/attlas-2026/pull/1342) | [[SOFTWARE-2385 - Alimentação de vídeo do analítico em container]] |
-| [SOFTWARE-2386](https://app.clickup.com/t/86aju62w6) | Especificação do analítico de vídeo em container | [#1343](https://github.com/atmanadmin/attlas-2026/pull/1343) | [[SOFTWARE-2386 - Especificação do analítico de vídeo em container]] |
-| [SOFTWARE-2387](https://app.clickup.com/t/86aju62yc) | Especificação do connector de laço virtual | [#1345](https://github.com/atmanadmin/attlas-2026/pull/1345) | [[SOFTWARE-2387 - Especificação do connector de laço virtual]] |
-| [SOFTWARE-2394](https://app.clickup.com/t/86aju7bxa) | Serviço, imagem e ingestão do stream | [#1346](https://github.com/atmanadmin/attlas-2026/pull/1346) | [[SOFTWARE-2394 - Analítico em container - serviço, imagem e ingestão]] |
-| [SOFTWARE-2395](https://app.clickup.com/t/86aju7c1v) | Detecção de objetos por frame | [#1347](https://github.com/atmanadmin/attlas-2026/pull/1347) | [[SOFTWARE-2395 - Analítico em container - detecção por frame]] |
-| [SOFTWARE-2396](https://app.clickup.com/t/86aju7c6y) | Laço virtual e ocupação da região | [#1349](https://github.com/atmanadmin/attlas-2026/pull/1349) | [[SOFTWARE-2396 - Analítico em container - laço virtual e ocupação]] |
-| [SOFTWARE-2397](https://app.clickup.com/t/86aju7cg8) | Publicar a ocupação no Kafka | [#1350](https://github.com/atmanadmin/attlas-2026/pull/1350) | [[SOFTWARE-2397 - Analítico em container - publicar ocupação no Kafka]] |
-| [SOFTWARE-2398](https://app.clickup.com/t/86aju7cjb) | Escala: câmeras por instância e distribuição | [#1351](https://github.com/atmanadmin/attlas-2026/pull/1351) | [[SOFTWARE-2398 - Escala do analítico - câmeras por instância]] |
-| [SOFTWARE-2389](https://app.clickup.com/t/86aju633j) | Vínculo região da câmera para endereço de detector | [#1352](https://github.com/atmanadmin/attlas-2026/pull/1352) | [[SOFTWARE-2389 - Vínculo região da câmera para endereço de detector]] |
-| [SOFTWARE-2390](https://app.clickup.com/t/86aju635n) | Connector: ocupação vira evento de detector | [#1353](https://github.com/atmanadmin/attlas-2026/pull/1353) | [[SOFTWARE-2390 - Connector de laço virtual - ocupação vira evento de detector]] |
-| [SOFTWARE-2388](https://app.clickup.com/t/86aju631k) | Analítico embarcado no mesmo contrato de ocupação | [#1354](https://github.com/atmanadmin/attlas-2026/pull/1354) | [[SOFTWARE-2388 - Analítico embarcado no mesmo contrato de ocupação]] |
-| [SOFTWARE-2391](https://app.clickup.com/t/86aju63bv) | Pendências do analítico embarcado | [#1355](https://github.com/atmanadmin/attlas-2026/pull/1355) | [[SOFTWARE-2391 - Pendências do analítico embarcado]] |
-| [SOFTWARE-2392](https://app.clickup.com/t/86aju63t9) | Recorte da atuação via ACOM | [#1356](https://github.com/atmanadmin/attlas-2026/pull/1356) | [[SOFTWARE-2392 - Recorte da atuação via ACOM (docs-only)]] |
-| [SOFTWARE-2200](https://app.clickup.com/t/86ajj1xv4) | Prova de campo até a timeline do detector | [#1357](https://github.com/atmanadmin/attlas-2026/pull/1357) | [[SOFTWARE-2200 - Prova de campo do analítico em container]] |
-
-O passo barato que esta nota vinha propondo - tirar de draft as três PRs de especificação na ordem 2385,
-2386 e 2387, porque review não consome dia de implementação - **virou card comprometido** na
-[[Attlas - Sprint 30]], em paralelo com a implementação da semana. Contexto do planejamento anterior em
-[[Attlas - Sprint 27]]; o plano vigente é o da Sprint 30.
+Os 10 cards comprometidos da Sprint 30 (`2676` a `2685`) e os 8 cards novos da Sprint 31 (`2692` a
+`2699`) já existem no ClickUp, todos na lista da **Sprint 30** (única lista vigente em 25/08 - Sprint 31 e
+32 ainda não têm lista própria, por decisão do user), tag `squad 2`, com pontos setados. Ver
+[[Attlas - Sprint 30]], [[Attlas - Sprint 31]] e [[Attlas - Sprint 32]] para o detalhe de cada um.
 
 ## Decisão por card (refino de 31/07)
 
@@ -178,13 +161,14 @@ existe métrica por câmera para sustentar um comparativo honesto. **03/08**: a 
 encerrou, então os três foram movidos para a lista da Sprint 27 no ClickUp, mantidos em `backlog` —
 não entram no foco único do analítico desta semana.
 
-### 2200: virou a frente única da Sprint 27
+### 2200: virou a frente única da Sprint 27, hoje comprometido na Sprint 32
 
 Atualizado no replanejamento do fim do dia 31/07. O 2200 não entrou como spec na fila: o analítico
 desacoplado virou **a** frente da semana, com 6 cards comprometidos (2385 a 2390) cobrindo alimentação de
 vídeo, motor fora da câmera, spec do connector, ocupação normalizada, vínculo de detector e publicação do
 evento raw. O card 2200 foi movido para a lista da 27 e reescopado como a prova ponta a ponta, com a
-atuação no controlador saindo para o 2392. Ver [[Attlas - Sprint 27]].
+atuação no controlador saindo para o 2392. Ver [[Attlas - Sprint 27]]. Em 25/08, virou card comprometido
+da [[Attlas - Sprint 32]] - ver a seção "Frente do analítico em container" acima.
 
 ### 2201: saiu do sem prazo em 10/08, comprometido na Sprint 28
 
@@ -198,7 +182,8 @@ retrabalho, como previsto.
 ### 2134: card defasado no ClickUp
 
 Entregue e validado ao vivo em 15/07 (PR #790), mas o card segue em `to do` com prioridade alta. O que
-sobra é higiene de doc e dois defeitos pequenos, e virou o SOFTWARE-2391, na fila da Sprint 27.
+sobra é higiene de doc e dois defeitos pequenos, e virou o SOFTWARE-2391, na fila da Sprint 27 (2391
+segue aberto na Sprint 29 e é um dos 11 candidatos a deleção - ver seção acima).
 
 ## Candidatos a card (trabalho sem card hoje)
 

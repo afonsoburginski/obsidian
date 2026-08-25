@@ -1,0 +1,18 @@
+{
+  "id": "0ed7b21c-6ccd-4967-b1a5-68b4153bbafb",
+  "state": "committed",
+  "createdAt": "2026-08-24T14:28:54.152Z",
+  "snapshots": [
+    {
+      "path": "Docs/ms-cameras/Dashboard de câmeras/Dashboard de câmeras - Fluxos.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "b800b90649b407b8a95fe2f2015922ba1638d28d7a85e2aa4da2885a5e0b9d84",
+      "recoverable": true,
+      "existed": false,
+      "committedEtag": "b800b90649b407b8a95fe2f2015922ba1638d28d7a85e2aa4da2885a5e0b9d84"
+    }
+  ],
+  "completedAt": "2026-08-24T14:28:54.163Z"
+}

@@ -1,0 +1,18 @@
+{
+  "id": "5fde41f1-dbad-43f3-9a42-1473730595fd",
+  "state": "committed",
+  "createdAt": "2026-08-24T15:14:15.935Z",
+  "snapshots": [
+    {
+      "path": "Sprint/30/Analítico - Entidade, persistência de região e unicidade.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "07564194f154848953c1a1bf68e4448b8dc1f865d7b05ae917080e9a30811309",
+      "recoverable": true,
+      "existed": false,
+      "committedEtag": "07564194f154848953c1a1bf68e4448b8dc1f865d7b05ae917080e9a30811309"
+    }
+  ],
+  "completedAt": "2026-08-24T15:14:15.945Z"
+}

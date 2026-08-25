@@ -1,0 +1,21 @@
+{
+  "id": "71296699-d833-4a62-9e42-690f4dc2931f",
+  "state": "committed",
+  "createdAt": "2026-08-24T16:56:44.767Z",
+  "snapshots": [
+    {
+      "path": "Docs/ms-cameras/Streaming/Plano - Banda por câmera (bitrate configurado ONVIF + VAPIX).md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "7d160bc9c5e5c30f2e7a228af870050f9a55151d09c3a6715ae8a5ea6d312453",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33204,
+      "etag": "dd23d5a66048552efb40fc19ed05a33fc5da78c03123123813eec5bf4c19f36f",
+      "snapshot": "0.bin",
+      "committedEtag": "7d160bc9c5e5c30f2e7a228af870050f9a55151d09c3a6715ae8a5ea6d312453"
+    }
+  ],
+  "completedAt": "2026-08-24T16:56:44.774Z"
+}

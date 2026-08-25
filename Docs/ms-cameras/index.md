@@ -16,10 +16,10 @@ fonte: apps/ms-cameras
 Microsserviço NestJS **híbrido** (REST + consumidor Kafka + Socket.IO) do monorepo Attlas. É o **único backend do módulo Câmeras (CCTV)**. Diagrama geral: [[00 - Geral - Módulo Cameras.excalidraw|canvas]].
 
 > [!abstract] Domínio
-> Centraliza o ciclo de vida das câmeras IP da rede de trânsito: cadastro técnico, monitoramento de conectividade/saúde, controle PTZ, streaming ao vivo + VMS (mosaico, ex Video Wall), e log de eventos/incidentes. A câmera é um **dispositivo de captura e transmissão, não de armazenamento** - gravação é do VMS externo; a analítica de vídeo é encaminhada ao módulo de Analytics. Integra o hardware **diretamente** (ONVIF obrigatório, RTSP, VAPIX/Axis) - não há connector dedicado: o serviço é ao mesmo tempo serviço de negócio e ponto de integração de hardware.
+> Centraliza o ciclo de vida das câmeras IP da rede de trânsito: cadastro técnico, monitoramento de conectividade/saúde, controle PTZ, streaming ao vivo + VMS (mosaico, ex Video Wall), e log de eventos/incidentes. A câmera é um **dispositivo de captura e transmissão, não de armazenamento** - gravação é do NVR externo; a analítica de vídeo pertence ao módulo [[Analítico]]. Integra o hardware **diretamente** (ONVIF, RTSP, VAPIX/Axis, ISAPI/Hikvision) - não há connector dedicado: o serviço é ao mesmo tempo serviço de negócio e ponto de integração de hardware.
 > Fontes de verdade no repo: `apps/ms-cameras/docs/SPEC.md` (spec técnica) e `docs/modules/cameras.md` (contexto de negócio, RF-*/RNF-*).
 
-Bootstrap: `apps/ms-cameras/src/main.ts` (prefixo global `/api`, `ValidationPipe` + `ClassSerializerInterceptor` + `AllExceptionsFilter`; adapter Redis do Socket.IO ligado antes do WS subir (CROSS-043); microserviço Kafka só conecta com `KAFKA_BROKERS`). Wiring: `apps/ms-cameras/src/app.module.ts`.
+Bootstrap: `apps/ms-cameras/src/main.ts` (prefixo global `/api`, `ValidationPipe` + `ClassSerializerInterceptor` + `AllExceptionsFilter`; adapter Redis do Socket.IO ligado antes do WS subir; microserviço Kafka só conecta com `KAFKA_BROKERS`). Wiring: `apps/ms-cameras/src/app.module.ts`.
 
 ## Mapa de domínios
 
@@ -28,30 +28,34 @@ Cada domínio é uma pasta em `Docs/ms-cameras/` com notas ricas (visão geral �
 | Domínio | O que faz | Doc | Código |
 | --- | --- | --- | --- |
 | Cameras (cadastro e ciclo de vida) | cadastro, listagem, update, replace, soft-delete, 4 estados, fabricantes | [[Cameras]] | `src/cameras/` |
-| Integração com dispositivo | fala com o hardware: ONVIF, RTSP, VAPIX (drivers + estratégias) | [[Integração com dispositivo]] | `src/hardware/` |
+| Integração com dispositivo | fala com o hardware: ONVIF, RTSP, VAPIX, ISAPI (drivers + estratégias) | [[Integração com dispositivo]] | `src/hardware/` |
 | Saúde e monitoramento | healthcheck 24/7 (heartbeat, evaluator, janelas 5 min, rollup 90d, métricas) **+** push de status em tempo real (Socket.IO/Redis) | [[Saúde e monitoramento]] | `src/health/`, `src/cameras/realtime/` |
 | Streaming (HLS + WebRTC) | ffmpeg → mediamtx → WHEP/LL-HLS, codecs, fallbacks, diagnóstico, TTFF | [[Streaming]] | `src/streaming/` |
 | PTZ e presets | comandos PTZ, presets nomeados, automações/tours | [[PTZ e presets]] | `src/cameras/` |
 | VMS, ex Video Wall (+ banda) | layouts e cenas, ativação, escopo por org, monitoramento de banda | [[VMS]] | `src/video-wall/`, `src/dashboard/bandwidth/` |
-| Eventos, incidentes e alarmes | log de eventos, correlação (incidentes), emissão de alarme | [[Eventos, incidentes e alarmes]] | `src/cameras/` |
+| Dashboard de câmeras | agregação read-time multi-câmera por período/escopo (KPIs, gauge e distribuição de conectividade, tabelas de intermitência/latência/degradação, donuts, heatmap, mapa, uptime, banda) + push realtime por widget (WS) | [[Dashboard de câmeras]] | `src/dashboard/` |
+| Eventos, incidentes e alarmes | log de eventos, correlação (incidentes), emissão de alarme, observações e reporte manual | [[Eventos, incidentes e alarmes]] | `src/events/` (domínio próprio desde 11/07) |
 
 O módulo [[Analítico]] (Virtual Loop, ATSPM) **não é domínio deste serviço**: é módulo próprio, dependente
 de Câmeras. Hoje o caminho embarcado dele mora provisoriamente em `src/analytics-realtime/`, dentro deste
-serviço, só porque os serviços dedicados ainda não saíram do scaffold.
+serviço, só porque os serviços dedicados ainda não saíram do scaffold. Plano da frente:
+[[Attlas - Sprint 30]].
 
 Canvases por domínio em [[#Diagramas]].
 
 ## Superfície HTTP (resumo)
 
 Prefixo `/api`. JWT no Kong, exceto `@Public()` (streaming/hls/thumbnail - ver [[Streaming]]); o gateway
-WebSocket de streaming (`cameras-stream`) também passou a exigir JWT em `camera.join`/`camera.leave`
-desde a correção de 24/08 - achado no código, sem PR/data identificada.
+WebSocket de streaming (`cameras-stream`) também exige JWT em `camera.join`/`camera.leave`. O código é
+assim desde antes; o que mudou em 24/08 foi a documentação, que ainda o descrevia como público.
 
-- **Cameras** (`cameras`): `POST /cameras` (batch), `GET /cameras` (filtros topologia/tenant), `GET /cameras/vms`, `GET /cameras/incidents[/:id]`, `GET /cameras/bulk-template`, `GET /cameras/manufacturers[/:id/models]`, `GET /cameras/:id/thumbnail` (público), `GET/PATCH/DELETE /cameras/:id`, `GET /cameras/:id/status`, `GET /cameras/:id/events[/:eventId]`, `PATCH /cameras/:id/{safe-mode,state}`, `POST /cameras/:id/replace`, `POST /cameras/{validate-credentials,validate,batch-get}`, PTZ (`/ptz`, `/ptz/absolute`, `/ptz/continuous`, `/ptz/stop`), presets (`/presets…`), automações (`/automations…`).
+- **Cameras** (`cameras`): `POST /cameras` (batch), `GET /cameras` (filtros topologia/tenant), `GET /cameras/vms`, `GET /cameras/bulk-template`, `GET /cameras/manufacturers[/:id/models]`, `GET /cameras/:id/thumbnail` (público), `GET/PATCH/DELETE /cameras/:id`, `GET /cameras/:id/status`, `PATCH /cameras/:id/{safe-mode,state}`, `POST /cameras/:id/replace`, `PUT /cameras/locations` (lote), `POST /cameras/{validate-credentials,validate,batch-get}`, `GET /cameras/:id/media-profiles` (UC-031), PTZ (`/ptz`, `/ptz/absolute`, `/ptz/continuous`, `/ptz/stop`), presets (`/presets…`), automações (`/automations…`).
+- **Eventos e incidentes** (ver [[Eventos, incidentes e alarmes]]): leitura por câmera (`GET /cameras/:id/events[/:eventId]`) e a superfície cross-câmera (`GET /cameras/events`, `/events/stats`, `/events/:eventId`, `/events/:eventId/{timeline,recurrence,observations}`, `POST /events/:eventId/observations`, `POST /events/:eventId/report`), mais `GET /cameras/incidents[/:id]`.
 - **Health**: `GET /cameras/health[/:cameraId]` (snapshot), `GET /cameras/:id/health?period=7d|30d|90d` (métricas, UC-026).
 - **Streaming** (público): `GET/DELETE /cameras/:id/hls`, `GET /cameras/:id/hls/:quality/index.m3u8` + `/:segment`, `GET /cameras/:id/stream-diagnostics` (UC-027).
 - **VMS** (`vms` - o path legado `video-wall` foi removido em `c9766ab960`, 18/08, confirmado em 24/08): `GET /vms/layouts`, `GET/POST /vms/scenes`, `GET/PATCH/DELETE /vms/scenes/:id`, `POST /vms/scenes/:id/{activate,deactivate}`.
-- **Dashboard**: `GET /dashboard/bandwidth?cameraIds=`.
+- **Dashboard** (16 rotas GET + 1 canal WS, ver [[Dashboard de câmeras]]): `GET /dashboard/bandwidth?cameraIds=` e os widgets de conectividade, distribuição, heatmap, mapa, uptime e banda.
+- **Analítico embarcado** (módulo [[Analítico]], hospedado aqui): `GET/PUT /cameras/:id/object-detection-regions`, `GET/PUT /cameras/:id/virtual-loops` - **os quatro sem nenhuma spec**, ver [[Attlas - Sprint 30]].
 
 ## CQRS
 
@@ -63,9 +67,10 @@ Constantes: `libs/contracts/src/lib/camera/cameras-topics.constant.ts` (+ `alarm
 
 | Direção | Tópico | Onde |
 | --- | --- | --- |
-| Consome | `attlas.cameras.event-ingest` | `cameras/events/camera-event-ingest.listener.ts` (UC-019) |
+| Consome | `attlas.cameras.event-ingest` | `events/recording/` (UC-019) |
 | Consome | `attlas.cameras.event-logged` | fan-out: `correlate-events` **e** `emit-alarm` |
 | Consome | `attlas.cameras.incident-created` | `emit-alarm.listener.ts` |
+| Consome | `traffic-motion-detection.detections` | `analytics-realtime/device-stream.consumer.ts`, **broker do device**, fora do Kafka da plataforma (ver [[Analítico]]) |
 | Consome (planejado) | `attlas.emergencies.ptz-command` | declarado no SPEC; **sem `@EventPattern` ainda** |
 | Produz | `attlas.cameras.event-logged` | `RecordCameraEventService` (key=cameraId) |
 | Produz | `attlas.cameras.incident-created` | `CorrelateEventsService` |
@@ -77,19 +82,21 @@ Constantes: `libs/contracts/src/lib/camera/cameras-topics.constant.ts` (+ `alarm
 
 Schema multi-arquivo em `src/database/schema/`; client gerado em `database/generated/prisma`.
 
-- **Núcleo:** `Camera` (hub), `CameraCredential` (1:1 ONVIF/VAPIX), `CameraManufacturer` (catálogo, `code` único), `CameraStreamProfile` (perfil por papel PRIMARY/SECONDARY/TERTIARY).
+- **Núcleo:** `Camera` (hub), `CameraCredential` (1:1 ONVIF/VAPIX), `CameraManufacturer` (catálogo, `code` único), `CameraStreamProfile` (perfil por papel PRIMARY/SECONDARY/TERTIARY), `CameraMediaProfile` (inventário descoberto no device, UC-031).
 - **Saúde:** `CameraOperationalSnapshot` (1:1 snapshot atual), `CameraHeartbeatHistory` (série de pings), `CameraAvailabilityWindow` (janela 5 min, único `(cameraId, windowStart)`), `CameraAvailabilityDailyRollup` (dia, único `(cameraId, date)`, horizonte 90d), `CameraTtffSample` (abertura de stream), `CameraBitrateSample` (bitrate medido 24/7 por device físico, PROJ-006).
-- **Eventos:** `CameraEventLog`, `CameraIncident`, `CameraIncidentEvent` (único `(incidentId, eventLogId)` = idempotência).
+- **Eventos:** `CameraEventLog`, `CameraEventObservation` (thread de dois níveis), `CameraIncident`, `CameraIncidentEvent` (único `(incidentId, eventLogId)` = idempotência).
 - **PTZ:** `CameraPtzPreset`, `CameraPtzTour`, `CameraPtzTourStep`.
 - **VMS (ex Video Wall):** `VideoWallLayout`, `VideoWallScene`, `VideoWallSceneCell`.
+- **Analítico:** nenhuma tabela. A geometria de região e o vínculo com o analítico embarcado vivem no device (proxy HTTP) e num campo `Json` livre da `Camera` - é lacuna conhecida e é a pedra angular da [[Attlas - Sprint 30]].
 
 ## Integrações externas
 
 - **ms-traffic-model** (HTTP) - `cameras/clients/traffic-model-topology.http-client.ts`: resolve node ids sob uma topologia para filtrar câmeras por área/subárea (UC-025); fail-closed 502.
 - **ms-organization** (HTTP) - `cameras/clients/permissions.client.ts`: `assertAllowed('cameras:ptz')` antes de todo PTZ.
-- **Hardware** - ONVIF (`hardware/drivers/onvif/`), VAPIX/Axis (`cameras/utils/vapix-*`, `health/utils/digest-auth`), estratégias RTSP/ONVIF (`hardware/communication/`).
+- **Hardware** - ONVIF (`hardware/drivers/onvif/`), VAPIX/Axis (`cameras/utils/vapix-*`, `health/utils/digest-auth`), ISAPI/Hikvision (INT-018/019/020), estratégias RTSP/ONVIF (`hardware/communication/`).
 - **mediamtx** - servidor de mídia (`streaming/services/mediamtx.client.ts`, `ffmpeg-session.service.ts`).
-- **Redis** - cache de status (`redis/redis.module.ts`, `camera:status:<id>`) + adapter do Socket.IO para escala horizontal (CROSS-043, `main.ts`).
+- **Device do analítico embarcado** - ACAP Axis "ATMAN Traffic Edge" via proxy HTTP digest (`analytics-realtime/`), ver [[Analítico]].
+- **Redis** - cache de status (`redis/redis.module.ts`, `camera:status:<id>`) + adapter do Socket.IO para escala horizontal (`main.ts`).
 
 ## Diagramas
 

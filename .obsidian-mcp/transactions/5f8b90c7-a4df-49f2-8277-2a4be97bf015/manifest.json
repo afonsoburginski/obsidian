@@ -1,0 +1,21 @@
+{
+  "id": "5f8b90c7-a4df-49f2-8277-2a4be97bf015",
+  "state": "committed",
+  "createdAt": "2026-08-25T11:24:19.853Z",
+  "snapshots": [
+    {
+      "path": "Sprint/30/Analítico - Compatibilidade por arquitetura de câmera.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "d6c9c725656293f0e37026e5511d123d34425f91fffa442e3eebba179c1d2249",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33152,
+      "etag": "acbdf30bdb227f5292724235364aeadb7296a9214ae5fdfb0e4b19ae788cc828",
+      "snapshot": "0.bin",
+      "committedEtag": "d6c9c725656293f0e37026e5511d123d34425f91fffa442e3eebba179c1d2249"
+    }
+  ],
+  "completedAt": "2026-08-25T11:24:19.861Z"
+}

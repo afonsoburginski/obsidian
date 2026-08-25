@@ -1,0 +1,21 @@
+{
+  "id": "a6b571b0-ed5a-474a-bf28-22d9cd27d45e",
+  "state": "committed",
+  "createdAt": "2026-08-24T14:32:10.746Z",
+  "snapshots": [
+    {
+      "path": "Docs/ms-cameras/Eventos, incidentes e alarmes/index.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "867ef948bc8a6cde09560079c09600c2fb90648a3b67430b8b3952e50fd6c36d",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33204,
+      "etag": "3142c3271fd96b2ef18c262e766fe35af239366b12375e4cd28b6556923d4b63",
+      "snapshot": "0.bin",
+      "committedEtag": "867ef948bc8a6cde09560079c09600c2fb90648a3b67430b8b3952e50fd6c36d"
+    }
+  ],
+  "completedAt": "2026-08-24T14:32:10.752Z"
+}

@@ -1,0 +1,21 @@
+{
+  "id": "614ac97e-6a1f-498a-8cc7-e352498f60c1",
+  "state": "committed",
+  "createdAt": "2026-08-24T14:28:02.501Z",
+  "snapshots": [
+    {
+      "path": "Docs/ms-cameras/Eventos, incidentes e alarmes/Eventos, incidentes e alarmes - Fluxos.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "4c12b8ec100c5106f44503ff77a7a236d6a68fc62988bf20c5dba675c35e86f0",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33204,
+      "etag": "0202855bd007a32d0f9107852917986d650e9248256b19f4131113662248897a",
+      "snapshot": "0.bin",
+      "committedEtag": "4c12b8ec100c5106f44503ff77a7a236d6a68fc62988bf20c5dba675c35e86f0"
+    }
+  ],
+  "completedAt": "2026-08-24T14:28:02.505Z"
+}

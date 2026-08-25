@@ -1,0 +1,222 @@
+---
+tags:
+  - doc
+  - analitico
+atualizado: 2026-08-24
+servico: ms-virtual-loop, ms-connector-virtual-loop, ms-atspm, ms-dai (planejados, todos scaffold hoje)
+fonte: código atual (revisado em 24/08 contra apps/ms-cameras/src/analytics-realtime/) + 14 PRs em draft da Sprint 27 (#1342 a #1357) + notas do user + PDF do squad de CV
+---
+
+# Analítico - Arquitetura e estratégias
+
+Parte do [[Analítico]]. Diagnóstico do que existe de fato, o achado de uma rodada de planejamento anterior
+que nunca foi mergeada, e a proposta de topologia de serviço.
+
+> [!info] Estado em 24/08
+> `git log` em `apps/ms-cameras/src/analytics-realtime/` não mostra nenhum commit desde 12/08 - o
+> código do caminho embarcado não mudou desde a última revisão desta nota. As PRs em draft da Sprint
+> 27 checadas via `gh pr view` (12 das 14, incluindo a #1355 - fix de terminologia da `UF-033`) seguem
+> todas `OPEN` + `draft`: nada mergeou. A seção "Caminho embarcado" abaixo ganhou o detalhe de
+> implementação que faltava (gateway WS, consumer Kafka, resolver de endpoint, controller de regiões)
+> para cobrir o que o plano de documentação original pedia - não é mudança de comportamento, é
+> preenchimento de lacuna descritiva.
+
+## O que existe de fato hoje
+
+### Caminho embarcado (`ms-cameras/src/analytics-realtime/`)
+
+É o único lugar do monorepo onde o analítico de vídeo roda de verdade. O device é o aplicativo Axis "ATMAN
+Traffic Edge ATSPM", falado em `/local/atman_traffic_edge_atspm/api`. O serviço não persiste nada em
+banco: cada leitura e escrita de região ou configuração de laço é um proxy HTTP com autenticação digest
+direto pra câmera (`GET/PUT /regions`, `PUT /config`). Um WebSocket (namespace `/cameras-analytics`)
+retransmite a detecção ao vivo pro front, e um consumidor Kafka lê o tópico `traffic-motion-detection.detections`,
+publicado pelo próprio device num broker separado do resto da plataforma - esse tópico nunca foi
+catalogado nas constantes centrais de tópicos do sistema.
+
+O vínculo entre câmera e analítico é hoje só um campo `Json` livre (`analyticsCapabilities`), de onde o
+código lê por convenção a chave `deviceSourceId`. Não existe entidade "Analítico" persistida, nem coluna
+de arquitetura de processador na câmera ou no fabricante.
+
+#### Gateway WS (`camera-analytics.gateway.ts`)
+
+Namespace `cameras-analytics`, path `/api/cameras/analytics/realtime` (3 segmentos, de propósito - escapa
+o regex de rota-por-id do Kong). Autenticação por JWT via `WsAuthGuard`
+(`apps/ms-cameras/src/cameras/realtime/guards/ws-auth.guard.ts`) - **confirmado presente**: é o MESMO
+guard que o gateway de streaming usa (handshake por header `Authorization` ou
+`socket.handshake.auth.token`, nunca query string, pra não vazar token em log), aplicado via
+`@UseGuards` nas duas mensagens que o client manda: `subscribe_camera` e `unsubscribe_camera`, que
+entram/saem da sala `camera:<cameraId>`. O guard ganhou mais campo em 03/08 (commit `7ddac2831d`, feature
+de dashboard) - passou a gravar `claims`/`token` no socket - mas isso não mudou a exigência de auth em si,
+que já existia.
+
+O gateway emite dois eventos pra sala: `camera:analytics:detection` (`IAnalyticsDetectionEvent` -
+`cameraId`, `kind` (`OBJECT_DETECTION` | `VIRTUAL_LOOP`), `index` da região, `objectClass?`,
+`occurredAt?`) e `camera:analytics:frame` (`IAnalyticsFrameEvent` - `cameraId`, `boxes:
+IAnalyticsDetectionBox[]`, `observedAt`, `capturedAt`). Os dois contratos vivem em
+`libs/contracts/src/lib/object-detection/`. `index` referencia a região de detecção de objeto (DAI),
+nunca o id gerado no front - vale pros dois `kind`, porque o laço virtual não tem geometria própria
+(reaproveita a região DAI). `capturedAt` é o `frame_id` do device (epoch segundos, convertido pra ms) - é
+o relógio que o overlay usa pra colar a bounding box no veículo em vez de atrasar; cai pro horário de
+recebimento quando o device omite `frame_id`.
+
+#### Consumer Kafka (`device-stream.consumer.ts`)
+
+Liga no broker de `ANALYTICS_STREAM_BROKERS` (o do próprio device, fora do Kafka da plataforma) e consome
+`traffic-motion-detection.detections`. Vínculo por `source_id` no **value** da mensagem, nunca na key - a
+key é o `analytic_id` do device, um token aleatório que o device troca a cada reinstall/upgrade do ACAP,
+então bindar nela perderia o stream depois de qualquer rebuild. O `source_id` mapeia pra
+`analyticsCapabilities.deviceSourceId` de **todas** as câmeras que compartilham aquele device físico
+(mesmo hardware cadastrado uma vez por sistema-tenant) - um frame acende todas elas, não só a última. O
+índice de região vem da ordem estável do `/regions` do device, nunca da posição no array do frame (que
+omite região vazia e reordena).
+
+`groupId` do consumer: `ANALYTICS_STREAM_GROUP_ID` setada (cluster) → group estável por deployment - com o
+adapter Redis do Socket.IO (CROSS-043) um único consumidor por deployment basta, o fan-out pras réplicas é
+do adapter (`PROJ-012`, com adendo de `PROJ-017` em 30/07); env ausente (dev) → UUID por processo,
+isolamento por stack (ao custo de um group órfão por boot). É proteção contra o incidente de 2026-07-15
+(`SOFTWARE-2226` item 3c), onde um group fixo fazia dev/homolog/produção - que compartilham o mesmo
+broker/device - disputarem partição entre si.
+
+#### Resolver de endpoint (`atman-endpoint.resolver.ts`)
+
+Sonda três transportes na ordem até um responder `GET /config`: porta **2001** nativa do ACAP, porta
+**80** (o Apache da Axis reverso-proxeia o mesmo path, Digest) e porta **443** (Basic, TLS
+auto-assinado). Cacheia a base resolvida por IP de device com TTL (`ATMAN_ENDPOINT_TTL_MS`, default 30
+min); invalida em erro pra re-sondar na próxima chamada. É o que permite alcançar uma câmera travada
+(HTTP puro desligado, só HTTPS, porta do ACAP bloqueada) sem configuração por device - lista de
+transportes e timeouts são tunáveis via env (`ATMAN_ANALYTIC_API_ENDPOINTS`).
+
+#### Controller de regiões (`camera-regions.controller.ts`)
+
+Rotas `GET/PUT /cameras/:id/object-detection-regions` e `GET/PUT /cameras/:id/virtual-loops`, escopadas
+por `@SystemId()`. GET lê o device de verdade (o que ele detecta de fato, degradando pra vazio/default
+quando o device está fora); PUT reconcilia: relê o `/regions` atual, faz `POST /regions` (upsert do
+conjunto desejado), `DELETE` das regiões que saíram (preservando incidentes DAI que o front não
+gerencia), e termina chamando `enableProducer` do `AtmanDeviceProvisioner` - é aqui, e só aqui, que o
+`source_id` é re-carimbado e o producer religado, sempre atrás de um save explícito do operador.
+
+`AtmanDeviceProvisioner.ensureSourceId` só escreve `PUT /config` quando o `source_id` atual do device
+diverge do esperado (lê antes de escrever, best-effort, nunca lança) - é exatamente o padrão idempotente
+que faltava no reconciler do `PROJ-014` e que causava a guerra de escrita entre instâncias (ver achado
+abaixo).
+
+### Aba Analíticos no frontend
+
+`apps/web-attlas/src/app/modules/cameras/analytics/` e os componentes `camera-analytics-*` implementam o
+desenho de região (DAI) e a configuração do Virtual Loop sobre o vídeo ao vivo, com overlay de bounding
+box em tempo real (dead reckoning e interpolação a 60fps). Entregue pelo PR #766 e uma sequência de
+follow-ups que migraram a persistência de `localStorage` para chamada HTTP real contra `ms-cameras`. A
+spec `UF-033-camera-analytics-draw.md` continua descrevendo a feature como "front-only, mock em
+localStorage" - texto desatualizado, ver a seção de dívida técnica abaixo.
+
+### ACOM
+
+Já foi portada de fato para dentro de `ms-controllers/src/acom/` (CRUD, comunicação TCP, tempo real), não
+mora no serviço reservado `ms-acom`, que nunca teve uma linha de domínio escrita. A decisão de portar está
+registrada como DD-20 no SPEC do `ms-controllers`.
+
+### Série do detector do lado do controlador
+
+`ms-detector-history` persiste a série de detector físico e virtual **do lado do equipamento de campo**
+(via ACOM/contato seco ou nativo do controlador), não o pipeline de vídeo em si. É um domínio vizinho, não
+o mesmo pipeline.
+
+## O achado que muda o plano: Sprint 27 já especificou boa parte disso
+
+Enquanto este documento estava sendo escrito, apareceu a confirmação de que a Sprint 27 (03 a 09/08) já
+produziu **14 PRs em draft**, nenhuma mergeada, especificando o servidor de Virtual Loop com bastante
+detalhe. A sprint fechou sem entrega de código, e a frente voltou a ficar sem prazo.
+
+> [!warning] Nada disso está em `develop`
+> As 14 PRs (#1342 a #1357) seguem abertas em draft. Nenhuma tem código de produção, só spec/ADR em
+> markdown. Antes de desenhar algo novo pro servidor de VL, o primeiro passo é destravar e mergear esta
+> cadeia. **Reconfirmado em 24/08** via `gh pr view` em 12 das 14 (#1342, #1343, #1345, #1346, #1347,
+> #1349, #1351, #1352, #1353, #1355, #1356, #1357): todas `OPEN` + `isDraft: true`, `mergedAt: null`.
+> Nenhuma mudou de estado desde 12/08.
+
+Decisões já fechadas nessas PRs:
+
+- **Fonte do vídeo do analítico em container** (ADR, PR #1342): consome o relay que o `ms-cameras` já
+  mantém pro operador assistir ao vivo, pedindo o substream de menor resolução disponível. Não lê a câmera
+  direto (evitaria expor a credencial da câmera a mais um processo) e não usa Kafka para vídeo.
+- **Stack e escopo do `ms-virtual-loop`** (SPEC, PR #1343): NestJS, com `ffmpeg` como processo filho pra
+  decodificação e uma biblioteca de inferência nativa embutida no processo Node, não um serviço Python
+  separado. O serviço ingere o stream, detecta veículo por frame, lê a geometria da região do `ms-cameras`
+  (que continua dono dela) e publica a ocupação da região. Não persiste série histórica, não fala com o
+  controlador, não decide atuação em hardware.
+- **`ms-connector-virtual-loop` só traduz endereço** (PR #1345): consome a ocupação publicada pelo
+  `ms-virtual-loop`, resolve pra qual detector físico aquela câmera e região correspondem, e republica no
+  mesmo tópico de detecção bruta que o caminho físico usa. Não reimplementa a lógica de reconciliação de
+  janela do caminho físico, porque o problema que ela resolve (buffer de leitura de equipamento por
+  polling) não existe do lado do vídeo.
+- **Vínculo entre região de câmera e endereço de detector** (PR #1352, dentro de `ms-cameras`): modelo novo
+  que garante que um endereço de detector físico nunca é referenciado por duas regiões ao mesmo tempo -
+  regra de unicidade diferente da unicidade de analítico embarcado (ver [[Analítico - Requisitos e SLA]]),
+  granularidade diferente.
+- **Invariante contra contagem duplicada** (PRs #1345 e #1356, no recorte de atuação por ACOM): se o laço
+  virtual algum dia atuar também via ACOM na entrada do controlador, o endereço que já tem vínculo de
+  câmera registrado não pode ao mesmo tempo ser publicado como presença física pelo caminho antigo, senão
+  o histórico conta o mesmo veículo duas vezes.
+- **Correção da spec `UF-033` já escrita, nunca mergeada** (PR #1355): reescreve exatamente o texto
+  desatualizado do frontend e corrige a terminologia morta (`deviceAnalyticId` para `deviceSourceId`).
+  Confirmado por leitura direta de `develop`: o texto antigo ainda está lá, o conserto existe só nesta PR
+  draft. **Ainda verdade em 24/08** - a #1355 segue `OPEN`/`draft`, sem merge.
+
+Achados de dívida técnica que a própria Sprint 27 registrou e nunca corrigiu em código:
+
+- Um bug de derivação invertida no consumidor do device (`kind` trocado), encontrado em 03/08, sem PR de
+  correção.
+- O reconciliador que reativava automaticamente o produtor de stream do device (quando ele sobe desligado
+  após reinício de energia) foi revertido em 29/07 por causar loop de reboot no equipamento, e nunca teve
+  sucessor. Histórico completo (medição do loop entre dois writers concorrentes, causa raiz no seed com
+  device hardcodado, receita de diagnóstico de rede) em
+  [[Carga desnecessária nas câmeras - reconciler do analítico e conexões duplicadas]]. A spec `PROJ-017`
+  (30/07, domínio Saúde - lease Redis por device pra monitor único sob N réplicas) marcou o `PROJ-014`
+  como `superseded` no código e trouxe o `ANALYTICS_STREAM_GROUP_ID` estável pro consumer (ver seção
+  acima), mas resolve um problema diferente (réplicas do próprio `ms-cameras` disputando o mesmo device,
+  não instâncias externas de Attlas) - não é sucessora funcional pro cenário "device reinicia com producer
+  desligado", que segue sem dono explícito.
+- O tópico de falha do detector não tem nenhum consumidor real hoje, apesar da documentação de detectores
+  descrever `ms-alarms` como assinante dele.
+
+## Proposta de modelagem da compatibilidade de câmera
+
+O pedido de negócio é claro: precisamos de um jeito de decidir, dada uma câmera cadastrada, quais features
+de analítico ela pode oferecer. A proposta é separar dois tipos de dado:
+
+- **Fato de hardware, estável**: a arquitetura do processador da câmera (sem Axis, ARTPEC 7, ARTPEC 8/9) e
+  a tabela de compatibilidade dela com cada forma de execução (ver [[Analítico - Requisitos e SLA]]). Isso
+  não muda com decisão de produto, é físico. Modelado como um enum de arquitetura mais uma tabela de
+  compatibilidade, no mesmo espírito de outras constantes estáticas de domínio já usadas no repo (limites
+  do laço lógico do controlador, por exemplo).
+- **Decisão de produto, que pode mudar**: como o Attlas agrupa e licencia essas features como sub-produtos
+  (ver [[Analítico - Requisitos e SLA]]). Isso é redesenho, não fato de hardware.
+
+## Proposta de topologia de serviço
+
+| Serviço | Proposta | Por quê |
+| --- | --- | --- |
+| `ms-cameras` | Mantém e cresce | Continua dono da geometria de região e do vínculo com o analítico embarcado. Ganha, do trabalho já especificado na Sprint 27, o vínculo região-endereço de detector e a publicação de ocupação também pelo caminho embarcado |
+| `ms-virtual-loop` | Mantém, escopo já fechado | É o servidor de Virtual Loop em si, não uma camada de configuração em volta de um processamento que ficaria em outro lugar. Falta destravar e mergear |
+| `ms-connector-virtual-loop` | Mantém, escopo já fechado | Só traduz endereço, não é candidato a descontinuar como pareceria antes de achar a spec em draft |
+| `ms-atspm` | Mantém, redefine do zero | Único dos serviços de produto sem nenhum planejamento anterior. Escopo: métricas avançadas de fato, associação com grupo semafórico e snapshot |
+| `ms-dai` | Mantém, escopo pendente | Fica em aberto se processa incidentes de forma independente ou se vira sub-produto do ATSPM, exibido por ele |
+| `ms-acom` | Descontinuar | Substituído por completo por `ms-controllers/src/acom/` |
+
+## Roadmap sugerido
+
+1. Destravar e mergear a cadeia de PRs da Sprint 27, que já cobre a fundação do servidor de VL.
+2. Entidade "Analítico" com unicidade de cadastro e healthcheck, granularidade diferente do vínculo de
+   endereço de detector que a Sprint 27 já resolveu.
+3. `ms-atspm` real, incluindo a associação com grupo semafórico e o snapshot de configuração.
+4. Decisão e implementação de `ms-dai`.
+5. ACOM refinado dentro de Controladores, com a nomenclatura e as cardinalidades de
+   [[Analítico - Requisitos e SLA]].
+6. Presets com snapshot de região.
+
+## Ver também
+
+- [[Analítico]] · [[Analítico - Requisitos e SLA]] · [[Analítico - Fluxos]]
+- [[Carga desnecessária nas câmeras - reconciler do analítico e conexões duplicadas]] (histórico do
+  `PROJ-014` revertido e da dedup de conexão por device)
+- [[VMS - Arquitetura e estratégias]] (padrão de nota usado aqui) · [[ms-cameras]]
