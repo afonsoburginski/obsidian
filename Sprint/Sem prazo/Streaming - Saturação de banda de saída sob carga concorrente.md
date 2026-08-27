@@ -32,17 +32,30 @@ Dados de healthcheck persistidos em `CameraAvailabilityWindow` confirmam que, da
 
 Isso é exatamente o risco que a Fase 3 da [[SOFTWARE-2003 - Ciclo de vida de sessões de streaming e telemetria de banda por câmera]] ("validação de escalabilidade... sem saturar banda") deveria cobrir, e ainda não tem critério de aceite comprovado. O incidente é evidência ao vivo, numa escala pequena (14 câmeras, poucos viewers), de que o sistema não tem nenhum limite/QoS entre tráfego de vídeo e tráfego de controle (healthcheck) na mesma interface, e que o próprio mecanismo de recuperação de conexão (WHEP↔HLS) pode amplificar o problema em vez de absorvê-lo.
 
-## O que precisa mudar (candidatos, não fechado)
+## O que precisa mudar (propostas com priorização, 27/08)
 
-- Limitar/negociar variantes de qualidade (ABR) publicadas por câmera sob demanda, não sempre as três (secondary/tertiary/tertiary-h265).
-- Isolar/priorizar o tráfego de healthcheck do tráfego de vídeo (QoS na interface, ou rota dedicada).
-- Corrigir o backoff do `MediaConnection` (ver [[Streaming - Diagnóstico de oscilação WHEP-HLS no videowall]]) antes de qualquer coisa - é a correção mais barata e reduz o tráfego de retry independente da causa de fundo.
-- Rodar de fato a Fase 3 da SOFTWARE-2003, usando este episódio como caso de teste real (reproduzir N viewers x M câmeras e medir o ponto de saturação).
-- Alerta automático sobre `avgLatencyMs` agregado da rede (já gravado em `CameraAvailabilityWindow`), pra não depender de relato manual do usuário.
+### P0 - Correções de código (sem mudar infra)
+
+- **Backoff WHEP no player** (30 min): `MediaConnection` guarda `lastWhepFailure` com TTL 60s; se WHEP falhou recentemente, pula direto para HLS. Elimina o loop de reconexão que amplifica tráfego.
+- **Warm-up no monitor de saúde** (15 min): após transição para `playing`, ignorar os primeiros 10s do monitor antes de considerar "struggling". Evita `switchTo()` desnecessário.
+
+### P1 - Limites no servidor
+
+- **Limite de sessões por câmera** (15 min): `MAX_SESSIONS_PER_CAMERA = 5` (env), erro 429 quando excede. Previne que videowall sature.
+- **Limpeza de rollup diário** (5 min): adicionar delete em `CameraAvailabilityDailyRollup` com `date < NOW() - 90 days`. Previne crescimento indefinido.
+
+### P2 - Otimizações de tráfego
+
+- **ABR sob demanda** (30 min): publicar só a variant solicitada, não todas 3. Reduz tráfego em ~66%.
+- **QoS healthcheck** (30 min): usar `tc` para priorizar ICMP/WS sobre vídeo. Isola tráfego de controle.
+
+### P3 - Observabilidade
+
+- **Alerta automático** (1h): query periódica em `CameraAvailabilityWindow` para `avgLatencyMs > 500` em >50% das câmeras. Detecção proativa.
 
 ## Por que ficou sem prazo
 
-É investigação/achado, não spec fechada - falta decidir a estratégia de mitigação (limitar variantes vs. QoS vs. backoff do player vs. os três) antes de virar card com DoD.
+É investigação/achado, não spec fechada - falta decidir a estratégia de mitigação (limitar variantes vs. QoS vs. backoff do player vs. os três) antes de virar card com DoD. **Atualização 27/08**: propostas priorizadas acima; P0 e P1 são rápidos (<1h total) e devem ser implementados antes de qualquer carga real.
 
 ## Encosta em
 

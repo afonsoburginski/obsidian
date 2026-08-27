@@ -1,0 +1,30 @@
+---
+tags:
+  - doc
+  - infra
+  - server
+aliases:
+  - "Server e CI"
+atualizado: 2026-08-24
+---
+
+# Server e CI
+
+Índice das notas do servidor de gestão e do CI.
+
+> [!info] Cluster e deploy saíram do vault em 24/08
+> O domínio Kubernetes (índice mais 8 notas de faceta) foi removido a pedido do user e está na trash do
+> MCP, recuperável. Cluster, chart Helm, Terraform e KEDA vivem no repo `Developer/kubernetes`, que é a
+> fonte de verdade fora daqui; para trabalhar neles, o skill `attlas-kubernetes` do Claude Code carrega
+> o contexto operacional.
+
+## Notas deste domínio
+
+- [[Acessos SSH - Infra Attlas]] - runbook dos acessos: sumo, EC2 dev 26, VM do runner, VMs 1 a 7. Tem credenciais, não versionar.
+- [[Observabilidade CI - plano (stack completa)]] - plano da stack de observabilidade do CI e as camadas de higiene dos runners.
+- [[Consultar câmera Hikvision via ISAPI]] - comandos para interrogar uma câmera Hikvision pelo terminal, e como separar "ONVIF desabilitado no firmware" de credencial errada.
+- [[Infraestrutura de CI - trabalho sem card]] - as sete pull requests mergeadas desde 01/07 que não citam card nenhum, cinco delas a mesma frente da fila de integração, com o que cada rodada corrigiu e o que ficou pendente.
+
+## Relacionados
+
+[[ms-cameras]] · [[Plano - atualização da documentação do vault]]

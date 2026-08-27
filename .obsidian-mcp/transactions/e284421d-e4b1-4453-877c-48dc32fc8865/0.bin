@@ -6,17 +6,13 @@ date: 2026-08-25
 ```
 Report Diário - 25/08/2026
 
-Concentrei a entrega do dia nas PRs #2036 e #1999. Revisei também 16 pull requests de colegas, listadas abaixo.
+Tudo concentrado na #2036. Revisei também 14 pull requests de colegas, listadas abaixo.
 
-Revisão automatizada de PR (#2036):
+Revisão automatizada de PR:
 - Removi a checagem de base develop do workflow do @claude: ela abortava o job depois de já ter postado o comentário de início, deixando toda PR empilhada com um review que parecia começar e nunca terminava.
-
-Duplicidade de numeração de spec (#1999):
-- Corrigi a duplicidade de número entre duas especificações que tratavam de assuntos diferentes, permissões de visibilidade e vídeo de câmera fora da rede interna, atualizando as dezesseis referências afetadas em sete arquivos, incluindo configurações de infraestrutura de streaming.
 
 PRs mergeadas:
 - 2036 - fix: review do @claude alcança PR empilhada, não só base develop
-- 1999 - fix: Renumerar a CROSS-032 duplicada
 
 PRs revisadas:
 - 1897 - Resolução de Sistema para Organização e teto do canal in-app (aprovada, com apontamentos)
@@ -33,10 +29,9 @@ PRs revisadas:
 - 1957 - Controle adaptativo UNE no PUT de controles em tempo real (mudanças solicitadas)
 - 1993 - Habilitar coleta autorizada de métricas (aprovada)
 - 1995 - Conexão Redis única do serviço de notificações (aprovada)
-- 1997 - Régua do corredor do Percurso, projeção de sequência (aprovada)
-- 1998 - Interseção de Percurso ativo protegida contra rebaixamento de licença e remoção (aprovada)
 
 PRs em andamento:
+- 1999 - fix: Renumerar a CROSS-032 duplicada
 - 2000 - feat: Entidade Analítico + persistência de região + unicidade
 - 2001 - fix: Writer do deviceSourceId e higiene do embarcado
 - 2002 - feat: Compatibilidade do analítico por arquitetura de câmera

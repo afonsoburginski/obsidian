@@ -6,7 +6,7 @@
   "baseFontSizeAction": true,
   "baseFontSize": 14,
   "translucency": true,
-  "cssTheme": "Things",
+  "cssTheme": "GitHub Theme",
   "nativeMenus": true,
   "enabledCssSnippets": [
     "galaxy-graph"

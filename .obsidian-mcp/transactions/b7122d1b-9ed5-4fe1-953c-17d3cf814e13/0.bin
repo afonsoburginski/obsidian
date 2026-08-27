@@ -236,10 +236,7 @@ Os dois achados (saturação de banda + oscilação WHEP↔HLS) foram consolidad
 
 ## Atualização (27/08) - Investigação de infraestrutura e propostas de limpeza
 
-> [!warning] Correção sobre esta seção (27/08, ~18:00 UTC)
-> A tabela "Estado atual da infraestrutura (27/08 14:45 UTC)" logo abaixo estava **errada** — registrada num momento em que o SSH para a EC2 estava falhando (ver "achado complementar ~14h" na seção de 24/08 acima, mesma assinatura de instabilidade de rede), e a conclusão "tudo down" foi tirada só disso, sem confirmar de outra forma. Investigação retomada às ~15:30-18:00 UTC do mesmo dia (nova sessão, SSH voltou a responder) achou uma realidade bem diferente — ver "Estado real (27/08, ~16:00 UTC)" logo depois da tabela. **A tabela abaixo fica só como registro do que foi observado naquele momento, não como fato corrente.**
-
-### Estado atual da infraestrutura (27/08 14:45 UTC) — ⚠️ ver correção acima
+### Estado atual da infraestrutura (27/08 14:45 UTC)
 
 | Componente | Status | Detalhe |
 |---|---|---|
@@ -251,18 +248,6 @@ Os dois achados (saturação de banda + oscilação WHEP↔HLS) foram consolidad
 | PostgreSQL/Redis | **Down** | Exit 0, 46h parados |
 | Kong | **Down** | Exit 143 (SIGTERM) |
 
-### Estado real (27/08, ~16:00 UTC) — confirmado por SSH direto + query no banco
-
-| Componente | Status real | Detalhe |
-|---|---|---|
-| EC2 `aws-attlas-26` | **Acessível** | SSH normal; `uptime` 99 dias, sem reboot |
-| `attlas-ms-cameras` | **Up e saudável** | Reiniciado 11:26 UTC pelo deploy da PR #2000 (MOD-017 CameraAnalytic); 0 restarts desde então, boot limpo (`Nest application successfully started`, 39 migrations aplicadas) |
-| Todas as ~88 linhas de `Camera` | **`connectionStatus=OFFLINE` contínuo** desde o restart | Não é "serviço fora do ar" — é o healthcheck ONVIF/Axis WebSocket falhando por timeout (`"Axis WebSocket initial connection failed — timeout of 5000ms exceeded"`), repetido a cada ciclo de retry, sem UMA conexão bem-sucedida em 4h+ de uptime |
-| DBs, Kafka, Kong, mediamtx, coturn | **Up** | 57 containers no ar, nenhum órfão dos essenciais |
-| CI self-hosted (`attlas-dev-runner`) | **Ativo, disputando CPU** | `PSI` (pressure stall) `avg60=33%` medido com um job Build rodando; PR #2210 (mergeada 27/08 15:10, mesmo dia) já moveu Build/Integration Test para os runners da sumo (`heavy` label), deixando só Lint no pool aberto — mitigação já aplicada antes desta investigação terminar |
-
-**Duração é a peça que não fecha com o padrão de 24/08 sozinho**: o episódio de 24/08 durou 25 minutos e se resolveu quando a carga de visualização caiu. Este aqui persistiu pelas 4h+ inteiras da sessão de investigação, sem UMA reconexão ONVIF bem-sucedida — mais consistente com perda de rota (o caminho até as sub-redes de câmera via tailnet/subnet-router `aquario-server`, documentado como ponto único de falha em [[SOFTWARE-2226 - Testes do analítico e provisionamento no cadastro]]) do que com fila de banda transitória. Esse teste específico (alcance TCP direto host→câmera e dentro do container) ficou **pendente**, interrompido nesta sessão antes de concluir — próximo passo pra quem retomar.
-
 ### Mecanismos de limpeza existentes no ms-cameras
 
 | Limpeza | Tabela/Dado | Retenção | Frequência | Serviço |
@@ -271,108 +256,84 @@ Os dois achados (saturação de banda + oscilação WHEP↔HLS) foram consolidad
 | Bitrate samples | `CameraBitrateSample` | 48h | Horário | `BitrateSampleCleanupService` |
 | Availability windows | `CameraAvailabilityWindow` | 7 dias | Diário 1AM UTC | `AvailabilityRollupService` |
 | TTFF samples | `CameraTtffSample` | 7 dias | Diário 1AM UTC | `AvailabilityRollupService` |
-| Daily rollups | `CameraAvailabilityDailyRollup` | 90d (implícito) | ~~Nenhum~~ **implementado, ver abaixo** | `AvailabilityRollupService` |
+| Daily rollups | `CameraAvailabilityDailyRollup` | 90d (implícito) | **Nenhum** | **GAP** |
 | Stream sessions | Memória (`StreamSessionRegistry`) | Processo | Reaper 5s | `StreamSessionReaperService` |
 | FFmpeg processes | OS | Sessão | Mate + reaper | `FfmpegSessionService` |
 | Videowall mirror | DB + mediamtx | Sessão | Reaper | `VideowallMirrorReaperService` |
 
 ### Gaps identificados (o que falta para manter nível saudável)
 
-1. ~~Sem limpeza de `CameraAvailabilityDailyRollup`~~ — **corrigido**, PR #2246.
-2. ~~Sem limite de sessões concorrentes (novas) no host~~ — **corrigido**, PR #2246 (teto agregado no host, não por câmera — ver nota de escopo abaixo).
-3. ~~Sem limite de variantes ABR~~ — **investigado e descartado 27/08**: leitura de código (`camera-stream-player.component.ts`, `media-connection.ts`, `videowall-stream-session.store.ts`, `live-media-registry.service.ts`, `ffmpeg-session.service.ts`, `streaming.controller.ts`) confirma que o front pede **uma qualidade por vez**, com troca make-before-break (abre a nova, só então fecha a antiga) — nunca fan-out para 3 variantes simultâneas. Nenhum cron/warm-up no backend dispara sessão sem uma requisição HTTP explícita de viewer. As "múltiplas variantes" vistas no episódio de 24/08 são mais provavelmente os **paths de telemetria sempre-ligados** (PROJ-006, `sourceOnDemand: false`, 1 por câmera para o contador de bitrate) coincidindo com o pico de visualização, não publicação ABR desperdiçada — a nota de 24/08 conflou os dois. Item **2.2 da seção de propostas abaixo fica marcado como não-necessário**, não como pendente.
-4. **Sem QoS de healthcheck** - tráfego de vídeo e healthcheck competem pela mesma interface `ens5`. Delegado a um agente rodando direto no host em paralelo a esta investigação — ver seção "Limpeza do EC2" ao final desta nota para o resultado.
-5. ~~Sem backoff no player~~ — **corrigido**, PR #2246.
-6. **Sem alerta automático** - `avgLatencyMs` agregado não dispara alerta quando satura. Backlog.
+1. **Sem limpeza de `CameraAvailabilityDailyRollup`** - tabela cresce indefinidamente (90d é meta, mas não há delete)
+2. **Sem limite de sessões concorrentes por câmera** - viewer pode abrir quantas sessões quiser
+3. **Sem limite de variantes ABR** - mediamtx publica 3 variantes por câmera mesmo sem viewers
+4. **Sem QoS de healthcheck** - tráfego de vídeo e healthcheck competem pela mesma interface `ens5`
+5. **Sem backoff no player** - `MediaConnection` não lembra que WHEP falhou recentemente
+6. **Sem alerta automático** - `avgLatencyMs` agregado não dispara alerta quando satura
 
 ### Propostas de solução
 
 #### Nível 1 - Correções de código (sem mudar infra)
 
-**1.1. Limpeza de rollup diário — ✅ implementado, PR #2246**
-- `AvailabilityRollupService.cleanupDailyRollups()`, rodando no mesmo lock/cron do rollup existente (`EVERY_DAY_AT_1AM UTC`).
-- `AVAILABILITY_ROLLUP_RETENTION_DAYS` (default 90) no `.env.example`.
+**1.1. Limpeza de rollup diário (5 min de código)**
+- Adicionar `@Cron(EVERY_DAY_AT_1AM)` no `AvailabilityRollupService` para deletar `CameraAvailabilityDailyRollup` com `date < NOW() - INTERVAL '90 days'`
+- implementing `cleanupDailyRollups()` similar ao `cleanupFineWindows`
+- Impacto: previne crescimento indefinido da tabela
 
-**1.2. Backoff no player WHEP — ✅ implementado, PR #2246**
-- `whep-failure-tracker.util.ts` (novo arquivo, DD-015): memória por-url em nível de módulo, TTL 60s.
-- `MediaConnection.load()` pula direto pro fallback HLS quando a url acabou de falhar; limpa a marca no primeiro track recebido com sucesso.
+**1.2. Backoff no player WHEP (frontend, 30 min)**
+- Em `MediaConnection`, adicionar memória `Map<cameraId, lastWhepFailure>` com TTL 60s
+- Em `load()`, se `lastWhepFailure` existe e é recente → pular WHEP, ir direto para HLS
+- Impacto: elimina o loop de reconexão WHEP↔HLS que amplifica tráfego
 
-**1.3. Warm-up no monitor de saúde do player — ✅ implementado, PR #2246**
-- `CameraStreamPlayerComponent`: 4 ticks (~10s) de carência em `sampleHealth()` após toda transição para `playing`, antes de contar pra struggling/smooth.
+**1.3. Warm-up no monitor de saúde do player (frontend, 15 min)**
+- Em `startHealthMonitor()`, adicionar `warmupMs = 10000` antes de considerar "struggling"
+- Após transição para `playing`, ignorar os primeiros 4 ticks (10s) do monitor
+- Impacto: evita `switchTo()` desnecessário que gera sessão nova
 
 #### Nível 2 - Limites no servidor (mudanças moderadas)
 
-**2.1. Limite de sessões concorrentes NOVAS no host — ✅ implementado, PR #2246 (escopo ajustado)**
-- Implementado como teto **agregado no host** (`MAX_CONCURRENT_STREAM_SESSIONS`, default 40), não por câmera — é o que protege de fato o egress de `ens5`, que é o recurso compartilhado. `StreamingController` recusa (429, `TooManyRequestsException`) só a criação de sessão genuinamente nova; anexar a uma sessão já viva (N viewers da mesma câmera+qualidade) nunca conta.
-- Sem atômica formal — comportamento novo, mas tratado como fluxo de correção de incidente (SDD §8.4); registrado como dívida no PR para quem quiser formalizar depois.
+**2.1. Limite de sessões concorrentes por câmera (15 min)**
+- Em `StreamSessionRegistry`, adicionar `MAX_SESSIONS_PER_CAMERA = 5` (configurável via env)
+- `incrementViewers()` retorna erro 429 quando excede o limite
+- Impacto: previne que um videowall com 9 câmeras gere 9+ sessões simultâneas
 
-**2.2. ~~Publicação ABR sob demanda~~ — não necessário, descartado 27/08**
-- Ver item 3 dos gaps acima: já é sob demanda, uma qualidade por vez. Não abrir código pra isso.
+**2.2. Publicação ABR sob demanda (30 min)**
+- Em `ffmpeg-session.service.ts`, publicar só a variant solicitada (não todas 3)
+- `mediamtx.yml`: manter `sourceOnDemand: false` só para a path primária
+- Impacto: reduz tráfego de saída em ~66% (de 3 variantes para 1 por câmera)
 
-**2.3. Reaper de sessões sem viewers (já existe, ajustar parâmetros) — não alterado**
-- `STREAM_REAPER_ZERO_READER_GRACE_MS` (20s) e `STREAM_REAPER_MIN_SESSION_AGE_MS` (15s) mantidos como estão — o problema não era o reaper (ele funciona como projetado, ver [[Streaming - Diagnóstico de oscilação WHEP-HLS no videowall]]), era o cliente reabrindo contra um relay que o reaper matou corretamente. Mexer no timing do reaper sem necessidade é risco sem benefício.
+**2.3. Reap fuerzo de sessões sem viewers (já existe, ajustar parâmetros)**
+- `STREAM_REAPER_ZERO_READER_GRACE_MS`: reduzir de 20s para 10s
+- `STREAM_REAPER_MIN_SESSION_AGE_MS`: manter em 15s
+- Impacto: sessões órfãs morrem mais rápido
 
 #### Nível 3 - Infraestrutura (mudanças de infra)
 
-**3.1. QoS de healthcheck via tc/iptables — investigado e descartado, ver abaixo**
+**3.1. QoS de healthcheck via tc/iptables (infra, 30 min)**
+- Usar `tc` (traffic control) para priorizar tráfego ICMP/WS sobre tráfego de vídeo
+- Ou: rota dedicada para healthcheck via interface secundária (se disponível)
+- Impacto: healthcheck não sofre quando vídeo satura a banda
 
-**3.2. Limite de banda no mediamtx — backlog, não implementado**
-- Mudança de infra, fora do escopo de um PR de código.
+**3.2. Limite de banda no mediamtx (infra, 15 min)**
+- Em `mediamtx.yml`: `webrtcBandwidth: 1000` (1 Mbps por sessão WebRTC)
+- Limita tráfego total de saída por viewer
+- Impacto: previne que um videowall sature sozinho a interface
 
-**3.3. Alerta automático — backlog, não implementado**
-- Feature nova (query periódica + notificação), pede spec própria.
+**3.3. Alerta automático (infra + código, 1h)**
+- Query periódica em `CameraAvailabilityWindow` para `avgLatencyMs > 500` em >50% das câmeras
+- Notificação via Kafka/Slack quando detectado
+- Impacto: detecta saturação antes do usuário relatar
 
-### Priorização recomendada (atualizado 27/08 pós-PR #2246)
+### Priorização recomendada
 
-| Prioridade | Ação | Status |
-|---|---|---|
-| ~~P0~~ | Backoff WHEP no player (1.2) | ✅ PR #2246 |
-| ~~P0~~ | Warm-up no monitor (1.3) | ✅ PR #2246 |
-| ~~P1~~ | Limpeza de rollup (1.1) | ✅ PR #2246 |
-| ~~P1~~ | Limite de sessões novas no host (2.1) | ✅ PR #2246 |
-| — | ~~ABR sob demanda (2.2)~~ | descartado — não necessário |
-| — | ~~QoS healthcheck (3.1)~~ | investigado e descartado — ver "Achado crítico" abaixo |
-| P3 | Alerta automático (3.3) | backlog — feature nova |
-
-### Limpeza do EC2 (27/08, agente dedicado)
-
-- `docker image prune -f`: **109,9MB** reclamados (1 imagem dangling + 2 camadas órfãs, 3 meses de idade).
-- `docker builder prune -f --filter "until=168h"`: 0B, no-op (cache já estava zerado).
-- Disco antes da limpeza: 91G usados / 193G total / **102G livres (48%)** — **disco nunca foi o gargalo**.
-- `asc-simulador` **investigado e confirmado vivo**: não é ocioso, é consultado a cada ~1s por `attlas-ms-connector-neo` (simulador de firmware ASC2). **Não parado** — teria quebrado uma dependência real.
-- `ubuntu-ms-connector-une-1/2/3`: achado à parte, não é lixo — é o deploy real do connector-une rodando sob o projeto compose "ubuntu" em vez de "attlas", 3 réplicas (só 1 rodando, 2 travadas em `Created` por conflito de porta, custo zero). Anomalia de deploy pra investigar, não limpeza.
-- **13,23GB reclamáveis em volumes Docker anônimos órfãos** (55% dos 286 volumes, só 45 em uso) — fora do escopo pré-autorizado no momento, ficou como candidato; autorização ampla veio depois ("pode limpar") mas a conectividade caiu antes de executar. **Pendente**.
-- Logs de container grandes: não verificado (precisa sudo interativo no host).
-- Runner de CI (disco, `node_modules`): não verificado, conectividade caiu antes desse passo.
-- Stack essencial (`attlas-ms-*`, `attlas-db-*`, kong, kafka, mediamtx, coturn): confirmada saudável antes e depois, nenhuma ação de limpeza tocou nela.
-
-### Achado crítico: conectividade caiu AO VIVO durante a investigação, mesma assinatura de 24/08
-
-Durante a sessão do agente de limpeza, comandos SSH triviais começaram a travar 60-120s cada, até timeout total de TCP puro na porta 22 (confirmado com `nc`, não só SSH) — verificado independentemente de duas localizações. Voltou sozinho ~15-20 min depois. Mesmo padrão de degradação-progressiva-até-queda-total do incidente de 24/08.
-
-**Causa mais provável, achada nesta investigação**: a instância é **`t3a.2xlarge`** — família *burstable*, com crédito de rede limitado (mesmo mecanismo dos créditos de CPU do T3). Esse padrão (degrada, cai, recupera sozinho em minutos) é a assinatura clássica de esgotamento de crédito de rede sob carga sustentada, não falta de QoS: `tc qdisc show dev ens5` já mostra `fq_codel` ativo (default do driver ENA/kernel), então já existe fairness/anti-bufferbloat por fluxo. `fq_codel` não pode inventar banda além do que a instância tem alocada — se o gargalo é o teto de burst da própria classe de instância, QoS na fila não resolve. Por isso o item 3.1 (QoS/tc) fica **descartado**, não pendente.
-
-**Recomendação registrada, não executada** (decisão de infra/custo, não é código): considerar migrar para uma instância não-burstable (família M) ou dimensionar acima do baseline de rede do t3a.2xlarge, verificando o saldo de crédito de rede (`NetworkPacketsIn/Out` + `NetworkOut` no CloudWatch, sem crédito de rede exposto diretamente como métrica — mas o padrão de degradação é o proxy).
-
-### Bônus: bitrate medido (PROJ-006) também não escalava — removido o pull always-on
-
-Discussão à parte, no meio da mesma investigação: o mecanismo de bitrate medido do PROJ-006 mantinha
-**uma sessão RTSP contínua por câmera física, 24/7**, incondicional e linear com o tamanho da frota
-(BR-TELE-007 original já previa >1 Gbps a 1000 devices). O dono do serviço questionou diretamente se
-isso não era parte do problema de escala pra meta de produção de 900 câmeras — questionamento correto
-mesmo sem ligação direta comprovada com o incidente de hoje (config já estava em SECONDARY/320x180/5fps,
-~0,04 Mbps/device, ~36 Mbps agregados a 900 câmeras, não obviamente suficiente sozinho pra saturar).
-
-**Removido e redesenhado** (PR #2246, 4º commit): `TelemetryPathReconciler` e `BitrateSamplePersister`
-saem. `AvailabilityWindowSampler.sampleBitrate` passa a calcular em duas camadas, ambas de **custo
-zero em conexões novas**: real (delta de bytes de um relay que um viewer genuíno já abriu —
-`LivePublisherProbe.readFleet`, a mesma leitura que já serve o card de saúde ao vivo) quando alguém
-está assistindo; aproximado (bitrate **provisionado** do device, `CameraStreamProfile.bitrateKbps`,
-já mantido por `ProvisionedBandwidthCollectorService` via ONVIF/VAPIX/ISAPI, INT-006/PROJ-008 — dado
-que o healthcheck já coleta pro dashboard de Banda Provisionada, não uma sessão dedicada) no resto
-do tempo. Amendment completa com o raciocínio técnico completo (por que ONVIF sozinho não resolve,
-por que RTSP é fundamentalmente pull-based) em
-`apps/ms-cameras/docs/atomic/PROJ-006-bitrate-ttff-telemetry.md#amendment-270826`.
+| Prioridade | Ação | Esforço | Impacto |
+|---|---|---|---|
+| **P0** | Backoff WHEP no player (1.2) | 30 min | Elimina loop de reconexão que amplifica tráfego |
+| **P0** | Warm-up no monitor (1.3) | 15 min | Evita sessões novas desnecessárias |
+| **P1** | Limpeza de rollup (1.1) | 5 min | Previne crescimento de tabela |
+| **P1** | Limite de sessões (2.1) | 15 min | Previne saturação por videowall |
+| **P2** | ABR sob demanda (2.2) | 30 min | Reduz tráfego em 66% |
+| **P2** | QoS healthcheck (3.1) | 30 min | Isola tráfego de controle |
+| **P3** | Alerta automático (3.3) | 1h | Detecção proativa |
 
 ### Ligado a
 
@@ -380,16 +341,3 @@ por que RTSP é fundamentalmente pull-based) em
 - [[Streaming - Diagnóstico de oscilação WHEP-HLS no videowall]] - diagnóstico do loop de reconexão
 - [[SOFTWARE-2003 - Ciclo de vida de sessões de streaming e telemetria de banda por câmera]] - Fase 1 (reaper) já implementada, Fase 3 (escala) pendente
 - [[Incidentes - Streaming (ms-cameras)]] - este arquivo, seções anteriores
-- PR [#2246](https://github.com/atmanadmin/attlas-2026/pull/2246) - as quatro correções de código desta seção (rollup, WHEP backoff, teto de sessões, redesign do bitrate medido)
-
-
----
-
-## Atualização (27/08, ~19:00 UTC) - runner de CI tirado da EC2
-
-Decisão tomada com o dono do serviço após o achado de crédito de CPU/rede burstable (t3a.2xlarge): tirar o runner de CI (`attlas-dev-runner`) da EC2 de dev, deixando o host dedicado só à aplicação. Esperado o job `Lint` em andamento terminar (`completed/success`) antes de agir, pra não derrubar check de PR de ninguém.
-
-- `sudo systemctl stop actions.runner.atmanadmin-attlas-2026.attlas-dev-runner.service` + `disable` — confirmado `inactive`/`disabled`, sem processo `Runner.Listener`/`Runner.Worker` residual.
-- Stack essencial (`attlas-ms-cameras`, `attlas-kong`, `attlas-mediamtx`) seguiu de pé, sem impacto.
-- **Não removido oficialmente da lista de runners do GitHub** (fica "offline" lá) — o token do `gh` usado não tem escopo `admin:org`, necessário pro endpoint de remoção. Quem tiver esse escopo pode limpar pela UI (Settings → Actions → Runners) ou rodar `gh auth refresh -h github.com -s admin:org` e reexecutar a remoção completa.
-- Efeito na fila de CI do time: um runner a menos no pool aberto (só sumo resta). Fila do dia estava com dezenas de jobs `queued` no momento da remoção — não medido o impacto exato na vazão, mas o pool aberto já vinha sendo esvaziado pela PR #2210 (Build/Integration Test só na sumo desde hoje 15:10).

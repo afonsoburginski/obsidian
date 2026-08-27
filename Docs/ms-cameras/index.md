@@ -6,7 +6,7 @@ tags:
 aliases:
   - "ms-cameras"
   - "ms-cameras - visão geral"
-atualizado: 2026-08-24
+atualizado: 2026-08-27
 servico: ms-cameras
 fonte: apps/ms-cameras
 ---

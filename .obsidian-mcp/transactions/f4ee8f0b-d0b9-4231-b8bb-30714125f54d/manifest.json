@@ -1,0 +1,39 @@
+{
+  "id": "f4ee8f0b-d0b9-4231-b8bb-30714125f54d",
+  "state": "committed",
+  "createdAt": "2026-08-27T13:13:25.645Z",
+  "snapshots": [
+    {
+      "path": ".obsidian-mcp/trash/16495651-0ee8-43bc-b413-2d6cd866c028.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "b1ea59a3b34c3f511fa9c453aae9b1ec9253eca1b3c1f93108e17c675bcf8789",
+      "recoverable": true,
+      "existed": false,
+      "committedEtag": "b1ea59a3b34c3f511fa9c453aae9b1ec9253eca1b3c1f93108e17c675bcf8789"
+    },
+    {
+      "path": ".obsidian-mcp/trash/16495651-0ee8-43bc-b413-2d6cd866c028.json",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "48a15e956078008dfd8b240316197a13ae9a4464afe4d7ebebc8ee849deba17b",
+      "recoverable": true,
+      "existed": false,
+      "committedEtag": "48a15e956078008dfd8b240316197a13ae9a4464afe4d7ebebc8ee849deba17b"
+    },
+    {
+      "path": "Docs/server/CI - fan-out do affected do NX.md",
+      "operation": "delete",
+      "entryType": "file",
+      "phase": "applied",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33152,
+      "etag": "b1ea59a3b34c3f511fa9c453aae9b1ec9253eca1b3c1f93108e17c675bcf8789",
+      "snapshot": "2.bin"
+    }
+  ],
+  "completedAt": "2026-08-27T13:13:25.659Z"
+}

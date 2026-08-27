@@ -7,7 +7,7 @@ tags:
 aliases:
   - "Eventos, incidentes e alarmes"
   - "00 - Eventos, incidentes e alarmes"
-atualizado: 2026-08-24
+atualizado: 2026-08-25
 ---
 
 # Eventos, incidentes e alarmes (ms-cameras)
@@ -24,6 +24,7 @@ Como o `ms-cameras` registra ocorrências das câmeras (eventos), lê essa rede 
 - [[Eventos, incidentes e alarmes - Arquitetura e estratégias]] - seam de registro (MOD-010, unificado para as 2 fontes), leitura cross-camera, observações/report, correlação, emissão de alarme e as decisões por trás.
 - [[Eventos, incidentes e alarmes - Fluxos]] - use cases e o caminho de um evento até o alarme, + mapa UF→endpoint do frontend.
 - [[Eventos, incidentes e alarmes - Requisitos e SLA]] - RF-EVT e RF-INC cobertos, estado de cada um (RF-INC-01 passou a **Implementado**).
+- [[Eventos, incidentes e alarmes - Catálogo e criticidade]] - catálogo de todo evento produzido hoje (câmera e analítico) ordenado por criticidade, a definição de evento crítico e os furos do pipeline.
 
 ## Pipeline (em prosa)
 

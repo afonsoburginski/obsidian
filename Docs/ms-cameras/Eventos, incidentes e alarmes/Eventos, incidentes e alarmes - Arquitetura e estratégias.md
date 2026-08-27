@@ -4,7 +4,7 @@ tags:
   - ms-cameras
   - cameras
   - eventos
-atualizado: 2026-08-24
+atualizado: 2026-08-25
 ---
 
 # Eventos, incidentes e alarmes - Arquitetura e estratégias
@@ -126,7 +126,7 @@ Não existia na nota de 03/07. Modelo novo `CameraEventObservation` (migration `
 ## 9. Decisões e trade-offs
 
 - **Categoria derivada, não persistida**: `CameraEventLog` não tem coluna `category`; `deriveCameraEventCategory` mapeia `(eventType, causeCode)` em read-time. Filtrar por categoria vira predicado Prisma (`buildCategoryWhere`). O clause `OPERATIONAL` é NULL-safe: não usa `NOT(OR(positivos))` porque `payload->'causeCode'` ausente é SQL `NULL` e descartaria a linha; trata o caso "sem causeCode" explicitamente.
-- **`ANALYTICS` sem produtor**: categoria existe no enum mas nenhum evento a produz ainda (analítica de vídeo é tarefa futura, RF-EVT-03 parcial). `positiveCategoryClause(ANALYTICS)` retorna `eventType: { in: [] }` (nunca casa).
+- **`ANALYTICS` com produtor fora da `develop` (corrigido 25/08)**: a categoria passou a ter produtor em `6bc94d324d` (PROJ-021, `analytics-realtime/analytics-incident-recorder.service.ts`), que grava `ANALYTICS_INCIDENT` a partir do campo `region_incidents` do frame do analítico embarcado, com dedup de 30 s por `(câmera, região, tipo)`. O commit está na linhagem `SOFTWARE-2676` e **ainda não na `develop`**: na `develop` a afirmação antiga continua verdadeira (nenhum evento produz a categoria, e `positiveCategoryClause(ANALYTICS)` casa `eventType: { in: [ANALYTICS_INCIDENT] }` sem nunca encontrar linha). Catálogo por tipo e criticidade em [[Eventos, incidentes e alarmes - Catálogo e criticidade]].
 - **Fallback pt-BR persistido**: `title`/`description` de incidente e chaves i18n (`buildIncidentTitleFallback`) são texto estável para consumidores sem i18n; o frontend prefere `translationKey`.
 - **`type`/severidade derivados de `correlationKey`**: não há coluna dedicada; o filtro por `type` (UC-023) vira `endsWith(':<causeCode>')` sobre `correlationKey` (`incidents/incident-mapping.ts`). Incidentes manuais (UC-044) têm `correlationKey: null`, então não carregam `type` derivado dessa via - a UI de detalhe recebe `causeCode: null` e cai no fallback `UNKNOWN`.
 - **`area`/`subarea` resolvidos por topologia, não persistidos no evento**: a leitura cross-camera (seção 4) busca a topologia do tenant (ms-traffic-model, via bearer forwarded) uma vez por request e resolve `trafficElementId → {area, subarea}` em memória; uma indisponibilidade do ms-traffic-model degrada os rótulos para string vazia sem falhar a rota.

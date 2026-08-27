@@ -1,0 +1,18 @@
+{
+  "id": "9bcf42cf-060c-4c5c-820c-81b455f0a679",
+  "state": "committed",
+  "createdAt": "2026-08-25T19:35:08.388Z",
+  "snapshots": [
+    {
+      "path": "Docs/ms-cameras/Eventos, incidentes e alarmes/Eventos, incidentes e alarmes - Catálogo e criticidade.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "0d58fe641d9d34144bada10c180bc25dcc424fb9dee51f2a70bf29e511d7e86a",
+      "recoverable": true,
+      "existed": false,
+      "committedEtag": "0d58fe641d9d34144bada10c180bc25dcc424fb9dee51f2a70bf29e511d7e86a"
+    }
+  ],
+  "completedAt": "2026-08-25T19:35:08.400Z"
+}

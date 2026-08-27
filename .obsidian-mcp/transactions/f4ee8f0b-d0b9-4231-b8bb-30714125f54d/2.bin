@@ -1,0 +1,47 @@
+---
+tags:
+  - doc
+  - infra
+  - server
+  - ci
+aliases:
+  - "Fan-out do affected"
+atualizado: 2026-08-27
+---
+
+# CI - fan-out do affected do NX
+
+Por que quase toda PR roda a integração dos 13 microsserviços, e quanto disso dá para consertar.
+
+## O número que importa
+
+Medir por commit engana: 75% dos commits não tocam código compartilhado. Mas o `nx affected` compara o **diff inteiro da PR**, então um commit da PR tocando código compartilhado faz a PR toda dar fan-out.
+
+Por PR, sobre os 2.025 merges em `develop` nos 30 dias até 27/08, classificados pela causa mais forte:
+
+| Grupo | O que a PR toca | PRs | % | Tratável? |
+| :--- | :--- | ---: | ---: | :--- |
+| A | nada compartilhado | 566 | 28% | já não dá fan-out |
+| B | apenas `i18n/locales/` | 461 | 23% | fase 1, PR #2213 |
+| C | `libs/contracts` fora de i18n | 386 | 19% | fase 2, proposta |
+| D | `libs/core-*`, libs, `sharedGlobals` | 612 | 30% | não, é correto |
+
+**72% das PRs tocam algo compartilhado.** O teto de qualquer escopo em contracts é B + C, 42%.
+
+## Por que o grupo D fica
+
+A maior mudança em `libs/core-*` é `core-common/exceptions`, 86 arquivos em 30 dias: `DomainException` e `ErrorCode`, que todo serviço lança. E `sharedGlobals` (`tsconfig.base.json`, `package-lock.json`, `.nvmrc`) muda resolução de módulo ou árvore de dependência. Reexecutar tudo é a resposta certa nos dois casos.
+
+## Causa raiz da fase 1
+
+`nx.json` declarava `inputs` para `build`, `lint` e `test`, mas **não para `test:integration`** - nem nos 13 `project.json`. Sem input declarado, a chave de cache era o que o NX inferisse, e um `pt-BR/cameras.json` invalidava a integração do `ms-pmv`.
+
+## Estado
+
+- **Fase 1** na PR #2213 (empilhada na #2210): `namedInput` `productionSemLocales` + `cache: true` no `test:integration`. Alcança 23%. `build` fica intocado de propósito, porque o backend embute os catálogos no bundle e cache-hit publicaria tradução velha.
+- **Fase 2** proposta na spec `CROSS-066` seção 9, não implementada: allowlist de domínios de contracts por serviço, gerada por script e travada por guard, no padrão do `docker/kafka-topics.list`. O gerador falha aberto - símbolo não resolvido volta ao input cheio.
+- Fase 2 só depois da fase 1 medida em `develop`: as duas dependem de `^namedInput` resolver no contexto da dependência, e verificar isso com 26 linhas custa menos.
+
+## Relacionados
+
+[[Infraestrutura de CI - trabalho sem card]] · [[Observabilidade CI - plano (stack completa)]] · [[server]]
