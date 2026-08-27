@@ -8,7 +8,7 @@ aliases:
   - "VL e ATSPM"
 servico: ms-virtual-loop, ms-atspm, ms-connector-virtual-loop, ms-dai (planejados, todos scaffold hoje)
 fonte: auditoria de código de 24/08 (embarcado, servidor, ACOM/ATSPM) + Anotações sobre Analítico de vídeo (notas do user) + attlas-vl-atspm.pdf (squad de Visão Computacional, 10/08) + decisões preservadas das 14 PRs fechadas da Sprint 27 + prazo externo fechado em 25/08
-atualizado: 2026-08-27
+atualizado: 2026-08-25
 ---
 
 # Analítico (Virtual Loop, ATSPM, DAI, ACOM)
@@ -22,12 +22,9 @@ atualizado: 2026-08-27
 > [!important] Prazo externo: 18/09/2026, front e backend
 > Fechado pelo user em 25/08: a entrega do Analítico de vídeo, **front e backend**, tem prazo de
 > **18 de setembro de 2026**. A data cai na Sprint 33, depois do fim da [[Attlas - Sprint 32]] - as três
-> sprints do analítico (30, 31, 32) são o desenvolvimento cheio antes da semana de entrega. A Sprint 30
-> já tem 3 cards `[Front]` reais, com PR aberta (fila de incidentes, galeria de mídia de evidência,
-> desenho sobre frame congelado) - o risco não é "zero frontend planejado". O risco genuíno é mais
-> específico: as telas de **Métricas ATSPM** e do **Laço Virtual**, já prontas no `attlas-design`
-> (~11.000 linhas), não têm card em nenhuma das três sprints (30, 31, 32) - ver [[Attlas - Sprint 32]],
-> seção "Proposto, sem pontos fechados".
+> sprints do analítico (30, 31, 32) são o desenvolvimento cheio antes da semana de entrega. Maior risco
+> conhecido contra o prazo: nenhuma das três tem card de implementação de frontend, só spec `UF-*` - ver
+> [[Attlas - Sprint 32]], seção "Proposto, sem pontos fechados".
 
 ## As duas capacidades e a placa
 
@@ -111,7 +108,7 @@ uma tem um `index.md` respondendo o que entrega em feature e em tela:
 
 - [[Sprint 30 - o que entrega]] (24-30/08) - camada de gestão do embarcado: entidade em banco, saúde do
   analítico, writer do vínculo, compatibilidade ARTPEC, dedup de incidente, preset com snapshot,
-  evidência. **5 telas.** 51 pts em 11 cards, 11 pts entregues em 25/08.
+  evidência. **5 telas.** 51 pts em 12 cards, 11 entregues.
 - [[Sprint 31 - o que entrega]] (31/08-06/09) - analítico servidor (Virtual Loop em container). 25 pts,
   **nenhuma tela** - é o caminho do dado.
 - [[Sprint 32 - o que entrega]] (07-13/09) - escala e prova de campo. Último checkpoint antes do prazo.

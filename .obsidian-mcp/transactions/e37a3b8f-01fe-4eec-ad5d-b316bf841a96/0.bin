@@ -2,7 +2,7 @@
 tags:
   - doc
   - analitico
-atualizado: 2026-08-27
+atualizado: 2026-08-25
 servico: ms-cameras (hoje), ms-virtual-loop, ms-connector-virtual-loop, ms-atspm, ms-dai (planejados)
 fonte: síntese das notas deste domínio + auditoria de código de 25/08 + as 16 decisões tomadas nas Sprints 30, 31 e 32
 ---
@@ -121,17 +121,15 @@ A dependência de Câmeras é a mais forte e a mais mal entendida: o Analítico 
 ## 5. Estado real de cada peça
 
 Auditado contra o código em 25/08, não contra o plano. Mapa de código detalhado no
-[[Analítico|índice do domínio]]. Estado de cada card da Sprint 30, entregue x a fazer, é sempre conferido
-contra [[Sprint 30 - o que entrega]] - fonte de verdade da semana.
+[[Analítico|índice do domínio]].
 
 | Peça | Estado |
 | --- | --- |
 | Pipeline embarcado ao vivo, aba Analíticos, contratos de região e detecção | Real |
 | Contratos de detector e histórico de detecção | Real e maduro - aceita o evento do laço virtual sem mudança |
 | ACOM: CRUD, TCP, codec, pollers | Real, **falta o caller** |
-| Entidade Analítico + região em banco + unicidade, healthcheck do analítico | **Entregue na Sprint 30** (11 pts, com código e teste, 25/08) |
-| Compatibilidade por arquitetura ARTPEC, incidente contável com dedup, preset PTZ com snapshot, fonte da imagem de evidência | **A fazer na Sprint 30** - card aberto, PR em andamento |
-| Fila de incidentes, galeria de evidência, desenho sobre frame congelado (os 3 cards `[Front]`) | **A fazer na Sprint 30** - PR aberta, ainda não mergeada |
+| Entidade Analítico, região em banco, unicidade, saúde, ARTPEC, incidente contável, preset com snapshot, evidência | **Entregue na Sprint 30** |
+| Fila de incidentes, galeria de evidência, frame congelado | **Entregue na Sprint 30** |
 | Analítico servidor e tradutor de endereço | Scaffold - [[Sprint 31 - o que entrega\|Sprint 31]] |
 | Telas de métricas ATSPM e Laço Virtual | Prontas no `attlas-design` (~11.000 linhas), **sem card em nenhuma sprint** |
 | `ms-atspm`, `ms-dai` | Nem spec existe |

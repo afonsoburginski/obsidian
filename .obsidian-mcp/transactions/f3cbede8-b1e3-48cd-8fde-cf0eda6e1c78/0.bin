@@ -9,7 +9,7 @@ aliases:
   - "Sprint 32 - o que entrega"
 sprint: Sprint 32 (7/9/26 - 13/9/26)
 status: CRIADA em 25/08 pelo user, como a terceira semana da frente do analítico, contra o prazo externo de 18/09 (front + backend). Comprometido só o resíduo que a Sprint 31 já projetava pra cá (2 cards, 4 pts) - SOFTWARE-2398 e SOFTWARE-2200, cards já existentes no ClickUp desde a Sprint 27, mantidos com o mesmo ID, pontos setados em 25/08. O resto da nota é o que falta dimensionar, não escopo fechado - ver "Proposto, sem pontos fechados" abaixo.
-atualizado: 2026-08-27
+atualizado: 2026-08-25
 ---
 
 # Sprint 32 - o que entrega
@@ -72,25 +72,23 @@ a lista existir.
 
 ## Proposto, sem pontos fechados: o furo de frontend
 
-> [!danger] O furo real: métricas ATSPM e Laço Virtual sem card em nenhuma sprint
-> A Sprint 30 já tem frontend real, com PR aberta: fila de incidentes, galeria de mídia de evidência e
-> desenho de região sobre frame congelado (os 3 cards `[Front]`), mais o card `[Full]` de healthcheck do
-> analítico, já **entregue**. O furo não é "zero frontend planejado" - é mais específico: as telas de
-> **Métricas ATSPM** e do **Laço Virtual**, prontas no `attlas-design` (~11.000 linhas), não têm card em
-> nenhuma das três sprints do analítico (30, 31, 32). A [[Attlas - Sprint 30]] registra isso
-> explicitamente em "Explicitamente NÃO entrega esta semana"; a [[Attlas - Sprint 31]] não tem tela
-> nenhuma por natureza (é só o caminho do dado do analítico servidor); e esta sprint (32) não
-> comprometeu ponto de tela nenhuma.
+> [!danger] Nenhuma das três sprints do analítico tem card de implementação de frontend
+> Auditado nas notas das três semanas: a [[Attlas - Sprint 30]] e a [[Attlas - Sprint 31]] registram
+> explicitamente que "as telas entram como spec `UF-*`, não como implementação da sprint". Nem uma spec
+> `UF-*` nova está no comprometido de nenhuma das duas - o que existe hoje é a `UF-033` (aba Analíticos,
+> desenho de região), que já está **implementada** desde o PR #766 e só precisa de correção de texto
+> (card 2 da Sprint 30, herdado da PR fechada #1355). Fora dela, zero spec de frontend do analítico
+> existe: nada para exibir arquitetura/compatibilidade no cadastro (card 4 da Sprint 30), nada pro
+> healthcheck do analítico (card 5 da Sprint 30), nada pro preset PTZ com snapshot de região (card 8 da
+> Sprint 30). Sem spec aprovada, não há o que implementar - é a própria regra de SDD do repo.
 >
-> Se o prazo de 18/09 exige essas telas em produção (não só backend funcionando por baixo), falta pelo
-> menos:
-> 1. Confirmar se as métricas ATSPM/Laço Virtual entram no escopo de 18/09 (mesma pergunta em aberto
->    sobre ATSPM/ACOM, seção abaixo).
-> 2. Dimensionar e agendar a implementação, sobre o que a cadeia de Virtual Loop das Sprints 30-31 tiver
->    entregue - candidata é a Sprint 33, que ainda não existe e não é escopo desta atualização.
+> Se o prazo de 18/09 exige tela em produção (não só backend funcionando por baixo), falta pelo menos:
+> 1. Escrever as specs `UF-*` das três telas acima, sobre o que a Sprint 30 entrega.
+> 2. Dimensionar e agendar a implementação delas - candidata é a Sprint 33, que ainda não existe e não é
+>    escopo desta atualização.
 >
-> **Isso não foi decidido pelo user em 25/08** - fica registrado aqui como o risco genuíno de frontend
-> contra o prazo, não resolvido silenciosamente.
+> **Isso não foi decidido pelo user em 25/08** - fica registrado aqui como o maior risco de todo o
+> planejamento contra o prazo, não resolvido silenciosamente.
 
 ## Em aberto: ATSPM e ACOM entram no prazo de 18/09?
 
@@ -103,7 +101,7 @@ domínio inteiro (incluindo ATSPM e ACOM), faltam 28 pontos sem sprint nenhuma a
 ## Riscos
 
 1. **Furo de frontend, ver seção própria acima.** É o risco mais concreto: zero ponto orçado em zero
-   sprint para as telas de métricas ATSPM e Laço Virtual, que o prazo pede.
+   sprint para telas que o prazo pede.
 2. **Escopo ATSPM/ACOM não confirmado**, ver seção acima.
 3. **Cards 1 e 2 desta sprint herdam qualquer atraso da Sprint 31.** Se a escada de 5 cards de código da
    Sprint 31 (cards 4 a 8) escorregar, os dois cards daqui escorregam junto - não há margem para absorver

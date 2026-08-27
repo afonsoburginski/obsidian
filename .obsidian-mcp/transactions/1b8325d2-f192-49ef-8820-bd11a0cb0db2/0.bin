@@ -7,7 +7,7 @@ tags:
 aliases:
   - "Infra de CI"
   - "Trabalho de CI sem card"
-atualizado: 2026-08-27
+atualizado: 2026-08-19
 ---
 
 # Infraestrutura de CI, o trabalho que nunca teve card
@@ -36,9 +36,6 @@ medida delas.
 A 2579 mora na Sprint 29 porque foi onde a frente encerrou, mas o trabalho dela atravessa as Sprints 25,
 26 e 29. A lista indica a conclusão, não o período inteiro.
 
-As PRs de 27/08 (seção "Rodada de 27/08" abaixo) ainda não viraram card retroativo — ficam de fora desta
-tabela até isso acontecer.
-
 ## As pull requests de julho e agosto
 
 | PR | Data | Frente | O que resolveu |
@@ -50,10 +47,8 @@ tabela até isso acontecer.
 | [#1670](https://github.com/atmanadmin/attlas-2026/pull/1670) | 18/08 | resiliência de boot (SOFTWARE-2580) | consumidor Kafka deixa de derrubar o processo inteiro em quatro serviços |
 | [#1727](https://github.com/atmanadmin/attlas-2026/pull/1727) | 18/08 | fila do CI (SOFTWARE-2579) | vaga liberada pela morte do processo dono, não por guarda de tempo |
 | [#1737](https://github.com/atmanadmin/attlas-2026/pull/1737) | 18/08 | fila do CI (SOFTWARE-2579) | teto de inotify e contenção de containers vazados na máquina de runners |
-| [#2210](https://github.com/atmanadmin/attlas-2026/pull/2210) | 27/08 | pool de runners (sem card ainda) | EC2 sai do pool de Build/Integration/deploy, fica só com Lint; para o checkout que apagava `node_modules` do runner a cada execução |
-| [#2213](https://github.com/atmanadmin/attlas-2026/pull/2213) | 27/08 | CROSS-066 (sem card ainda) | `test:integration` ganha `inputs` declarados por domínio de `libs/contracts`, parando de reexecutar a suíte dos 13 serviços a cada mudança de tradução |
 
-## Por que a fila do CI voltou (seis vezes até agora)
+## Por que a fila do CI voltou quatro vezes
 
 Cada rodada corrigiu uma causa e descobriu a seguinte, porque todas produzem o mesmo sintoma, integração
 vermelha em pull request que não tem nada de errado.
@@ -73,40 +68,6 @@ vermelha em pull request que não tem nada de errado.
    rodava inteira contra um container morto. O teto padrão do kernel é 128 por usuário e estourava porque
    a máquina acumulava centenas de containers vazados, já que o testcontainers reusa um reaper único por
    máquina que só é podado quando a última conexão cai, o que nunca acontece em CI contínuo.
-6. **Gargalo mudou de máquina, não sumiu** (27/08). A EC2 divide 8 vCPU com a dev stack e o stream de
-   câmera; medindo 99 jobs de 60 runs ela pegava um terço dos Builds a 10,8 min cada e virava o gargalo do
-   fleet (0,211 run/min contra 0,260 da sumo). O #2210 tirou Build/Integration/deploy da EC2 e deixou ela
-   só com Lint (4,6 min, cabe no slot único que ela tem). Efeito colateral não previsto: `Integration Test`
-   e `Build` de toda PR da empresa passaram a competir só pelos **3 runners heavy da sumo** (uma VM só).
-   Observado ao vivo em 27/08: uma PR sem nada de compartilhado (`traffic-model/UC-060`) teve Lint em 48s
-   e ficou **24 min parada** só esperando vaga de Integration Test — nada a ver com domínio, contracts ou
-   `nx affected`, é fila pura pelos 3 slots. Uma rodada de push própria (7 branches empurradas em sequência
-   pra levar o fix do #2213 pros PRs de câmera) também competiu pelo slot único de Lint da EC2 e atrasou
-   o Lint de uma PR simultânea.
-
-## `nx affected` e o domínio de contracts (27/08, investigação, não executada)
-
-Motivada pela demora do PR #2002 (SOFTWARE-2678, `ms-cameras`). Duas causas distintas, confundidas no
-primeiro diagnóstico:
-
-- **Fila de runner** (causa 6 acima): já é o que domina o tempo de espera hoje, e o #2213 não mexe nisso.
-- **`nx affected` no nível de projeto**: `libs/contracts` é um projeto NX só. Mudar qualquer arquivo dentro
-  dele (mesmo só em `camera/*`) marca o projeto inteiro como alterado, e todo consumidor de `@attlas/contracts`
-  entra na lista de afetados de lint/build/test — 22 projetos no caso do #2002, a maioria resolvida via
-  cache remoto (custo perto de zero), mas ainda soma ao tempo de checkout/instalação e engorda o log.
-
-  Proposta (não executada): extrair `libs/contracts/src/lib/{camera,camera-analytic,camera-media-profile}`
-  (202 arquivos) para um projeto NX próprio, `libs/contracts-camera`. Confirmado por grep que nenhum
-  serviço fora de `ms-cameras`/`web-attlas` importa esses símbolos hoje, então só esses dois ficariam com
-  edge no grafo até o pacote novo — uma PR que só muda tipo de câmera para de aparecer nos outros ~20
-  serviços. Custo: mover os 202 arquivos, reescrever import em `ms-cameras`/`web-attlas` (inclusive separar
-  import misto câmera + outro domínio em duas linhas), criar o alias `@attlas/contracts-camera` no
-  `tsconfig.base.json`, e atualizar a lista de domínios do `test:integration` do `ms-cameras` (CROSS-066) e
-  o script `scripts/contracts-integration-inputs.mjs`. Relacionado a [[feedback_i18n_contracts_split_parked|CROSS-022/026]],
-  que tratava do mesmo tipo de split e ficou parado em 17/06 — a diferença agora é o escopo: só o domínio
-  `camera`, não os 19 domínios inteiros.
-
-  Diagrama antes/depois publicado: https://claude.ai/code/artifact/ddc8a13b-3381-491d-adf7-eee52b1e1211
 
 ## As pull requests de maio e junho
 
@@ -131,11 +92,6 @@ Mesma frente, fase anterior, toda coberta pela SOFTWARE-2582 com exceção das d
   caído, e resolver exige alterar o healthcheck de cada um.
 - O teto de inotify está levantado em runtime na máquina de runners. O arquivo de sysctl versionado e o
   reaper entraram na PR, mas só valem para máquina nova ou reinício.
-- Avaliar um quarto runner heavy na sumo (ou mais). Não investigado se a VM tem CPU sobrando — é a
-  alavanca mais direta pra fila de Integration/Build hoje, mais direta que o split de contracts.
-- Split de `libs/contracts-camera` (seção acima): desenhado, não executado. Precisa de checagem de tipo
-  em ~300+ arquivos que a regra de "nunca rodar build/lint/tsc local" não cobre sem uma exceção pontual —
-  decisão em aberto de como validar antes de empurrar.
 
 ## Relacionados
 

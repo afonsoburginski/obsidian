@@ -9,7 +9,7 @@ aliases:
   - "Sprint 31 - o que entrega"
 sprint: Sprint 31 (31/8/26 - 6/9/26)
 status: PLANEJADA em 24/08, junto com a Sprint 30, como a segunda metade da frente do analítico. Frente única - a cadeia do analítico servidor (Virtual Loop em container), respecificada do zero depois do fechamento das 14 PRs da Sprint 27. Comprometido 25 pontos em 8 cards (repontuado de 21 em 25/08, ver seção "Comprometido"; mínimo de 8 PRs por sprint). Depende inteira da fundação que a Sprint 30 entrega. Em 25/08, ganhou o prazo externo de 18/09 (front + backend) - ver [[Attlas - Sprint 32]] para o que sobra depois desta semana. Os 8 cards foram criados no ClickUp em 25/08 (SOFTWARE-2692 a 2699), na lista da Sprint 30 (única lista vigente - Sprint 31 não tem lista própria ainda), pontos setados e repontuados no mesmo dia.
-atualizado: 2026-08-27
+atualizado: 2026-08-25
 ---
 
 # Sprint 31 - o que entrega
@@ -198,11 +198,8 @@ Vai para [[Attlas - Sprint 32]], porque só faz sentido com a cadeia acima de p�
 6. **O device de campo é compartilhado.** Vale para comparar o nosso analítico com o embarcado: o
    `10.11.20.101` continua sem dono explícito e outro writer segue carimbando o `source_id`. Validar ao
    vivo pode consumir meio dia esperando.
-7. **Métricas ATSPM e Laço Virtual sem sprint que as implemente.** Esta sprint não tem tela por natureza
-   - é só o caminho do dado do analítico servidor. Diferente da Sprint 30 (que já tem 3 cards `[Front]`
-   reais, com PR aberta, mais o healthcheck já entregue), as telas de métricas ATSPM e do Laço Virtual,
-   prontas no `attlas-design`, seguem sem card em nenhuma das três sprints do analítico - ver
-   [[Attlas - Sprint 32]].
+7. **Prazo de 18/09 sem sprint de frontend implementada, herdado da Sprint 30.** Esta sprint também não
+   tem nenhum card de implementação de tela - ver o callout de prazo no topo.
 
 ## Ver também
 

@@ -5,13 +5,13 @@ tags:
   - sprint-30
   - analitico
 card: SOFTWARE-2682
-titulo: "[Back] Writer do deviceSourceId e higiene do embarcado"
 clickup: https://app.clickup.com/t/86ak5dx7x
+titulo: "[Back] Writer do deviceSourceId e higiene do embarcado"
 frente: Analítico
 tamanho: 3 pts
 status: comprometido na Sprint 30, bug P0 e próximo do caminho crítico. PR
 sprint: "[[Attlas - Sprint 30]]"
-atualizado: 2026-08-27
+atualizado: 2026-08-25
 ---
 
 # Analítico - Writer do deviceSourceId e higiene do embarcado
@@ -50,25 +50,18 @@ o texto é recuperável e serve de ponto de partida. O conteúdo entra neste car
 - Reescreve a `UF-033` do `web-attlas`, hoje em `draft` afirmando "persistência em localStorage" e "o
   backend ainda não existe". As duas afirmações são falsas desde 14/07.
 
-## O bug de `kind` entra neste card, e não é impacto zero
+## O que este card deliberadamente não faz
 
-`device-stream.consumer.ts` deriva o `kind` do evento de detecção invertido em relação ao que os nomes
-sugerem, encontrado em 03/08, código intocado desde 14/07. Uma leitura anterior desta nota - e da nota de
-arquitetura do domínio, corrigida em 24/08 - dizia que o impacto funcional era zero, porque o overlay de
-desenho (`camera-analytics-store.service.ts`) nunca lê `event.kind`. Isso é verdade, mas incompleto:
-**`camera-analytics-panel.component.html:234` renderiza `{{ entry.kind }}` cru no log de detecção ao vivo
-da aba Analíticos**, com `[attr.data-kind]` colorindo `VIRTUAL_LOOP` diferente - hoje o operador lê o
-rótulo trocado (ver [[Analítico - Arquitetura e estratégias]], seção do bug de `kind`).
-
-Como não existe spec fixando a semântica nem `device-stream.consumer.spec.ts` no repo, o flip do ternário
-entra **junto** com o teste que trava o significado - não como correção às cegas de um campo sem dono.
+Não corrigir o bug de `kind` invertido como prioridade. O código está intocado desde 14/07, mas o frontend
+**ignora o campo**: `apps/web-attlas/src/app/modules/cameras/services/camera-analytics-store.service.ts`
+nunca lê `event.kind`. O impacto funcional hoje é zero. O que falta ali é teste e spec que digam qual é o
+comportamento correto, não correção às cegas de um campo que ninguém consome.
 
 ## DoD
 
 Cadastro de câmera pela interface grava `deviceSourceId` e a câmera passa a aparecer no binding do
 consumer sem edição manual de banco, com teste de integração cobrindo o caminho. PR #1355 mergeada junto,
-com `deviceAnalyticId` zerado da develop e a `UF-033` reescrita. Flip do `kind` corrigido, com
-`device-stream.consumer.spec.ts` novo travando a semântica correta.
+com `deviceAnalyticId` zerado da develop e a `UF-033` reescrita.
 
 ## Encosta em
 

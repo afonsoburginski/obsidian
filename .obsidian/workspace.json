@@ -4,21 +4,21 @@
     "type": "split",
     "children": [
       {
-        "id": "f2126f7dc55ef3a8",
+        "id": "0c7b252ec76f6abc",
         "type": "tabs",
         "children": [
           {
-            "id": "0a201a8563f55e4e",
+            "id": "d6f1ecfe9df44260",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Sprint/31/index.md",
+                "file": "Reports/2026-08-27.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "index"
+              "title": "2026-08-27"
             }
           }
         ]
@@ -209,8 +209,17 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "a025b9b6a66377fd",
+  "active": "d6f1ecfe9df44260",
   "lastOpenFiles": [
+    "Sprint/30/index.md",
+    "Reports/2026-08-27.md",
+    "Reports/2026-08-27.md.tmp.500946.a496ca36ef44",
+    "Docs/index.md",
+    "Sem título.canvas",
+    "Docs/ms-cameras/Diagramas/09 - Streaming - estratégia de codec.excalidraw.md",
+    "Docs/ms-cameras/Diagramas/08 - MOD-008 bandwidth-monitoring.excalidraw.md",
+    "Docs/ms-cameras/Diagramas/01 - MOD-001 cameras-crud.excalidraw.md",
+    "Sprint/31/index.md",
     "Docs/server/Observabilidade CI - plano (stack completa).md",
     "Reports/2026-08-27.md.tmp.167743.9e00cbbe8027",
     "Docs/server/Consultar câmera Hikvision via ISAPI.md",
@@ -226,18 +235,11 @@
     "Docs/ms-cameras/Eventos, incidentes e alarmes/Eventos, incidentes e alarmes - Requisitos e SLA.md",
     "Sprint/31/Analítico servidor - ADR de alimentação e SPEC do ms-virtual-loop.md",
     "Docs/Analítico/Analítico - Visão do produto.md",
-    "Docs/index.md",
     "Docs/Convenções de escrita.md",
     "Sprint/31/Analítico servidor - Contrato de ocupação.md",
     "Sprint/32/SOFTWARE-2200 - Prova de campo do analítico em container.md",
     "Reports/2026-07-20.md",
-    "Reports/2026-07-12.md",
-    "Sprint/30/Analítico - Writer do deviceSourceId e higiene do embarcado.md",
     "graph-01.png",
-    "Sprint/30/Analítico - Spec dos endpoints de região.md",
-    "Sprint/30/Analítico - Renumerar a CROSS-032 duplicada.md",
-    "Sprint/30/Analítico - Preset PTZ com snapshot de região.md",
-    "Sprint/30/Analítico - Healthcheck do analítico.md",
     "Sprint/32",
     "Sprint/31",
     "Docs/Analítico/attlas-vl-atspm.pdf",
@@ -247,9 +249,7 @@
     "Docs/ms-cameras/VMS/index.md.tmp.419919.44c45f5da3df",
     "Sprint/29/SOFTWARE-2532 - Hikvision - telemetria e preview.md.tmp.82700.20de609be91b",
     "Reports/2026-08-17.md.tmp.42836.f8d931f43fc9",
-    "Sprint/28/SOFTWARE-2434 - Câmeras como fontes IPC.md.tmp.11463.07e290afc379",
     "Sem título 1.canvas",
-    "Sem título.canvas",
     "Docs/ms-cameras/VMS/videowall-h9-quito.png",
     "Docs/ms-cameras/Video Wall/videowall-h9-quito.png",
     "image (5).png",

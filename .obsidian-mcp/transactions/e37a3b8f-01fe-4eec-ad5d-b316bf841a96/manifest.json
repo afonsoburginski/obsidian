@@ -1,0 +1,21 @@
+{
+  "id": "e37a3b8f-01fe-4eec-ad5d-b316bf841a96",
+  "state": "committed",
+  "createdAt": "2026-08-27T19:39:07.230Z",
+  "snapshots": [
+    {
+      "path": "Docs/Analítico/Analítico - Visão do produto.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "485412dcdcfb6869bd357defa9700690889a215b8f9ca5a1448b1863ac1ed1c3",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33204,
+      "etag": "e5b2d1bdaf0f1f490437d80b0968d510a88b3b4a6afbc9f7098e837cc0c2541a",
+      "snapshot": "0.bin",
+      "committedEtag": "485412dcdcfb6869bd357defa9700690889a215b8f9ca5a1448b1863ac1ed1c3"
+    }
+  ],
+  "completedAt": "2026-08-27T19:39:07.242Z"
+}
