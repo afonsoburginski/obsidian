@@ -2,8 +2,8 @@
 tags:
   - doc
   - analitico
-atualizado: 2026-08-24
-servico: ms-virtual-loop, ms-connector-virtual-loop, ms-atspm, ms-dai (planejados, todos scaffold hoje)
+atualizado: 2026-08-31
+servico: ms-video-analytics (o analitico servidor, hoje ms-virtual-loop e scaffold). ms-atspm, ms-dai e ms-connector-virtual-loop nao nascem - CROSS-077, 31/08
 fonte: auditoria de código de 24/08 (embarcado, servidor, ACOM/ATSPM, detector-history) + 14 PRs da Sprint 27, fechadas em 24/08 (#1342 a #1357) + notas do user + PDF do squad de CV
 ---
 
@@ -212,13 +212,21 @@ ocupação e o connector que traduz o endereço. O lado que persiste a série j�
 
 ## Estado real dos cinco serviços reservados
 
+> [!important] Dos cinco, só um nasce
+> Decidido em 31/08 ([[Analítico - Topologia de serviço do analítico de vídeo]]): o `ms-virtual-loop`
+> vira o analítico servidor, renomeado para `ms-video-analytics`. Os outros quatro seguem scaffold até
+> o card de remoção. O parágrafo abaixo é o retrato do repo, não uma lista de trabalho a fazer.
+
 `ms-virtual-loop`, `ms-connector-virtual-loop`, `ms-atspm`, `ms-dai` e `ms-acom` são **scaffold NX
 byte-idêntico**: `app.service.ts` tem o mesmo hash MD5 nos cinco, e `main.ts` nos cinco ainda carrega o
 comentário gerado `This is not a production server yet!`. Zero linha de domínio em qualquer um deles.
 
 O que engana é que a **infraestrutura está toda provisionada e vazia** nos cinco: imagem Docker, entrada
 no `docker-compose.yml`, rota no `docker/kong.yml` e banco `db-*` criado. Do lado de fora parece serviço
-vivo - `docs/architecture/services.md` inclusive ainda anuncia o `ms-acom` como serviço na porta 3305.
+vivo. **Corrigido em 31/08**: o Grupo 5 do `docs/architecture/services.md` passou a descrever a topologia
+decidida em vez da reservada, e o mesmo vale para o `readme.md`, o índice mestre de specs, o `SPEC-GUIDE`
+e o `backend-standards`. A infraestrutura em si (imagem, compose, Kong, banco) continua provisionada até o
+card de remoção.
 
 ## As decisões preservadas das 14 PRs fechadas
 
@@ -248,7 +256,7 @@ Decisões já fechadas nessas PRs:
   separado. O serviço ingere o stream, detecta veículo por frame, lê a geometria da região do `ms-cameras`
   (que continua dono dela) e publica a ocupação da região. Não persiste série histórica, não fala com o
   controlador, não decide atuação em hardware.
-- **`ms-connector-virtual-loop` só traduz endereço** (PR #1345): consome a ocupação publicada pelo
+- **A tradução de endereço** (PR #1345, então desenhada como `ms-connector-virtual-loop`; desde 31/08 ela vive **dentro** do analítico servidor): consome a ocupação publicada pelo
   `ms-virtual-loop`, resolve pra qual detector físico aquela câmera e região correspondem, e republica no
   mesmo tópico de detecção bruta que o caminho físico usa. Não reimplementa a lógica de reconciliação de
   janela do caminho físico, porque o problema que ela resolve (buffer de leitura de equipamento por
@@ -327,10 +335,32 @@ auto-detecção do cadastro seta com o mesmo valor. Modelar isso é o card 4 da 
 | --- | --- | --- |
 | `ms-cameras` | Mantém e cresce | Continua dono da geometria de região e do vínculo com o analítico embarcado. Ganha, do trabalho já especificado na Sprint 27, o vínculo região-endereço de detector e a publicação de ocupação também pelo caminho embarcado |
 | `ms-virtual-loop` | Mantém, escopo já fechado | É o servidor de Virtual Loop em si, não uma camada de configuração em volta de um processamento que ficaria em outro lugar. Falta destravar e mergear |
-| `ms-connector-virtual-loop` | **Não nasce como serviço.** Decidido em 24/08 relendo as notas de alinhamento (elas listam só quatro serviços) | Fica scaffold no repo/compose; a tradução de endereço e a publicação em `attlas.detectors.raw` vivem dentro do `ms-virtual-loop`, ver [[Attlas - Sprint 31]] |
-| `ms-atspm` | Mantém, redefine do zero | Único dos serviços de produto sem nenhum planejamento anterior. Escopo: métricas avançadas de fato, associação com grupo semafórico e snapshot |
-| `ms-dai` | Mantém, escopo pendente | Fica em aberto se processa incidentes de forma independente ou se vira sub-produto do ATSPM, exibido por ele |
-| `ms-acom` | Descontinuar | Substituído por completo por `ms-controllers/src/acom/`. Sai junto a rota `/api/acom` singular do Kong |
+| `ms-connector-virtual-loop` | **Não nasce como serviço.** Decidido em 24/08 relendo as notas de alinhamento (elas listam só quatro serviços) | Fica scaffold no repo/compose; a tradução de endereço e a publicação em `attlas.detectors.raw` vivem dentro do analítico servidor, ver [[Attlas - Sprint 31]] |
+| `ms-atspm` | **Não nasce.** Revisto em 31/08 (ver callout abaixo) | ATSPM é **capacidade** do analítico servidor, não serviço. Escopo do produto (métricas de fato, associação com grupo semafórico, snapshot) continua valendo, dentro dele |
+| `ms-dai` | **Não nasce.** Revisto em 31/08 | Detecção por objeto é a base técnica compartilhada de VL e ATSPM: como base é biblioteca; como feature de produto é sub-produto do ATSPM. Nas duas leituras, não é deployable |
+| `ms-acom` | Descontinuar | Substituído por completo por `ms-controllers/src/acom/`. Sai junto a rota `/api/acom` singular do Kong. O user decidiu em 31/08 manter o scaffold por ora, sem código previsto |
+
+> [!important] Estado em 31/08: a topologia fechou em **um** analítico servidor, chamado `ms-video-analytics`
+> A tabela acima ainda tratava `ms-atspm` e `ms-dai` como serviços a nascer. Fechado com o user em
+> 31/08: **o analítico de vídeo tem um único deployable novo**, o analítico servidor, e ATSPM e DAI
+> entram nele como capacidades. O `ms-virtual-loop` que a [[Attlas - Sprint 31]] está construindo é
+> esse serviço, e **renomeia para `ms-video-analytics`**.
+>
+> **A regra que decide é a nossa**, de [[Analítico - Embarcado x Servidor]]: o que muda por tipo de
+> câmera é **onde** a capacidade roda, nunca a capacidade em si. Logo a divisão de serviço é por
+> capacidade, não por forma de execução nem por forma de carga. E o produto já recusou a duplicação
+> na câmera: onde há ATSPM, o app de VL separado não é instalado. Dois serviços no servidor
+> reintroduziriam exatamente isso, com **duas sessões de relay na mesma câmera e duas inferências
+> sobre os mesmos frames** - e o custo por frame é o número que define o teto de câmeras por
+> instância.
+>
+> O que **não** muda de dono: geometria, credencial, caminho embarcado e vínculo região-detector
+> seguem no [[ms-cameras]]; a série segue no `ms-detector-history`, compartilhada com o laço físico;
+> ACOM segue no `ms-controllers`.
+>
+> Registrado no repo como `CROSS-077` e `ADR-31`. **Dois cards próprios saem daqui**: o renome
+> (depois de a pilha da Sprint 31 mergear, antes de o ATSPM começar) e a remoção dos scaffolds
+> `ms-atspm`, `ms-dai`, `ms-connector-virtual-loop` com bancos e rotas de Kong.
 
 ## Planejamento
 

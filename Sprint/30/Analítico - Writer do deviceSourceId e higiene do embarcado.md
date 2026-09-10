@@ -9,9 +9,9 @@ titulo: "[Back] Writer do deviceSourceId e higiene do embarcado"
 clickup: https://app.clickup.com/t/86ak5dx7x
 frente: Analítico
 tamanho: 3 pts
-status: comprometido na Sprint 30, bug P0 e próximo do caminho crítico. PR
+status: "MERGEADA na develop em 27/08 pela PR #2001. Era o bug P0 da semana: câmera cadastrada pela tela não recebia detecção ao vivo, só as do seed. Comprometido na Sprint 30."
 sprint: "[[Attlas - Sprint 30]]"
-atualizado: 2026-08-27
+atualizado: 2026-08-28
 ---
 
 # Analítico - Writer do deviceSourceId e higiene do embarcado

@@ -9,9 +9,9 @@ clickup: https://app.clickup.com/t/86ak5dx4y
 titulo: "[Back] Entidade Analítico, persistência de região e unicidade"
 frente: Analítico
 tamanho: 5 pts
-status: ENTREGUE em 25/08 na PR
+status: "MERGEADA na develop em 27/08 pela PR #2000. Pedra angular da semana: 2682, 2678, 2681, 2683, 2684 leem a entidade que ela cria."
 sprint: "[[Attlas - Sprint 30]]"
-atualizado: 2026-08-25
+atualizado: 2026-08-28
 ---
 
 # Analítico - Entidade, persistência de região e unicidade

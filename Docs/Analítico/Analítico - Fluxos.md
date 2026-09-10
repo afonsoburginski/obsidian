@@ -3,7 +3,7 @@ tags:
   - doc
   - analitico
 atualizado: 2026-08-24
-servico: ms-virtual-loop, ms-connector-virtual-loop (planejados, scaffold hoje)
+servico: ms-video-analytics (o analitico servidor, hoje ms-virtual-loop e scaffold). ms-connector-virtual-loop nao nasce - CROSS-077, 31/08
 fonte: attlas-vl-atspm.pdf (squad de Visão Computacional, 10/08) + decisões preservadas das 14 PRs fechadas da Sprint 27 + auditoria de código de 24/08
 ---
 
@@ -90,7 +90,7 @@ Sem app embarcado, tudo em servidor, desdobrado conforme a necessidade:
 | 2 | Decodifica com `ffmpeg` em processo filho, e detecta veículo por frame com inferência nativa embutida no próprio processo Node (não é serviço Python separado) |
 | 3 | Projeta a ocupação da região a partir das detecções, com uma janela de histerese antes de confirmar mudança de estado |
 | 4 | Publica em `attlas.analytics.region-occupancy` com `IRegionOccupancyEvent` - ocupação referenciada por `cameraId` e `regionIndex` |
-| 5 | `ms-connector-virtual-loop` traduz `(cameraId, regionIndex)` para `(controllerId, detectorIndex)`, usando o vínculo cadastrado no `ms-cameras` |
+| 5 | O **analítico servidor** traduz `(cameraId, regionIndex)` para `(controllerId, detectorIndex)`, usando o vínculo cadastrado no `ms-cameras`. Não há connector separado ([[Analítico - Topologia de serviço do analítico de vídeo]]) |
 | 6 | Republica em `attlas.detectors.raw`, o mesmo tópico do caminho físico, e a partir daí segue o mesmo cano até `ms-detector-history` |
 
 Sem vínculo cadastrado, o connector **descarta o evento e nunca inventa endereço**.

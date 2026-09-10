@@ -68,7 +68,7 @@ Duas premissas de 15/07 mudaram. As outras se confirmaram.
   detector é responsabilidade do `ms-cameras`, que é o dono do domínio Cameras - card 7 da
   [[Attlas - Sprint 31]] desde o reescopo de 24/08.
 - **Serviços da cadeia seguem esqueletos**, exceto pela entidade Analítico e geometria em banco que a
-  [[Attlas - Sprint 30]] cria. `ms-virtual-loop`, `ms-atspm` e `ms-dai` são scaffolds de "Hello API".
+  [[Attlas - Sprint 30]] cria. Os três são scaffolds de "Hello API" - e desde 31/08 só o `ms-virtual-loop` nasce, como `ms-video-analytics`, com ATSPM e DAI dentro ([[Analítico - Topologia de serviço do analítico de vídeo]]).
   Reais e prontos: `ms-detector-history`, `ms-controllers`, `ms-traffic-model` e a base de analítico do
   `ms-cameras`.
 - **Contratos servem inteiros.** `IDetectorRawEvent`, `DetectorTechnology.VIRTUAL_LOOP`,

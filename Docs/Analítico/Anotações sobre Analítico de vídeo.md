@@ -43,4 +43,9 @@ Validar se a imagem é gerada pelo lado Attlas x camera, para que possamos propo
 	ms-dai
 	ms-virtual-loop
 
+> **Estado em 01/09:** a lista acima é o que se propôs na reunião. A topologia foi fechada depois:
+> existe **um** analítico server-side, o `ms-virtual-loop`, que renomeia para `ms-video-analytics` e
+> absorve ATSPM e detecção por objeto como capacidades. `ms-atspm` e `ms-dai` não nascem como serviço.
+> Ver [[Analítico - Topologia de serviço do analítico de vídeo]].
+
 

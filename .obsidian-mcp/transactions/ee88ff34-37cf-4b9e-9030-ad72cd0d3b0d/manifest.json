@@ -1,0 +1,18 @@
+{
+  "id": "ee88ff34-37cf-4b9e-9030-ad72cd0d3b0d",
+  "state": "committed",
+  "createdAt": "2026-08-28T16:45:54.464Z",
+  "snapshots": [
+    {
+      "path": "Sprint/30/Analítico - Controles de tratamento do incidente.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "f780b793439d616543c82cc22aef464831522b2692d535cddcba9f0d0f44ff7c",
+      "recoverable": true,
+      "existed": false,
+      "committedEtag": "f780b793439d616543c82cc22aef464831522b2692d535cddcba9f0d0f44ff7c"
+    }
+  ],
+  "completedAt": "2026-08-28T16:45:54.470Z"
+}

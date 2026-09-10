@@ -10,9 +10,9 @@ titulo: "[Front] Galeria de mídia de evidência"
 clickup: https://app.clickup.com/t/86ak5veqn
 frente: Analítico
 tamanho: 3 pts
-status: card criado na reestimativa de 25/08, quando o frontend entrou na conta da sprint. Irmão de [[Analítico - Fonte da imagem de evidência]] (o backend). Spec UF-035 escrita em 25/08, [PR #2023](https://github.com/atmanadmin/attlas-2026/pull/2023) aberta em draft (fase só-spec).
+status: "CÓDIGO MERGEADO na pilha em 27/08. Card criado na reestimativa de 25/08. Irmão de [[Analítico - Fonte da imagem de evidência]] (o backend, já mergeado na develop). Spec UF-035 escrita em 25/08, [PR #2023](https://github.com/atmanadmin/attlas-2026/pull/2023) mergeada em cameras/feat/SOFTWARE-2734 - chega à develop junto com a [[Analítico - Fila de incidentes (front)|fila de incidentes]] (#2022)."
 sprint: "[[Attlas - Sprint 30]]"
-atualizado: 2026-08-25
+atualizado: 2026-08-28
 ---
 
 # Analítico - Galeria de mídia de evidência (front)

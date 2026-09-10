@@ -10,9 +10,9 @@ titulo: "[Front] Desenho de região sobre frame congelado do preset"
 clickup: https://app.clickup.com/t/86ak5verw
 frente: Analítico
 tamanho: 3 pts
-status: card criado na reestimativa de 25/08. Irmão de [[Analítico - Preset PTZ com snapshot de região]] (o backend). Spec UF-036 escrita em 25/08, PR #2024 aberta. Corrigido em 25/08: HÁ o que portar (detection-frame), a leitura anterior estava errada.
+status: "EM REVIEW em 28/08. Card criado na reestimativa de 25/08. Irmão de [[Analítico - Preset PTZ com snapshot de região]] (o backend, já mergeado na develop). Spec UF-036 escrita em 25/08, [PR #2024](https://github.com/atmanadmin/attlas-2026/pull/2024) com changes requested (otavioassis-git e DanielZanotelliAtman, dois approves já dados) e CONFLITO contra a develop - precisa reconciliar antes de mergear. Corrigido em 25/08: HÁ o que portar (detection-frame), a leitura anterior estava errada."
 sprint: "[[Attlas - Sprint 30]]"
-atualizado: 2026-08-25
+atualizado: 2026-08-28
 ---
 
 # Analítico - Desenho de região sobre frame congelado (front)

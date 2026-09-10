@@ -2,8 +2,8 @@
 tags:
   - doc
   - analitico
-atualizado: 2026-08-24
-servico: ms-virtual-loop, ms-atspm, ms-connector-virtual-loop, ms-dai (planejados, todos scaffold hoje)
+atualizado: 2026-09-09
+servico: ms-video-analytics (o analitico servidor, REAL desde 03/09; renome do ms-virtual-loop feito em 02/09). ms-atspm, ms-dai e ms-connector-virtual-loop foram REMOVIDOS do repo em 05/09 (PR 2530) - CROSS-077
 fonte: Anotações sobre Analítico de vídeo.md (notas do user) + attlas-vl-atspm.pdf (squad de Visão Computacional, 10/08) + auditoria de código de 24/08
 ---
 
@@ -13,15 +13,23 @@ Regras de negócio das duas fontes de alinhamento, cada uma cruzada com o **cód
 Compatibilidade por arquitetura de câmera e regras de desenho de região saíram desta nota e vivem em
 [[Analítico - Embarcado x Servidor]], que é onde a distinção importa.
 
-> [!note] IDs de trabalho, não oficiais
-> Não existe `docs/modules/analitico.md` no repo. O Analítico é módulo do edital
-> (`docs/architecture/modules.md`), categoria Dependente, e é **um dos cinco módulos da tabela sem doc
-> de contexto próprio** - os outros quatro são Nobreaks, Emergências, Relatórios e Dashboard global.
-> Nove docs de módulo o citam, todos como dependência de terceiros: `cameras`, `alarms`,
-> `traffic-model`, `detectors`, `operations-panel`, `selective-priority`, `execution-plans`,
-> `simulation` e `controllers` - este último só como módulo vizinho, porque suas mais de
-> mil linhas não mencionam ACOM, ATSPM, DAI nem laço virtual uma única vez. Escrever o doc próprio é o
-> primeiro card da [[Attlas - Sprint 30]]; até lá, os nomes de regra abaixo são de trabalho.
+> [!success] Estado em 09/09: o doc de módulo existe, e boa parte destas tabelas caducou
+> **Os IDs de regra deixaram de ser de trabalho.** `docs/modules/analitico.md` existe no repo desde a
+> Sprint 30 (`SOFTWARE-2680`), com 482 linhas e requisitos numerados `RF-DAI-*`, `RF-VL-*`, `RF-ATSPM-*`
+> e `RF-ACOM-*`. **Ele é a fonte de verdade de regra de negócio**, não esta nota - e ele se organiza por
+> quatro recursos (DAI, Virtual Loop, ATSPM, ACOM), não pelos cinco do edital: Visão Geral e Dashboard
+> não têm seção nenhuma lá, e reconciliar isso é a PR 1 da [[Attlas - Sprint 32]]
+> ([`SOFTWARE-3051`](https://app.clickup.com/t/86akffm6d)).
+>
+> **As tabelas abaixo são a auditoria de 24/08 e não foram reescritas.** Muitos dos `❌` foram fechados
+> pelas Sprints 30 e 31: entidade Analítico em banco, unicidade, writer do `deviceSourceId`, healthcheck,
+> compatibilidade ARTPEC, incidente contável com dedup, preset com snapshot, imagem de evidência, e a
+> cadeia inteira do analítico servidor. Continuam de pé, conferidos no código em 09/09: **OTA do app
+> embarcado**, **sub-produtos do ATSPM**, **quatro laços por câmera**, **snapshot da configuração
+> semafórica** e **o ACOM inteiro, incluindo o caller que fecha o contato**.
+>
+> Para o estado atual item por item, com pontos e quem é o dono, ler
+> [[Analítico - O que falta para fechar o módulo]] em vez destas tabelas.
 
 Legenda: ✅ satisfeito · 🟡 parcial · ❌ nada existe.
 
@@ -41,7 +49,7 @@ Legenda: ✅ satisfeito · 🟡 parcial · ❌ nada existe.
 | Regra | Descrição | Estado auditado |
 | --- | --- | --- |
 | Ativação de laço | Toggle que ativa o Virtual Loop | ✅ `IVirtualLoopConfig.active` |
-| Sub-produtos do ATSPM | Tracker, DAI, TPM e VL embutido como sub-produtos endereçáveis, para exibição e possível licenciamento | ❌ `ms-atspm` é scaffold sem uma linha de spec |
+| Sub-produtos do ATSPM | Tracker, DAI, TPM e VL embutido como sub-produtos endereçáveis, para exibição e possível licenciamento | ❌ sem spec. Desde 31/08 o ATSPM é **capacidade** do analítico servidor, não serviço próprio ([[Analítico - Topologia de serviço do analítico de vídeo]]) |
 | Contagem de detecções de incidente com dedup | O mesmo incidente pode aparecer várias vezes e precisa ser contado corretamente | ❌ Pior que ausente: o incidente DAI **é lido do frame e descartado**. Serve só para escolher o `kind` do WebSocket. Não vira `CameraEventLog` (`CameraEventCategory.ANALYTICS` tem zero produtores, comentado no próprio código), não vira alarme (`ANLT_SEVERE_CONGESTION` está `generatesAlarm: false` e sem produtor) |
 | Qualidade da imagem de evidência | Investigar se a baixa qualidade das imagens do histórico do Attlas 25 vem do lado Attlas ou da câmera | **Pergunta respondida pelo Attlas 26: não existe imagem nenhuma.** O payload Kafka do device carrega só metadado (`labels`, `bboxes`, `ids`, `curr_speeds`), zero pixel. Captura de snapshot JPEG do device **já existe** (`CameraThumbnailService`, VAPIX `axis-cgi/jpg/image.cgi` e ISAPI `/ISAPI/Streaming/channels/<n>/picture`, servida em `GET /cameras/:id/thumbnail`), mas é efêmera e de preview: 320x240, `compression=35`, substream secundário, `max-age=5`, sem persistência e sem vínculo com detecção. Não é "corrigir qualidade" nem partir do zero, é decidir se a evidência reusa esse caminho em resolução cheia com armazenamento - ver [[Attlas - Sprint 30]] |
 

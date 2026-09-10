@@ -10,9 +10,9 @@ titulo: "[Front] Fila de incidentes do analítico"
 clickup: https://app.clickup.com/t/86ak5vek3
 frente: Analítico
 tamanho: 8 pts
-status: card criado na reestimativa de 25/08, quando o frontend entrou na conta da sprint. Irmão de [[Analítico - Contagem e dedup de incidente DAI]] (o backend). Spec UF-034 escrita em 25/08, [PR #2022](https://github.com/atmanadmin/attlas-2026/pull/2022) aberta em draft (fase só-spec).
+status: "FECHADA em 28/08 pela mescla da PR #2022. Revisão de fidelidade contra o attlas-design no mesmo dia achou dois gaps reais que a PR original não cobria - mapa sem 'concentração por câmera' e nenhum write-path pra assumir/resolver - fechados em duas PRs próprias: [#2300](https://github.com/atmanadmin/attlas-2026/pull/2300) (mapa + rótulo do menu) e [#2306](https://github.com/atmanadmin/attlas-2026/pull/2306) (SOFTWARE-2794, UC-062 backend + UF-040 frontend)."
 sprint: "[[Attlas - Sprint 30]]"
-atualizado: 2026-08-25
+atualizado: 2026-08-28
 ---
 
 # Analítico - Fila de incidentes (front)
@@ -63,9 +63,24 @@ Fila de incidentes no `web-attlas` lendo evento real do backend (não mock), com
 timeline e detalhe lateral, i18n nos 3 locales, guarda de permissão e teste de componente. Sem
 nenhuma chamada a `localStorage` nem a factory de mock.
 
+## Gaps achados em revisão de fidelidade (28/08), fechados fora desta PR
+
+A `UF-034` (spec escrita pra esta tela) retirou de si mesma, em review, o mapa e os controles de
+tratamento - ambos escopo próprio, sem critério de aceite nesta atômica. Uma comparação direta
+contra o `attlas-design` no mesmo dia confirmou que os dois realmente faltavam e não eram só
+"declarados fora":
+
+- **Mapa** - fechado por [[Analítico - Frontend do attlas-design|UF-039]] (retroativa, o código já
+  tinha ido nas PRs #2022/#2300).
+- **Controles de tratamento** (assumir/resolver) - fechado por
+  [[Analítico - Controles de tratamento do incidente]] (UC-062 + UF-040, PR #2306). Precisou de
+  tabela nova no banco (`CameraEventTreatment`) porque não existia write-path de status pra
+  incidente de analítico em lugar nenhum do backend.
+
 ## Encosta em
 
 - [[Analítico - Contagem e dedup de incidente DAI]] - o backend que produz o evento. **Dependência
   dura**: sem produtor, a tela não tem o que listar.
 - [[Analítico - Frontend do attlas-design]] - de onde o código vem.
+- [[Analítico - Controles de tratamento do incidente]] - o gap de tratamento, fechado fora desta PR.
 - [[Attlas - Sprint 30]].

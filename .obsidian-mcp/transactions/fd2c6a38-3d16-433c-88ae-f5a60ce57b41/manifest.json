@@ -1,0 +1,18 @@
+{
+  "id": "fd2c6a38-3d16-433c-88ae-f5a60ce57b41",
+  "state": "committed",
+  "createdAt": "2026-08-29T12:22:14.299Z",
+  "snapshots": [
+    {
+      "path": "Sprint/30/SOFTWARE-2687 - Tráfego na origem, isolamento do controle e linha de base de carga.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "29a4b8b6c97f4934f1a460f810a60f600ba874228f08737a6d2e76a358bce25e",
+      "recoverable": true,
+      "existed": false,
+      "committedEtag": "29a4b8b6c97f4934f1a460f810a60f600ba874228f08737a6d2e76a358bce25e"
+    }
+  ],
+  "completedAt": "2026-08-29T12:22:14.310Z"
+}

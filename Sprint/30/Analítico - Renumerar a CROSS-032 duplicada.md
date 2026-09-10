@@ -9,9 +9,9 @@ clickup: https://app.clickup.com/t/86ak5dx6f
 titulo: "[Back] Renumerar a CROSS-032 duplicada"
 frente: Analítico
 tamanho: 1 pt
-status: ENTREGUE em 25/08 na PR
+status: MERGEADA na develop em 25/08 pela PR #1999.
 sprint: "[[Attlas - Sprint 30]]"
-atualizado: 2026-08-25
+atualizado: 2026-08-28
 ---
 
 # Analítico - Renumerar a CROSS-032 duplicada

@@ -2,7 +2,7 @@
 tags:
   - doc
   - analitico
-atualizado: 2026-08-25
+atualizado: 2026-08-31
 fonte: attlas-vl-atspm.pdf (squad de Visão Computacional, 10/08) + "Anotações sobre Analítico de vídeo" (notas do user) + auditoria de código de 24/08 e 25/08
 ---
 
@@ -78,10 +78,19 @@ evento de ocupação**, para o consumidor não precisar saber a origem:
   `counters` em RLE de `DETECTOR_SAMPLE_DURATION_MS`, `sampledAt`, `receivedAt`).
 - O servidor publica direto; o embarcado republica no mesmo tópico, a partir do estado de ocupação que já
   calcula para o WebSocket.
-- A partir daí o cano é único: `ms-connector-virtual-loop` traduz o endereço, e `ms-detector-history`
-  persiste a série igual ao caminho do laço físico.
+- A partir daí o cano é único: o **analítico servidor** traduz o endereço (não há connector separado,
+  ver [[Analítico - Arquitetura e estratégias]]) e o `ms-detector-history` persiste a série igual ao
+  caminho do laço físico.
 
-O contrato é **greenfield** - `libs/contracts/src/lib/analytics/` não existe hoje. Nasce como card próprio na [[Attlas - Sprint 31]].
+O contrato nasce como card próprio na [[Attlas - Sprint 31]]. **Estado em 31/08**: ele mora no
+domínio `virtual-loop/` de `libs/contracts`, que já existia, e não num domínio `analytics/` novo -
+já havia três domínios irmãos de analítico e um quarto seria espalhamento. O tópico é
+`attlas.virtual-loop.region-occupancy`.
+
+> [!note] A convergência do contrato continua valendo depois de CROSS-077
+> A topologia fechou em um analítico servidor, mas o **caminho embarcado continua existindo** dentro
+> do [[ms-cameras]] - ele roda na câmera, não em servidor nenhum. Então os dois produtores seguem
+> sendo dois, e este contrato segue sendo o que os faz convergirem.
 
 ## Regras de desenho de região: quem decide é o motor, não o lugar
 

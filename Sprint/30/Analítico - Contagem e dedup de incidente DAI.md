@@ -9,9 +9,9 @@ clickup: https://app.clickup.com/t/86ak5dx8n
 titulo: "[Back] Contagem e dedup de incidente DAI"
 frente: Analítico
 tamanho: 5 pts
-status: comprometido na Sprint 30. Reestimado em 25/08 de 3 para 5 pts como [Back]; a fila de incidentes virou card irmão [[Analítico - Fila de incidentes (front)]] (8 pts, a maior tela da semana). PR
+status: MERGEADA na develop em 27/08 pela PR #2004. Reestimado em 25/08 de 3 para 5 pts como [Back]; a fila de incidentes virou card irmão [[Analítico - Fila de incidentes (front)]] (8 pts, a maior tela da semana), que segue em review.
 sprint: "[[Attlas - Sprint 30]]"
-atualizado: 2026-08-25
+atualizado: 2026-08-28
 ---
 
 # Analítico - Contagem e dedup de incidente DAI

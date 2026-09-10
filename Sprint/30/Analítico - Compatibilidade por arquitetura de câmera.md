@@ -9,9 +9,9 @@ clickup: https://app.clickup.com/t/86ak5dx60
 titulo: "[Full] Compatibilidade do analítico por arquitetura de câmera"
 frente: Analítico
 tamanho: 8 pts
-status: comprometido na Sprint 30. Reestimado DUAS VEZES em 25/08: primeiro quebrei a tela num card [Front] separado (2732), depois o user apontou que ARTPEC é lógica de backend - o card voltou a ser um só, agora [Full] de 8 pts, e o 2732 foi fechado. PR #2002. Bloqueado por acesso a device ARTPEC real para confirmar o parâmetro VAPIX.
+status: "MERGEADA na develop em 27/08 pela PR #2002. Reestimado DUAS VEZES em 25/08: primeiro quebrei a tela num card [Front] separado (2732), depois o user apontou que ARTPEC é lógica de backend - o card voltou a ser um só, agora [Full] de 8 pts, e o 2732 foi fechado. A pendência A-02 segue aberta: qual chave do VAPIX carrega a geração do chip, sem device ARTPEC real em mão o parser varre todos os valores do grupo."
 sprint: "[[Attlas - Sprint 30]]"
-atualizado: 2026-08-25
+atualizado: 2026-08-28
 ---
 
 # Analítico - Compatibilidade por arquitetura de câmera

@@ -2,8 +2,8 @@
 tags:
   - doc
   - analitico
-atualizado: 2026-08-27
-servico: ms-cameras (hoje), ms-virtual-loop, ms-connector-virtual-loop, ms-atspm, ms-dai (planejados)
+atualizado: 2026-09-09
+servico: ms-cameras (hoje) + ms-video-analytics (o analitico servidor, hoje ms-virtual-loop). ms-atspm, ms-dai e ms-connector-virtual-loop nao nascem - CROSS-077, 31/08
 fonte: síntese das notas deste domínio + auditoria de código de 25/08 + as 16 decisões tomadas nas Sprints 30, 31 e 32
 ---
 
@@ -114,13 +114,14 @@ O mesmo frame alimenta os três. **O metadado do device nunca carrega pixel** - 
 | Inventário e Notificações | ocorrência e envio - **declarados, sem produtor ainda** |
 
 A dependência de Câmeras é a mais forte e a mais mal entendida: o Analítico **vive hoje dentro do
-`ms-cameras`**, mas é módulo próprio. O `ms-virtual-loop` existir é o que separa os dois de fato.
+`ms-cameras`**, mas é módulo próprio. O analítico servidor existir é o que separa os dois de fato -
+e ele é **um só**, `ms-video-analytics` (CROSS-077), com ATSPM e DAI dentro como capacidades.
 
 ---
 
 ## 5. Estado real de cada peça
 
-Auditado contra o código em 25/08, não contra o plano. Mapa de código detalhado no
+Auditado contra o código em 28/08, não contra o plano. Mapa de código detalhado no
 [[Analítico|índice do domínio]]. Estado de cada card da Sprint 30, entregue x a fazer, é sempre conferido
 contra [[Sprint 30 - o que entrega]] - fonte de verdade da semana.
 
@@ -130,11 +131,11 @@ contra [[Sprint 30 - o que entrega]] - fonte de verdade da semana.
 | Contratos de detector e histórico de detecção | Real e maduro - aceita o evento do laço virtual sem mudança |
 | ACOM: CRUD, TCP, codec, pollers | Real, **falta o caller** |
 | Entidade Analítico + região em banco + unicidade, healthcheck do analítico | **Entregue na Sprint 30** (11 pts, com código e teste, 25/08) |
-| Compatibilidade por arquitetura ARTPEC, incidente contável com dedup, preset PTZ com snapshot, fonte da imagem de evidência | **A fazer na Sprint 30** - card aberto, PR em andamento |
-| Fila de incidentes, galeria de evidência, desenho sobre frame congelado (os 3 cards `[Front]`) | **A fazer na Sprint 30** - PR aberta, ainda não mergeada |
-| Analítico servidor e tradutor de endereço | Scaffold - [[Sprint 31 - o que entrega\|Sprint 31]] |
-| Telas de métricas ATSPM e Laço Virtual | Prontas no `attlas-design` (~11.000 linhas), **sem card em nenhuma sprint** |
-| `ms-atspm`, `ms-dai` | Nem spec existe |
+| Compatibilidade por arquitetura ARTPEC, incidente contável com dedup, preset PTZ com snapshot, fonte da imagem de evidência | **Entregue na Sprint 30** - mergeado na develop em 27 e 28/08, junto com o writer do `deviceSourceId` (bug P0). Os 8 cards de backend fecharam, 37 dos 51 pts |
+| Fila de incidentes, galeria de evidência, desenho sobre frame congelado (os 3 cards `[Front]`) | **Entregues.** Os 11 cards da Sprint 30 fecharam em 28/08, e a fila de incidentes mergeou pela #2306 em 29/08 (`SOFTWARE-2794`) |
+| Analítico servidor e tradutor de endereço | **Real.** `ms-video-analytics` ingere stream, detecta por frame, projeta ocupação com histerese, traduz endereço e publica em `attlas.detectors.raw`. A Sprint 31 fechou os 10 cards em 05/09, e a tradução mora dentro do serviço, não num connector |
+| Telas de métricas ATSPM e Laço Virtual | **As duas estão no ar, e a face ATSPM está vazia por falta de produtor**: 4 das 38 métricas têm leitor. O `SOFTWARE-2797` fechou em 05/09, a casca de três sub-abas e o funil entraram com ele, e o Exportar mostra o resumo do que o arquivo levaria porque não há endpoint. O ATSPM **não é serviço novo**: o dado que falta se agrega de `detection_record` e `controller_cycle`, no `ms-detector-history` - ver [[Analítico - O que falta para fechar o módulo]] |
+| `ms-atspm`, `ms-dai` | **Removidos do repo em 05/09** (PR #2530), com banco, rota Kong e scrape. São capacidades do analítico servidor (CROSS-077) |
 | OTA do app embarcado | Não existe gestão nenhuma no device |
 
 ---
@@ -184,7 +185,7 @@ alternativa recusada é o que impede de reabrir a discussão depois. As de arqui
 | --- | --- | --- |
 | A-01 | **De onde vem o pixel da evidência**. Implementado na opção recomendada (reler o device em resolução cheia), isolado num seam de um método. As outras: extrair frame do relay, ou pedir ao fornecedor do ACAP que publique a imagem | Muda o shape do que a galeria lista - uma imagem por incidente, sequência de frames, ou trecho de vídeo |
 | A-02 | **Qual chave do VAPIX carrega a geração do chip**. Nenhum ARTPEC 7 nem 8/9 estava disponível; o parser varre todos os valores do grupo em vez de apostar num nome de chave | Nenhum no contrato: quando um device real confirmar, o que estreita é um regex |
-| A-03 | **As telas de métricas não estão em nenhuma sprint** (~11.000 linhas prontas no `attlas-design`, dependentes do backend da Sprint 31) | Se precisam estar no ar em 18/09, a Sprint 32 é a última semana em que caberiam |
+| A-03 | **A tela de métricas do ATSPM não está em nenhuma sprint**, e o bloqueio é o backend, não o porte: desde CROSS-077 o ATSPM é capacidade do analítico servidor, e nenhuma sprint a orçou. As métricas do Laço Virtual saíram deste risco em 28/08 (`SOFTWARE-2797`, Sprint 31) ao se confirmar que elas leem o `ms-detector-history`, não o servidor de VL | Se o ATSPM precisa estar no ar em 18/09, o que falta orçar é o serviço |
 | A-04 | **ACOM e ATSPM entram no prazo de 18/09?** 28 pontos somados, no backlog sem prazo | É mais de uma sprint inteira entrando três semanas antes do prazo |
 
 > [!danger] A pendência que não é nossa

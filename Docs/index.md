@@ -4,7 +4,7 @@ tags:
   - attlas
 aliases:
   - "Docs - índice raiz"
-atualizado: 2026-08-25
+atualizado: 2026-09-09
 ---
 
 # Docs - índice raiz
@@ -30,6 +30,14 @@ programação: é a porta de entrada do assunto e não repete o conteúdo das no
 - [[Convenções de escrita]] - como escrever report, PR, comentário de review e documento de público misto. **Fonte de verdade de estilo**, saiu da memória do Claude em 31/07.
 - [[Edital - Attlas nova definição de módulos]] - o edital do cliente. **Fonte de verdade de requisito**, não se edita.
 - [[Plano - atualização da documentação do vault]] - o que está defasado, com evidência, e em que ordem consertar.
+- [[Registro - movimentação da develop em 05 e 07 de setembro]] - as 75 PRs das outras frentes nesses dois dias, condensadas pelo que me alcança: o que subiu para `core/map` e `core/shared`, o módulo de Relatórios inteiro, a onda de de-mock do Modelo de Tráfego e a renumeração de `CROSS-089` para `CROSS-095`.
+- [[Registro - pedido de integração da Prioridade Seletiva com Câmeras e Analítico]] - o que a frente de
+  Prioridade Seletiva pediu de Câmeras e do Analítico em 09/09, e o que o código responde: ninguém aciona
+  controlador pela plataforma, o evento de avistamento com classe não existe, e a classe não cabe como
+  campo aditivo no contrato de ocupação porque a janela fecha com a região já vazia.
+- [[Registro - movimentação da develop em 05 e 07 de setembro]] - condensação de dois dias de trabalho
+  do repositório inteiro (82 PRs), escrita para achar o que outras squads mudaram na camada
+  compartilhada do frontend e em `@attlas/contracts` sem passar pela minha frente.
 
 ## Convenção
 
@@ -37,7 +45,7 @@ programação: é a porta de entrada do assunto e não repete o conteúdo das no
 | --- | --- |
 | Índice da pasta | `index.md` (H1 = nome do assunto, alias com o nome do assunto) |
 | Faceta do assunto | `<Assunto> - Arquitetura e estratégias` · `- Fluxos` · `- Requisitos e SLA` |
-| Registro histórico | `Incidente - <assunto>` · `Plano - <assunto>` · `Pesquisa - <assunto>` · `Runbook - <assunto>` |
+| Registro histórico | `Incidente - <assunto>` · `Plano - <assunto>` · `Pesquisa - <assunto>` · `Registro - <assunto>` · `Runbook - <assunto>` |
 
 Frontmatter obrigatório: `tags` em lista YAML (`doc` mais domínio mais assunto) e `atualizado` com a data
 da última revisão de **conteúdo**. Prosa sem travessão e sem `§`.

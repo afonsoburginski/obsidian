@@ -18,6 +18,12 @@ atualizado: 2026-08-10
 
 # SOFTWARE-2387 - Especificação do connector de laço virtual
 
+> [!warning] Obsoleto em 31/08: o connector não nasce
+> A tradução de endereço vive dentro do analítico servidor, e `ms-connector-virtual-loop` fica
+> scaffold morto até o card de remoção. Decisão em
+> [[Analítico - Topologia de serviço do analítico de vídeo]]; no repo, `CROSS-077`. Esta nota fica
+> como registro do que se especificou, não como trabalho a fazer.
+
 Bootstrap SDD do `ms-connector-virtual-loop`, hoje um esqueleto do gerador sem nenhum código de
 domínio, mais a especificação que define o produtor de detecção de laço virtual.
 

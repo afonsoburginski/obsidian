@@ -1,0 +1,21 @@
+{
+  "id": "b565056d-831f-44a8-b0d4-65b7bdd46007",
+  "state": "committed",
+  "createdAt": "2026-08-28T16:45:28.511Z",
+  "snapshots": [
+    {
+      "path": "Sprint/30/Analítico - Fila de incidentes (front).md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "0ba3ca16bd0813f3bfa4a369a9c9fd4ffe882bf502c88fe2f54d72354351ce7e",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33152,
+      "etag": "9f9c783ef31ebcaec88eaa7c1ea84e6b047142b4194ae1323ca98c888d435aef",
+      "snapshot": "0.bin",
+      "committedEtag": "0ba3ca16bd0813f3bfa4a369a9c9fd4ffe882bf502c88fe2f54d72354351ce7e"
+    }
+  ],
+  "completedAt": "2026-08-28T16:45:28.536Z"
+}

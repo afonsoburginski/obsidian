@@ -9,9 +9,9 @@ clickup: https://app.clickup.com/t/86ak5dx4e
 titulo: "[Back] Preset PTZ com snapshot de região"
 frente: Analítico
 tamanho: 5 pts
-status: comprometido na Sprint 30. Reestimado em 25/08 de 3 para 5 pts como [Back] (vínculo + snapshot por preset + storage); o desenho sobre frame congelado virou card irmão [[Analítico - Desenho de região sobre frame congelado (front)]] (3 pts). PR
+status: MERGEADA na develop em 28/08 pela PR #2005. Reestimado em 25/08 de 3 para 5 pts como [Back] (vínculo + snapshot por preset + storage); o desenho sobre frame congelado virou card irmão [[Analítico - Desenho de região sobre frame congelado (front)]] (3 pts), que segue em review.
 sprint: "[[Attlas - Sprint 30]]"
-atualizado: 2026-08-25
+atualizado: 2026-08-28
 ---
 
 # Analítico - Preset PTZ com snapshot de região

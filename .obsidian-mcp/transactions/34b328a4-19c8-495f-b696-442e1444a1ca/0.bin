@@ -1,0 +1,24 @@
+---
+tags:
+  - report
+date: 2026-09-09
+---
+```
+Report Diário - 09/09/2026
+
+Dia sem entrega própria. Revisei também 6 pull requests de colegas, listadas abaixo.
+
+PRs mergeadas:
+(nenhuma)
+
+PRs revisadas:
+- 2873 - detalhe do vínculo de participação (aprovada, com apontamentos)
+- 2874 - leitura em lote do cadastro de origem (aprovada)
+- 2867 - histórico imutável da regra de um ponto (aprovada, com apontamentos)
+- 2877 - subsistemas derivados e interruptor de prioridade do grupo (aprovada, com apontamentos)
+- 2887 - a viagem e as três origens (aprovada, com apontamentos)
+- 2888 - leitura do registro de viagens (mudanças solicitadas)
+
+PRs em andamento:
+(nenhuma)
+```

@@ -8,8 +8,8 @@ aliases:
   - "Attlas - Sprint 30"
   - "Sprint 30 - o que entrega"
 sprint: Sprint 30 (24/8/26 - 30/8/26)
-status: ABERTA em 24/08, frente única - analítico de vídeo. REESTIMADA em 25/08 com o frontend na conta: 51 pontos em 11 cards (eram 28 em 10, porque o plano antigo não tinha card de frontend nenhum). 11 pontos entregues em 25/08. Todas as 11 PRs abertas em 25/08. O user decidiu fechar a semana incluindo sábado; o que não couber rola para a Sprint 31, que está mapeada. Prazo do módulo: 18/09.
-atualizado: 2026-08-25
+status: "ABERTA em 24/08, frente única - analítico de vídeo. REESTIMADA em 25/08 com o frontend na conta: 51 pontos em 11 cards (eram 28 em 10, porque o plano antigo não tinha card de frontend nenhum). Em 28/08 os 8 cards de backend estão mergeados na develop - 37 dos 51 pontos. Restam os 3 cards [Front] (14 pts): a galeria mergeou dentro da pilha, a fila de incidentes e o frame congelado estão com changes requested. O user decidiu fechar a semana incluindo sábado; o que não couber rola para a Sprint 31, que está mapeada. Prazo do módulo: 18/09."
+atualizado: 2026-08-29
 ---
 
 # Sprint 30 - o que entrega
@@ -19,8 +19,10 @@ analítico embarcado. Responde uma coisa só: *o que sai desta semana, em featur
 planejamento, a estimativa e os riscos estão em [[Attlas - Sprint 30]].
 
 > [!note] Plano da semana: 51 pts, sábado incluído, sobra rola para a 31
-> 11 pontos entregues em 25/08 (entidade em banco, healthcheck front e back, renumeração). Restam **40
-> pontos** para qua, qui, sex e **sábado** - decisão do user de fechar a semana com hora extra.
+> **Estado em 28/08: 37 pontos mergeados na develop** - os 8 cards de backend e full-stack, todos.
+> Restam **14 pontos**, os 3 cards `[Front]`, e nenhum deles está bloqueado por backend: o que falta é
+> fechar review. Leitura original de 25/08, mantida por registro: 11 pontos entregues, 40 restantes
+> para qua, qui, sex e **sábado** - decisão do user de fechar a semana com hora extra.
 >
 > **Ordem de ataque**, do que mais destrava para o que menos: o bug P0 do writer (sem ele nenhuma
 > câmera cadastrada pela tela recebe detecção), depois o backend do dedup, que libera a fila de
@@ -41,21 +43,21 @@ planejamento, a estimativa e os riscos estão em [[Attlas - Sprint 30]].
 | Analítico de uma câmera vira **entidade de banco**, com geometria de região persistida e a regra "um embarcado por tipo por câmera" garantida no banco | `ms-cameras`                | ✅ **entregue**                         |
 | Operador passa a **distinguir "device caiu" de "não configurado"** na saúde do analítico                                                               | `ms-cameras` + `web-attlas` | ✅ **entregue**                         |
 | Duas specs cross-service com o mesmo ID (`CROSS-032`) deixam de colidir                                                                                | `docs/specs`                | ✅ **entregue**                         |
-| **Câmera cadastrada pela tela passa a receber detecção ao vivo** (hoje só as do seed recebem)                                                          | `ms-cameras`                | 🔴 bug P0, a fazer                     |
-| Arquitetura da câmera (ARTPEC 7 / 8-9 / não-Axis) **detectada automaticamente**, e a matriz de compatibilidade aplicada como regra de negócio          | `ms-cameras`                | ⏳ a fazer                              |
-| Incidente de trânsito reportado pela câmera **vira evento contável**, com deduplicação (hoje é lido e descartado)                                      | `ms-cameras`                | ⏳ a fazer                              |
-| Região de detecção **vinculada ao preset PTZ**, com captura do enquadramento (hoje mover o preset invalida a geometria em silêncio)                    | `ms-cameras`                | ⏳ a fazer                              |
-| **Imagem de evidência** da detecção passa a existir (hoje o dado da câmera é 100% numérico, zero pixel)                                                | `ms-cameras`                | ⏳ a fazer, decisão de produto pendente |
+| **Câmera cadastrada pela tela passa a receber detecção ao vivo** (hoje só as do seed recebem)                                                          | `ms-cameras`                | ✅ **entregue** (bug P0 fechado)        |
+| Arquitetura da câmera (ARTPEC 7 / 8-9 / não-Axis) **detectada automaticamente**, e a matriz de compatibilidade aplicada como regra de negócio          | `ms-cameras`                | ✅ **entregue**                         |
+| Incidente de trânsito reportado pela câmera **vira evento contável**, com deduplicação (hoje é lido e descartado)                                      | `ms-cameras`                | ✅ **entregue**                         |
+| Região de detecção **vinculada ao preset PTZ**, com captura do enquadramento (hoje mover o preset invalida a geometria em silêncio)                    | `ms-cameras`                | ✅ **entregue**                         |
+| **Imagem de evidência** da detecção passa a existir (hoje o dado da câmera é 100% numérico, zero pixel)                                                | `ms-cameras`                | ✅ **entregue** na opção recomendada (A-01 segue aberta) |
 
 ## Telas (o que o operador vê)
 
 | Tela | Onde vive | Origem | Estado |
 | --- | --- | --- | --- |
 | **Saúde do analítico** - linha nova na aba "Informações Gerais" do detalhe da câmera, com estado e há quanto tempo o sinal parou | detalhe da câmera | escrita do zero | ✅ **entregue** |
-| **Fila de incidentes** - página nova: tabela, mapa, timeline e página própria do incidente | rota nova no módulo de câmeras | portar do `attlas-design` (~7.900 linhas: 2 páginas + 9 componentes) | ⏳ a fazer (8 pts, a maior) |
-| **Galeria de mídia de evidência** - 3 abas (imagem, vídeo, anexo do operador), carrossel, upload | dentro da página do incidente | portar do `attlas-design` (componente pronto, 1.145 linhas) | ⏳ a fazer |
-| **Desenho sobre frame congelado** - seletor de preset e desenho da região sobre a imagem parada do enquadramento | aba Analíticos (evolui o que já existe) | portar `detection-frame` do `attlas-design` (963 linhas) | ⏳ a fazer |
-| **Cadastro oferta só o compatível** - exibe a arquitetura detectada e desabilita o que aquele modelo não roda | wizard de cadastro de câmera | edição de formulário existente, **dentro do card `[Full]` de backend** | ⏳ a fazer |
+| **Fila de incidentes** - página nova: tabela, mapa, timeline e página própria do incidente | rota nova no módulo de câmeras | portar do `attlas-design` (~7.900 linhas: 2 páginas + 9 componentes) | 🔄 em review, changes requested ([#2022](https://github.com/atmanadmin/attlas-2026/pull/2022)) |
+| **Galeria de mídia de evidência** - 3 abas (imagem, vídeo, anexo do operador), carrossel, upload | dentro da página do incidente | portar do `attlas-design` (componente pronto, 1.145 linhas) | 🔄 código mergeado na pilha ([#2023](https://github.com/atmanadmin/attlas-2026/pull/2023)), sobe junto com a fila |
+| **Desenho sobre frame congelado** - seletor de preset e desenho da região sobre a imagem parada do enquadramento | aba Analíticos (evolui o que já existe) | portar `detection-frame` do `attlas-design` (963 linhas) | 🔄 em review, changes requested e conflito com a develop ([#2024](https://github.com/atmanadmin/attlas-2026/pull/2024)) |
+| **Cadastro oferta só o compatível** - exibe a arquitetura detectada e desabilita o que aquele modelo não roda | wizard de cadastro de câmera | edição de formulário existente, **dentro do card `[Full]` de backend** | ✅ **entregue** com o `2678` |
 
 De onde o frontend vem, e o que do protótipo **não** serve: [[Analítico - Frontend do attlas-design]].
 
@@ -69,6 +71,15 @@ Para não haver surpresa na revisão:
 - **ACOM** (atuação no controlador) e **ATSPM** - seguem sem prazo, em [[00 - Sem prazo (backlog)]].
 - **Quatro laços virtuais por câmera** - requisito decidido, mas é redesenho de contrato.
 - **OTA do app embarcado** - depende do fornecedor do ACAP.
+
+## Sábado 30/08, fora da frente da semana
+
+O sábado de hora extra não é sobra do analítico, que fechou os 11 cards em 28/08. É a frente de
+streaming, com o card que estava sem prazo desde 24/08:
+[[SOFTWARE-2687 - Tráfego na origem, isolamento do controle e linha de base de carga]]. Três
+pendências declaradas no report de 28/08: cortar o fan-out de leituras na origem, separar o tráfego de
+controle do de vídeo, e levantar a linha de base de banda, latência e concorrência que hoje não existe.
+Entrega prevista em PR única, porque o teste é manual e iterativo.
 
 ## Cards da semana
 
@@ -113,19 +124,20 @@ entidade que ela cria.
 
 | # | Card | Tipo | Pts | Estado | PR |
 | --- | --- | --- | --- | --- | --- |
-| 1 | [[Analítico - Renumerar a CROSS-032 duplicada\|Renumerar a `CROSS-032` duplicada]] | `[Back]` | 1 | **entregue** | [#1999](https://github.com/atmanadmin/attlas-2026/pull/1999) |
-| 2 | [[Analítico - Entidade, persistência de região e unicidade\|Entidade Analítico + região em banco + unicidade]] | `[Back]` | 5 | **entregue** | [#2000](https://github.com/atmanadmin/attlas-2026/pull/2000) |
-| 3 | [[Analítico - Writer do deviceSourceId e higiene do embarcado\|Writer do `deviceSourceId`]] `bug P0` | `[Back]` | 3 | a fazer | [#2001](https://github.com/atmanadmin/attlas-2026/pull/2001) |
-| 4 | [[Analítico - Compatibilidade por arquitetura de câmera\|Compatibilidade por arquitetura de câmera]] | `[Full]` | 8 | a fazer | [#2002](https://github.com/atmanadmin/attlas-2026/pull/2002) |
-| 5 | [[Analítico - Healthcheck do analítico\|Healthcheck do analítico]] | `[Full]` | 5 | **entregue** | [#2003](https://github.com/atmanadmin/attlas-2026/pull/2003) |
-| 6 | [[Analítico - Contagem e dedup de incidente DAI\|Contagem e dedup de incidente DAI]] | `[Back]` | 5 | a fazer | [#2004](https://github.com/atmanadmin/attlas-2026/pull/2004) |
-| 7 | [[Analítico - Preset PTZ com snapshot de região\|Preset PTZ com snapshot de região]] | `[Back]` | 5 | a fazer | [#2005](https://github.com/atmanadmin/attlas-2026/pull/2005) |
-| 8 | [[Analítico - Fonte da imagem de evidência\|Fonte da imagem de evidência]] | `[Back]` | 5 | a fazer | [#2006](https://github.com/atmanadmin/attlas-2026/pull/2006) |
-| 9 | [[Analítico - Fila de incidentes (front)\|Fila de incidentes]] | `[Front]` | 8 | a fazer | [#2022](https://github.com/atmanadmin/attlas-2026/pull/2022) |
-| 10 | [[Analítico - Galeria de mídia de evidência (front)\|Galeria de mídia de evidência]] | `[Front]` | 3 | a fazer | [#2023](https://github.com/atmanadmin/attlas-2026/pull/2023) |
-| 11 | [[Analítico - Desenho de região sobre frame congelado (front)\|Desenho sobre frame congelado]] | `[Front]` | 3 | a fazer | [#2024](https://github.com/atmanadmin/attlas-2026/pull/2024) |
+| 1 | [[Analítico - Renumerar a CROSS-032 duplicada\|Renumerar a `CROSS-032` duplicada]] | `[Back]` | 1 | **mergeada** | [#1999](https://github.com/atmanadmin/attlas-2026/pull/1999) |
+| 2 | [[Analítico - Entidade, persistência de região e unicidade\|Entidade Analítico + região em banco + unicidade]] | `[Back]` | 5 | **mergeada** | [#2000](https://github.com/atmanadmin/attlas-2026/pull/2000) |
+| 3 | [[Analítico - Writer do deviceSourceId e higiene do embarcado\|Writer do `deviceSourceId`]] `bug P0` | `[Back]` | 3 | **mergeada** 27/08 | [#2001](https://github.com/atmanadmin/attlas-2026/pull/2001) |
+| 4 | [[Analítico - Compatibilidade por arquitetura de câmera\|Compatibilidade por arquitetura de câmera]] | `[Full]` | 8 | **mergeada** 27/08 | [#2002](https://github.com/atmanadmin/attlas-2026/pull/2002) |
+| 5 | [[Analítico - Healthcheck do analítico\|Healthcheck do analítico]] | `[Full]` | 5 | **mergeada** | [#2003](https://github.com/atmanadmin/attlas-2026/pull/2003) |
+| 6 | [[Analítico - Contagem e dedup de incidente DAI\|Contagem e dedup de incidente DAI]] | `[Back]` | 5 | **mergeada** 27/08 | [#2004](https://github.com/atmanadmin/attlas-2026/pull/2004) |
+| 7 | [[Analítico - Preset PTZ com snapshot de região\|Preset PTZ com snapshot de região]] | `[Back]` | 5 | **mergeada** 28/08 | [#2005](https://github.com/atmanadmin/attlas-2026/pull/2005) |
+| 8 | [[Analítico - Fonte da imagem de evidência\|Fonte da imagem de evidência]] | `[Back]` | 5 | **mergeada** 28/08 | [#2006](https://github.com/atmanadmin/attlas-2026/pull/2006) |
+| 9 | [[Analítico - Fila de incidentes (front)\|Fila de incidentes]] | `[Front]` | 8 | em review, changes requested | [#2022](https://github.com/atmanadmin/attlas-2026/pull/2022) |
+| 10 | [[Analítico - Galeria de mídia de evidência (front)\|Galeria de mídia de evidência]] | `[Front]` | 3 | mergeada na pilha, sobe com a #2022 | [#2023](https://github.com/atmanadmin/attlas-2026/pull/2023) |
+| 11 | [[Analítico - Desenho de região sobre frame congelado (front)\|Desenho sobre frame congelado]] | `[Front]` | 3 | changes requested + conflito | [#2024](https://github.com/atmanadmin/attlas-2026/pull/2024) |
 
-**Entregue: 11 pts.** Restante: 40 pts.
+**Mergeado na develop em 28/08: 37 pts** (os 8 cards `[Back]`/`[Full]`, todos). Restante: **14 pts**,
+os 3 cards `[Front]` - nenhum bloqueado por backend, o que falta é fechar review.
 
 ### O que mudou de ponto, e por quê
 
@@ -140,7 +152,7 @@ entidade que ela cria.
 | `2685` spec dos endpoints | 1 | **absorvido** | Idem, na PR do card `2683` |
 | `2732` cadastro ARTPEC (front) | 3 (`[Front]`) | **absorvido** | Criado por erro meu na reestimativa. ARTPEC é lógica de backend, e o que sobra na tela não é tela nova - foi para dentro do `2678` |
 
-## Já entregue (11 pts, com código e teste)
+## Já entregue (37 pts na develop, com código e teste)
 
 **`2677` - Entidade Analítico** ([#2000](https://github.com/atmanadmin/attlas-2026/pull/2000)):
 `CameraAnalytic` e `CameraAnalyticRegion` em banco, índice único parcial garantindo "um analítico
@@ -157,6 +169,19 @@ Informações Gerais, i18n nos 3 locales, 12 testes.
 **`2679` - Renumerar `CROSS-032`** ([#1999](https://github.com/atmanadmin/attlas-2026/pull/1999)):
 duas specs cross-service com o mesmo ID; a de TURN virou `CROSS-062`, 3 backlinks e o índice mestre
 corrigidos.
+
+> [!success] Estado em 28/08: a pilha de backend fechou inteira
+> Os cinco cards que em 25/08 estavam "a fazer" mergearam na develop entre 27 e 28/08, cada um na sua
+> PR, com base `develop`: `2682` (writer do `deviceSourceId`, o bug P0) na [#2001](https://github.com/atmanadmin/attlas-2026/pull/2001),
+> `2678` (compatibilidade ARTPEC) na [#2002](https://github.com/atmanadmin/attlas-2026/pull/2002),
+> `2683` (dedup de incidente) na [#2004](https://github.com/atmanadmin/attlas-2026/pull/2004),
+> `2684` (preset PTZ com snapshot) na [#2005](https://github.com/atmanadmin/attlas-2026/pull/2005) e
+> `2676` (fonte da imagem de evidência) na [#2006](https://github.com/atmanadmin/attlas-2026/pull/2006).
+> Sobra a camada de tela: [#2022](https://github.com/atmanadmin/attlas-2026/pull/2022) (fila de
+> incidentes) e [#2024](https://github.com/atmanadmin/attlas-2026/pull/2024) (frame congelado) com
+> changes requested, a #2024 também com conflito contra a develop; a
+> [#2023](https://github.com/atmanadmin/attlas-2026/pull/2023) (galeria) mergeou dentro da #2022 e
+> chega à develop com ela.
 
 ## Fatiamento: 1 task = 1 PR, pilha mergeando em cascata
 
@@ -214,7 +239,7 @@ gate é manual: `gh workflow run ci-pr.yml --ref <branch>`.
 | Escala e prova de campo | [[Attlas - Sprint 32]], 4 pts | Dependem da Sprint 31 inteira |
 | Quatro laços por câmera | [[00 - Sem prazo (backlog)]], 5 pts | Requisito decidido, mas é redesenho do contrato de `IVirtualLoopConfig` |
 | ACOM (1:1 com controlador, vínculo com analítico, caller da atuação, tela) | [[00 - Sem prazo (backlog)]], 18 pts | Vive no `ms-controllers`, depende de outro squad, migration com backfill. **Fora do prazo de 18/09 salvo confirmação do user** |
-| ATSPM (unicidade de grupo, snapshot de config, SPEC do `ms-atspm`, decisão do `ms-dai`) | [[00 - Sem prazo (backlog)]], 10 pts | `ms-atspm` é scaffold sem uma linha de spec. Mesma ressalva do ACOM |
+| ATSPM (unicidade de grupo, snapshot de config, spec do ATSPM) | [[00 - Sem prazo (backlog)]], 10 pts | Sem uma linha de spec. A **decisão do `ms-dai`** saiu daqui em 31/08: ele não nasce, é sub-produto do ATSPM ([[Analítico - Topologia de serviço do analítico de vídeo]]). Mesma ressalva do ACOM |
 | OTA do app embarcado | sem card | Depende do fornecedor do ACAP expor caminho de atualização |
 
 ## Riscos

@@ -1,0 +1,18 @@
+{
+  "id": "a865fe87-ff59-443f-95bf-ef75c425706b",
+  "state": "committed",
+  "createdAt": "2026-09-03T14:32:16.934Z",
+  "snapshots": [
+    {
+      "path": "Docs/Analítico/Analítico - Tela de Métricas no web-attlas.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "39e33d4a710d9f3856d06796334f25fcfb025918ca0b6c85481db0fc7074bdbd",
+      "recoverable": true,
+      "existed": false,
+      "committedEtag": "39e33d4a710d9f3856d06796334f25fcfb025918ca0b6c85481db0fc7074bdbd"
+    }
+  ],
+  "completedAt": "2026-09-03T14:32:16.941Z"
+}

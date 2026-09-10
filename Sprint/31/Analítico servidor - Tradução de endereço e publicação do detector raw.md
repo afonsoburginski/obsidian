@@ -11,7 +11,7 @@ frente: Analítico
 tamanho: 3 pts
 status: comprometido na Sprint 31 (planejada em 24/08). Card criado no ClickUp em 25/08.
 sprint: "[[Attlas - Sprint 31]]"
-atualizado: 2026-08-25
+atualizado: 2026-08-31
 ---
 
 # Analítico servidor - Tradução de endereço e publicação do detector raw
@@ -24,7 +24,12 @@ tópico de detecção bruta que o caminho físico usa.
 
 As notas de alinhamento (`Docs/Analítico/Anotações sobre Analítico de vídeo.md`, seção "Arquitetura de
 serviços") listam **quatro** serviços para o analítico: `ms-cameras`, `ms-atspm`, `ms-dai`,
-`ms-virtual-loop`. Não há um quinto para tradução de endereço. É decisão de produto, não lacuna de
+`ms-virtual-loop`. Não há um quinto para tradução de endereço.
+
+> [!note] Atualização de 31/08: a conta foi de quatro para um
+> Fechado em [[Analítico - Topologia de serviço do analítico de vídeo]]: `ms-atspm` e `ms-dai`
+> também não nascem, são capacidades do mesmo analítico servidor, que passa a se chamar
+> `ms-video-analytics`. Não muda nada deste card - o serviço que ele constrói é exatamente esse. É decisão de produto, não lacuna de
 levantamento - a primeira versão do plano desta sprint tratou isso como pergunta em aberto e não
 precisava: a resposta já estava escrita.
 

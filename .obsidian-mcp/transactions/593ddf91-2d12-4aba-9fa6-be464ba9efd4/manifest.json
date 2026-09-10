@@ -1,0 +1,18 @@
+{
+  "id": "593ddf91-2d12-4aba-9fa6-be464ba9efd4",
+  "state": "committed",
+  "createdAt": "2026-09-09T16:22:04.673Z",
+  "snapshots": [
+    {
+      "path": "Docs/Analítico/Prompt - igualar a sidebar de câmeras ao attlas-design.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "d5dd82f4e7afdff3e7ab7b3d7e76adb4da1eab0d0db0a0635e6f0ca188b01bce",
+      "recoverable": true,
+      "existed": false,
+      "committedEtag": "d5dd82f4e7afdff3e7ab7b3d7e76adb4da1eab0d0db0a0635e6f0ca188b01bce"
+    }
+  ],
+  "completedAt": "2026-09-09T16:22:04.711Z"
+}

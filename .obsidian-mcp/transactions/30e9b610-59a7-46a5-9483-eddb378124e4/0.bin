@@ -1,0 +1,22 @@
+---
+tags:
+  - report
+date: 2026-08-28
+---
+
+```
+Report Diário - 28/08/2026
+
+Dia dedicado a revisão de pull requests de colegas. Revisei 2 pull requests, listadas abaixo.
+
+PRs revisadas:
+- 2152 - Ponte de identidade do Detector de Faixa para o registro de medição (UC-060) (aprovada, com apontamentos)
+- 2161 - Associa a câmera da interseção às vias que ela cobre, com sentido e mira (UC-062) (aprovada, com apontamentos)
+
+PRs em andamento:
+- 2005 - Preset PTZ com snapshot de região
+- 2006 - SOFTWARE-2676 - Fonte da imagem de evidência
+- 2022 - Fila de incidentes do analítico
+- 2024 - Desenho de região sobre o frame congelado do preset PTZ
+- 2246 - Corta o loop de reconexão WHEP-HLS e dá retenção ao rollup diário de disponibilidade
+```

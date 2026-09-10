@@ -9,9 +9,9 @@ clickup: https://app.clickup.com/t/86ak5dwz4
 titulo: "[Back] Fonte da imagem de evidência"
 frente: Analítico
 tamanho: 5 pts
-status: comprometido na Sprint 30. Reestimado em 25/08 de 2 para 5 pts como [Back] - os 2 pts originais eram o custo da decisão, não da implementação (endpoint + object storage + vínculo). A galeria virou card irmão [[Analítico - Galeria de mídia de evidência (front)]] (3 pts). PR
+status: "MERGEADA na develop em 28/08 pela PR #2006. Reestimado em 25/08 de 2 para 5 pts como [Back] - os 2 pts originais eram o custo da decisão, não da implementação (endpoint + object storage + vínculo). Implementado na opção recomendada (reler o device em resolução cheia), isolado num seam de um método: a pendência A-01, de onde vem o pixel, segue aberta. A galeria virou card irmão [[Analítico - Galeria de mídia de evidência (front)]] (3 pts)."
 sprint: "[[Attlas - Sprint 30]]"
-atualizado: 2026-08-25
+atualizado: 2026-08-28
 ---
 
 # Analítico - Fonte da imagem de evidência

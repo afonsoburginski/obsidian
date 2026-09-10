@@ -6,9 +6,9 @@ aliases:
   - "Analítico"
   - "Analítico de vídeo"
   - "VL e ATSPM"
-servico: ms-virtual-loop, ms-atspm, ms-connector-virtual-loop, ms-dai (planejados, todos scaffold hoje)
+servico: ms-video-analytics (o analitico servidor, real desde 03/09; renome do ms-virtual-loop feito em 02/09). ms-atspm, ms-dai e ms-connector-virtual-loop foram REMOVIDOS do repo em 05/09 (PR 2530) - CROSS-077
 fonte: auditoria de código de 24/08 (embarcado, servidor, ACOM/ATSPM) + Anotações sobre Analítico de vídeo (notas do user) + attlas-vl-atspm.pdf (squad de Visão Computacional, 10/08) + decisões preservadas das 14 PRs fechadas da Sprint 27 + prazo externo fechado em 25/08
-atualizado: 2026-08-27
+atualizado: 2026-09-09
 ---
 
 # Analítico (Virtual Loop, ATSPM, DAI, ACOM)
@@ -25,9 +25,45 @@ atualizado: 2026-08-27
 > sprints do analítico (30, 31, 32) são o desenvolvimento cheio antes da semana de entrega. A Sprint 30
 > já tem 3 cards `[Front]` reais, com PR aberta (fila de incidentes, galeria de mídia de evidência,
 > desenho sobre frame congelado) - o risco não é "zero frontend planejado". O risco genuíno é mais
-> específico: as telas de **Métricas ATSPM** e do **Laço Virtual**, já prontas no `attlas-design`
-> (~11.000 linhas), não têm card em nenhuma das três sprints (30, 31, 32) - ver [[Attlas - Sprint 32]],
-> seção "Proposto, sem pontos fechados".
+> específico: a tela de **Métricas ATSPM**, já pronta no `attlas-design`, não tem card em nenhuma das três
+> sprints (30, 31, 32) e não tem backend - ver [[Attlas - Sprint 32]], seção "Proposto, sem pontos
+> fechados". A tela do **Laço Virtual** saiu desse risco em 28/08 e está em code review na Sprint 31
+> (`SOFTWARE-2797`), mas entregou uma fatia, não a tela: a casca de três sub-abas, o funil de filtros e o
+> Exportar seguem sem card, e o levantamento de 03/09 contou 33 discrepâncias visuais contra a
+> referência - ver [[Analítico - Tela de Métricas no web-attlas]].
+
+> [!important] Topologia fechada em 31/08: **um** analítico servidor, `ms-video-analytics`
+> O analítico de vídeo tem **um único deployable novo**: o analítico servidor, que roda a capacidade
+> configurada. É o `ms-virtual-loop` da [[Attlas - Sprint 31]], que **renomeia para
+> `ms-video-analytics`**. ATSPM e DAI entram nele como capacidades; `ms-atspm`, `ms-dai` e
+> `ms-connector-virtual-loop` **não nascem**, e `ms-acom` fica descontinuado (o ACOM real são os 78
+> arquivos de `ms-controllers/src/acom/`).
+>
+> A regra que decide é a de [[Analítico - Embarcado x Servidor]]: o que muda por tipo de câmera é
+> **onde** a capacidade roda, nunca a capacidade em si. Detalhe, alternativas rejeitadas e o custo
+> concreto de separar em [[Analítico - Arquitetura e estratégias]]; no repo, `CROSS-077` e `ADR-31`.
+
+> [!success] Estado em 09/09: a cadeia do Laço Virtual está de pé, e o front do módulo saiu do placeholder
+> O quadro de 24/08 abaixo ("só o caminho embarcado existe") **caducou**. Entre 01 e 07/09 mergearam as
+> dez PRs da [[Attlas - Sprint 31]] mais quatro de sábado e duas de segunda:
+>
+> - **Analítico servidor real.** `ms-virtual-loop` foi renomeado para `ms-video-analytics` em 02/09 e
+>   hoje ingere stream, detecta objeto por frame, projeta ocupação de região com histerese, traduz para
+>   endereço de detector e publica em `attlas.detectors.raw`. A tradução mora dentro dele, não num
+>   connector.
+> - **Pedestre é o segundo agente**, com histerese própria e endereço de detector por propósito
+>   (`VirtualLoopDetectorBinding.purpose`), sem misturar contagem com a de veículo.
+> - **Os três scaffolds sumiram do repo** em 05/09: `ms-atspm`, `ms-dai` e `ms-connector-virtual-loop`,
+>   com toda a infra exclusiva deles. O monorepo passou a ter **25 microsserviços**, número corrigido nos
+>   documentos canônicos. `ms-acom` fica, a decisão sobre ele segue em aberto.
+> - **Escala tem mecanismo, não tem número.** Posse de câmera por lease em Redis e política de saturação
+>   entraram; o teto `VIRTUAL_LOOP_MAX_CAMERAS_PER_INSTANCE` fica sem default até alguém medir.
+> - **O front do módulo virou quatro abas**: `detection` (desenhada, mas **desabilitada** na barra),
+>   `instances`, `incidents` e `metrics`. Instâncias e Incidentes foram portados do `attlas-design` e
+>   mergearam em 07/09 pela #2918.
+>
+> O furo de `deviceSourceId` sem writer, descrito abaixo, foi fechado na Sprint 30. O que continua
+> valendo do quadro antigo é o ATSPM: não existe em backend nenhum.
 
 ## As duas capacidades e a placa
 
@@ -51,11 +87,11 @@ atualizado: 2026-08-27
 | Frente | Estado | Onde |
 | --- | --- | --- |
 | Analítico embarcado (pipeline ao vivo) | **Real**, com o furo acima | `apps/ms-cameras/src/analytics-realtime/` |
-| Aba Analíticos no frontend (desenhar região e laço, overlay ao vivo) | **Real** | `apps/web-attlas/src/app/modules/cameras/analytics/` |
+| Aba Analíticos no frontend (desenhar região e laço, overlay ao vivo) | **Real** | `apps/web-attlas/src/app/modules/cameras/analytics/`, e o módulo próprio `analytics` com as abas `detection` (desabilitada), `instances`, `incidents` e `metrics` |
 | Contratos de região, laço, detecção e frame | **Real** | `libs/contracts/src/lib/{object-detection,virtual-loop}/` |
-| Analítico servidor (`ms-virtual-loop`) | **Zero código.** As 14 PRs de spec de 03/08 foram fechadas no reescopo de 24/08; decisões preservadas, spec renasce na [[Attlas - Sprint 31]] | `apps/ms-virtual-loop/` (scaffold) |
-| Tradutor de endereço (`ms-connector-virtual-loop`) | **Especificado, zero código** | `apps/ms-connector-virtual-loop/` (scaffold) |
-| `ms-atspm` e `ms-dai` | **Nem spec existe** | scaffold puro, banco e rota Kong provisionados e vazios |
+| Analítico servidor (`ms-video-analytics`) | **Real desde 03/09.** Ingestão de stream, detecção por frame, ocupação de região, tradução de endereço e publicação do raw. Renomeado em 02/09 | `apps/ms-video-analytics/` |
+| Tradutor de endereço | **Não é serviço.** Vive dentro do analítico servidor (`PROJ-002`), entregue em 03/09 | `apps/ms-video-analytics/` |
+| `ms-atspm` e `ms-dai` | **Removidos do repo em 05/09** (PR 2530), com banco, rota Kong e scrape. São capacidades do analítico servidor | não existem mais em `apps/` |
 | ACOM (CRUD, TCP, realtime) | **Real**, mas sem o caller que atua | `apps/ms-controllers/src/acom/` (80 arquivos) |
 | Persistência de geometria de região | **Não existe em banco nenhum** - é proxy HTTP direto pro device | - |
 | Entidade "Analítico" persistida | **Não existe** - é a chave `deviceSourceId` num campo `Json` livre | `Camera.analyticsCapabilities` |
@@ -85,7 +121,8 @@ notas de alinhamento do user pedem. Nenhum destes tem uma linha de spec:
 | Contratos de detector (sumidouro) | `libs/contracts/src/lib/detectors/` | Real e completo (`IDetectorRawEvent`, `VIRTUAL_LOOP`, `deriveDetectorId`) |
 | Histórico de detecção | `apps/ms-detector-history/` | Real e maduro; aceita o evento do laço virtual sem nenhuma mudança |
 | ACOM | `apps/ms-controllers/src/acom/` | Real (CRUD, TCP, codec, pollers); **falta o caller** |
-| `ms-virtual-loop`, `ms-connector-virtual-loop`, `ms-atspm`, `ms-dai`, `ms-acom` | `apps/` | Scaffold NX byte-idêntico; infra (compose, Kong, banco) provisionada e vazia |
+| `ms-video-analytics` | `apps/ms-video-analytics/` | Real: SPEC, `MOD-001` (pipeline), `MOD-002` (escala), INT-001/002, PROJ-001/002 e UC-001. É o único dos cinco que nasceu |
+| `ms-acom` | `apps/ms-acom/` | Último scaffold de pé. `ms-connector-virtual-loop`, `ms-atspm` e `ms-dai` foram removidos em 05/09; a decisão sobre este segue em aberto |
 
 ## Notas deste domínio
 
@@ -103,23 +140,41 @@ notas de alinhamento do user pedem. Nenhum destes tem uma linha de spec:
 - [[Analítico - Frontend do attlas-design]] - o frontend do módulo já foi desenhado e codado fora do
   produto, no repo `attlas-design`. Mapa de o que serve portar, o que não serve, e o que ainda é
   desenho novo (ARTPEC não existe no protótipo).
+- [[Analítico - O que falta para fechar o módulo]] - **o inventário de fechamento**: os cinco recursos do
+  edital (seção 4.6) confrontados com o código em 09/09, o que falta de cada um, e por que o módulo
+  inteiro não cabe em um dev até 18/09. É a nota que o replanejamento da [[Attlas - Sprint 32]] usa.
+- [[Analítico - Tela de Métricas no web-attlas]] - estado da rota `/analytics/metrics` no produto: o que
+  já está em review, as 33 discrepâncias visuais contra a referência, os dois defeitos funcionais e de
+  onde vem o dado de cada uma das três sub-abas.
 
 ## Planejamento
 
-Três sprints, contra o prazo externo de **18/09** (front e backend) registrado no topo desta nota. Cada
+Quatro sprints, contra o prazo externo de **18/09** (front e backend) registrado no topo desta nota. Cada
 uma tem um `index.md` respondendo o que entrega em feature e em tela:
 
 - [[Sprint 30 - o que entrega]] (24-30/08) - camada de gestão do embarcado: entidade em banco, saúde do
   analítico, writer do vínculo, compatibilidade ARTPEC, dedup de incidente, preset com snapshot,
-  evidência. **5 telas.** 51 pts em 11 cards, 11 pts entregues em 25/08.
-- [[Sprint 31 - o que entrega]] (31/08-06/09) - analítico servidor (Virtual Loop em container). 25 pts,
-  **nenhuma tela** - é o caminho do dado.
-- [[Sprint 32 - o que entrega]] (07-13/09) - escala e prova de campo. Último checkpoint antes do prazo.
+  evidência. **5 telas. Fechada em 28/08**, 11 de 11 cards, 51 pts.
+- [[Sprint 31 - o que entrega]] (31/08-06/09) - analítico servidor (Virtual Loop em container).
+  **Fechada em 05/09**, 10 de 10 cards, 32 pts, mais quatro PRs fora do plano: peso do modelo, escala,
+  pedestre como segundo agente e a remoção dos três scaffolds. Entregou também a tela de métricas do
+  Laço Virtual.
+- [[Sprint 32 - o que entrega]] (07-13/09) - **replanejada em 09/09**: 11 PRs em cascata e 30 pts em 9
+  cards, somando o modo edição da aba Detecção (o recurso "Visão Geral" do edital, hoje construído e
+  desligado) aos três cards que já existiam.
+- [[Attlas - Sprint 33]] (14-20/09) - **a semana do prazo**, que cai na quinta 18/09. Resíduo declarado:
+  ATSPM Split Monitor e Yellow/Red, a face lendo os dois grupos novos, e o histórico de configuração.
 
-> [!danger] A conta de capacidade não fecha com um dev
-> Somando o que falta: 40 pts na Sprint 30, 25 na 31, 4 na 32 = **69 pts em 3 semanas**, ou ~23 por
-> semana, contra 13-20 que a tabela do time põe numa semana de um dev. Detalhe e as três saídas
-> possíveis em [[Attlas - Sprint 30]], seção "O veredito de capacidade".
+> [!danger] Fechar o módulo inteiro até 18/09 não é possível com um dev
+> Depois da Sprint 33 sobram **90 pts** do edital, dos quais 16 são do módulo Controladores: ACOM,
+> Dashboard do Analítico, decisão automatizada alimentando as Estratégias, as métricas ATSPM que exigem
+> o mapa estágio-grupo de movimento e classe no evento, o snapshot da configuração semafórica, polling
+> com histórico, recorrência de incidente, exportação e o OTA do embarcado.
+>
+> O que a entrega de 18/09 **é**: a cadeia do Laço Virtual ponta a ponta, demonstrável em campo, com a
+> Detecção configurável pela tela, Instâncias e Incidentes no ar e as Métricas do Laço Virtual com dado
+> real. O que ela **não é**: atuação em controlador legado, e o Dashboard do módulo. Item por item em
+> [[Analítico - O que falta para fechar o módulo]].
 
 ## Relacionados
 

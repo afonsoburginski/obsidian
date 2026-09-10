@@ -18,6 +18,12 @@ atualizado: 2026-08-10
 
 # SOFTWARE-2390 - Connector de laço virtual - ocupação vira evento de detector
 
+> [!warning] Obsoleto em 31/08: o connector não nasce
+> A tradução de endereço vive dentro do analítico servidor, e `ms-connector-virtual-loop` fica
+> scaffold morto até o card de remoção. Decisão em
+> [[Analítico - Topologia de serviço do analítico de vídeo]]; no repo, `CROSS-077`. Esta nota fica
+> como registro do que se especificou, não como trabalho a fazer.
+
 Fazer o `ms-connector-virtual-loop` publicar o evento canônico de detector no tópico da plataforma
 a partir da ocupação normalizada por região. É o primeiro produtor do caminho de vídeo.
 

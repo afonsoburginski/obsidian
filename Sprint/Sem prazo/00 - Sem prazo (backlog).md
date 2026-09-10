@@ -9,7 +9,7 @@ aliases:
   - "Sem prazo"
 tipo: índice
 escopo: cards meus (squad 2) sem data de entrega, espalhados por várias listas do ClickUp
-atualizado: 2026-08-25
+atualizado: 2026-08-31
 ---
 
 # Sem prazo (backlog)
@@ -41,8 +41,8 @@ semana, **in progress** = pegando agora.
 | ~~[SOFTWARE-2005](https://app.clickup.com/t/86ajc6uzx)~~ | Saiu do sem prazo: rescopado em 31/07 para permissões nas rotas de câmeras (não transferido para o squad 3, ver decisão abaixo), movido para a lista da 27 em 03/08 | to do | Sprint 27 | [[SOFTWARE-2005 - Permissões nas rotas de câmeras - mapa das 86 rotas]] |
 | [SOFTWARE-1263](https://app.clickup.com/t/86ah842t3) | Unificar pastas do Prisma e Database | backlog, prioridade baixa | Quito | sem nota |
 | [SOFTWARE-1363](https://app.clickup.com/t/86aha9whm) | Plano de escalabilidade de streaming em HLS + Cloudflare | em teste (data de 11/05, vencida) | Quito | sem nota |
-| [SOFTWARE-2687](https://app.clickup.com/t/86ak5e33b) | Saturação de banda de saída da EC2 sob carga concorrente de streaming (mediamtx) | backlog | criado em 24/08 na lista da Sprint 30 (vigente); achado em 24/08, investigação de instabilidade de câmeras relatada pelo usuário (causa raiz + oscilação WHEP↔HLS no videowall como achado relacionado) | [[Streaming - Saturação de banda de saída sob carga concorrente]] |
-| [SOFTWARE-2686](https://app.clickup.com/t/86ak5e32x) | Suportar até 4 laços virtuais por câmera | backlog | criado em 24/08 na lista da Sprint 30 (vigente); requisito decidido nas notas de alinhamento, fora da Sprint 30/31 por tamanho. Pontos (5) setados em 25/08 | [[Analítico - Suportar até 4 laços virtuais por câmera]] |
+| ~~[SOFTWARE-2687](https://app.clickup.com/t/86ak5e33b)~~ | Saturação de banda de saída da EC2 sob carga concorrente de streaming (mediamtx) | **SAIU do sem prazo em 29/08** | Ganhou data: sábado 30/08 em hora extra, decisão do report de 28/08. As correções rápidas já tinham saído na PR #2246; o que restou (cortar o fan-out de pulls na origem, separar o tráfego de controle do de vídeo e levantar a linha de base de carga) virou plano de execução com recorte de PR única. Card segue na lista da Sprint 30 no ClickUp | [[SOFTWARE-2687 - Tráfego na origem, isolamento do controle e linha de base de carga]], achado em [[Streaming - Saturação de banda de saída sob carga concorrente]] |
+| [SOFTWARE-2686](https://app.clickup.com/t/86ak5e32x) | Suportar até 4 laços virtuais por câmera | **SAIU do sem prazo em 28/08** | Entrou na [[Attlas - Sprint 32]] como card 3. A dependência que o segurava (entidade e persistência de região) foi entregue pela Sprint 30, e o card mexe no mesmo domínio de contrato que a Sprint 31 abre. Card segue na lista da Sprint 30 no ClickUp até a lista da 32 existir. Pontos (5) setados em 25/08 | [[Analítico - Suportar até 4 laços virtuais por câmera]] |
 
 ## Frente do analítico em container: reescopada em 24/08, ClickUp reconciliado em 25/08
 
@@ -186,6 +186,15 @@ sobra é higiene de doc e dois defeitos pequenos, e virou o SOFTWARE-2391, na fi
 segue aberto na Sprint 29 e é um dos 11 candidatos a deleção - ver seção acima).
 
 ## Candidatos a card (trabalho sem card hoje)
+
+- **Renomear `ms-virtual-loop` para `ms-video-analytics`**: decidido em 31/08, ver
+  [[Analítico - Topologia de serviço do analítico de vídeo]]. Depois de a pilha da
+  [[Attlas - Sprint 31]] mergear e **antes** de o ATSPM começar. Toca `apps/`, `project.json`,
+  `Dockerfile`, compose, Kong, nome de imagem, `.env*`, Helm e o workflow de deploy - mesma forma do
+  renome de VMS. Fazê-lo com feature em voo reescreveria as 10 PRs empilhadas.
+- **Remover os scaffolds `ms-atspm`, `ms-dai` e `ms-connector-virtual-loop`**: mesma decisão. Sai
+  junto `db-atspm`, `db-dai`, `redis-connector-virtual-loop` e as rotas de Kong. Independente do
+  renome. O `ms-acom` fica por ora, por decisão do user em 31/08.
 
 - ~~**Renomear "Video Wall" para VMS**~~: saiu dos candidatos em 10/08, virou as três fases comprometidas da [[Attlas - Sprint 28]] (cards a criar no ClickUp). Alcance arquivo por arquivo em [[VMS]].
 - **Gerenciamento global do videowall externo**: absorvido pelo RF-7 do 2201.

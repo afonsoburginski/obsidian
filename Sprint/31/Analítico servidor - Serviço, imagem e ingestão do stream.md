@@ -45,6 +45,22 @@ boot e na recarga de geometria, não só na primeira leitura.
 - **Reconexão com recuo progressivo**, com o teto do intervalo nomeado em constante, não literal espalhado.
   Câmera que cai e volta não pode gerar tempestade de reconexão nem ficar fora para sempre.
 
+> [!success] Entrou além do escopo original, em 31/08
+> Depois da conversa de arquitetura ([[Analítico - Topologia de serviço do analítico de vídeo]]),
+> este card ganhou duas peças de escala que cabiam nele:
+>
+> - **Partição por câmera** (`VIRTUAL_LOOP_SHARD_INDEX`/`SHARD_COUNT`, hash estável do `cameraId`).
+>   O analítico é stateful por câmera, então duas réplicas na mesma câmera decodificam duas vezes e
+>   publicam a mesma virada duas vezes. Estática de propósito; a dinâmica segue no `MOD-002` da
+>   [[Attlas - Sprint 32]]. Só o decoder filtra por shard - a resolução de endereço continua vendo a
+>   frota inteira, senão o tradutor descartaria virada de outro shard como "sem vínculo".
+> - **Custo de decode medido em separado** da inferência
+>   (`virtual_loop_frame_interval_seconds{resolution}`). O decoder é processo filho e não há chamada
+>   para cronometrar; o observável é se o frame continua chegando na cadência.
+>
+> E a **imagem** foi corrigida: o scaffold era Alpine e sem `ffmpeg`, ou seja o container subiria e
+> nunca produziria frame. Virou `node:22-slim` (os prebuilds do runtime de inferência são glibc).
+
 ## DoD
 
 Container decodificando frame do relay para pelo menos uma câmera real, com a guarda de "sem região, sem

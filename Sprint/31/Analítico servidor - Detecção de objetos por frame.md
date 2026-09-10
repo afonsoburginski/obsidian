@@ -11,7 +11,7 @@ frente: Analítico
 tamanho: 5 pts
 status: comprometido na Sprint 31 (planejada em 24/08). Card criado no ClickUp em 25/08. Repontuado de 3 para 5 em 25/08 contra o "Guia Geral de Boas Práticas" (tabela §3.1) - inferência nativa embutida + carga de modelo de object storage + gate de readiness + medição de custo por resolução passa de 4-8h para 1-2 dias.
 sprint: "[[Attlas - Sprint 31]]"
-atualizado: 2026-08-25
+atualizado: 2026-09-02
 ---
 
 # Analítico servidor - Detecção de objetos por frame
@@ -37,6 +37,25 @@ precisar de duas gramáticas para ler a mesma coisa, e o `IAnalyticsFrameEvent` 
 Veículo é o alvo desta unidade. **Pedestre fica filtrado e declarado como próximo eixo**, não removido em
 silêncio: filtrar sem registrar é o tipo de decisão que reaparece como bug seis meses depois.
 
+> [!warning] Estado em 02/09: o pedestre deixou de ser filtrado, e este parágrafo virou registro histórico
+> O parágrafo acima descreve o card como ele foi entregue na Sprint 31, e **não descreve mais o código**.
+> A PR [#2529](https://github.com/atmanadmin/attlas-2026/pull/2529) fez do pedestre um agente de detecção
+> ao lado do veículo, com histerese própria e endereço de detector próprio. No código de hoje:
+>
+> - `agent-classes.constant.ts` carimba cada caixa com o `DetectorPurpose` que a classe resolve -
+>   `VEHICLE` para `car`/`motorcycle`/`bus`/`truck`, `PEDESTRIAN` para `person` (e só `person`).
+> - O motivo de métrica `class_next_axis` **saiu do vocabulário**: `person` é alvo, e o que sobra
+>   reconhecido e sem agente é `bicycle`, sob `class_vru_unassigned`. A contagem vive na série **por
+>   caixa** (`virtual_loop_detections_filtered_total`), não na de frame.
+> - `bicycle` continua atribuído a nenhum agente **de propósito**, e é isso que o parágrafo acima acerta
+>   em espírito: `docs/modules/detectors.md` §3.2 registra que ciclista conta como usuário vulnerável em
+>   algumas jurisdições e como tráfego em outras, e essa é decisão de produto por implantação. O contador
+>   é o que vai dizer com que frequência a pergunta aparece em campo.
+>
+> Deixo o parágrafo original de pé porque ele é a decisão da Sprint 31 e o `[!warning]` é o delta -
+> reescrevê-lo apagaria o registro de que o eixo do pedestre foi uma escolha de sequência, não um
+> esquecimento.
+
 ## Entrega obrigatória: o tempo de inferência medido por resolução
 
 Isto não é um "seria bom ter", é parte do DoD. **O teto de câmeras por instância sai deste número**, e é
@@ -45,6 +64,19 @@ exatamente por isso que o card de escala ficou fora da semana em vez de entrar c
 A medição também é o gatilho da cláusula de reabertura registrada no ADR: se o custo por frame no processo
 Node provar a via inviável, a alternativa Python volta à mesa como decisão registrada, não como descoberta
 no CI.
+
+> [!success] Entrou além do escopo original, em 31/08
+> **Inferência sobre o recorte da região, não sobre o frame inteiro** - a alavanca que mais muda o
+> custo da cadeia ([[Analítico - Topologia de serviço do analítico de vídeo]], seção de escala). Num
+> laço típico leva 640x360 para cerca de 192x108, algo em torno de um décimo da área.
+>
+> Com margem de 25% em volta da união das regiões, porque a regra de contato lê a **base** da caixa e
+> recorte justo entregaria veículo truncado, com a base no lugar errado. As caixas voltam para
+> coordenada de frame na fronteira do estágio, e cai para frame inteiro quando não há região, quando
+> o recorte ficaria menor que 64 px de lado, ou quando ele já cobre 90% do frame.
+>
+> A dependência do runtime (`onnxruntime-node`) também entrou no `package.json` neste passe, com o
+> lockfile carregando só a subárvore dela.
 
 ## DoD
 
