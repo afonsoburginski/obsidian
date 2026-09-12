@@ -2,7 +2,7 @@
 tags:
   - doc
   - analitico
-atualizado: 2026-09-11
+atualizado: 2026-08-31
 fonte: attlas-vl-atspm.pdf (squad de Visão Computacional, 10/08) + "Anotações sobre Analítico de vídeo" (notas do user) + auditoria de código de 24/08 e 25/08
 ---
 
@@ -126,7 +126,7 @@ A ACOM é transporte (contato seco), não capacidade. As regras fechadas em alin
 > por câmera, não por região". Suportar quatro laços por câmera é **redesenho de contrato**, não uma
 > constante nova - e já está decidido nas notas de alinhamento, não é decisão em aberto. Ficou fora da
 > Sprint 30 e da Sprint 31 por tamanho, como card próprio no sem prazo:
-> [[SOFTWARE-2686 - Suportar até quatro laços virtuais por câmera|Analítico - Suportar até 4 laços virtuais por câmera]].
+> [[Analítico - Suportar até 4 laços virtuais por câmera]].
 
 ## Convergência: o que o operador vê
 
@@ -139,91 +139,3 @@ que o fluxo de cadastro oferece, e isso é [[Analítico - Fluxos]].
 
 - [[Analítico]] · [[Analítico - Requisitos e SLA]] · [[Analítico - Arquitetura e estratégias]] · [[Analítico - Fluxos]]
 - [[Attlas - Sprint 30]] · [[Attlas - Sprint 31]] · [[Attlas - Sprint 32]] (o escopo que fecha os buracos acima, contra o prazo de 18/09)
-
-## Estado de campo em 11/09/2026: o que os dois aparelhos da bancada realmente têm
-
-Levantamento feito direto nas câmeras, com `GET /axis-cgi/applications/list.cgi` por digest. Corrige
-por observação o que até aqui era inferido, e é a informação que faltava para decidir modo de execução.
-
-| Câmera | IP | Apps com `Status="Running"` |
-| --- | --- | --- |
-| ATMN - DEMO | 10.1.1.78 | `atman_virtual_loop_analytic` 1.2.4 e `traffic_edge_detection` 0.1.0 |
-| ATMN - PTZ | 10.1.1.79 | `atman_virtual_loop_analytic` 1.2.2, mais o diagnóstico da Axis |
-
-> [!warning] A DEMO tem DOIS apps de analítico rodando ao mesmo tempo
-> A seção da matriz acima registra que o app de laço e o app de ATSPM nunca rodam juntos na mesma
-> câmera. O que a DEMO tem rodando em paralelo é o app de laço e o `traffic_edge_detection`, que é o de
-> detecção de objetos. Se esse terceiro app conta como o app de ATSPM para efeito daquela exclusão, a
-> regra precisa ser revista com a squad de Visão Computacional, porque o aparelho está contrariando ela.
-> Se é um app à parte, a matriz precisa ganhar a terceira coluna. Não decidi por conta: registrei.
-
-### Por que as duas estão em Servidor hoje
-
-Não é preferência, é o que o aparelho permite.
-
-A **PTZ não tem o app de detecção de objetos**. Servidor não é escolha, é o único caminho. Aqui o
-responsável pelo analítico estava certo.
-
-A **DEMO tem o app**, e ele está detectando de fato: o estado do detector acusava 113.220 detecções
-sobre 74.371 quadros, com o rastreador vivo e quase quatro horas de atividade. Mesmo assim ela também
-está em Servidor, por dois motivos somados. O app de laço dela só reporta pelo protocolo TCP antigo do
-attlas de 2025, discando para fora, e a topologia decidida em 31/08 aposentou o conector que escutaria
-isso. E o app de detecção de objetos nasce com o produtor desligado e sem destino configurado, então
-não publica em lugar nenhum.
-
-### Onde a API do app de objetos realmente atende
-
-Esta é a descoberta que destrava o caminho embarcado, e ela vale anotar porque custou tempo.
-
-O app **não** responde sob o caminho que o backend procurava. Ele atende na **porta 8000**, sob o
-prefixo **`/traffic-motion-detection`**:
-
-- `info/analytic` devolve o id do analítico, que na DEMO é `ATMAN-7RGS2SIVI3E0EKFL`
-- `status/analytic` devolve o estado do detector e do rastreador
-- `cameras` devolve `[{"id":"self","uri":"vdo://self"}]`, ou seja, ele analisa o próprio sensor
-- `classes` devolve o catálogo completo com os nomes em português
-
-O backend procurava em `/horus/traffic-analytics`, que aparelho nenhum atende. O probe caía em 404, o
-resolvedor concluía que a câmera não tem analítico, e a chave de origem nunca era descoberta. Esse é o
-motivo de o consumidor do stream registrar zero fontes mapeadas. Corrigido tornando o prefixo uma lista,
-porque tentar os dois só encontra mais aparelhos e nunca menos. O attlas de 2025 confirma o prefixo de
-forma independente: o serviço externo dele monta exatamente esse endereço.
-
-### A receita para o app publicar, herdada do attlas de 2025
-
-São dois passos, na ordem, e estão no caso de uso de criação de detector de movimento daquele
-repositório:
-
-1. `PATCH` em `settings/analytic/streams` com o host, a porta e o tópico de destino
-2. `POST` em `producers/self` habilitando o produtor
-
-O primeiro diz para onde publicar, o segundo liga. No attlas de 2025 o produtor é acionado sob demanda,
-quando alguém abre a tela, e por isso ele nasce desligado. Confirmei consumindo o tópico por 65 segundos
-no broker de desenvolvimento: zero mensagens, ou seja, nenhuma instância está disputando o aparelho.
-
-> [!warning] Esse endpoint de streams é só escrita
-> Uma leitura nele devolve "not found". Não há como capturar o valor anterior para restaurar depois. O
-> attlas de 2025 também não lia, sempre regravava no provisionamento. Quem for gravar precisa saber que
-> a operação não é reversível por leitura.
-
-E uma restrição de rede que decorre disso: a câmera alcança o host de desenvolvimento, mas não alcança
-uma estação de trabalho, porque a rota até ela sai por Tailscale. O destino tem de ser um broker que o
-aparelho enxergue, que é o mesmo que a variável de brokers do stream já aponta.
-
-### Caixas de detecção: onde elas podem e não podem vir
-
-Vale fixar, porque é a pergunta que mais se repete.
-
-Pelo **caminho embarcado** as caixas já têm cano pronto: o consumidor do stream recebe o quadro e o
-gateway de WebSocket já tem o método que as transmite para a tela. Falta só o aparelho publicar.
-
-Pelo **caminho servidor** elas não existem como contrato. O analítico servidor calcula as caixas
-internamente, mas publica apenas ocupação de região, e o domínio de contratos tem um tópico só, o de
-ocupação. Levar caixa por esse caminho é tópico novo, produtor, consumidor e ponte para o WebSocket,
-com limitação de taxa, porque caixa por quadro em cada câmera é volume considerável. É trabalho de
-spec, não de configuração.
-
-Consequência prática para a PTZ: como ela não tem o app de objetos e o caminho servidor não publica
-caixa, **hoje não existe forma de mostrar caixa nela**.
-
-Ver [[Analítico - Arquitetura e estratégias]] e [[Analítico - O que falta para fechar o módulo]].

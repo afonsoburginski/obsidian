@@ -8,8 +8,8 @@ aliases:
   - "Attlas - Sprint 32"
   - "Sprint 32 - o que entrega"
 sprint: Sprint 32 (7/9/26 - 13/9/26)
-status: "CRIADA em 25/08 pelo user como a terceira semana da frente do analítico, contra o prazo externo de 18/09 (front + backend). REVISADA em 28/08 em sequência à revisão da Sprint 31: comprometido subiu de 4 para 9 pts em 3 cards, com a entrada do SOFTWARE-2686 (4 laços por câmera), que estava no sem prazo e foi desbloqueado pela entrega da Sprint 30. Continua sendo a sprint mais leve das três, e a decisão que falta é o ATSPM. A lista propria no ClickUp EXISTE (901329020073), levantada na API em 09/09, com 7 tasks e nenhuma minha - os meus tres cards seguem nas listas da Sprint 29 (2398 e 2200) e da Sprint 30 (2686), todos em backlog. ESTADO EM 09/09, com três dos sete dias gastos: nenhum dos três cards saiu do backlog e não há PR aberta minha. O card 1 teve o mecanismo adiantado no sábado 05/09 pela #2528, dentro da Sprint 31, e o que falta dele é a medição do teto. Os dois dias de trabalho da semana foram para o front do Analítico, fora do plano: #2910 (destrave da ci-develop) e #2918 (porte de Instâncias e Incidentes). REPLANEJADA em 09/09 contra o inventário do módulo inteiro (edital seção 4.6 confrontado com o código): a semana virou 9 PRs em cascata e cerca de 19 pts, somando aos três cards existentes o modo edição da aba Detecção (o recurso Visão Geral do edital, hoje construído e desabilitado), a base de docs que faltava (docs/modules/analytics.md e a UF-046 que o código cita sem existir) e a troca da face default de Métricas. A pilha ficou em 12 PRs e 35 pts, somando o refinamento de emergência (SOFTWARE-3057, urgente) pedido em 09/09, com repontuação recomendada de dois cards (2686 de 5 para 8, 2200 de 2 para 5) e 15 dos 30 pts sem card. ACOM, Dashboard do Analítico, decisão automatizada, AOG/PCD/TMC/Approach Delay e o snapshot de configuração semafórica ficam declaradamente fora do prazo de 18/09, com motivo por item."
-atualizado: 2026-09-10
+status: "CRIADA em 25/08 pelo user como a terceira semana da frente do analítico, contra o prazo externo de 18/09 (front + backend). REVISADA em 28/08 em sequência à revisão da Sprint 31: comprometido subiu de 4 para 9 pts em 3 cards, com a entrada do SOFTWARE-2686 (4 laços por câmera), que estava no sem prazo e foi desbloqueado pela entrega da Sprint 30. Continua sendo a sprint mais leve das três, e a decisão que falta é o ATSPM. A lista propria no ClickUp EXISTE (901329020073), levantada na API em 09/09, com 7 tasks e nenhuma minha - os meus tres cards seguem nas listas da Sprint 29 (2398 e 2200) e da Sprint 30 (2686), todos em backlog. ESTADO EM 09/09, com três dos sete dias gastos: nenhum dos três cards saiu do backlog e não há PR aberta minha. O card 1 teve o mecanismo adiantado no sábado 05/09 pela #2528, dentro da Sprint 31, e o que falta dele é a medição do teto. Os dois dias de trabalho da semana foram para o front do Analítico, fora do plano: #2910 (destrave da ci-develop) e #2918 (porte de Instâncias e Incidentes). REPLANEJADA em 09/09 contra o inventário do módulo inteiro (edital seção 4.6 confrontado com o código): a semana virou 9 PRs em cascata e cerca de 19 pts, somando aos três cards existentes o modo edição da aba Detecção (o recurso Visão Geral do edital, hoje construído e desabilitado), a base de docs que faltava (docs/modules/analytics.md e a UF-046 que o código cita sem existir) e a troca da face default de Métricas. A pilha ficou em 12 PRs e 35 pts, somando o refinamento de emergência (SOFTWARE-3057, urgente) pedido em 09/09, com repontuação recomendada de dois cards (2686 de 5 para 8, 2200 de 2 para 5) e 15 dos 30 pts sem card. ACOM, Dashboard do Analítico, decisão automatizada, AOG/PCD/TMC/Approach Delay e o snapshot de configuração semafórica ficam declaradamente fora do prazo de 18/09, com motivo por item. FECHAMENTO em 11/09 à noite: a #3066 e as oito PRs de spec (#3188 a #3195) mergearam na develop entre 23:01 e 23:57. A prova de campo do SOFTWARE-2200 foi executada no EC2 dev com duas câmeras em modo servidor. As correções estão abertas nas #3303, #3304, #3305 e #3306, todas com CI verde. As #3297 e #3300 foram mergeadas. As #3303, #3304, #3305 e #3306 seguem abertas, verdes e aguardando review."
+atualizado: 2026-09-11
 ---
 
 # Sprint 32 - o que entrega
@@ -30,6 +30,18 @@ do prazo de 18/09, que cai na Sprint 33. O planejamento detalhado é a segunda m
 > (`SOFTWARE-2686`, contrato backend) e [#3195](https://github.com/atmanadmin/attlas-2026/pull/3195)
 > (`SOFTWARE-2686`, escolha por região no frontend). A implementação continua pendente das aprovações e
 > merges dessa base; os registros abaixo de 09/09 permanecem como fotografia histórica.
+
+> [!success] Estado em 11/09 no fechamento
+> A prova de campo gerou quatro PRs independentes contra `develop`, abertas na ordem prevista. A #3303
+> corrige a reconciliação, o transporte e o filtro de caixas pela região; a #3304 sincroniza o overlay
+> com o vídeo; a #3305 corrige o deploy e as URLs internas; a #3306 aplica os defaults do ms-simulation.
+> Todas estão com CI verde e sem comentários pendentes. A ordem de merge permanece #3303, #3304, #3305
+> e #3306.
+>
+> O modo embarcado da câmera compartilhada `10.11.20.101` foi configurado: o device publica com
+> `source_id=E827251A4173`, possui uma região de aproximação e o consumer do `ms-cameras` consome
+> o tópico replicado pelo broker externo. O cadastro, a geometria e o broker do device foram mantidos
+> compatíveis com o uso compartilhado pelo Attlas 25.
 
 > [!warning] Estado em 09/09: três dias gastos, nenhum dos três cards começado
 > Os três seguem em `backlog` no ClickUp e nenhum está na lista da própria sprint: `SOFTWARE-2398` e
@@ -81,11 +93,11 @@ do prazo de 18/09, que cai na Sprint 33. O planejamento detalhado é a segunda m
 
 | Feature | Onde | Estado |
 | --- | --- | --- |
-| **Configurar a detecção pela tela**: congelar o frame, desenhar com as cinco ferramentas, descartar ou salvar, e a aba **Detecção** deixa de ser anunciada e desabilitada | `web-attlas`, `analytics-detection` | ⏳ a fazer, é a maior fatia da semana |
-| **Até 4 laços virtuais por câmera**, com o laço deixando de ser configuração única por câmera | `libs/contracts` (`virtual-loop`) + `ms-cameras` | ⏳ a fazer (`SOFTWARE-2686`) |
+| **Configurar a detecção pela tela**: congelar o frame, desenhar com as cinco ferramentas, descartar ou salvar, e a aba **Detecção** deixa de ser anunciada e desabilitada | `web-attlas`, `analytics-detection` | ✅ entregue pela #3066 em 11/09; specs #3191 a #3193 mergeadas |
+| **Até 4 laços virtuais por câmera**, com o laço deixando de ser configuração única por câmera | `libs/contracts` (`virtual-loop`) + `ms-cameras` | ⏳ specs mergeadas em 11/09 (#3194 e #3195); implementação a fazer (`SOFTWARE-2686`) |
 | **Teto medido** de câmeras por instância, com o número entrando por configuração | `ms-video-analytics` | ⏳ a fazer (`SOFTWARE-2398`) - o mecanismo já entrou em 05/09 |
-| **Prova de campo ponta a ponta**: câmera comum, detecção em container, ocupação publicada, evento de detector na timeline com contadores coerentes | cadeia inteira | ⏳ a fazer (`SOFTWARE-2200`) |
-| **Métricas abre numa face que tem dado**, em vez de 34 cartões vazios | `web-attlas`, `analytics-metrics` | ⏳ a fazer, 1 PR |
+| **Prova de campo ponta a ponta**: câmera comum, detecção em container, ocupação publicada, evento de detector na timeline com contadores coerentes | cadeia inteira | executada em 11/09 no EC2 dev; correções abertas nas #3303 e #3304 (`SOFTWARE-2200`), mais #3305 e #3306 sem card |
+| **Métricas abre numa face que tem dado**, em vez de 34 cartões vazios | `web-attlas`, `analytics-metrics` | ✅ mergeada em 11/09 (#3190) |
 
 ## Telas
 
@@ -117,6 +129,71 @@ face default.
 
 ## A pilha da semana: 12 PRs, 35 pts
 
+> [!success] A #3066 mergeou em 11/09, e a pilha encolheu
+> A `#3066` (`SOFTWARE-3057`) está na `develop`. Com ela entraram, além do refinamento das telas, **o
+> modo edição inteiro da Detecção** e a spec `UF-053`, que é a unidade de registro da tela.
+>
+> **Três cards fecham sem PR de código**: `SOFTWARE-3054`, `SOFTWARE-3055` e `SOFTWARE-3056` (9 pts).
+> As specs deles descreviam congelar o quadro e o preset, as cinco ferramentas, e salvar e descartar -
+> tudo entregue pela #3066. Conferi critério por critério no código: o seletor de preset bloqueado na
+> edição, os exatamente quatro vértices, o salvar e o descartar travados durante a escrita, e a aba já
+> sem `disabled`. As três specs passaram para `implemented` e apontam a UF-053 como unidade de registro.
+>
+> **O `SOFTWARE-3052` encolheu para o `MOD-012`**. A `UF-046` e a `UF-047` saíram da PR: foram escritas
+> em 10/09, antes da UF-053, e a #3066 invalidou a premissa das duas. A UF-046 existia para adotar as
+> citações `UF-046` dos fontes, e a #3066 renomeou essas citações para `UF-053`.
+>
+> **Sobram quatro PRs de spec com trabalho real**: `#3188` (doc de módulo), `#3190` (face default de
+> Métricas, que ainda abre na ATSPM vazia), `#3194` e `#3195` (quatro laços por câmera). A `#3188`
+> passou a ter base `develop` e por isso voltou a receber CI.
+>
+> Triagem completa, PR por PR e com a evidência no código:
+> [claude.ai/code/artifact/b2e4749b](https://claude.ai/code/artifact/b2e4749b-3cf6-4a8b-a825-40239a6e12a7)
+
+> [!success] Fechamento em 11/09 à noite: a pilha inteira está na develop e a prova de campo aconteceu
+> As oito PRs de spec (`#3188` a `#3195`) deixaram de ser cascata: cada uma recebeu `merge origin/develop`,
+> base retargetada para `develop`, `ci-pr` verde e merge em sequência, entre 23:30 e 23:57, logo depois da
+> `#3066` (23:01). A `UF-053` está `approved` na develop. Duas PRs pequenas nasceram do rabicho e seguem
+> mergeadas após aprovação: [#3297](https://github.com/atmanadmin/attlas-2026/pull/3297) (runbook da MinIO
+> fora do Docker Hub, pedido do Will) e [#3300](https://github.com/atmanadmin/attlas-2026/pull/3300)
+> (links para a `UF-047` removida). O deploy seguinte terminou com sucesso no run `34665519410`.
+>
+> **A linha 10 saiu do papel sem esperar câmera nova**: o deploy do merge foi feito no EC2 dev e as duas
+> câmeras ATMN do tenant atman passaram a detectar no `ms-video-analytics`, com ocupação chegando ao
+> `ms-detector-history` (detectores 22 e 23 do controlador Quito 2) e bounding box na tela pública. O que
+> travava, em ordem: env nova do ms-simulation, modelo fora do MinIO, frota sem região, mediamtx com
+> configuração de agosto, paths do analítico apagados pelo restart do mediamtx, vínculo região-detector
+> inexistente, PTZ duplicada num tenant morto e a URL do analítico ausente no ms-cameras. Cada item, o que
+> é bug de código e a PR de destino estão em
+> [[Registro - prova de campo do analítico servidor no EC2 em 11 de setembro]]. **A linha 11 vira a PR
+> `[Back] Correções da prova de campo`** (`SOFTWARE-2200`, reconciliador dos paths do analítico), mais
+> duas sem card (deploy e ms-simulation).
+
+> [!info] Estado em 11/09 mais cedo: as nove PRs da pilha estão abertas
+> As oito de spec (1 a 8) e a urgente (12) saíram do papel. As três que faltam (9, 10 e 11) seguem
+> sem PR porque dependem de máquina e de campo, como o plano já previa.
+>
+> **A ordem de merge inverteu em relação ao plano.** A 12 (`#3066`) não ficou independente: ela virou
+> a base da cascata, e as oito de spec sobem a partir dela. A consequência prática é que **só a
+> `#3066` recebe CI** - o `ci-pr.yml` só dispara com base `develop`, então as oito empilhadas são
+> revisadas sem check nenhum para se apoiar.
+>
+> **Onde cada uma está:**
+>
+> | Fase | PRs | Estado |
+> | --- | --- | --- |
+> | Mergeada | `#3066` | Duas rodadas de review atendidas (Will, Daniel, Sarah, Igor e o `claude[bot]`), 36 das 37 threads resolvidas, Lint e os três `validate` verdes, Integration Test rodando. Merge assim que fechar verde |
+> | Specs, empilhadas | `#3188` a `#3195` | Abertas, sem review ainda. Review pedida em 11/09 a Will, Sarah, Igor, Daniel, Otávio e Hadson. O `@claude` foi disparado nas três primeiras |
+> | Sem PR | cards 9, 10 e 11 | Dependem de máquina (`SOFTWARE-2398`) e de campo (`SOFTWARE-2200`) |
+>
+> **Um conflito de spec a resolver antes de mergear a `#3189`.** A `UF-053`, que entra pela `#3066`,
+> abre justificando o próprio ID com "a `UF-046` deste módulo nunca existiu" e renomeia para `UF-053`
+> as cinco citações dos fontes. A `#3189` faz o oposto: **cria** a `UF-046` do analytics justamente
+> para adotar aquelas citações. Mergeadas em sequência, a segunda entra com a premissa já falsa e o
+> módulo fica com três specs para a mesma tela de Detecção (`UF-046` leitura, `UF-047` edição e
+> `UF-053` as duas mais o ciclo). A decisão de qual decomposição vale é do user.
+
+
 Restam **cinco dias** (09 a 13/09). Onze PRs em cascata mais uma independente (a 12, urgente). A pilha segue as regras duras: docs-only na base, uma PR por card,
 migration gerada por CLI não se parte, e **o que pode travar vai no topo** - aqui são as duas que
 dependem de máquina e de campo.
@@ -124,20 +201,20 @@ dependem de máquina e de campo.
 Nomenclatura na convenção do ClickUp (`[Back]`/`[Front]` no nome). Estimativa pela tabela do time
 (1 = menos de 2h, 2 = 2-4h, 3 = 4-8h, 5 = 1-2d, 8 = 2-3d, 13 = 4-5d).
 
-| # | Task (nome no ClickUp) | ID | Pts | Por que nesta posição |
-| --- | --- | --- | --- | --- |
-| 1 | `[Back] Reconciliar o doc de módulo do Analítico com o edital` | [SOFTWARE-3051](https://app.clickup.com/t/86akffm6d) | 3 | Base da pilha: docs-only, merge rápido, zero conflito, e fixa o vocabulário das de cima. `docs/modules/analitico.md` existe (482 linhas) mas se organiza por DAI, VL, ATSPM e ACOM: **Visão Geral e Dashboard não têm seção nenhuma**, e o ATSPM tem três definições diferentes no projeto (8 métricas no edital, pacote de 4 funcionalidades no doc, 38 métricas no front). Decidir qual vale é pré-requisito de construir o ATSPM |
-| 2 | `[Back] UF-046, UF-047 e MOD-003: as specs que o código já cita` | [SOFTWARE-3052](https://app.clickup.com/t/86akffm9z) | 2 | Ainda docs-only. A `UF-046` do namespace `analytics` é referenciada pelo guard da Detecção e **não existe como arquivo**; a `UF-047` declara o modo edição que as PRs 4 a 6 implementam; o `MOD-003` declara o ATSPM como módulo de agregação do `ms-detector-history` |
-| 3 | `[Front] Métricas abre na face que tem dado` | [SOFTWARE-3053](https://app.clickup.com/t/86akffme4) | 1 | Independente de tudo, e é o conserto mais barato da pior aparência do módulo: hoje a aba default é a ATSPM, com 34 dos 38 cartões vazios |
-| 4 | `[Front] Detecção: congelar o frame e escolher o preset` | [SOFTWARE-3054](https://app.clickup.com/t/86akffmkh) | 3 | Front puro, sem dependência externa. Primeira metade do modo edição |
-| 5 | `[Front] Detecção: as cinco ferramentas e a paleta` | [SOFTWARE-3055](https://app.clickup.com/t/86akffmpw) | 3 | Depende da 4 |
-| 6 | `[Front] Detecção: salvar e descartar, e a aba sai de desabilitada` | [SOFTWARE-3056](https://app.clickup.com/t/86akffmt8) | 3 | Depende da 5. É a PR que **liga a tela**: ligar antes de salvar funcionar ofereceria configuração que não persiste |
-| 7 | `[Back] Suportar até 4 laços virtuais por câmera` (contrato e migration) | [SOFTWARE-2686](https://app.clickup.com/t/86ak5e32x) | 5 | Migration não se parte, então a escrita inteira mora aqui. Acima do front porque mexe em contrato publicado e consumido por dois serviços |
-| 8 | `[Front] 4 laços: escolher o laço por região na Detecção` | [SOFTWARE-2686](https://app.clickup.com/t/86ak5e32x) | 3 | Depende da 7 e da 6 |
-| 9 | `[Back] Escala do analítico: câmeras por instância e distribuição` | [SOFTWARE-2398](https://app.clickup.com/t/86aju7cjb) | 2 | **Precisa de máquina para medir.** Vai alto: se a medição atrasar, não trava as de baixo. O mecanismo já entrou em 05/09, sobrou o número |
-| 10 | `[Back] Prova de campo do analítico em container até a timeline do detector` | [SOFTWARE-2200](https://app.clickup.com/t/86ajj1xv4) | 3 | **Precisa de câmera em campo.** É o elo que cede primeiro, então fica no topo |
-| 11 | `[Back] Correções da prova de campo` | [SOFTWARE-2200](https://app.clickup.com/t/86ajj1xv4) | 2 | Nasce do resultado da 10, então não existe antes dela |
-| **12** | `[Front] Refinamento de emergência das telas do Analítico` | [SOFTWARE-3057](https://app.clickup.com/t/86akfgfvq) | 5 | **Urgente, pedida em 09/09, e NÃO empilha**: base `develop` direto. As telas deste passe (Incidentes, Instâncias, Métricas) já estão mergeadas e não têm sobreposição de arquivo com as PRs 4 a 6, da Detecção |
+| # | Task (nome no ClickUp) | ID | PR | Pts | Por que nesta posição |
+| --- | --- | --- | --- | --- | --- |
+| 1 | `[Back] Reconciliar o doc de módulo do Analítico com o edital` | [SOFTWARE-3051](https://app.clickup.com/t/86akffm6d) | [#3188](https://github.com/atmanadmin/attlas-2026/pull/3188) **mergeada 11/09** | 3 | Base da pilha: docs-only, merge rápido, zero conflito, e fixa o vocabulário das de cima. `docs/modules/analitico.md` existe (482 linhas) mas se organiza por DAI, VL, ATSPM e ACOM: **Visão Geral e Dashboard não têm seção nenhuma**, e o ATSPM tem três definições diferentes no projeto (8 métricas no edital, pacote de 4 funcionalidades no doc, 38 métricas no front). Decidir qual vale é pré-requisito de construir o ATSPM |
+| 2 | `[Back] MOD-012: o ATSPM como módulo de agregação` (era UF-046 + UF-047 + MOD-012) | [SOFTWARE-3052](https://app.clickup.com/t/86akffm9z) | [#3189](https://github.com/atmanadmin/attlas-2026/pull/3189) **mergeada 11/09** | 2 | Docs-only, e **reduzida em 11/09** ao `MOD-012`, que declara o ATSPM como módulo de agregação do `ms-detector-history` e não como serviço novo (o plano dizia `MOD-003`). A `UF-046` e a `UF-047` saíram: escritas em 10/09 antes da `UF-053`, tiveram a premissa invalidada pela #3066, que renomeou para `UF-053` as citações que a UF-046 existia para adotar |
+| 3 | `[Front] Métricas abre na face que tem dado` | [SOFTWARE-3053](https://app.clickup.com/t/86akffme4) | [#3190](https://github.com/atmanadmin/attlas-2026/pull/3190) **mergeada 11/09** | 1 | Independente de tudo, e é o conserto mais barato da pior aparência do módulo: hoje a aba default é a ATSPM, com 34 dos 38 cartões vazios |
+| 4 | ~~`[Front] Detecção: congelar o frame e escolher o preset`~~ **ENTREGUE pela #3066** | [SOFTWARE-3054](https://app.clickup.com/t/86akffmkh) | [#3191](https://github.com/atmanadmin/attlas-2026/pull/3191) **mergeada 11/09** | 3 | Front puro, sem dependência externa. Primeira metade do modo edição |
+| 5 | ~~`[Front] Detecção: as cinco ferramentas e a paleta`~~ **ENTREGUE pela #3066** | [SOFTWARE-3055](https://app.clickup.com/t/86akffmpw) | [#3192](https://github.com/atmanadmin/attlas-2026/pull/3192) **mergeada 11/09** | 3 | Depende da 4 |
+| 6 | ~~`[Front] Detecção: salvar e descartar, e a aba sai de desabilitada`~~ **ENTREGUE pela #3066** | [SOFTWARE-3056](https://app.clickup.com/t/86akffmt8) | [#3193](https://github.com/atmanadmin/attlas-2026/pull/3193) **mergeada 11/09** | 3 | Depende da 5. É a PR que **liga a tela**: ligar antes de salvar funcionar ofereceria configuração que não persiste |
+| 7 | `[Back] Suportar até 4 laços virtuais por câmera` (contrato e migration) | [SOFTWARE-2686](https://app.clickup.com/t/86ak5e32x) | [#3194](https://github.com/atmanadmin/attlas-2026/pull/3194) **mergeada 11/09** | 5 | Migration não se parte, então a escrita inteira mora aqui. Acima do front porque mexe em contrato publicado e consumido por dois serviços |
+| 8 | `[Front] 4 laços: escolher o laço por região na Detecção` | [SOFTWARE-2686](https://app.clickup.com/t/86ak5e32x) | [#3195](https://github.com/atmanadmin/attlas-2026/pull/3195) **mergeada 11/09** | 3 | Depende da 7 e da 6 |
+| 9 | `[Back] Escala do analítico: câmeras por instância e distribuição` | [SOFTWARE-2398](https://app.clickup.com/t/86aju7cjb) | sem PR | 2 | **Precisa de máquina para medir.** Vai alto: se a medição atrasar, não trava as de baixo. O mecanismo já entrou em 05/09, sobrou o número |
+| 10 | `[Back] Prova de campo do analítico em container até a timeline do detector` | [SOFTWARE-2200](https://app.clickup.com/t/86ajj1xv4) | executada em 11/09 no EC2 dev (registro no vault) | 3 | **Precisa de câmera em campo.** É o elo que cede primeiro, então fica no topo |
+| 11 | `[Back] Correções da prova de campo` | [SOFTWARE-2200](https://app.clickup.com/t/86ajj1xv4) | [#3303](https://github.com/atmanadmin/attlas-2026/pull/3303), CI verde; a metade front está na [#3304](https://github.com/atmanadmin/attlas-2026/pull/3304), CI verde | 2 | Nasce do resultado da 10, então não existe antes dela |
+| **12** | `[Front] Refinamento de emergência das telas do Analítico` | [SOFTWARE-3057](https://app.clickup.com/t/86akfgfvq) | [#3066](https://github.com/atmanadmin/attlas-2026/pull/3066) **mergeada 11/09** | 5 | **Urgente, pedida em 09/09.** O plano dizia que ela não empilharia; na execução ela virou **a base de todas as outras**: a 1 tem base nela e as demais sobem em cascata a partir daí. Só ela tem base `develop`, e por isso é a única das nove que recebe CI |
 
 **35 pts em cinco dias.** Está acima dos 13-20 que a tabela do time põe numa semana, e abaixo do que as
 duas sprints anteriores fecharam de fato (51 na Sprint 30, 32 na Sprint 31). É agressivo, não é ficção.

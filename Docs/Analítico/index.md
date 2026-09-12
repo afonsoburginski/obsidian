@@ -8,7 +8,7 @@ aliases:
   - "VL e ATSPM"
 servico: ms-video-analytics (o analitico servidor, real desde 03/09; renome do ms-virtual-loop feito em 02/09). ms-atspm, ms-dai e ms-connector-virtual-loop foram REMOVIDOS do repo em 05/09 (PR 2530) - CROSS-077
 fonte: auditoria de código de 24/08 (embarcado, servidor, ACOM/ATSPM) + Anotações sobre Analítico de vídeo (notas do user) + attlas-vl-atspm.pdf (squad de Visão Computacional, 10/08) + decisões preservadas das 14 PRs fechadas da Sprint 27 + prazo externo fechado em 25/08
-atualizado: 2026-09-09
+atualizado: 2026-09-11
 ---
 
 # Analítico (Virtual Loop, ATSPM, DAI, ACOM)
@@ -64,6 +64,16 @@ atualizado: 2026-09-09
 >
 > O furo de `deviceSourceId` sem writer, descrito abaixo, foi fechado na Sprint 30. O que continua
 > valendo do quadro antigo é o ATSPM: não existe em backend nenhum.
+
+> [!success] Estado em 11/09 à noite: pilha da Sprint 32 na develop e prova de campo executada no EC2 dev
+> A #3066 (`SOFTWARE-3057`, painel de câmeras, modo edição da Detecção e a `UF-053`) e as oito PRs de
+> spec empilhadas (#3188 a #3195) mergearam em sequência entre 23:01 e 23:57. A aba **Detecção deixou de
+> ser desabilitada**: congela o quadro, desenha com as cinco ferramentas, salva e descarta, em modo
+> embarcado e em modo servidor. No mesmo dia a cadeia do analítico servidor rodou **no EC2 dev, com
+> câmera real e bounding box na tela pública**: `ATMN – DEMO` (Laço Virtual) e `ATM-PTZ` (ATSPM), as duas
+> em `SERVER`, com ocupação chegando ao `ms-detector-history` nos detectores 22 e 23 do controlador
+> Quito 2. Os achados e os bugs que saíram disso, com o destino de cada um, estão em
+> [[Registro - prova de campo do analítico servidor no EC2 em 11 de setembro]].
 
 ## As duas capacidades e a placa
 
@@ -147,6 +157,11 @@ notas de alinhamento do user pedem. Nenhum destes tem uma linha de spec:
   já está em review, as 33 discrepâncias visuais contra a referência, os dois defeitos funcionais e de
   onde vem o dado de cada uma das três sub-abas.
 
+- [[Registro - prova de campo do analítico servidor no EC2 em 11 de setembro]] - o dia em que a cadeia
+  do analítico servidor rodou fora da máquina de desenvolvimento: estado final do EC2 dev, os nove
+  achados em ordem, os cinco bugs de código e a PR de destino de cada um, o que foi verificado e não é
+  bug, e os débitos declarados.
+
 ## Planejamento
 
 Quatro sprints, contra o prazo externo de **18/09** (front e backend) registrado no topo desta nota. Cada
@@ -161,7 +176,8 @@ uma tem um `index.md` respondendo o que entrega em feature e em tela:
   Laço Virtual.
 - [[Sprint 32 - o que entrega]] (07-13/09) - **replanejada em 09/09**: 11 PRs em cascata e 30 pts em 9
   cards, somando o modo edição da aba Detecção (o recurso "Visão Geral" do edital, hoje construído e
-  desligado) aos três cards que já existiam.
+  desligado) aos três cards que já existiam. **Fechada em 11/09**: a #3066 e as oito de spec mergearam, e a prova de
+  campo (`SOFTWARE-2200`) foi executada no EC2 dev; as correções dela viram PR.
 - [[Attlas - Sprint 33]] (14-20/09) - **a semana do prazo**, que cai na quinta 18/09. Resíduo declarado:
   ATSPM Split Monitor e Yellow/Red, a face lendo os dois grupos novos, e o histórico de configuração.
 

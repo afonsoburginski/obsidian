@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Reports/2026-09-09.md",
+                "file": "Reports/2026-09-11.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "2026-09-09"
+              "title": "2026-09-11"
             }
           }
         ]
@@ -211,11 +211,17 @@
   },
   "active": "d6f1ecfe9df44260",
   "lastOpenFiles": [
+    "Reports/2026-09-10.md",
+    "Reports/2026-09-11.md",
+    "Sprint/32/SOFTWARE-3055 - Detecção - as cinco ferramentas e a paleta.md",
+    "Sprint/32/SOFTWARE-3054 - Detecção - congelar o quadro e escolher o preset.md",
+    "Sprint/32/SOFTWARE-3052 - UF-046, UF-047 e MOD-012 - as specs que o código já cita.md",
+    "Reports/2026-09-09.md",
+    "Reports/2026-09-07.md",
+    "Reports/2026-09-04.md",
     "Docs/Analítico/index.md",
     "Docs/Analítico/attlas-vl-atspm.pdf",
     "Docs/Analítico/Prompt - igualar a sidebar de câmeras ao attlas-design.md",
-    "Reports/2026-09-09.md",
-    "Reports/2026-09-07.md",
     "Reports/2026-09-05.md",
     "Docs/server/Acessos SSH - Infra Attlas.md",
     "prompt-frontend-metricas-analitico.md",
@@ -232,16 +238,10 @@
     "Sprint/33",
     "Docs/Analítico/Analítico - O que falta para fechar o módulo.md",
     "Docs/Registro - a develop em 05 e 07 de setembro.md",
-    "Reports/2026-09-04.md",
     "Sprint/32/Planning - Sprint 31 e 32.md",
     "Reports/2026-09-02.md",
-    "Reports/2026-09-01.md",
     "Reports/2026-09-02.md.tmp.51374.781ec100a6db",
-    "Reports/2026-08-31.md",
-    "Sprint/31/index.md",
     "Reports/2026-08-31.md.tmp.207320.b85a282f2036",
-    "Sprint/Sem prazo/Analítico - Topologia de serviço do analítico de vídeo.md",
-    "Sprint/index.md",
     "Reports/2026-08-27.md.tmp.500946.a496ca36ef44",
     "Reports/2026-08-27.md.tmp.167743.9e00cbbe8027",
     "graph-01.png",

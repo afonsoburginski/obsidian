@@ -2,20 +2,22 @@
 tags:
   - attlas
   - task
-  - backlog
-  - sem-prazo
+  - sprint-32
   - analitico
 card: SOFTWARE-2686
 clickup: https://app.clickup.com/t/86ak5e32x
 titulo: "[Back] Suportar até 4 laços virtuais por câmera"
+aliases:
+  - "Analítico - Suportar até 4 laços virtuais por câmera"
 frente: Analítico
 tamanho: 5 pts
-status: SEM PRAZO desde 24/08. Requisito decidido nas notas de alinhamento, não é decisão em aberto - ficou fora da Sprint 30 e da Sprint 31 por tamanho (redesenho de contrato), as duas já lotadas. Card criado no ClickUp em 24/08, na lista da Sprint 30 (vigente), status backlog.
-sprint: "[[00 - Sem prazo (backlog)]]"
-atualizado: 2026-08-24
+pr: "#3194 e #3195"
+status: SPECS MERGEADAS em 11/09 (#3194 às 23:54, UC-073; #3195 às 23:57, UF-052), base develop, ci-pr verde. A implementação (contrato, migration e a escolha do laço por região na Detecção) não começou; o card continua aberto. Histórico: SEM PRAZO desde 24/08, comprometido na Sprint 32 nas posições 7 e 8.
+sprint: "[[Attlas - Sprint 32]]"
+atualizado: 2026-09-11
 ---
 
-# Analítico - Suportar até 4 laços virtuais por câmera
+# SOFTWARE-2686 - Suportar até quatro laços virtuais por câmera
 
 Requisito das notas de alinhamento (`Docs/Analítico/Anotações sobre Analítico de vídeo.md`, seção
 "Acom"): *"cada analítico tem um máximo de 4 laços por câmera"*. Não é decisão em aberto - está escrito.

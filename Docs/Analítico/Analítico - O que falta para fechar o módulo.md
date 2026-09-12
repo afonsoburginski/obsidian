@@ -140,7 +140,7 @@ Card existente: [[SOFTWARE-2392 - Recorte da atuação via ACOM (docs-only)|SOFT
 - **Exportar não tem endpoint.** A tela diz isso na cara, com o resumo do que o arquivo levaria. O
   destino natural é o `ms-reports`.
 - **Quatro laços por câmera**: `IVirtualLoopConfig` segue documentado como configuração única por câmera.
-  Card [[Analítico - Suportar até 4 laços virtuais por câmera|SOFTWARE-2686]], 5 pts.
+  Card [[SOFTWARE-2686 - Suportar até quatro laços virtuais por câmera|SOFTWARE-2686]], 5 pts.
 - **Teto de câmeras por instância**: o mecanismo entrou em 05/09, o número não.
   `VIRTUAL_LOOP_MAX_CAMERAS_PER_INSTANCE` fica sem default até alguém medir. Card `SOFTWARE-2398`.
 - **Prova de campo ponta a ponta**: card `SOFTWARE-2200`, e a descrição dele está defasada (manda o

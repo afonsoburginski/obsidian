@@ -10,9 +10,9 @@ clickup: https://app.clickup.com/t/86ajj1xv4
 titulo: "[Back] Prova de campo do analítico em container até a timeline do detector"
 frente: Analítico
 tamanho: 2 pts
-status: comprometido na Sprint 32 (7-13/09/26), movido do sem prazo em 25/08 junto com o prazo externo de 18/09. Histórico anterior preservado abaixo (fila da Sprint 27, SEM PRAZO desde 10/08). PR em draft segue aberta (plano de teste).
+status: "EXECUTADA em campo em 11/09 no EC2 dev com ATMN - DEMO em Laço Virtual e ATM-PTZ em ATSPM, ambas no modo SERVER, produzindo ocupação e caixas. Correções abertas na #3303 [Back] e #3304 [Front], ambas com CI verde e sem comentários pendentes. Passo 5 do plano, fault por presença contínua, não executado. O modo embarcado da câmera 10.11.20.101 foi configurado e validado: o device publica com source_id E827251A4173, possui a região Aproximação central e o ms-cameras consome o tópico bridged. Registro completo em [[Registro - prova de campo do analítico servidor no EC2 em 11 de setembro]]."
 sprint: "[[Attlas - Sprint 32]]"
-atualizado: 2026-08-25
+atualizado: 2026-09-11
 ---
 
 # SOFTWARE-2200 - Prova de campo do analítico em container
@@ -166,6 +166,33 @@ Sobraram, e viraram conteúdo de spec no card 8 da Sprint 31 em vez de bloqueio:
    de unificação datado?
 3. **Endereçamento**: índice de canal físico do controlador ou faixa sintética?
 4. **Critério de aceite**: basta aparecer na timeline, ou ATSPM e traffic-model precisam estar prontos?
+
+## Resultado da prova de campo em 11/09/2026 (EC2 dev)
+
+Executada no box `aws-attlas-26` depois do deploy do merge da #3066, com autorização do user para mexer
+no ambiente. Contra o plano de teste acima:
+
+1. Smoke do sumidouro: não isolado, o sumidouro foi provado direto pelo passo 3.
+2. `ms-video-analytics` no ar: `/health/ready` com `targets 2, ingesting 2, producing 2`, modelo
+   `vehicle-detection.onnx` v1 carregado do MinIO, `2 held here`.
+3. Cadeia completa: `attlas.virtual-loop.frame-detections` com caixas `car` da `ATMN – DEMO`;
+   `attlas.detectors.raw` para o controlador `Quito 2 - Novo cadastro` (`f722dd6f…`, UNE, tenant atman),
+   índices 22 (região `Via - fluxo`) e 23 (região `Aproximacao norte` da `ATM-PTZ`); `meta_detector` 22 e
+   23 criados no `ms-detector-history` com `detection_record` gravados.
+4. Veículo cruzando: caixas na tela pública `#/analytics/detection/…010`, estado Online.
+5. Caminho de falha: **não executado**.
+
+O que a prova revelou e vira código está em
+[[Registro - prova de campo do analítico servidor no EC2 em 11 de setembro]]. A #3303, metade Back
+do card, reconcilia os paths do analítico a cada ciclo, fixa o pull em TCP e impede que caixas fora
+das regiões sejam publicadas. A #3304, metade Front, sincroniza o overlay com o relógio do vídeo em
+HLS e WebRTC. As duas estão abertas contra `develop`, com CI verde e sem comentários pendentes.
+
+A câmera embarcada `10.11.20.101` foi cadastrada no tenant atman como `ATMN - EMBEDDED 101`, com
+analítico `ATSPM`, identidade `E827251A4173`, três perfis RTSP e a região `Aproximacao central`.
+O producer foi reativado, a ponte Kafka está persistente e o consumer do `ms-cameras` apresenta offsets
+avançando no tópico bridged. O broker e a geometria do device foram mantidos sob o mesmo arranjo compartilhado
+com o Attlas 25.
 
 ## Referências
 
