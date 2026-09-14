@@ -8,7 +8,7 @@ aliases:
   - "VL e ATSPM"
 servico: ms-video-analytics (o analitico servidor, real desde 03/09; renome do ms-virtual-loop feito em 02/09). ms-atspm, ms-dai e ms-connector-virtual-loop foram REMOVIDOS do repo em 05/09 (PR 2530) - CROSS-077
 fonte: auditoria de código de 24/08 (embarcado, servidor, ACOM/ATSPM) + Anotações sobre Analítico de vídeo (notas do user) + attlas-vl-atspm.pdf (squad de Visão Computacional, 10/08) + decisões preservadas das 14 PRs fechadas da Sprint 27 + prazo externo fechado em 25/08
-atualizado: 2026-09-12
+atualizado: 2026-09-14
 ---
 
 # Analítico (Virtual Loop, ATSPM, DAI, ACOM)
@@ -214,6 +214,10 @@ notas de alinhamento do user pedem. Nenhum destes tem uma linha de spec:
   achados em ordem, os cinco bugs de código e a PR de destino de cada um, o que foi verificado e não é
   bug, e os débitos declarados.
 
+- [[Registro - os quatro blocos de configuração da Detecção no EC2 em 14 de setembro]] - onde cada um
+  dos quatro blocos abaixo do player lê o estado dele, o inventário das sete analíticas do EC2 dev que
+  mostrou por que os quatro apareciam desabilitados, e o script que fecha isso.
+
 ## Planejamento
 
 Quatro sprints, contra o prazo externo de **18/09** (front e backend) registrado no topo desta nota. Cada
@@ -254,3 +258,11 @@ uma tem um `index.md` respondendo o que entrega em feature e em tela:
 
 [[ms-cameras]] · [[Cameras]] · [[PTZ e presets]] · [[Saúde e monitoramento]] · [[Streaming]] ·
 [[Carga desnecessária nas câmeras - reconciler do analítico e conexões duplicadas]]
+
+## Estudo de caso de 14/09
+
+[[Analítico - Estudo de caso de captura, inferência e sincronização]] - por que o analítico servidor
+gasta 580% de CPU no EC2 (é a inferência, não o vídeo), a arquitetura alvo em três camadas (captura
+direta da câmera num perfil de analítico, inferência dentro de um orçamento, sincronização pelo relógio
+da câmera nas duas pontas), o diagnóstico do videowall e a decisão sobre CDN. As cinco PRs que saem
+dele estão na [[Attlas - Sprint 33]].

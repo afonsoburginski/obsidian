@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Sprint/33/Detecção do Analítico - gaps para polir.md",
+                "file": "Reports/2026-09-14.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Detecção do Analítico - gaps para polir"
+              "title": "2026-09-14"
             }
           }
         ]
@@ -80,7 +80,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 336.35676193237305
+    "width": 332.43098068237305
   },
   "right": {
     "id": "7f39f37a7b274764",
@@ -209,37 +209,37 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "d6f1ecfe9df44260",
+  "active": "a025b9b6a66377fd",
   "lastOpenFiles": [
-    "Sprint/33/Attlas - Sprint 33.md",
-    "Sprint/33/Detecção do Analítico - gaps para polir.md",
+    "Prompt - continuar a validação das PRs da Sprint 33.md",
+    "Sprint/33/Laço virtual - consolidar o overlay e apagar a cópia da ACOM.md",
+    "Docs/Analítico/Registro - os quatro blocos de configuração da Detecção no EC2 em 14 de setembro.md",
+    "Sprint/33/Instâncias - ler uma unidade sem compor a frota.md",
+    "Sprint/33/Incidentes - contadores OPEN e DETECTED na fila.md",
+    "Sprint/33/Entrega de vídeo - sessão compartilhada, réplicas e a pergunta da CDN.md",
+    "Sprint/33/Detecção - uma lista só de classes de objeto nos quatro idiomas.md",
+    "Sprint/33/Detecção - sincronização exata da caixa com o vídeo.md",
+    "Sprint/33/Detecção - renomear a caixa e atualizar a UF-053 do relógio.md",
+    "Sprint/33/Detecção - cor e nome da região não persistem.md",
+    "Sprint/33/CI - job de teste unitário e suíte dos projetos da 3328.md",
+    "Sprint/33/Analítico servidor - captura direta da câmera com perfil de analítico.md",
+    "Sprint/33/Ambiente - infra up volta a subir a infraestrutura inteira.md",
+    "Sprint/33/Analítico embarcado - broker por ambiente e consumidor sem atraso.md",
     "Sprint/33/index.md",
-    "Reports/2026-09-12.md",
-    "Reports/2026-09-11.md",
-    "Reports/2026-09-10.md",
-    "Sprint/32/SOFTWARE-3055 - Detecção - as cinco ferramentas e a paleta.md",
-    "Sprint/32/SOFTWARE-3054 - Detecção - congelar o quadro e escolher o preset.md",
-    "Sprint/32/SOFTWARE-3052 - UF-046, UF-047 e MOD-012 - as specs que o código já cita.md",
-    "Reports/2026-09-09.md",
-    "Reports/2026-09-07.md",
-    "Reports/2026-09-04.md",
-    "Docs/Analítico/index.md",
+    "Sprint/33/VMS - tiles pretos e vídeo travando no videowall.md",
+    "Sprint/33/Infra - a VM do EC2 é t3a.2xlarge, burstable, e não 16 núcleos.md",
+    "Sprint/33/Attlas - Sprint 33.md",
+    "Sprint/33/Câmeras - miniatura fora do ar para de poluir o console.md",
+    "Sprint/33/Analítico servidor - orçamento de inferência na CPU.md",
+    "Sprint/33/Detecção do Analítico - gaps para polir.md",
+    "Docs/Analítico/Analítico - Estudo de caso de captura, inferência e sincronização.md",
+    "Reports/2026-09-14.md",
+    "Sprint/33/Analítico servidor - custo de CPU no EC2 e a PTZ com os dois analíticos.md",
+    "Sprint/33/i18n - paridade das quatro locales do Analítico.md",
+    "Sprint/33/Permissões - 403 do resolver fora e o timeout que ninguém lê.md",
     "Docs/Analítico/attlas-vl-atspm.pdf",
-    "Docs/Analítico/Prompt - igualar a sidebar de câmeras ao attlas-design.md",
-    "Reports/2026-09-05.md",
-    "Docs/server/Acessos SSH - Infra Attlas.md",
-    "prompt-frontend-metricas-analitico.md",
-    "Grau de saturação não é ATSPM.md",
     "Sem título.canvas",
-    "Docs/Registro - movimentação da develop em 05 e 07 de setembro.md",
-    "Docs/Plano - atualização da documentação do vault.md",
-    "Docs/index.md",
-    "Docs/Edital - Attlas nova definição de módulos.md",
-    "Docs/Convenções de escrita.md",
-    "Docs/server/Server e CI.md",
-    "Docs/Registro - pedido de integração da Prioridade Seletiva com Câmeras e Analítico.md",
     "Sprint/33",
-    "Docs/Analítico/Analítico - O que falta para fechar o módulo.md",
     "Reports/2026-09-02.md.tmp.51374.781ec100a6db",
     "Reports/2026-08-31.md.tmp.207320.b85a282f2036",
     "Reports/2026-08-27.md.tmp.500946.a496ca36ef44",

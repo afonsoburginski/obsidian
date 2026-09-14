@@ -1,0 +1,20 @@
+---
+tags:
+  - report
+date: 2026-09-14
+---
+```
+Report Diário - 14/09/2026
+
+Dia leve, sem entrega própria. Revisei também 2 pull requests de colegas, listadas abaixo.
+
+PRs mergeadas:
+(nenhuma)
+
+PRs revisadas:
+- 2215 - integração de quatro serviços transpila sem type-check (aprovada após correção)
+- 2194 - integração isola por worker nos 4 projetos restantes, SOFTWARE-2762 (aprovada após correção)
+
+PRs em andamento:
+(nenhuma)
+```

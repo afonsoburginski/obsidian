@@ -63,12 +63,21 @@ fora do ar, sem trocar o código de status.
 
 ## 5. Cobertura de teste da superfície nova
 
-- `components/detection-object-boxes` entrou sem spec, e é onde mora o laço de pintura por quadro.
-- O spec do `virtual-loop-overlay` usa laços de três pontos, então nem o chevron de direção nem o disco
-  do índice são exercitados.
-- `utils/sample-box-at.util.spec.ts` é anterior à predição e à janela de velocidade.
-- `detection-toolbar.component.spec.ts` e `detection-block.component.spec.ts` continuam sem existir,
-  como já registrado no handoff da frente anterior.
+Inventário conferido em 13/09, depois do merge da #3328. Sem spec, no módulo `analytics-detection`:
+
+- Componentes: `detection-object-boxes` (onde mora o laço de pintura por quadro), `detection-toolbar`,
+  `detection-block`, `detection-class-select`, `color-picker`.
+- Utilitários: `cuboid-path`, `buffered-head`, `detection-control`, `detection-vertices`,
+  `active-detection-preset`, `to-detection-preset`.
+- Serviços e estratégias: `video-locked-head.strategy`, `buffered-head.strategy`,
+  `analytics-detection.service`, `network-discovery.http-source`.
+
+Além disso: o spec do `virtual-loop-overlay` usa laços de três pontos, então nem o chevron de direção
+nem o disco do índice são exercitados, e `utils/sample-box-at.util.spec.ts` é anterior à predição e à
+janela de velocidade. No back, `analytic-instances/utils/push-into.util.ts` entrou sem spec.
+
+O card fecha a lista inteira de uma vez, porque cada spec isolado vira uma PR de duas linhas e a
+frente some do radar; e ele depende do item 18 para valer alguma coisa no CI.
 
 ## 6. Contadores `OPEN` e `DETECTED` na fila de incidentes
 
@@ -228,3 +237,46 @@ aparece nas Métricas nem alimenta o controlador, embora a tela de Detecção pa
 O que o card decide: se a câmera embarcada deve ganhar vínculo de detector por padrão (e em qual
 controlador e índice), ou se a tela precisa dizer que a região não tem detector, em vez de deixar o
 descarte só no log.
+
+## 18. Nenhum workflow do CI roda teste unitário
+
+Conferido em 13/09: `ci-pr.yml` tem três jobs (Lint, Integration Test, Build) e `ci-develop.yml` tem
+os mesmos três mais o push das imagens. Nenhum arquivo em `.github/workflows` chama `nx test` ou
+`affected:test`. Ou seja: a suíte unitária do `web-attlas` e do `ms-cameras` **não rodou** na #3328,
+que trouxe cerca de 1900 linhas de spec novo no frontend e reescreveu o spec do interpolador e o stub
+do `detection-frame`. O `CLAUDE.md` da raiz cobra a suíte completa antes do PR, mas o CI não tem como
+reprovar quem não rodar.
+
+É o item de maior alcance da sprint: enquanto ele não existir, todo spec desta frente é decoração.
+
+O que o card faz: acrescentar o job de teste unitário ao `ci-pr` e ao `ci-develop` (afetados no PR,
+suíte inteira na develop), rodar a suíte dos dois projetos tocados pela #3328 e corrigir o que estiver
+vermelho - corrigindo o lado certo, spec desatualizado ou bug real, nunca enfraquecendo asserção.
+
+## 19. Vocabulário de classes de objeto diverge do catálogo de tradução
+
+`ANOMALY_CLASS_CODES` (`modules/cameras/analytics/analytics.constants.ts`) fala `stones`, `boughs`,
+`refrigerator`, `tire`, `garbage` e `traffic_light`. O catálogo
+`analytics.detection.classes.label` fala `rock`, `branch`, `fridge`, `tyre`, `litter` e
+`trafficLight`. Nenhum dos seis códigos da primeira lista existe no catálogo, então a lista de
+classes do incidente de Anomalia na tela de Detecção mostra o código cru para o operador.
+
+`FALLBACK_OBJECT_CLASS_CODES` está certo (os seis códigos existem no catálogo), então o problema é
+só o da anomalia - e é o mesmo assunto que a UF-043 registrou como "unificar o vocabulário de classes
+de objeto", agora com sintoma visível na tela.
+
+O que o card faz: uma lista só de códigos, a do contrato, com o catálogo cobrindo os quatro idiomas,
+e a conferência de quem realmente decide a lista (o equipamento) fica anotada como pergunta aberta.
+
+## 20. O nome `cuboid` mente desde que a caixa virou plana
+
+A extrusão isométrica saiu em 12/09 (item 15), mas o nome ficou: `utils/cuboid-path.util.ts`,
+`interfaces/i-detection-cuboid.interface.ts`, `constants/detection-cuboid.constants.ts`, a função
+`cuboid()` e o docblock do `detection-object-boxes`, que ainda diz que desenha "a solid". É
+exatamente o achado que a review da #3328 levantou contra `MOCK_OBJECT_CLASS_CODES`: nome que
+descreve o que a coisa já não é.
+
+O que o card faz: renomear os três arquivos, a interface e a função para o que a peça é hoje (a caixa
+do objeto), e atualizar no mesmo passe a `UF-053` - que descreve o contrato do relógio do overlay e
+ainda não conhece nem a leitura dos carimbos do device no relógio do navegador nem o alcance de
+predição de 400 ms.

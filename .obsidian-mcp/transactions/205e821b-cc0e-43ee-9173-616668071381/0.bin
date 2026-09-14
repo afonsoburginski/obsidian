@@ -1,0 +1,25 @@
+---
+tags:
+  - report
+date: 2026-09-14
+---
+```
+Report Diário - 14/09/2026
+
+Dia leve, sem entrega própria. Revisei também 6 pull requests de colegas, listadas abaixo.
+
+PRs mergeadas:
+(nenhuma)
+
+PRs revisadas:
+- 2215 - integração de quatro serviços transpila sem type-check (aprovada após correção)
+- 2194 - integração isola por worker nos 4 projetos restantes, SOFTWARE-2762 (aprovada após correção)
+- 2208 - as cinco maiores suítes de integração recebem um múltiplo do orçamento de workers (aprovada após correção)
+- 2794 - auditoria e notificação da superfície de escrita, SOFTWARE-2928 (aprovada após correção)
+- 2262 - follow-ups da stack SOFTWARE-2760 (aprovada após correção)
+- 2220 - filtros de enum numerico param de depender de coercao implicita (aprovada, com apontamentos)
+
+PRs em andamento:
+- 3429 - [Infra] Suíte unitária completa vigiada na develop (fase 2/2)
+- 3402 - [Infra] CI reprova PR com teste unitário quebrado, e a suíte dos projetos da #3328 volta ao verde (fase 1/2)
+```
