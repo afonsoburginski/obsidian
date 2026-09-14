@@ -7,7 +7,7 @@ aliases:
   - "O que falta para fechar o Analítico"
   - "Analítico - inventário de fechamento"
 fonte: edital seção 4.6 (fonte de requisito) confrontado com leitura direta de origin/develop em 09/09/2026 - apps/ms-video-analytics, apps/ms-cameras, apps/ms-detector-history, apps/web-attlas/src/app/modules/analytics*, libs/contracts
-atualizado: 2026-09-12
+atualizado: 2026-09-09
 ---
 
 # Analítico - O que falta para fechar o módulo
@@ -16,30 +16,6 @@ Parte do [[Analítico]]. Esta nota existe para responder uma pergunta só: **o q
 estar fechado**, contra o prazo externo de 18/09. O método é o único que vale aqui: a lista de recursos
 do **edital, seção 4.6** (fonte de requisito) confrontada com o que a `develop` tem em 09/09, lido no
 código. Onde a nota antiga de requisito discordou do código, o código venceu.
-
-> [!success] Estado em 12/09: três itens desta conta saíram, e nenhum deles está na develop ainda
-> O inventário abaixo é de **09/09**. Entre 11 e 12/09 mudaram três linhas dele, todas em PR **aberta com
-> CI verde e não mergeada** - então a conta de pontos continua valendo até o merge, mas o *trabalho* não
-> precisa mais ser planejado:
->
-> 1. **"A aba Detecção está desabilitada na barra"** caducou em 11/09: a #3066 ligou a aba com o modo
->    edição (`UF-053`). E em 12/09 a [#3328](https://github.com/atmanadmin/attlas-2026/pull/3328) foi
->    além - a **aba Analíticos do detalhe da câmera foi removida**, e a Detecção passou a ser o único
->    lugar onde região, laço e configuração do embarcado são lidos e escritos. A remoção só entrou depois
->    de fechar seis lacunas de paridade (`UF-043`).
-> 2. **"Intervalo de polling e histórico de disponibilidade"**, que o recurso "Analíticos" listava como
->    faltando com `IAnalyticInstance` carregando o campo `null` e sem fonte, foi entregue pela `UC-075`:
->    `AnalyticInstance.pollingIntervalSeconds` (com default, não anulável) e
->    `AnalyticInstanceAvailability` guardando **uma linha por transição de estado**, nunca por amostra -
->    a pergunta "cai toda noite?" é sobre série, e uma linha por amostra faria a tabela crescer com o
->    inverso do intervalo e obrigaria toda leitura a deduplicar antes de responder. Fecha RF-INST-01 e
->    RF-INST-03. A tela ganhou edição de verdade (`UF-056`), com permissão nova.
-> 3. **A prova de campo ponta a ponta (`SOFTWARE-2200`) foi executada** em 11/09 no EC2 dev - ver
->    [[Registro - prova de campo do analítico servidor no EC2 em 11 de setembro]]. As correções dela são
->    as PRs **#3303**, **#3304**, **#3305** e **#3306**, todas abertas e nenhuma mergeada.
->
-> Saiu também, fora desta conta: **ação em massa na fila de incidentes** (`UC-074` + `UF-042` de cameras)
-> e **Dados Brutos paginado com unidade no cabeçalho** mais o mapa restaurado no Laço Virtual (`UF-054`).
 
 > [!success] O que já está fechado, para ninguém replanejar trabalho entregue
 > **Caminho embarcado**: entidade `CameraAnalytic` e `CameraAnalyticRegion` em banco, geometria por
@@ -53,16 +29,15 @@ código. Onde a nota antiga de requisito discordou do código, o código venceu.
 >
 > **Frontend**: quatro abas montadas - `detection` (construída, **desabilitada na barra**), `instances`,
 > `incidents` e `metrics`, esta com as três faces (ATSPM, Laço Virtual, Incidentes), barra de sub-abas,
-> funil de filtros, avisos e o resumo de exportação. *(A parte "desabilitada na barra" vale até 11/09 -
-> ver o callout de 12/09 acima.)*
+> funil de filtros, avisos e o resumo de exportação.
 
 ## Os cinco recursos do edital, um por um
 
 | Recurso (edital 4.6) | Estado em 09/09 | O que falta |
 | --- | --- | --- |
-| **Visão Geral** - listar câmeras analíticas, stream com overlay, desenhar laço e região, validação ao vivo, histórico de configuração | 🟢 **Atualizado em 12/09**: a aba `detection` está ligada e em **modo edição** desde 11/09 (#3066, `UF-053`), e desde a #3328 é a **única** superfície de configuração do analítico - a aba Analíticos da câmera saiu. Em 09/09 o estado era "modo leitura só, desabilitada na barra" | **Histórico de configuração** com versão, autor, data, motivo e reverter. É o que resta deste recurso |
-| **Analíticos** - cadastro de servidor analítico, estados de conectividade, polling com histórico, coleta de dados, associação de câmeras, **gestão de ACOMs**, **decisão automatizada** | 🟡 A aba `instances` lê a frota real e a saúde; associação câmera-analítico existe. **Em 12/09** a `UC-075` deu à instância linha de banco própria, com endereço, porta, capacidade, `pollingIntervalSeconds` e histórico de disponibilidade | ~~Intervalo de polling e histórico de disponibilidade~~ - **entregue em 12/09 (#3328), fora da develop ainda**. Continua faltando o **ACOM inteiro** (ver abaixo) e a **decisão automatizada** alimentando as Estratégias |
-| **Incidentes** - detecção automática, classificação e severidade, fluxo de tratamento com SLA, histórico e padrões | ✅ Fila, mapa, detalhe, tratamento, agregados e dedup entregues. Em 12/09 somam-se seleção múltipla, chips de filtro multivalor e ação em massa com resultado por item (`UC-074`) | Recorrência e correlação de padrão, que o edital pede em "histórico e padrões" |
+| **Visão Geral** - listar câmeras analíticas, stream com overlay, desenhar laço e região, validação ao vivo, histórico de configuração | 🟡 A aba `detection` existe em **modo leitura só**, e está desabilitada na barra de navegação | **Modo edição** (congelar frame, as cinco ferramentas, paleta, descartar e salvar juntos) e **histórico de configuração** com versão, autor, data, motivo e reverter |
+| **Analíticos** - cadastro de servidor analítico, estados de conectividade, polling com histórico, coleta de dados, associação de câmeras, **gestão de ACOMs**, **decisão automatizada** | 🟡 A aba `instances` lê a frota real e a saúde; associação câmera-analítico existe | **Intervalo de polling e histórico de disponibilidade** (`IAnalyticInstance` carrega o campo `null`, sem fonte), **ACOM inteiro** (ver abaixo) e **decisão automatizada** alimentando as Estratégias |
+| **Incidentes** - detecção automática, classificação e severidade, fluxo de tratamento com SLA, histórico e padrões | ✅ Fila, mapa, detalhe, tratamento, agregados e dedup entregues | Recorrência e correlação de padrão, que o edital pede em "histórico e padrões" |
 | **ATSPM** - PCD, AOG, Split Monitor, Yellow/Red, TMC, Approach Delay, Preemption/Priority, relatórios | 🔴 **A tela está pronta e o dado não existe**: 4 das 38 métricas têm produtor | **A capacidade ATSPM**, que é o maior buraco do módulo. Ver a seção própria |
 | **Dashboard** - indicadores de videoanalítica, de cobertura analítica, de qualidade, de incidentes e resumo ATSPM | 🔴 **Não existe.** O módulo `analytics` não tem aba nem rota de dashboard | A superfície inteira. Parte dos indicadores de câmera já existe no `cameras-dashboard` e se reusa |
 
@@ -151,16 +126,12 @@ Card existente: [[SOFTWARE-2392 - Recorte da atuação via ACOM (docs-only)|SOFT
 
 ## Buracos menores, mas que contam como "falta"
 
-- ~~**A aba Detecção está desabilitada na barra**, com a rota montada. Ligar não é flag: o que falta é o
-  modo edição, e a costura já está no código (`canEdit` e a saída `edit`).~~ - **fechado em 11/09**
-  (#3066, `UF-053`), e em 12/09 a #3328 tornou a Detecção a única superfície de configuração do
-  analítico, com a aba Analíticos da câmera removida.
-- **A `UF-046` do namespace `analytics` era citada no código e não existia como arquivo.** **Conferido em
-  12/09**: não há mais nenhuma referência a `UF-046` em `apps/web-attlas/src` - o ponteiro morto sumiu
-  junto das reescritas da Detecção. A pasta `apps/web-attlas/docs/modules/analytics/atomic/` hoje tem
-  `UF-042`, `UF-044`, `UF-045`, `UF-048` a `UF-056`, mais o `PORT-PLAN-atspm-face.md` e um `README.md`.
-  **O `UF-046` e o `UF-047` do namespace seguem sem arquivo**, e é isso que resta do item: o ID que o
-  plano de port do ATSPM reservou foi consumido por outra fatia.
+- **A aba Detecção está desabilitada na barra**, com a rota montada. Ligar não é flag: o que falta é o
+  modo edição, e a costura já está no código (`canEdit` e a saída `edit`).
+- **A `UF-046` do namespace `analytics` é citada no código e não existe como arquivo.** O guard de
+  aterrissagem da Detecção referencia `UF-046`, e `apps/web-attlas/docs/modules/analytics/` tem só
+  `UF-042`, `UF-044`, `UF-045` e o `PORT-PLAN-atspm-face.md`. É violação de rastreabilidade do SDD, e
+  também significa que o ID que o plano de port do ATSPM reservou foi consumido por outra fatia.
 - **O doc de módulo existe, com outro nome e outro recorte de recurso.** É
   `docs/modules/analitico.md`, 482 linhas, e ele **não** organiza o módulo pelos cinco recursos do
   edital: os dele são DAI, Virtual Loop, ATSPM e ACOM, com requisitos `RF-DAI-*`, `RF-VL-*`,
@@ -172,11 +143,8 @@ Card existente: [[SOFTWARE-2392 - Recorte da atuação via ACOM (docs-only)|SOFT
   Card [[SOFTWARE-2686 - Suportar até quatro laços virtuais por câmera|SOFTWARE-2686]], 5 pts.
 - **Teto de câmeras por instância**: o mecanismo entrou em 05/09, o número não.
   `VIRTUAL_LOOP_MAX_CAMERAS_PER_INSTANCE` fica sem default até alguém medir. Card `SOFTWARE-2398`.
-  **Nota de 12/09**: a `UC-075` trouxe `AnalyticInstance.cameraCapacity`, que é o campo **declarado** da
-  unidade - não substitui o teto medido, dá onde guardá-lo.
-- ~~**Prova de campo ponta a ponta**: card `SOFTWARE-2200`, e a descrição dele está defasada (manda o
-  `ms-connector-virtual-loop` traduzir endereço, e esse serviço foi removido em 05/09).~~ - **executada
-  em 11/09** no EC2 dev; as correções são as PRs #3303 a #3306. A descrição do card continua defasada.
+- **Prova de campo ponta a ponta**: card `SOFTWARE-2200`, e a descrição dele está defasada (manda o
+  `ms-connector-virtual-loop` traduzir endereço, e esse serviço foi removido em 05/09).
 - **OTA do app embarcado**: zero código de gestão de aplicação no device. O edital não pede OTA no 4.6, as
   notas de alinhamento pedem. Fica registrado como requisito de nota, não de edital.
 
@@ -185,21 +153,15 @@ Card existente: [[SOFTWARE-2392 - Recorte da atuação via ACOM (docs-only)|SOFT
 Estimativa pela tabela do time (1 = menos de 2h, 2 = 2-4h, 3 = 4-8h, 5 = 1-2d, 8 = 2-3d, 13 = 4-5d).
 Onde o card existe, o número é o **repontuado**, não o antigo.
 
-> [!important] Estado em 12/09: a conta abaixo é de 09/09 e ainda não foi refeita
-> Três linhas dela já foram executadas ("Detecção em modo edição", "Prova de campo ponta a ponta" e
-> "Polling configurável e histórico de disponibilidade"), mas **nenhuma mergeou** - por isso os números
-> ficam onde estão até o merge, marcados linha a linha. Refazer a conta quando a #3328 e as #3303-#3306
-> entrarem na `develop`.
-
 | Frente | Card | Pts | Quando |
 | --- | --- | --- | --- |
 | Reconciliar `docs/modules/analitico.md` com o edital: Visão Geral e Dashboard como recurso, e a definição de ATSPM | sem card | 3 | Sprint 32 |
 | `UF-046`, `UF-047` e `MOD-003`, as specs que faltam | sem card | 2 | Sprint 32 |
 | Métricas abre na face que tem dado | sem card | 1 | Sprint 32 |
-| Detecção em modo edição, em três PRs, e a aba sai de desabilitada | sem card | 9 | **Feito em 11/09** (#3066) |
+| Detecção em modo edição, em três PRs, e a aba sai de desabilitada | sem card | 9 | Sprint 32 |
 | Até 4 laços por câmera, contrato e tela | `SOFTWARE-2686` (era 5) | 8 | Sprint 32 |
 | Teto medido de câmeras por instância | `SOFTWARE-2398` | 2 | Sprint 32 |
-| Prova de campo ponta a ponta, e as correções dela | `SOFTWARE-2200` (era 2) | 5 | **Executada em 11/09**; correções em PR aberta (#3303-#3306) |
+| Prova de campo ponta a ponta, e as correções dela | `SOFTWARE-2200` (era 2) | 5 | Sprint 32 |
 | ATSPM: Split Monitor sobre o ciclo | sem card | 5 | Sprint 33, semana do prazo |
 | ATSPM: Yellow e Red Actuations | sem card | 3 | Sprint 33 |
 | A face ATSPM lendo os dois grupos novos | sem card | 2 | Sprint 33 |
@@ -212,7 +174,7 @@ Onde o card existe, o número é o **repontuado**, não o antigo.
 | ATSPM: AOG, PCD, Approach Delay e TMC | sem card | 13 | **Depois do prazo** - exige o mapa estágio-grupo de movimento e classe no evento |
 | Snapshot da configuração semafórica por ciclo | sem card | 8 | **Depois do prazo** - produtor é o `ms-controllers`, outra squad |
 | Decisão automatizada alimentando as Estratégias | sem card | 13 | **Depois do prazo** - cross-módulo com o Modelo de Tráfego |
-| Polling configurável e histórico de disponibilidade do servidor analítico | sem card | 3 | **Feito em 12/09** pela `UC-075` (#3328), fora da develop ainda |
+| Polling configurável e histórico de disponibilidade do servidor analítico | sem card | 3 | **Depois do prazo** |
 | Recorrência e padrões de incidente | sem card | 3 | **Depois do prazo** |
 | Exportar métricas, via `ms-reports` | sem card | 5 | **Depois do prazo** - cross-módulo |
 | OTA do app embarcado | sem card | 13 | **Depois do prazo** - requisito de nota, não do edital 4.6 |
@@ -230,5 +192,4 @@ decisão de o que entra é do user.
 
 [[Analítico]] · [[Analítico - Embarcado x Servidor]] · [[Analítico - Requisitos e SLA]] ·
 [[Analítico - Tela de Métricas no web-attlas]] · [[Analítico - Frontend do attlas-design]] ·
-[[Registro - prova de campo do analítico servidor no EC2 em 11 de setembro]] ·
 [[Attlas - Sprint 32]] · [[Grau de saturação não é ATSPM]]

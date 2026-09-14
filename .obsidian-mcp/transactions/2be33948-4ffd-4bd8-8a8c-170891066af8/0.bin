@@ -10,7 +10,7 @@ aliases:
   - "Prova de campo do analítico no EC2 (11/09)"
   - "Registro - deploy do analítico no EC2"
 fonte: sessão de 11/09/2026 no box aws-attlas-26 (compose em /home/ubuntu), banco attlas_cameras, logs dos containers, tela pública dev.v2.attlas.atmansystems.com, código da develop em dbe3b2ab3c
-atualizado: 2026-09-12
+atualizado: 2026-09-11
 ---
 
 # Registro - prova de campo do analítico servidor no EC2 em 11 de setembro
@@ -236,30 +236,3 @@ Tela: `https://dev.v2.attlas.atmansystems.com/#/analytics/detection/00000000-000
 [[SOFTWARE-2200 - Prova de campo do analítico em container]] ·
 [[Registro - movimentação da develop em 05 e 07 de setembro]] ·
 [[Carga desnecessária nas câmeras - reconciler do analítico e conexões duplicadas]]
-
-## Adendo de 12/09: dois dos caminhos de arquivo deste registro deixaram de existir
-
-O corpo acima fica como foi escrito - é registro do dia 11/09 e estava certo naquele dia. O que mudou
-depois, e que quem for mexer nas PRs desta tabela precisa saber:
-
-> [!important] Estado em 12/09: a #3328 remove arquivos que a #3304 altera
-> A PR [#3328](https://github.com/atmanadmin/attlas-2026/pull/3328) (consolidação do console do
-> Analítico, CI verde, **ainda não mergeada**) **apaga** `camera-analytics-overlay.component.ts` e
-> `camera-analytics-store.service.ts`, junto com o resto da aba Analíticos do detalhe da câmera. Esses
-> são exatamente dois dos três caminhos que o bug **B7** aponta, e a **#3304** os altera.
->
-> Conferido em 12/09: **#3304 e #3328 saem as duas de `develop`** e tocam o mesmo conjunto -
-> `camera-analytics-overlay.component.ts`, `camera-analytics-store.service.ts`,
-> `camera-detail.page.html` e a spec `UF-033-camera-analytics-draw.md`. Quem mergear em segundo lugar
-> pega conflito de "modificado x apagado", e se a #3328 entrar primeiro a parte da #3304 que mexe nesses
-> arquivos vira trabalho morto - o conserto que importa é o que ela faz em
-> `analytics-detection/pages/detection/detection.page.ts`, em `detection-frame/` e no
-> `camera-stream-player` compartilhado, que sobrevivem.
->
-> A **ordem de merge** registrada acima (#3303, #3304, #3305, #3306) não considerava a #3328, que não
-> existia em 11/09. Decidir a ordem das duas é pré-requisito do merge, não detalhe de rebase.
-
-Também vale para a leitura do B7 e do item 1 dos "pedidos adicionais": onde os dois falam da tela de
-Detecção, a tela continua no lugar. O que sai é a **outra** superfície, a aba do detalhe da câmera - e
-com ela some o overlay antigo. Contexto completo da consolidação no [[Analítico|índice do domínio]] e em
-[[Analítico - Arquitetura e estratégias]].

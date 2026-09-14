@@ -1,0 +1,21 @@
+{
+  "id": "75d1bf52-0b71-4c30-b912-d83a68d49350",
+  "state": "committed",
+  "createdAt": "2026-09-12T23:13:27.530Z",
+  "snapshots": [
+    {
+      "path": "Sprint/33/Detecção do Analítico - gaps para polir.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "32c6cf1167d161fc70068b815b426a6010f5bf2996d115d0d09112d8851685b5",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33152,
+      "etag": "29543e334f7eea0cbbac4b11d969760209421ad65c6c4b8e2dce05106862280d",
+      "snapshot": "0.bin",
+      "committedEtag": "32c6cf1167d161fc70068b815b426a6010f5bf2996d115d0d09112d8851685b5"
+    }
+  ],
+  "completedAt": "2026-09-12T23:13:27.556Z"
+}

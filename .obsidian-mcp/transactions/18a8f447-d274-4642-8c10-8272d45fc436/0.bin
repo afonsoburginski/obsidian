@@ -7,7 +7,7 @@ tags:
 aliases:
   - "Tela de Métricas no web-attlas"
   - "Métricas do Analítico - estado da tela"
-atualizado: 2026-09-12
+atualizado: 2026-09-09
 fonte: leitura direta de apps/web-attlas/src/app/modules/analytics-metrics na ponta da pilha (cameras/feat/SOFTWARE-2797-map) contra modulo-analitico/entrega-frontend do attlas-design, em 03/09/2026
 ---
 
@@ -36,27 +36,6 @@ importa: o `scripts/spec-id.mjs` tira o namespace do caminho de docs, então spe
 
 ## O que existe hoje
 
-> [!success] Estado em 12/09: Dados Brutos paginado, com unidade no cabeçalho, e o mapa de volta
-> **Tudo nesta entrada está na PR [#3328](https://github.com/atmanadmin/attlas-2026/pull/3328), com CI
-> inteiramente verde e ainda NÃO mergeada** - nada disto está na `develop` hoje. A spec é a
-> `UF-054-virtual-loop-raw-table-pagination`:
->
-> - **Rodapé de paginação nos Dados Brutos.** A tabela crua paginava nada: despejava a janela inteira.
->   Agora tem rodapé com tamanho de página escolhível (`RAW_PAGE_SIZE_OPTIONS`), e a paginação é **do
->   lado do cliente** de propósito - a leitura já está inteira em memória, porque a rota de métricas traz
->   a janela completa numa resposta só. Nada é sortable: a ordem da linha é a cronologia que a tela
->   responde.
-> - **Unidade de medida no cabeçalho de cada coluna** (veíc/h, veíc, %, s), reusando as chaves
->   `analytics.metrics.virtualLoop.catalog.<metrica>.unit` que **já existiam** e que os cartões de
->   métrica já imprimiam - não nasceu chave nova. A coluna `interval` fica sem unidade, porque é faixa de
->   relógio, não medição.
-> - **O mapa voltou à tela do Laço Virtual.** O atributo `showMap` tinha sumido do mount de
->   `app-atspm-camera-panel` dentro de `virtual-loop-panel.component.html` num commit de **outra** tela
->   (`3c03417043`, a página do incidente reconstruída), e a `UF-042` seção 14.1 sempre disse que o mapa
->   estava ali. Regressão silenciosa: o painel de câmeras é **compartilhado** entre as faces e vive em
->   `apps/web-attlas/src/app/modules/analytics/components/atspm-camera-panel/`, então perder um atributo
->   no mount de uma face não quebra nada na outra e não acende teste.
-
 > [!info] Estado em 09/09: as duas PRs mergearam e as abas irmãs deixaram de ser placeholder
 > A #2380 e a #2517 entraram em 03 e 04/09, fechando o `SOFTWARE-2797`. Em 07/09 a
 > [#2918](https://github.com/atmanadmin/attlas-2026/pull/2918) trouxe o porte de **Instâncias** e
@@ -67,11 +46,6 @@ importa: o `scripts/spec-id.mjs` tira o namespace do caminho de docs, então spe
 > As duas decisões que esta nota deixava em aberto abaixo **foram tomadas**: as chaves nasceram em
 > `libs/contracts/src/lib/i18n/locales/<locale>/analytics.json` próprio, e a barra de sub-abas entrou
 > junto do porte, em branch `analytics`, não como terceira PR do `SOFTWARE-2797`.
->
-> **Corrigido em 12/09**: a parte "`detection` desabilitada na barra" **caducou em 11/09**, quando a
-> #3066 ligou a aba com o modo edição (`UF-053`). E desde a #3328 a Detecção é o **único** lugar onde
-> região, laço e configuração do embarcado são lidos e escritos - a aba Analíticos do detalhe da câmera
-> foi removida. Ver o [[Analítico|índice do domínio]].
 
 São 65 arquivos e 3.577 linhas, somando as duas PRs que fecharam o `SOFTWARE-2797`. A rota deixou o
 `SectionPlaceholder` e virou módulo lazy.
@@ -124,13 +98,6 @@ referência, `max-height` descontando 160px sem origem declarada, piso de 224px 
 sete pesos de fonte numéricos onde há token, e a tabela da modal montada à mão duplicando a tabela crua
 que já está na página.
 
-> [!important] Estado em 12/09: parte desta lista já caiu, e a nota ainda não foi reauditada
-> Os itens 1, 2 e 6 têm sinal claro de que saíram - a barra de sub-abas existe (`metrics-tab-bar`), o
-> painel de câmeras compartilhado (`atspm-camera-panel`) substituiu a lista de links, e o cartão ganhou
-> `metric-chart-card`/`metric-chart-dialog`. **Não reauditei arquivo de estilo contra arquivo de
-> estilo**, então o número "33 discrepâncias" acima é de 03/09 e não vale como contagem de hoje. Quem
-> for atacar a paridade visual refaz o levantamento antes de usar esta lista como backlog.
-
 ## Defeitos funcionais, não visuais
 
 > [!success] Resolvido em 05/09: o funil não oferece mais janela que a API recusa
@@ -155,8 +122,7 @@ o calendário, a faixa é emitida e ninguém a recebe. A aba de Incidentes tem o
 Continua aberto também um menor: a coluna Intervalo da tabela crua é derivada com o bucket pedido e com
 o `start` calculado no cliente, não com o `start` realinhado que o response devolve somado à soma dos
 `duration` anteriores. A própria UF-042 manda o contrário, e é o único dos oito testes obrigatórios da
-spec que não tem asserção. **A `UF-054` de 12/09 não mexeu nisso**: ela pagina e rotula a coluna, não
-recalcula o intervalo.
+spec que não tem asserção.
 
 ## De onde vem o dado de cada sub-aba
 

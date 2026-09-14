@@ -8,7 +8,7 @@ aliases:
   - "VL e ATSPM"
 servico: ms-video-analytics (o analitico servidor, real desde 03/09; renome do ms-virtual-loop feito em 02/09). ms-atspm, ms-dai e ms-connector-virtual-loop foram REMOVIDOS do repo em 05/09 (PR 2530) - CROSS-077
 fonte: auditoria de código de 24/08 (embarcado, servidor, ACOM/ATSPM) + Anotações sobre Analítico de vídeo (notas do user) + attlas-vl-atspm.pdf (squad de Visão Computacional, 10/08) + decisões preservadas das 14 PRs fechadas da Sprint 27 + prazo externo fechado em 25/08
-atualizado: 2026-09-12
+atualizado: 2026-09-11
 ---
 
 # Analítico (Virtual Loop, ATSPM, DAI, ACOM)
@@ -75,51 +75,6 @@ atualizado: 2026-09-12
 > Quito 2. Os achados e os bugs que saíram disso, com o destino de cada um, estão em
 > [[Registro - prova de campo do analítico servidor no EC2 em 11 de setembro]].
 
-> [!success] Estado em 12/09: o console do Analítico consolidou, e a aba Analíticos da câmera foi aposentada
-> **Tudo nesta entrada está na PR [#3328](https://github.com/atmanadmin/attlas-2026/pull/3328), com CI
-> inteiramente verde e ainda NÃO mergeada** - nada disto está na `develop` hoje. A tela de **Detecção**
-> passou a ser o **único** lugar onde região de detecção, laço virtual e configuração do analítico
-> embarcado são lidos e escritos:
->
-> - **A aba Analíticos do detalhe da câmera saiu.** 23 arquivos de
->   `apps/web-attlas/src/app/modules/cameras/`: os componentes `camera-analytics-panel`,
->   `camera-analytics-overlay`, `camera-analytics-frozen-frame` e `camera-analytics-incidents-dialog`,
->   mais o `camera-analytics-store.service`. As specs `UF-033` e `UF-036` passaram a `superseded`
->   apontando para a `UF-053`, com os corpos preservados como registro histórico. O
->   `CameraAnalyticsService` sobreviveu e hoje é consumido pela Detecção.
-> - **A remoção entrou depois de fechar seis lacunas de paridade** (`UF-043`), nunca antes - remover com
->   lacuna aberta tiraria capacidade do operador em silêncio. As duas graves eram silenciosas: a Detecção
->   lia as regiões do **equipamento inteiro** em vez das do **preset ativo** (numa PTZ isso misturava
->   geometria entre enquadramentos, que é exatamente o que a `UF-036` existia para evitar) e não aplicava
->   a **invariante do laço** que o contrato exige - podar classe órfã, forçar inativo sem região. As
->   outras quatro: classes de evento restritas por tipo de incidente, tipo de região reaplicando o
->   preset, renomear região, e o log ao vivo das últimas detecções.
-> - **Detecção não dá mais autoplay** (`UF-055`). Entrar na tela não abre sessão de vídeo: o operador
->   começa a reprodução e até lá vê o thumbnail. O gate mora **na página**, não no player compartilhado,
->   então `camera-detail`, videowall e o painel ATSPM seguem abrindo sozinhos.
-> - **Instância de analítico deixou de ser leitura derivada e virou registro próprio** (`UC-075`,
->   RF-INST-01 e RF-INST-03): tabela `AnalyticInstance` com endereço, porta, capacidade de câmeras e
->   `pollingIntervalSeconds`, mais `AnalyticInstanceAvailability` guardando **uma linha por transição de
->   estado**, não por amostra. A tela de detalhe ganhou edição de verdade (`UF-056`), com permissão nova.
->   A migration aperta o índice - `CameraAnalytic_camera_type_embedded_unique` vira
->   `CameraAnalytic_camera_type_active_unique` (RF-INST-04), porque uma câmera com uma linha `EMBEDDED` e
->   uma `SERVER` do mesmo tipo era decodificada duas vezes; há guarda que **aborta o deploy** com
->   mensagem explícita se algum ambiente já tiver dado nessa forma.
-> - **Fila de incidentes com seleção múltipla, chips de filtro multivalor e ação em massa**, sobre
->   endpoint de lote novo no `ms-cameras` (`UC-074`), com envelope de resultado **por item** em vez de
->   tudo-ou-nada. Sem agrupamento por padrão na lista, por decisão do user: os badges do topo já fazem a
->   agregação. Junto saiu um defeito: a fila mandava `DETECTED` no fio e o backend só entende `OPEN`, e
->   aquele filtro voltava vazio.
-> - **Métricas do Laço Virtual**: Dados Brutos com rodapé de paginação e unidade de medida no cabeçalho
->   de cada coluna, e **o mapa de volta** - ver [[Analítico - Tela de Métricas no web-attlas]].
->
-> Fora da #3328, três PRs de correção abertas e com CI verde, também **não mergeadas**: **#3303** (o teto
-> de 64 caixas do overlay passou a valer **depois** do recorte por região, não antes), **#3304** (a fila
-> de lotes do overlay ao vivo ganhou limite; antes crescia sem teto se o relógio da câmera estivesse
-> adiantado) e **#3305** (o deploy comparava o `mediamtx.yml` rodando `md5sum` **dentro** do container,
-> mas a imagem oficial é `scratch` - três arquivos, sem shell -, então o restart nunca acontecia; agora
-> compara contra sentinela de hash no host).
-
 ## As duas capacidades e a placa
 
 - **Virtual Loop (VL)** - detecção de cruzamento por laço virtual desenhado sobre o vídeo. Não tem
@@ -142,14 +97,14 @@ atualizado: 2026-09-12
 | Frente | Estado | Onde |
 | --- | --- | --- |
 | Analítico embarcado (pipeline ao vivo) | **Real**, com o furo acima | `apps/ms-cameras/src/analytics-realtime/` |
-| Desenho de região e laço no frontend (overlay ao vivo) | **Real**, e desde 12/09 (#3328) num lugar só | `apps/web-attlas/src/app/modules/analytics-detection/` - a tela de **Detecção**, dentro do módulo próprio `analytics` com as abas `detection`, `instances`, `incidents` e `metrics`. A aba Analíticos do detalhe da câmera foi **removida** |
+| Aba Analíticos no frontend (desenhar região e laço, overlay ao vivo) | **Real** | `apps/web-attlas/src/app/modules/cameras/analytics/`, e o módulo próprio `analytics` com as abas `detection` (desabilitada), `instances`, `incidents` e `metrics` |
 | Contratos de região, laço, detecção e frame | **Real** | `libs/contracts/src/lib/{object-detection,virtual-loop}/` |
 | Analítico servidor (`ms-video-analytics`) | **Real desde 03/09.** Ingestão de stream, detecção por frame, ocupação de região, tradução de endereço e publicação do raw. Renomeado em 02/09 | `apps/ms-video-analytics/` |
 | Tradutor de endereço | **Não é serviço.** Vive dentro do analítico servidor (`PROJ-002`), entregue em 03/09 | `apps/ms-video-analytics/` |
 | `ms-atspm` e `ms-dai` | **Removidos do repo em 05/09** (PR 2530), com banco, rota Kong e scrape. São capacidades do analítico servidor | não existem mais em `apps/` |
 | ACOM (CRUD, TCP, realtime) | **Real**, mas sem o caller que atua | `apps/ms-controllers/src/acom/` (80 arquivos) |
 | Persistência de geometria de região | **Não existe em banco nenhum** - é proxy HTTP direto pro device | - |
-| Entidade "Analítico" persistida | **Existe desde 12/09 (#3328)**: `CameraAnalytic` (Sprint 30) mais a `AnalyticInstance` da `UC-075`. A linha antiga - "é a chave `deviceSourceId` num campo `Json` livre" - caducou | `apps/ms-cameras/src/database/schema/analytic_instance/` |
+| Entidade "Analítico" persistida | **Não existe** - é a chave `deviceSourceId` num campo `Json` livre | `Camera.analyticsCapabilities` |
 
 ## Os cinco buracos de ciclo de vida
 
@@ -166,19 +121,12 @@ notas de alinhamento do user pedem. Nenhum destes tem uma linha de spec:
 4. **Preset PTZ com snapshot de região**. Hoje mover a câmera de preset invalida a geometria em silêncio.
 5. **Atualização remota (OTA) do app embarcado**. Não existe nenhuma gestão de aplicação no device.
 
-> [!important] Estado em 12/09: os quatro primeiros foram fechados, e o item 1 mudou de forma duas vezes
-> Os itens 1 a 4 saíram entre as Sprints 30 e 32. O item 1 em particular fechou em duas etapas: o
-> `CameraAnalytic` da Sprint 30 (um analítico embarcado por tipo por câmera) e, na #3328, a
-> `AnalyticInstance` da `UC-075`, que faz da **unidade de processamento** um registro próprio nos dois
-> modos de execução. A unicidade também apertou: passou a valer por `(câmera, tipo)` ativo, não só para
-> `EMBEDDED`. Só o item 5 (OTA) segue sem nenhuma linha de código.
-
 ## Mapa de código
 
 | Área | Onde | Estado |
 | --- | --- | --- |
 | Proxy pro device, WS ao vivo, consumer Kafka | `apps/ms-cameras/src/analytics-realtime/` | Real; sem persistência, sem writer de `deviceSourceId` |
-| Tela de Detecção (desenho, overlay 60fps) | `apps/web-attlas/src/app/modules/analytics-detection/` | Real; congela o quadro e desenha sobre o frame do preset ativo. Desde a #3328 é a **única** superfície que lê e escreve região, laço e configuração do embarcado. De `modules/cameras/analytics/` sobraram só `analytics.types.ts` e `analytics.constants.ts`, compartilhados com ela |
+| Aba Analíticos (desenho, overlay 60fps) | `apps/web-attlas/src/app/modules/cameras/analytics/` | Real; desenha sobre vídeo ao vivo, não sobre frame congelado |
 | Contratos de região, laço, detecção, frame | `libs/contracts/src/lib/object-detection/`, `.../virtual-loop/` | Real; região é polígono de pontos em %, sem conceito de linha e sem validação |
 | Contratos de detector (sumidouro) | `libs/contracts/src/lib/detectors/` | Real e completo (`IDetectorRawEvent`, `VIRTUAL_LOOP`, `deriveDetectorId`) |
 | Histórico de detecção | `apps/ms-detector-history/` | Real e maduro; aceita o evento do laço virtual sem nenhuma mudança |
@@ -229,9 +177,7 @@ uma tem um `index.md` respondendo o que entrega em feature e em tela:
 - [[Sprint 32 - o que entrega]] (07-13/09) - **replanejada em 09/09**: 11 PRs em cascata e 30 pts em 9
   cards, somando o modo edição da aba Detecção (o recurso "Visão Geral" do edital, hoje construído e
   desligado) aos três cards que já existiam. **Fechada em 11/09**: a #3066 e as oito de spec mergearam, e a prova de
-  campo (`SOFTWARE-2200`) foi executada no EC2 dev; as correções dela viram PR. **Em 12/09** saiu a
-  consolidação do console (#3328) mais as três PRs de correção da prova de campo (#3303, #3304, #3305),
-  todas com CI verde e **nenhuma mergeada**.
+  campo (`SOFTWARE-2200`) foi executada no EC2 dev; as correções dela viram PR.
 - [[Attlas - Sprint 33]] (14-20/09) - **a semana do prazo**, que cai na quinta 18/09. Resíduo declarado:
   ATSPM Split Monitor e Yellow/Red, a face lendo os dois grupos novos, e o histórico de configuração.
 
@@ -245,10 +191,6 @@ uma tem um `index.md` respondendo o que entrega em feature e em tela:
 > Detecção configurável pela tela, Instâncias e Incidentes no ar e as Métricas do Laço Virtual com dado
 > real. O que ela **não é**: atuação em controlador legado, e o Dashboard do módulo. Item por item em
 > [[Analítico - O que falta para fechar o módulo]].
->
-> **Estado em 12/09**: o "polling com histórico" saiu desta lista - a `UC-075` da #3328 entregou
-> `pollingIntervalSeconds` configurável e `AnalyticInstanceAvailability`. Os pontos correspondentes
-> precisam sair da conta quando a PR mergear.
 
 ## Relacionados
 

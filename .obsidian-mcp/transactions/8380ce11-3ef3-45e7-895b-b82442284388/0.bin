@@ -2,7 +2,7 @@
 tags:
   - doc
   - analitico
-atualizado: 2026-09-12
+atualizado: 2026-09-09
 servico: ms-cameras (hoje) + ms-video-analytics (o analitico servidor, hoje ms-virtual-loop). ms-atspm, ms-dai e ms-connector-virtual-loop nao nascem - CROSS-077, 31/08
 fonte: síntese das notas deste domínio + auditoria de código de 25/08 + as 16 decisões tomadas nas Sprints 30, 31 e 32
 ---
@@ -19,21 +19,6 @@ com a profundidade.
 > esta nota nem menciona (grupo semafórico 1x1, snapshot de configuração, limites do ACOM, nomenclatura
 > "Periféricos ACOM"). Ler as duas: esta responde *como funciona*, aquela responde *o que foi pedido e o
 > que existe de fato*.
-
-> [!success] Estado em 12/09: o console do Analítico é um lugar só, e a aba Analíticos da câmera saiu
-> Na PR [#3328](https://github.com/atmanadmin/attlas-2026/pull/3328) - CI inteiramente verde, **ainda
-> não mergeada**, nada disto está na `develop`. A tela de **Detecção** do módulo `analytics` passou a ser
-> o **único** lugar onde região de detecção, laço virtual e configuração do analítico embarcado são lidos
-> e escritos; a aba Analíticos do detalhe da câmera foi removida (23 arquivos), e as specs `UF-033` e
-> `UF-036` viraram `superseded` apontando para a `UF-053`. Onde esta nota diz "aba Analíticos", leia
-> "tela de Detecção".
->
-> Mudaram também, na mesma PR: **Detecção sem autoplay** (`UF-055` - a sessão de vídeo abre por gesto do
-> operador, e o gate mora na página, não no player compartilhado), **instância de analítico como registro
-> próprio** (`UC-075` - `AnalyticInstance` com endereço, capacidade, intervalo de consulta e histórico de
-> disponibilidade), **edição de instância na tela** (`UF-056`), **ação em massa na fila de incidentes**
-> (`UC-074`) e **Dados Brutos paginado com unidade no cabeçalho** mais o mapa restaurado na tela do Laço
-> Virtual (`UF-054`). Inventário completo no [[Analítico|índice do domínio]].
 
 ---
 
@@ -94,17 +79,6 @@ ATSPM**. Mais uma exclusão que vale só no 8/9 - os dois apps existem, nunca ju
 liberável: remover o primeiro libera o outro. A coluna "servidor" ser toda "Sim" é o que torna o parque
 misto atendível por inteiro.
 
-> [!important] Estado em 12/09: a exclusão entre modos de execução virou índice, não só regra escrita
-> A #3328 troca `CameraAnalytic_camera_type_embedded_unique` por
-> `CameraAnalytic_camera_type_active_unique` (RF-INST-04). A unicidade passou a valer por
-> `(câmera, tipo)` **ativo**, e não só no modo `EMBEDDED`: uma câmera com uma linha `EMBEDDED` e uma
-> `SERVER` do mesmo tipo era decodificada duas vezes e publicava a mesma detecção duas vezes. A exceção
-> que a `MOD-017` seção 4.2 abria para o modo servidor era especulativa e foi fechada. A migration traz
-> guarda que **aborta o deploy** com mensagem explícita se algum ambiente já tiver dado nessa forma.
-> Isso **não** contradiz a decisão **D-12** abaixo ("câmera com embarcado e servidor é caso conhecido"):
-> o que fica proibido é a duplicação do **mesmo tipo** de analítico na mesma câmera, não a coexistência
-> dos dois modos por tipos diferentes.
-
 ---
 
 ## 3. Os três caminhos do dado
@@ -114,7 +88,7 @@ O módulo tem três pipelines distintos, e confundi-los é a origem da maioria d
 
 | # | Pipeline | O que é | Para quem |
 | --- | --- | --- | --- |
-| 1 | **Tela ao vivo** | WebSocket, efêmero, acende a região na tela de **Detecção** (era a aba Analíticos até 12/09) | Operador olhando a câmera. Nada é gravado - saiu da tela, deixou de existir |
+| 1 | **Tela ao vivo** | WebSocket, efêmero, acende a região na aba Analíticos | Operador olhando a câmera. Nada é gravado - saiu da tela, deixou de existir |
 | 2 | **Incidente contável** | `CameraEventLog` com categoria `ANALYTICS`, dedup por câmera + região + tipo | Fila de incidentes, e daí para Alarmes, Inventário e Notificações |
 | 3 | **Ocupação de laço** | Evento de detector, só na transição, com histerese | Controlador de semáforo, via ACOM ou direto, e o `ms-detector-history` |
 
@@ -153,12 +127,12 @@ contra [[Sprint 30 - o que entrega]] - fonte de verdade da semana.
 
 | Peça | Estado |
 | --- | --- |
-| Pipeline embarcado ao vivo, desenho de região e laço no frontend, contratos de região e detecção | Real. Desde 12/09 (#3328) o desenho mora só na tela de **Detecção**: a aba Analíticos do detalhe da câmera foi removida |
+| Pipeline embarcado ao vivo, aba Analíticos, contratos de região e detecção | Real |
 | Contratos de detector e histórico de detecção | Real e maduro - aceita o evento do laço virtual sem mudança |
 | ACOM: CRUD, TCP, codec, pollers | Real, **falta o caller** |
-| Entidade Analítico + região em banco + unicidade, healthcheck do analítico | **Entregue na Sprint 30** (11 pts, com código e teste, 25/08). Em 12/09 a `UC-075` somou a `AnalyticInstance` - a **unidade de processamento** como registro próprio nos dois modos, com endereço, porta, capacidade, intervalo de consulta e histórico de disponibilidade |
+| Entidade Analítico + região em banco + unicidade, healthcheck do analítico | **Entregue na Sprint 30** (11 pts, com código e teste, 25/08) |
 | Compatibilidade por arquitetura ARTPEC, incidente contável com dedup, preset PTZ com snapshot, fonte da imagem de evidência | **Entregue na Sprint 30** - mergeado na develop em 27 e 28/08, junto com o writer do `deviceSourceId` (bug P0). Os 8 cards de backend fecharam, 37 dos 51 pts |
-| Fila de incidentes, galeria de evidência, desenho sobre frame congelado (os 3 cards `[Front]`) | **Entregues.** Os 11 cards da Sprint 30 fecharam em 28/08, e a fila de incidentes mergeou pela #2306 em 29/08 (`SOFTWARE-2794`). Em 12/09 a fila ganhou seleção múltipla, chips de filtro multivalor e ação em massa (`UC-074`), ainda não mergeadas |
+| Fila de incidentes, galeria de evidência, desenho sobre frame congelado (os 3 cards `[Front]`) | **Entregues.** Os 11 cards da Sprint 30 fecharam em 28/08, e a fila de incidentes mergeou pela #2306 em 29/08 (`SOFTWARE-2794`) |
 | Analítico servidor e tradutor de endereço | **Real.** `ms-video-analytics` ingere stream, detecta por frame, projeta ocupação com histerese, traduz endereço e publica em `attlas.detectors.raw`. A Sprint 31 fechou os 10 cards em 05/09, e a tradução mora dentro do serviço, não num connector |
 | Telas de métricas ATSPM e Laço Virtual | **As duas estão no ar, e a face ATSPM está vazia por falta de produtor**: 4 das 38 métricas têm leitor. O `SOFTWARE-2797` fechou em 05/09, a casca de três sub-abas e o funil entraram com ele, e o Exportar mostra o resumo do que o arquivo levaria porque não há endpoint. O ATSPM **não é serviço novo**: o dado que falta se agrega de `detection_record` e `controller_cycle`, no `ms-detector-history` - ver [[Analítico - O que falta para fechar o módulo]] |
 | `ms-atspm`, `ms-dai` | **Removidos do repo em 05/09** (PR #2530), com banco, rota Kong e scrape. São capacidades do analítico servidor (CROSS-077) |
@@ -184,14 +158,6 @@ alternativa recusada é o que impede de reabrir a discussão depois. As de arqui
 | D-06 | "Device caiu" e "ninguém configurou" são **estados diferentes** | Os dois devolvem região vazia, e o operador não distingue equipamento com problema de câmera nunca configurada. São duas ações diferentes |
 | D-07 | A fila de incidentes é **o log filtrado**, não um segundo sistema | O protótipo tem ~7.900 linhas de fila e detalhe; o produto já tinha 2.314 de tratamento em produção. Duas implementações do mesmo assunto divergem |
 
-> [!important] D-05 quase se perdeu no caminho, e foi achada em 12/09
-> A tela de Detecção lia as regiões do **equipamento inteiro**, não as do **preset ativo** - ou seja, o
-> desenho tinha voltado a não pertencer a enquadramento nenhum, que é exatamente o que a D-05 proíbe.
-> Numa PTZ com mais de um enquadramento, a geometria de um preset aparecia em outro, em silêncio. Foi uma
-> das seis lacunas de paridade fechadas antes de a aba Analíticos ser removida (`UF-043`). **Decisão de
-> produto não se sustenta sozinha quando a superfície que a implementava é substituída por outra**: a
-> paridade precisa ser conferida item a item, não presumida da tela nova.
-
 ### Sprint 31 - o analítico servidor (nenhuma tela, é o caminho do dado)
 
 | # | Decisão | Porque |
@@ -210,16 +176,6 @@ alternativa recusada é o que impede de reabrir a discussão depois. As de arqui
 | --- | --- | --- |
 | D-15 | O teto de câmeras por instância é **medido, não estimado**, com política de saturação declarada | Estimativa de capacidade de inferência erra por múltiplos, não por percentual. Sem política, saturar significa "alguma câmera para de detectar" sem ninguém saber qual |
 | D-16 | A prova é **ponta a ponta, com contador coerente** | Cada elo passar isolado não prova a cadeia. O critério é o número no fim bater - o único que um operador consegue conferir |
-
-### Decisões de 12/09, na consolidação do console (ainda não mergeadas)
-
-| # | Decisão | Porque |
-| --- | --- | --- |
-| D-17 | **Um lugar só** para ler e escrever região, laço e configuração do embarcado: a tela de Detecção | Duas superfícies para o mesmo assunto divergem - é a mesma razão da D-07. A remoção da aba só entrou **depois** de fechar as seis lacunas de paridade, nunca antes: remover com lacuna aberta tiraria capacidade do operador em silêncio |
-| D-18 | A Detecção **não dá autoplay**; a sessão de vídeo abre por gesto do operador | Entrar na tela deixa de alocar um relay por abertura, o que é estritamente menos carga no `ms-cameras`. O gate mora **na página**, não no player compartilhado, então `camera-detail`, videowall e o painel ATSPM seguem abrindo sozinhos - nada é retirado de quem já tinha |
-| D-19 | Instância de analítico é **registro próprio**, não leitura derivada da frota | Endereço, capacidade, intervalo de consulta e histórico de disponibilidade não têm onde morar numa projeção. Sem linha própria, "a unidade cadastrada antes de ter câmera" não existe |
-| D-20 | Ação em massa devolve **resultado por item**, não tudo-ou-nada | Numa fila com item já tratado por outra pessoa, falha total obrigaria o operador a descobrir o culpado e repetir a seleção inteira |
-| D-21 | Sem agrupamento por padrão na fila de incidentes | Os badges do topo já fazem a agregação; agrupar a lista também seria a mesma resposta duas vezes, com dois jeitos de contar |
 
 ---
 

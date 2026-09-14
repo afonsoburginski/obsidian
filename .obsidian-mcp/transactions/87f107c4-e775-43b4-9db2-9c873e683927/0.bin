@@ -2,7 +2,7 @@
 tags:
   - doc
   - analitico
-atualizado: 2026-09-12
+atualizado: 2026-08-31
 servico: ms-video-analytics (o analitico servidor, hoje ms-virtual-loop e scaffold). ms-atspm, ms-dai e ms-connector-virtual-loop nao nascem - CROSS-077, 31/08
 fonte: auditoria de código de 24/08 (embarcado, servidor, ACOM/ATSPM, detector-history) + 14 PRs da Sprint 27, fechadas em 24/08 (#1342 a #1357) + notas do user + PDF do squad de CV
 ---
@@ -13,26 +13,6 @@ Parte do [[Analítico]]. Esta nota é sobre **implementação**: o que existe de
 especificado e não mergeou, a dívida técnica e a proposta de topologia de serviço. As regras de
 compatibilidade por arquitetura de câmera e a diferença entre as duas formas de execução não moram mais
 aqui - são de [[Analítico - Embarcado x Servidor]].
-
-> [!success] Estado em 12/09: a aba Analíticos não existe mais, e boa parte desta nota é retrato de 24/08
-> Leia os dois avisos abaixo antes do corpo da nota, porque ele descreve o repo de **24 de agosto** e
-> duas afirmações estruturais dele já não valem:
->
-> 1. **A aba Analíticos do detalhe da câmera foi removida** na PR
->    [#3328](https://github.com/atmanadmin/attlas-2026/pull/3328) - CI inteiramente verde, **ainda não
->    mergeada**, então nada disto está na `develop`. Onde esta nota diz "aba Analíticos", o lugar hoje é a
->    tela de **Detecção** do módulo `analytics`
->    (`apps/web-attlas/src/app/modules/analytics-detection/`), que passou a ser o **único** lugar onde
->    região de detecção, laço virtual e configuração do analítico embarcado são lidos e escritos. Saíram
->    23 arquivos de `modules/cameras/`: `camera-analytics-panel`, `camera-analytics-overlay`,
->    `camera-analytics-frozen-frame`, `camera-analytics-incidents-dialog` e o
->    `camera-analytics-store.service`. Sobreviveram o `CameraAnalyticsService` (hoje consumido pela
->    Detecção) e, de `modules/cameras/analytics/`, só `analytics.types.ts` e `analytics.constants.ts`.
-> 2. **O furo do `deviceSourceId` foi fechado na Sprint 30** e a seção abaixo que o chama de "defeito mais
->    grave do domínio hoje" é retrato de 24/08, não do estado atual. Ver o callout de correção na própria
->    seção.
->
-> Consolidação completa de 12/09 no [[Analítico|índice do domínio]].
 
 > [!info] Estado em 24/08 (primeira passada, do começo do dia)
 > `git log` em `apps/ms-cameras/src/analytics-realtime/` não mostra nenhum commit desde 12/08 - o
@@ -58,15 +38,6 @@ aqui - são de [[Analítico - Embarcado x Servidor]].
 
 ## O furo do `deviceSourceId`: o binding não tem writer
 
-> [!success] Estado em 12/09: este furo está fechado, e a seção abaixo é retrato de 24/08
-> O `deviceSourceId` **tem writer** desde a Sprint 30 (card 2, mergeado em 27-28/08). A sonda de
-> credencial (`apps/ms-cameras/src/cameras/services/camera-credential-probe.service.ts`) devolve o
-> `deviceSourceId` lido do device no cadastro, e o `camera-provisioning.service.ts` o persiste. A chave
-> também deixou de morar só num `Json` livre: hoje é **coluna** de `CameraAnalytic`
-> (`apps/ms-cameras/src/camera-analytics/repositories/camera-analytics.repository.ts`), com
-> `findEmbeddedByDeviceSourceId`. A consequência que esta seção descreve - "câmera cadastrada pela UI
-> nunca recebe detecção ao vivo" - **não vale mais**. O texto fica como registro do achado.
-
 > [!danger] Câmera cadastrada pela UI nunca recebe detecção ao vivo
 > `analyticsCapabilities.deviceSourceId` é a chave que liga o frame publicado pelo device à câmera do
 > Attlas. **Nenhum código escreve essa chave no banco.** A varredura por `deviceSourceId` em `apps/` e
@@ -86,8 +57,7 @@ A cadeia da consequência é direta e verificável:
 2. `DeviceStreamConsumer.refreshBindings` itera as câmeras e faz `if (!caps.deviceSourceId) continue;` -
    a câmera nova nunca entra no mapa de binding.
 3. O frame chega do device com um `source_id` que não casa com nenhuma câmera. É descartado.
-4. A tela do analítico abre, assina a sala, e não recebe nada. Sem erro, sem log de falha para o
-   operador. (Em 24/08 essa tela era a aba Analíticos do detalhe da câmera; desde 12/09 é a Detecção.)
+4. A aba Analíticos abre, assina a sala, e não recebe nada. Sem erro, sem log de falha para o operador.
 
 O analítico embarcado está "entregue desde 15/07" e funciona **só para as câmeras que o seed criou**.
 É o defeito mais grave do domínio hoje. Fechá-lo é o card 2 da [[Attlas - Sprint 30]].
@@ -116,22 +86,6 @@ intocada** - `git log` do arquivo não mostra commit desde 14/07, e não existe 
 > no repo. Então o flip do ternário entra **junto** com o teste que trava o significado, não no lugar
 > dele. Entra no card de higiene do embarcado da [[Attlas - Sprint 30]].
 
-> [!success] Estado em 12/09: a derivação continua, mas ela **deixou de chegar ao operador**
-> As duas pontas mudaram em direções opostas, e vale separar:
->
-> - **No backend a derivação ficou.** O ternário segue em `device-stream.consumer.ts` (hoje por
->   `incidentTypes.length > 0`, mesmo formato, variável renomeada), e continua sem
->   `device-stream.consumer.spec.ts`. O bug de semântica é o mesmo.
-> - **No frontend a superfície sumiu.** `camera-analytics-panel.component.html` foi deletado com a aba
->   na #3328, e o **log ao vivo** que a tela de Detecção ganhou como uma das seis lacunas de paridade
->   renderiza o **rótulo da classe do objeto** e a hora (`detection__log-class` /
->   `detection__log-time`), **não** o `kind`. Nenhuma tela do produto imprime o campo hoje.
->
-> Ou seja: o achado deixou de ser "o operador lê o rótulo trocado" e voltou a ser o que a primeira
-> passada dizia - dívida interna de contrato, sem leitor na UI. Isso **rebaixa a urgência, não apaga o
-> item**: quem voltar a exibir `kind` reintroduz o defeito visível, e é por isso que o flip continua
-> tendo de entrar junto do teste que trava o significado.
-
 ## O que existe de fato hoje
 
 ### Caminho embarcado (`ms-cameras/src/analytics-realtime/`)
@@ -147,18 +101,6 @@ catalogado nas constantes centrais de tópicos do sistema.
 O vínculo entre câmera e analítico é hoje só um campo `Json` livre (`analyticsCapabilities`), de onde o
 código lê por convenção a chave `deviceSourceId`. Não existe entidade "Analítico" persistida, nem coluna
 de arquitetura de processador na câmera ou no fabricante.
-
-> [!important] Estado em 12/09: os dois parágrafos acima caducaram nas duas pontas
-> **Persistência**: existe `CameraAnalytic` + `CameraAnalyticRegion` (Sprint 30) e, desde a #3328, a
-> `AnalyticInstance` da `UC-075` - a unidade de processamento como registro próprio nos dois modos de
-> execução, com endereço, porta, capacidade de câmeras, `pollingIntervalSeconds` e
-> `AnalyticInstanceAvailability` (uma linha por **transição de estado**, nunca por amostra). A
-> arquitetura do processador também deixou de faltar: a compatibilidade ARTPEC entrou na Sprint 30.
-> **Unicidade**: a #3328 troca `CameraAnalytic_camera_type_embedded_unique` por
-> `CameraAnalytic_camera_type_active_unique` (RF-INST-04) - a regra passou a valer por `(câmera, tipo)`
-> ativo, e não só no modo `EMBEDDED`, porque uma câmera com uma linha `EMBEDDED` e uma `SERVER` do mesmo
-> tipo era decodificada duas vezes. A migration traz guarda que **aborta o deploy** com mensagem
-> explícita se algum ambiente já tiver dado nessa forma.
 
 #### Gateway WS (`camera-analytics.gateway.ts`)
 
@@ -226,48 +168,14 @@ abaixo).
 
 Os quatro endpoints de região estão em produção **sem nenhuma spec**.
 
-### A tela de Detecção no frontend (era a aba Analíticos até 12/09)
+### Aba Analíticos no frontend
 
-> [!success] Estado em 12/09: esta seção descrevia a aba Analíticos, que foi removida na #3328
-> O desenho de região (DAI) e a configuração do Virtual Loop **saíram do detalhe da câmera** e passaram a
-> viver num lugar só: a tela de **Detecção** do módulo `analytics`, em
-> `apps/web-attlas/src/app/modules/analytics-detection/`. Ela desenha sobre o **frame congelado do preset
-> ativo**, não sobre o vídeo ao vivo, e é hoje a única superfície que lê e escreve região, laço e
-> configuração do analítico embarcado. A remoção entrou na PR
-> [#3328](https://github.com/atmanadmin/attlas-2026/pull/3328), com CI verde e **ainda não mergeada**.
->
-> **A remoção só veio depois de fechar seis lacunas de paridade** (`UF-043`) - retirar a aba com lacuna
-> aberta tiraria capacidade do operador em silêncio. As duas graves eram invisíveis:
->
-> 1. **Vínculo região-preset.** A Detecção lia as regiões do **equipamento inteiro**, não as do **preset
->    ativo**. Numa PTZ com mais de um enquadramento, a geometria de um preset aparecia em outro - o
->    defeito exato que a `UF-036` existia para evitar. Agora relê ao trocar de preset e recaptura o
->    snapshot depois de salvar.
-> 2. **Invariante do laço.** Não podava classe órfã nem forçava inativo sem região, como o contrato
->    exige.
->
-> As outras quatro: classes de evento restritas por tipo de incidente; tipo de região reaplicando o
-> preset; renomear região (fora de escopo enquanto a aba existia como saída); e o **log ao vivo das
-> últimas detecções**, alimentado pela assinatura que já estava aberta. Junto entrou o conserto de
-> `ANALYTICS_ROUTES.camera`, que montava um endereço inexistente com dois chamadores navegando para ele.
->
-> **Detecção não dá mais autoplay** (`UF-055`): entrar na tela não abre sessão de vídeo, o operador começa
-> a reprodução e até lá vê o thumbnail - estritamente menos carga no `ms-cameras`, que deixa de alocar um
-> relay por abertura de tela. O gate mora **na página**, não no player compartilhado, então
-> `camera-detail`, videowall e o painel ATSPM seguem abrindo sozinhos.
->
-> As specs `UF-033` e `UF-036` passaram a `superseded` apontando para a `UF-053`, com os corpos
-> preservados como registro histórico.
-
-`apps/web-attlas/src/app/modules/cameras/analytics/` e os componentes `camera-analytics-*` implementavam o
+`apps/web-attlas/src/app/modules/cameras/analytics/` e os componentes `camera-analytics-*` implementam o
 desenho de região (DAI) e a configuração do Virtual Loop sobre o vídeo ao vivo, com overlay de bounding
 box em tempo real (dead reckoning e interpolação a 60fps). Entregue pelo PR #766 e uma sequência de
 follow-ups que migraram a persistência de `localStorage` para chamada HTTP real contra `ms-cameras`. A
 spec `UF-033-camera-analytics-draw.md` continua descrevendo a feature como "front-only, mock em
-localStorage" - texto desatualizado, ver a seção de dívida técnica abaixo. Com a #3328 saíram 23 arquivos
-(os quatro componentes, o store e a entrada no painel de presets), mais 9 exports sem consumidor e 89
-chaves por locale; sobraram o `CameraAnalyticsService` - hoje consumido pela Detecção - e, da pasta
-`analytics/`, só `analytics.types.ts` e `analytics.constants.ts`.
+localStorage" - texto desatualizado, ver a seção de dívida técnica abaixo.
 
 ### ACOM
 
@@ -372,9 +280,7 @@ Decisões já fechadas nessas PRs:
   Confirmado por leitura direta de `develop`: o texto antigo ainda está lá. Com a #1355 fechada, o
   conserto some junto - foi por isso que ele virou parte explícita do card de higiene do embarcado da
   [[Attlas - Sprint 30]]. A terminologia morta contamina 4 docs (`INT-010`, `PROJ-011`, `PROJ-013`,
-  `MOD-014`). **Estado em 12/09**: esse conserto perdeu o objeto - a `UF-033` passou a `superseded` na
-  #3328, apontando para a `UF-053`, e o corpo dela ficou como registro histórico. O texto errado não vale
-  mais como descrição de tela viva, mas a terminologia morta nos outros 4 docs continua de pé.
+  `MOD-014`).
 
 ### `CROSS-043` e `CROSS-032`: uma colisão resolvida, uma dívida órfã
 
@@ -398,9 +304,7 @@ Decisões já fechadas nessas PRs:
 ### Dívida técnica que a Sprint 27 registrou e nunca corrigiu em código
 
 - O bug de `kind` no consumidor do device, encontrado em 03/08 e intocado - ver a seção própria acima.
-  O valor invertido aparecia no log ao vivo da aba Analíticos, então chegava ao operador. **Desde 12/09
-  não chega mais**: a aba saiu na #3328 e o log ao vivo da tela de Detecção mostra a classe do objeto, não
-  o `kind`. A derivação errada continua no backend, sem teste que trave a semântica.
+  O valor invertido aparece no log ao vivo da aba Analíticos, então chega ao operador.
 - O reconciliador que reativava automaticamente o produtor de stream do device (quando ele sobe desligado
   após reinício de energia) foi revertido em 29/07 por causar loop de reboot no equipamento, e nunca teve
   sucessor. Histórico completo (medição do loop entre dois writers concorrentes, causa raiz no seed com

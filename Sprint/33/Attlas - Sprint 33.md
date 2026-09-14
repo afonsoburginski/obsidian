@@ -1,0 +1,63 @@
+---
+tags:
+  - attlas
+  - sprint-33
+  - moc
+sprint: Sprint 33
+status: aberta em 12/09 como sprint de acabamento do console do Analítico. A frente de Detecção foi refeita e mergeada na develop pela PR #3328, que resolve a maior parte do que estava errado na tela; esta sprint é para fechar o que sobrou e deixar a tela sem ponta solta.
+atualizado: 2026-09-12
+---
+
+# Attlas - Sprint 33
+
+Sprint de acabamento. O console do Analítico foi reescrito na semana de 12/09, mergeado pela PR #3328, e a tela de Detecção
+passou a desenhar no instante que a imagem mostra, com caixa por objeto, laço verde quando ocupado e
+salvamento funcionando. O que entra aqui é o resto: o que foi encontrado no caminho e deliberadamente
+não entrou na mesma PR.
+
+A prioridade da sprint é o item 12, sincronização perfeita da caixa com o vídeo: é o pedido explícito
+do dia 12/09 e a única coisa que o usuário ainda vê errada na tela.
+
+## O que já está entregue e não volta para esta sprint
+
+- Caixas interpoladas e presas ao relógio de apresentação do vídeo, pintadas no frame callback do
+  próprio player.
+- Caixa plana com cantoneiras, fiel ao retângulo reportado mais uma margem pequena para cobrir o
+  veículo inteiro. A extrusão isométrica foi implementada e retirada: sem pose vinda do analítico ela
+  lê como caixa torta (ver item 15).
+- Nome da classe no idioma ativo, em etiqueta legível sobre a imagem.
+- Carimbo do device lido no relógio do navegador, o que tirou cerca de 600 ms de extrapolação da conta.
+- Laço virtual em verde enquanto ocupado, com seta de direção e número no centróide.
+- Editar mantém a região existente em vez de abrir uma nova.
+- Tela cheia leva a superfície inteira, overlay junto.
+- Barra e badges da tela sobem e descem junto com os controles nativos do player.
+- Imagem parada em alta resolução, e clique em qualquer parte do cartão da lateral seleciona a câmera.
+- Salvar região e laço voltou a funcionar: o `ms-cameras` em container não alcançava o resolver de
+  permissões do `ms-organization` em `nx serve`, e o guard falhava fechado.
+- Caixas voltaram a aparecer na `ATMN - EMBEDDED 101`: o device publica no broker de campo, não no de
+  dev (ver item 13).
+
+## Gaps levantados, a virar card
+
+Todos estão descritos com escopo e ponto de partida em
+[[Detecção do Analítico - gaps para polir]].
+
+| # | Gap | Natureza |
+| --- | --- | --- |
+| 1 | Consolidar o overlay do laço e apagar a cópia da ACOM (Fase 7 da `UF-706`) | `[Front]` |
+| 2 | Reaper derruba a sessão de streaming local em cerca de 20 s | `[Back]` |
+| 3 | `infra:up` não sobe a infraestrutura inteira e falta o `ms-detector-history` | `[Infra]` |
+| 4 | Thumbnail de câmera fora do ar polui o console de toda tela com lista | `[Front]` |
+| 5 | Cobertura de teste da superfície nova da Detecção | `[Front]` |
+| 6 | Contadores `OPEN` e `DETECTED` na fila de incidentes | `[Full]` |
+| 7 | Aferir a predição do overlay em trânsito rápido e frenagem | `[Front]` |
+| 8 | Métricas do Laço Virtual paga quinze miniaturas por visita | `[Front]` |
+| 9 | Guard de permissão responde 403 quando o resolver está fora | `[Back]` |
+| 10 | Paridade das quatro locales depois das chaves novas | `[Front]` |
+| 11 | `PERMISSIONS_CHECK_TIMEOUT_MS` não é lido por ninguém | `[Back]` |
+| 12 | **Sincronização perfeita da caixa com o vídeo, só nesta tela** | `[Full]` |
+| 13 | Broker do analítico embarcado não é o mesmo do ambiente dev | `[Infra]` |
+| 14 | Consumidor local do tópico compartilhado fica para trás em minutos | `[Back]` |
+| 15 | Caixa 3D isométrica depende de pose do analítico, não de heurística | `[Full]` |
+| 16 | Ler uma unidade de analítico sem compor a frota inteira | `[Back]` |
+| 17 | Ocupação da câmera embarcada descartada por falta de detector vinculado | `[Full]` |

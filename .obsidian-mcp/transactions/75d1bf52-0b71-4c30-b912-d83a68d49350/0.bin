@@ -1,0 +1,110 @@
+---
+tags:
+  - attlas
+  - analitico
+  - deteccao
+  - sprint-33
+  - gap
+sprint: Sprint 33
+status: levantado em 12/09 durante a consolidação do console do Analítico (branch shared/feat/NO-CARD-analytics-console-consolidation). A PR resolve a maior parte da tela de Detecção; o que está aqui é o que ficou de fora e precisa virar card.
+atualizado: 2026-09-12
+---
+
+# Detecção do Analítico - gaps para polir
+
+Levantado enquanto a tela de Detecção era refeita em 12/09. Nada aqui bloqueia o merge da frente atual:
+são as pontas que apareceram no caminho e que a próxima semana deve fechar. Cada bloco está escrito
+para virar card direto, com o porquê e onde olhar.
+
+## 1. Consolidar o overlay do laço e apagar a cópia da ACOM
+
+O overlay compartilhado nasceu em `apps/web-attlas/src/app/core/shared/components/virtual-loop-overlay`
+e a tela de Detecção já consome ele. A cópia de `modules/controllers/components/controller-acom-loop-overlay`
+continua de pé, e o docblock dela mesma diz que a Fase 7 do plano ACOM promove um overlay para
+`core/shared` e apaga a cópia. A `UF-706` condiciona essa fase a alinhamento com quem toca o módulo
+Analítico, que é por isso que não foi feito junto.
+
+O que o card faz: troca o consumo da ACOM para o componente compartilhado (converte os pontos de 0-100
+para 0-1 e mapeia os quatro estados de pintura para cor resolvida mais ênfase), apaga a cópia e as
+declarações que só ela usava, e sobe com a regressão de `UF-033` que a própria UF pede.
+
+## 2. Reaper derruba a sessão de streaming local em ~20 s
+
+Em desenvolvimento a sessão morre sozinha pouco depois de abrir. O log do `ms-cameras` diz:
+`StreamSessionReaperService - Reaping orphan session <camera>:SECONDARY: 0 readers no mediamtx por 20s`,
+e o navegador passa a receber 404 no `/whep/<sessão>`. A imagem volta se a tela for reaberta, o que
+torna qualquer validação visual longa penosa.
+
+O que investigar: se o leitor WHEP do navegador está sendo contado pelo mediamtx, e se o reaper deveria
+olhar a sessão e não só a contagem de leitores. Vale conferir se o mesmo acontece no EC2 antes de
+tratar como problema só de ambiente.
+
+## 3. `infra:up` não sobe mais a infraestrutura inteira
+
+`npm run infra:up` passou a nomear cinco serviços na linha de comando, então os bancos e caches que não
+estão em profile ficam fora, e o `ms-detector-history` não está na lista. Consequência direta: a face
+Métricas do Laço Virtual responde 502 em toda máquina que subiu o ambiente por ali, porque o único
+backend que ela lê não está no ar. O `CLAUDE.md` da raiz e o readme ainda descrevem o comportamento
+antigo.
+
+Decisão a tomar: renomear a pilha mínima para `infra:up:min` e devolver `infra:up` ao `docker compose up -d`,
+ou manter o novo significado e corrigir a documentação. Seja qual for, `db-detector-history` e
+`ms-detector-history` precisam entrar no caminho padrão.
+
+## 4. Thumbnail de câmera fora do ar polui o console
+
+`GET /api/cameras/<id>/thumbnail` responde 502 quando o gateway não alcança o equipamento, que é a
+resposta honesta e o player já cai no estado offline. O efeito colateral é ruído: toda tela que lista
+câmeras repete o erro no console a cada montagem, e num ambiente com uma câmera inalcançável isso
+esconde erro de verdade.
+
+O que o card faz: parar de pedir a mesma miniatura depois da primeira falha enquanto a câmera seguir
+fora do ar, sem trocar o código de status.
+
+## 5. Cobertura de teste da superfície nova
+
+- `components/detection-object-boxes` entrou sem spec, e é onde mora o laço de pintura por quadro.
+- O spec do `virtual-loop-overlay` usa laços de três pontos, então nem o chevron de direção nem o disco
+  do índice são exercitados.
+- `utils/sample-box-at.util.spec.ts` é anterior à predição e à janela de velocidade.
+- `detection-toolbar.component.spec.ts` e `detection-block.component.spec.ts` continuam sem existir,
+  como já registrado no handoff da frente anterior.
+
+## 6. Contadores `OPEN` e `DETECTED` na fila de incidentes
+
+Divergência já conhecida e ainda aberta: `list-camera-events.handler.ts` devolve `statusCounts` com a
+chave `OPEN` e a página indexa os tiles por `DETECTED`. O filtro foi corrigido antes; os contadores dos
+tiles não.
+
+## 7. Aferir a predição do overlay em trânsito rápido
+
+O overlay desenha no instante que a imagem está mostrando e cobre o atraso do analítico pela velocidade
+da própria track, com teto de 1,4 s. Medido em 12/09: o analítico embarcado responde a cada 46 ms mas
+com 600 a 900 ms de atraso de pipeline, e o servidor com cerca de 215 ms. Com veículo em velocidade
+constante o sólido cai em cima; falta aferir frenagem e conversão, onde a extrapolação linear erra por
+metade de um carro.
+
+O que o card faz: filmar a tela em avenida com fluxo real, medir o erro em frenagem e decidir se o teto
+cai, se a velocidade passa a ser amortecida ao final da janela, ou se fica como está.
+
+## 8. Métricas do Laço Virtual paga round-trip demais
+
+A lateral da face é um seletor e mesmo assim monta o cartão completo de cada câmera, com uma miniatura
+por câmera - quinze requisições por visita. Além disso o `@switch` da página destrói e recria o painel a
+cada troca de aba, então ir e voltar entre ATSPM e Laço Virtual repete a montagem inteira.
+
+## 9. Guard de permissão falha fechado e diz 403
+
+Quando o resolver de permissões não responde, o `core-auth` nega e a resposta é
+`403 FORBIDDEN_ACTION` com `PERMISSION_RESOLVER_UNAVAILABLE` no corpo. Falhar fechado está certo; o
+código de status é que engana, porque lê como "você não tem permissão" quando o que houve foi
+"não deu para perguntar". Custou tempo de diagnóstico em 12/09.
+
+Proposta de card: manter o fail-closed e responder 503 com o mesmo `errorCode` quando o motivo for
+indisponibilidade do resolver, para separar as duas coisas na tela e no log.
+
+## 10. i18n das quatro locales depois das chaves novas
+
+A frente adicionou `analytics.metrics.virtualLoop.state.unavailable` nas quatro locales. Vale passar o
+conferidor de paridade antes do merge para garantir que as quatro terminam com a mesma contagem e sem
+chave órfã.

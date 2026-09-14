@@ -1,0 +1,21 @@
+{
+  "id": "2be33948-4ffd-4bd8-8a8c-170891066af8",
+  "state": "committed",
+  "createdAt": "2026-09-12T17:36:18.667Z",
+  "snapshots": [
+    {
+      "path": "Docs/Analítico/Registro - prova de campo do analítico servidor no EC2 em 11 de setembro.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "28ed365d3cff7eacca54cb0a5d650eac2c68090e6d0bd7d3b44f8cf9e5d8e572",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33204,
+      "etag": "2a5930c137e766b8668722e69ef9bd5aab43d259519f6d09256a0533ef5c3155",
+      "snapshot": "0.bin",
+      "committedEtag": "28ed365d3cff7eacca54cb0a5d650eac2c68090e6d0bd7d3b44f8cf9e5d8e572"
+    }
+  ],
+  "completedAt": "2026-09-12T17:36:18.672Z"
+}

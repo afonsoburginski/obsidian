@@ -3,7 +3,7 @@ tags:
   - doc
   - analitico
   - frontend
-atualizado: 2026-09-12
+atualizado: 2026-09-09
 fonte: leitura direta do repo atmanadmin/attlas-design (branch main) em 25/08/2026
 ---
 
@@ -13,25 +13,6 @@ Parte do [[Analítico]]. O frontend do módulo **já foi desenhado e codado** no
 `atmanadmin/attlas-design` (privado, branch `main`), fora do produto. Esta nota é o mapa de **o que
 serve, o que não serve, e o que ainda precisa ser desenhado** - para não portar às cegas nem
 reimplementar o que já existe.
-
-> [!success] Estado em 12/09: o veredito "não portar, a aba Analíticos já cobre" caducou
-> **A aba Analíticos do detalhe da câmera foi removida** na PR
-> [#3328](https://github.com/atmanadmin/attlas-2026/pull/3328) - CI inteiramente verde, **ainda não
-> mergeada**, então nada disto está na `develop`. Com ela fora, a justificativa da linha
-> `detection-toolbar` / `detection-block` / `detection-class-tree` na tabela abaixo **não existe mais**:
-> não há aba para "já cobrir" nada. E o ponto é mais forte que isso - **essas ferramentas foram
-> portadas**: hoje existem `detection-toolbar/`, `detection-block/`, `detection-class-select/`,
-> `detection-frame/` e `color-picker/` em
-> `apps/web-attlas/src/app/modules/analytics-detection/components/`. A árvore de classes virou um
-> **select**, não uma árvore. A linha da tabela foi corrigida.
->
-> A tela de **Detecção** passou a ser o único lugar onde região de detecção, laço virtual e configuração
-> do analítico embarcado são lidos e escritos, e a remoção da aba só entrou depois de fechar seis lacunas
-> de paridade (`UF-043`) - detalhe em [[Analítico - Arquitetura e estratégias]].
->
-> **É o quarto acerto de contas desta nota, e pelo mesmo padrão dos três anteriores**: um veredito de
-> portabilidade escorado em "o produto já tem o equivalente" envelhece quando o equivalente sai do
-> produto. Veredito de "não portar" precisa de data de revalidação, não só de motivo.
 
 > [!success] Estado em 09/09: as duas maiores superfícies deste mapa já foram portadas
 > **Instâncias** e **Incidentes** saíram do protótipo e estão na develop, mergeadas em 07/09 pela
@@ -48,8 +29,6 @@ reimplementar o que já existe.
 > apagados dos quatro catálogos) e um defeito em `core/shared` que atingia todo módulo (o `ModulePage`
 > escondia o slot `[pageActions]` junto com o título). **Porte grande precisa de auditoria própria**, não
 > de review de tela.
->
-> **Corrigido em 12/09**: a aba `detection` deixou de ser desabilitada em 11/09 (#3066, `UF-053`).
 
 > [!important] É protótipo mock-first, não um app pronto pra copiar inteiro
 > Todo dado é servido por um interceptor HTTP local (`core/mocks/mock.interceptor.ts`), sem backend
@@ -79,12 +58,12 @@ atômicas `UF-ANL-A` a `UF-ANL-F`. O pacote de entrada bruto do domínio está e
 | Superfície no protótipo | Destino no produto | Veredito | Card |
 | --- | --- | --- | --- |
 | `incident-media/` + `incident-media-viewer/` - galeria de mídia de evidência em 3 abas (imagem, vídeo, anexos do operador), carrossel, upload, confirmação de remoção | Imagem de evidência da detecção | **PORTADO em 07/09** (#2918) - vive em `analytics-incidents/components/incident-media/` | [[Analítico - Fonte da imagem de evidência]] |
-| `pages/incidents/` + `pages/incident-detail/` + `incidents-panel`/`incidents-table`/`incidents-map`/`incident-side-detail`/`incident-timeline` - fila de incidentes com mapa MapLibre e 216 incidentes mockados | Fila de incidentes do DAI | **PORTADO em 07/09** (#2918) - fila, mapa, painel lateral, timeline, barra de ferramentas, funil de tipos e controles de tratamento. A fila entrou como janela incremental, não como as 20 linhas fixas do porte original. Em 12/09 a #3328 somou seleção múltipla, chips de filtro multivalor e ação em massa (`UC-074` + `UF-042` de cameras) | [[Analítico - Contagem e dedup de incidente DAI]] |
-| `atspm-*` (panel, camera-map, camera-card, camera-dialog, metric-card, metric-dialog, metric-visibility) - 38 métricas em 7 grupos, mapa cheio-tela com 15 interseções | Métricas ATSPM | **Esperar backend** - e não é a Sprint 31 que o entrega: o ATSPM não existe em lugar nenhum, e desde 31/08 ele é capacidade do analítico servidor, não serviço próprio. **A casca já saiu**: em 12/09 existem `atspm-panel/`, `atspm-metric-card/`, `atspm-metric-dialog/`, `atspm-camera-dialog/` e `atspm-metric-visibility/` em `analytics-metrics/components/`, mais o `atspm-camera-panel/` compartilhado em `modules/analytics/components/`. O que falta é produtor de dado, não tela | - |
+| `pages/incidents/` + `pages/incident-detail/` + `incidents-panel`/`incidents-table`/`incidents-map`/`incident-side-detail`/`incident-timeline` - fila de incidentes com mapa MapLibre e 216 incidentes mockados | Fila de incidentes do DAI | **PORTADO em 07/09** (#2918) - fila, mapa, painel lateral, timeline, barra de ferramentas, funil de tipos e controles de tratamento. A fila entrou como janela incremental, não como as 20 linhas fixas do porte original | [[Analítico - Contagem e dedup de incidente DAI]] |
+| `atspm-*` (panel, camera-map, camera-card, camera-dialog, metric-card, metric-dialog, metric-visibility) - 38 métricas em 7 grupos, mapa cheio-tela com 15 interseções | Métricas ATSPM | **Esperar backend** - e não é a Sprint 31 que o entrega: o ATSPM não existe em lugar nenhum, e desde 31/08 ele é capacidade do analítico servidor, não serviço próprio. Os blocos `atspm-metric-card` e `atspm-camera-panel` saem antes, junto do Laço Virtual, por serem dependência dele | - |
 | `virtual-loop-panel/` + `virtual-loop-raw-table/` - Fluxo e Densidade | Métricas do Laço Virtual | **PORTAR** - corrigido em 28/08. Não depende do servidor de VL: as 4 métricas saem do `ms-detector-history`, que já existe maduro. Ver o aviso abaixo | [[Analítico servidor - Métricas do Laço Virtual (front)]] |
-| `instance-creation-panel/` - criação de instância de analítico com `compatibleTypes`/`compatibilityLine` | Compatibilidade por arquitetura | **A casca foi portada em 07/09** (#2918): a aba `instances` tem tabela, filtro, visibilidade de coluna e painel lateral. A exclusividade ali continua sendo por **tipo** de analítico (VL x ATSPM), não por arquitetura de chip - isso segue com o card próprio. Em 12/09 a `UC-075` deu à instância uma linha de banco própria e a `UF-056` deu edição de verdade à tela. Ver aviso abaixo | [[Analítico - Compatibilidade por arquitetura de câmera]] |
-| `detection-frame/` (963 linhas) - desenho de região em SVG sobre **imagem parada**, com frame congelado avisado na superfície, `presets`/`activePreset`/`presetChange`, `frameCapturedAt`, `backdropRegions` e desenho por teclado | Desenho de região sobre frame congelado do preset | **PORTADO** - vive em `analytics-detection/components/detection-frame/`. O veredito virou "portar" em 25/08 (ver o callout de erro abaixo): o `web-attlas` estava à frente no *ao vivo* (PR #766) e atrás no desenho sobre imagem parada, e é isso que o `detection-frame` resolve | [[Analítico - Desenho de região sobre frame congelado (front)]] |
-| `detection-toolbar/` + `detection-block/` + `detection-class-tree/` | Ferramentas do desenho, hoje na tela de **Detecção** | **PORTADO** - `detection-toolbar/`, `detection-block/` e `detection-class-select/` (a árvore virou select) estão em `analytics-detection/components/`. O veredito antigo era **não portar**, com a justificativa "a aba Analíticos do `web-attlas` já cobre isso contra o `ms-cameras` real" - **essa justificativa caducou em 12/09**, quando a #3328 removeu a aba | - |
+| `instance-creation-panel/` - criação de instância de analítico com `compatibleTypes`/`compatibilityLine` | Compatibilidade por arquitetura | **A casca foi portada em 07/09** (#2918): a aba `instances` tem tabela, filtro, visibilidade de coluna e painel lateral. A exclusividade ali continua sendo por **tipo** de analítico (VL x ATSPM), não por arquitetura de chip - isso segue com o card próprio. Ver aviso abaixo | [[Analítico - Compatibilidade por arquitetura de câmera]] |
+| `detection-frame/` (963 linhas) - desenho de região em SVG sobre **imagem parada**, com frame congelado avisado na superfície, `presets`/`activePreset`/`presetChange`, `frameCapturedAt`, `backdropRegions` e desenho por teclado | Desenho de região sobre frame congelado do preset | **PORTAR** - corrigido em 25/08. O `web-attlas` está à frente no *ao vivo* (integrado desde 14/07, PR #766), mas **não tem** o modo frame congelado, nem seletor de preset, nem desenho por teclado, e é exatamente isso que o `detection-frame` resolve | [[Analítico - Desenho de região sobre frame congelado (front)]] |
+| `detection-toolbar/` + `detection-block/` + `detection-class-tree/` | Aba Analíticos (ferramentas do desenho) | **Não portar** - a aba Analíticos do `web-attlas` já cobre isso contra o `ms-cameras` real | - |
 | `camera-ptz-control/` - presets como lista estática, botões Ir para/Executar/Parar | Preset PTZ com snapshot | **Não portar** - o painel declara "Sem serviço de PTZ nesta entrega" e não há fluxo de capturar/salvar snapshot. Captura e persistência são backend. Mas o *desenho* sobre o frame congelado tem sim de onde vir: `detection-frame`, linha acima | [[Analítico - Preset PTZ com snapshot de região]] |
 
 > [!danger] Erro de leitura desta nota, corrigido em 25/08
@@ -136,17 +115,6 @@ atômicas `UF-ANL-A` a `UF-ANL-F`. O pacote de entrada bruto do domínio está e
 >
 > Lição, e é o terceiro acerto de contas desta nota no mesmo padrão: **previsão de efeito colateral de
 > porte só vale conferida contra o diretório que nasceu**, nunca contra a árvore do protótipo.
->
-> **Estado em 12/09, conferido no código**: a foto de 03/09 acima **não vale mais**. Existem hoje
-> `atspm-panel/`, `atspm-metric-card/`, `atspm-metric-dialog/`, `atspm-camera-dialog/`,
-> `atspm-metric-visibility/` e `metrics-filter-popover/` em
-> `apps/web-attlas/src/app/modules/analytics-metrics/components/`, mais `atspm-camera-panel/` em
-> `modules/analytics/components/`. Os `virtual-loop-camera-*` sumiram: a face do Laço Virtual passou a
-> montar o `atspm-camera-panel` compartilhado. **Não apurei em que PR isso virou** - só que virou, e
-> essa generalização é exatamente o item que o parágrafo acima previa. Ela tem custo próprio já
-> observado: a regressão do `showMap` de 12/09 (mapa sumido da tela do Laço Virtual) aconteceu porque o
-> painel é compartilhado e perder um atributo no mount de uma face não acende teste na outra - ver
-> [[Analítico - Tela de Métricas no web-attlas]].
 
 > [!warning] ARTPEC não existe no protótipo
 > Zero ocorrência de "ARTPEC" no repositório inteiro. O `instance-creation-panel` tem
@@ -164,12 +132,6 @@ não é o mesmo eixo que [[Analítico - Healthcheck do analítico]] pede, que é
 dentro do payload de status que a tela de detalhe já consome. O backend e a linha na aba
 "Informações Gerais" foram implementados sem portar nada daqui - o protótipo fica como referência de
 como exibir histórico de saúde, se um dia isso entrar.
-
-> [!success] Estado em 12/09: o histórico de saúde deixou de ser "se um dia isso entrar"
-> A `UC-075` da #3328 criou `AnalyticInstanceAvailability` - uma linha por **transição de estado** da
-> unidade, com `observedAt`, `status` e `latencyMs` -, e `pollingIntervalSeconds` configurável na
-> própria `AnalyticInstance`. O eixo por instância que o protótipo modelava passou a ter backend real;
-> o eixo por câmera continua sendo outro assunto, como esta seção diz.
 
 ## Ordem de portabilidade recomendada
 
