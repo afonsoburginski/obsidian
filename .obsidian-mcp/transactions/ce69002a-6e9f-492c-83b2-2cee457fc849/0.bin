@@ -14,10 +14,6 @@ atualizado: 2026-09-15
 
 # Validação - as 34 PRs, uma a uma
 
-> **Objetivo desta nota e da PR [#3596](https://github.com/atmanadmin/attlas-2026/pull/3596)**: validar
-> e testar, um por um, **tudo o que a Sprint 33 entregou**. Não é feature nova — é a bateria de testes
-> da sprint inteira, num lugar só.
-
 Porta de entrada da conferência da [[Attlas - Sprint 33]]. As 22 tasks entregaram **34 PRs**, 7 delas
 em stack. Esta nota existe para responder uma pergunta por PR: **ela entrega o valor que o card
 pediu, e isso funciona de verdade?**

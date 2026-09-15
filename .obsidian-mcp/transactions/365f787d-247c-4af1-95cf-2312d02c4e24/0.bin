@@ -14,11 +14,6 @@ atualizado: 2026-09-15
 
 # Sprint 33 - o que entrega
 
-> **Objetivo da PR [#3596](https://github.com/atmanadmin/attlas-2026/pull/3596) (validação, 15/09)**:
-> validar e testar, um por um, **tudo o que esta sprint entregou** (as 34 PRs, já mergeadas em
-> `develop`). Não é escopo novo — é a bateria de testes da sprint inteira, num lugar só. Detalhe em
-> [[Validação - as 34 PRs, uma a uma]].
-
 Porta de entrada da semana de **14 a 20/09**. O prazo externo do módulo Analítico é **18/09**,
 quinta-feira desta janela, e a PR #3328 (console do Analítico consolidado) entrou na develop em 12/09
 à noite: a tela de Detecção desenha no instante que a imagem mostra, com caixa por objeto, laço verde
