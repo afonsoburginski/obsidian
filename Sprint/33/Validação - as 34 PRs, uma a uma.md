@@ -22,6 +22,18 @@ pediu, e isso funciona de verdade?**
 > Toda linha começa em `a validar`. O estado muda quando alguém rodar, não quando o CI ficar verde -
 > CI verde prova que a suíte passa, não que a tela faz o que o card pediu.
 
+> [!danger] Correção de arquitetura em 15/09: ms-video-analytics não roda inferência própria
+> A DD-1 do `SPEC-ms-video-analytics` (inferência ONNX/ffmpeg embutida no serviço) foi **revogada** -
+> 580%+ de CPU num host de 8 vCPU derrubava a instância (EC2 `aws-attlas-26`, `ms-video-analytics`
+> parado lá). Decisão de produto: toda câmera resolve a capacidade pelo **analítico embarcado**, sem
+> engine redundante no servidor. Correção no repo: PR
+> [#3550](https://github.com/atmanadmin/attlas-2026/pull/3550) (SPEC + INT-001 + INT-002).
+>
+> **As PRs #3432, #3433, #3437, #3465, #3482 e #3489 (seção "Analítico servidor" abaixo) NÃO foram
+> fechadas** - foram atualizadas (review resolvido, threads fechadas) e seguem o fluxo normal até o
+> merge, mesmo com a decisão de arquitetura tendo mudado. O código delas estava certo contra a
+> decisão de quando foi escrito; regra que muda não é motivo para fechar PR, é motivo para atualizar.
+
 ## Regras da conferência
 
 1. **Uma PR por vez.** Checkout da branch, subir o que ela precisa, provar, anotar.
