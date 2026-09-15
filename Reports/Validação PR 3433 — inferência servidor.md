@@ -69,3 +69,13 @@ As PRs #3432/#3433 continuam abertas. A revisão confirmou que elas ainda inicia
 Não foram mergeadas para não colocar processamento local de vídeo em produção. O patch de capacidade
 de bounding boxes foi publicado em `codex/bounding-box-capability-v2` para o agente da Dell buscar;
 as PRs precisam ser reescritas/removidas dessa inferência antes do merge.
+
+### Validação adicional na Dell
+
+- O branch `codex/bounding-box-capability-v2` foi validado na Dell no commit `f364b59e3d`.
+- `ms-cameras`: 17/17 testes focados verdes (capacidade de bounding boxes e fontes do laço virtual).
+- `ms-video-analytics`: 12/12 testes focados verdes (encaminhamento e supressão do overlay).
+- O shell autenticado do `web-attlas` abriu no Mac via túnel para a Dell em
+  `http://127.0.0.1:4200/#/analytics/detection`. A tela mostrou “Nenhuma câmera com analítico”
+  porque a pilha isolada do F2 não compartilha as câmeras/analíticas do tenant autenticado; o
+  bootstrap do front e o gateway estão funcionando.
