@@ -54,3 +54,19 @@ Usar o gateway da Dell conforme [[Ambiente de validação — Dell]]. A URL de A
 O gateway foi corrigido na Dell: `ms-organization` e suas dependências foram iniciados e ligados à rede da pilha. `POST /api/organization/auth/login` deixou de responder `502` e passou a atingir o serviço (`400` para corpo vazio, como esperado).
 
 O front está compilado na Dell e acessível no Mac em `http://127.0.0.1:4200/#/auth/login` por túnel SSH; o processamento não roda no Mac.
+
+### EC2 dev — desligamento pendente
+
+A instância `i-06e8f8cf75102367e` (`dev.v2`, `3.15.199.101`) foi identificada, mas SSH/SSM/AWS CLI
+não estão acessíveis nesta sessão. O endpoint HTTPS devolve `503 name resolution failed` para a rota
+do analítico. Não foi desligada a instância inteira. Quando houver acesso ao host, parar somente o
+serviço com `docker compose stop ms-video-analytics` (ou `docker stop attlas-ms-video-analytics`) e
+confirmar com `docker ps`; isso preserva Kong, `ms-cameras`, Kafka e as câmeras.
+
+### Decisão sobre o merge
+
+As PRs #3432/#3433 continuam abertas. A revisão confirmou que elas ainda inicializam `ffmpeg` e
+`onnxruntime-node` no `ms-video-analytics`, incompatível com a arquitetura receiver-only corrigida.
+Não foram mergeadas para não colocar processamento local de vídeo em produção. O patch de capacidade
+de bounding boxes foi publicado em `codex/bounding-box-capability-v2` para o agente da Dell buscar;
+as PRs precisam ser reescritas/removidas dessa inferência antes do merge.
