@@ -6,28 +6,12 @@ date: 2026-09-14
 ```
 Report Diário - 14/09/2026
 
-Dia de volume alto, com 30 PRs próprias abertas, concentradas na Detecção do Analítico, no custo de CPU do analítico servidor e na entrega de vídeo do VMS. Revisei também 9 pull requests de colegas, listadas abaixo.
+Dia leve, sem entrega própria. Revisei também 7 pull requests de colegas, listadas abaixo.
 
-*Detecção do Analítico, relógio do overlay:*
-- Fechei a cadeia do relógio do overlay: o front passou a ler o instante de captura do quadro em vez de estimá-lo, e o analítico, embarcado e servidor, passou a carimbar o quadro com o relógio da própria câmera via RTCP sender reports, para a caixa deixar de aparecer adiantada em relação ao vídeo.
-- Corrigi a cor e o nome de região que não sobreviviam ao reload, o vínculo de detector que faltava para a câmera embarcada, e fechei a stack de specs e suítes da tela, encontrando dois defeitos de produção nas peças sem cobertura.
-
-*Analítico servidor:*
-- Medi o custo real do analítico servidor, 580% de CPU num host de 8 vCPU, e limitei o orçamento, corrigindo o tamanho de entrada do modelo e fazendo a PTZ rodar os dois analíticos numa única decodificação.
-- Troquei o perfil de stream que o YOLO consome: pedia o perfil do operador, quatro vezes os pixels e cinco vezes os quadros que o modelo precisa.
-
-*VMS, entrega de vídeo:*
-- Corrigi as duas causas dos tiles pretos do videowall: o reaper que derrubava tile ainda entrando, e a negociação de codec que escolhia H265 quando o Chrome não decodifica por hardware.
-- Documentei o modelo de fan-out que já existe no VMS e defini o orçamento de latência do publicador.
-
-*Infra e telas menores:*
-- Corrigi a face de Métricas que dava 502 no ambiente local, porque faltava o banco do detector-history no infra:up, e o tile de incidentes que zerava por divergência entre OPEN e DETECTED.
-- Medi a VM de desenvolvimento, uma t3a.2xlarge com 8 vCPU reais, e ajustei a miniatura de câmera, a lista de classes de objeto e o timeout do resolver de permissões.
-
-*PRs mergeadas:*
+PRs mergeadas:
 (nenhuma)
 
-*PRs revisadas:*
+PRs revisadas:
 - 2215 - integração de quatro serviços transpila sem type-check (aprovada após correção)
 - 2194 - integração isola por worker nos 4 projetos restantes, SOFTWARE-2762 (aprovada após correção)
 - 2208 - as cinco maiores suítes de integração recebem um múltiplo do orçamento de workers (aprovada após correção)
@@ -35,26 +19,24 @@ Dia de volume alto, com 30 PRs próprias abertas, concentradas na Detecção do 
 - 2262 - follow-ups da stack SOFTWARE-2760 (aprovada após correção)
 - 2220 - filtros de enum numerico param de depender de coercao implicita (aprovada, com apontamentos)
 - 3282 - CROSS-112 e CROSS-113, o que falta de câmera e do Analítico para a prioridade seletiva (aprovada após correção)
-- 3468 - nodeIds das interseções expostos no fetch de trajetos (aprovada após correção)
-- 3106 - emissão da auditoria da extração de relatórios, item 2.5 (aprovada, com apontamentos)
 
-*PRs em andamento:*
+PRs em andamento:
 - 3492 - [Front] Detecção: UF-059 fecha as peças de superfície, com dois defeitos que a suíte guardava (fase 3/3)
 - 3490 - [Infra] Analítico embarcado: o consumidor salta o atraso em vez de caminhar por ele (fase 2/2)
 - 3489 - [Back] Detecção: o analítico carimba o quadro com o relógio da câmera, lido dos sender reports (fase 3/3)
 - 3487 - [Full] VMS: orçamento de latência do publicador, e o tile diz quando caiu para HLS (fase 3/3)
-- 3482 - [Full] Analítico servidor: a PTZ ganha os dois analíticos, com uma decodificação por quadro (fase 3/3)
-- 3480 - [Full] Sessão de vídeo compartilhada por câmera e perfil: lease de espectador e encerramento só no último (fase 2/2)
-- 3478 - [Front] ACOM desenha pelo overlay compartilhado e a cópia sai do repo (fase 2/2)
+- 3482 - [Full] Analitico servidor: a PTZ ganha os dois analiticos, com uma decodificacao por quadro (fase 3/3)
+- 3480 - [Full] Sessao de video compartilhada por camera e perfil: lease de espectador e encerramento so no ultimo (fase 2/2)
+- 3478 - [Front] ACOM desenha pelo overlay compartilhado e a copia sai do repo (fase 2/2)
 - 3476 - [Front] Detecção: afere o erro da caixa em frenagem e conversão contra o teto de predição de 400 ms
-- 3474 - [Full] Detecção: serviços, estratégias de cabeça e o fim do apagamento de região no salvamento (fase 2/3)
+- 3474 - [Full] Deteccao: servicos, estrategias de cabeca e o fim do apagamento de regiao no salvamento (fase 2/3)
 - 3472 - [Back] Detecção: o relógio da câmera só no caminho do analítico, com a prova do risco do MediaMTX antes (fase 2/3)
-- 3471 - [Infra] Broker do analítico embarcado por ambiente e aviso quando a câmera não publica nele (fase 1/2)
+- 3471 - [Infra] Broker do analitico embarcado por ambiente e aviso quando a camera nao publica nele (fase 1/2)
 - 3469 - [Full] VMS: prova do decoder no cliente e queda automática para H264 (fase 2/3)
-- 3465 - [Full] Analítico servidor: o relay vira exceção e o decoder para de esperar (fase 2/3)
-- 3464 - [Front] Detecção: spec UF-057 e suíte dos seis utilitários puros (fase 1/3)
+- 3465 - [Full] Analitico servidor: o relay vira excecao e o decoder para de esperar (fase 2/3)
+- 3464 - [Front] Deteccao: spec UF-057 e suite dos seis utilitarios puros (fase 1/3)
 - 3462 - [Front] Overlay compartilhado aceita a geometria e a pintura da ACOM (fase 1/2)
-- 3461 - [Front] Paridade dos slices de tradução nas quatro locales do Analítico
+- 3461 - [Front] Paridade dos slices de traducao nas quatro locales do Analitico
 - 3460 - [Back] Ler uma unidade de analítico sem compor a frota inteira
 - 3459 - [Front] Métricas: a face que sai fica montada, e a lateral abre na lista em vez de quinze miniaturas
 - 3453 - [Back] 503 quando o resolver de permissões não responde, e um nome só para o timeout

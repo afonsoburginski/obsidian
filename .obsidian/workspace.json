@@ -80,7 +80,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 332.43098068237305
+    "width": 204.19855880737305
   },
   "right": {
     "id": "7f39f37a7b274764",
@@ -209,8 +209,11 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "a025b9b6a66377fd",
+  "active": "d6f1ecfe9df44260",
   "lastOpenFiles": [
+    "Reports/2026-09-12.md",
+    "Reports/2026-09-14.md",
+    "Reports/2026-09-11.md",
     "Prompt - continuar a validação das PRs da Sprint 33.md",
     "Sprint/33/Laço virtual - consolidar o overlay e apagar a cópia da ACOM.md",
     "Docs/Analítico/Registro - os quatro blocos de configuração da Detecção no EC2 em 14 de setembro.md",
@@ -233,10 +236,7 @@
     "Sprint/33/Analítico servidor - orçamento de inferência na CPU.md",
     "Sprint/33/Detecção do Analítico - gaps para polir.md",
     "Docs/Analítico/Analítico - Estudo de caso de captura, inferência e sincronização.md",
-    "Reports/2026-09-14.md",
     "Sprint/33/Analítico servidor - custo de CPU no EC2 e a PTZ com os dois analíticos.md",
-    "Sprint/33/i18n - paridade das quatro locales do Analítico.md",
-    "Sprint/33/Permissões - 403 do resolver fora e o timeout que ninguém lê.md",
     "Docs/Analítico/attlas-vl-atspm.pdf",
     "Sem título.canvas",
     "Sprint/33",

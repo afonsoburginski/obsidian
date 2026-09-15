@@ -1,0 +1,41 @@
+---
+tags:
+  - report
+date: 2026-09-14
+---
+```
+Report Diário - 14/09/2026
+
+Dia de volume alto, com 34 PRs próprias abertas, concentradas na Detecção do Analítico, no custo de CPU do analítico servidor e na entrega de vídeo do VMS.
+
+*Detecção do Analítico, relógio do overlay:*
+- Fechei a cadeia do relógio do overlay: o front passou a ler o instante de captura do quadro em vez de estimá-lo, e o analítico, embarcado e servidor, passou a carimbar o quadro com o relógio da própria câmera via RTCP sender reports, para a caixa deixar de aparecer adiantada em relação ao vídeo.
+- Corrigi a cor e o nome de região que não sobreviviam ao reload, o vínculo de detector que faltava para a câmera embarcada, e fechei a stack de specs e suítes da tela, encontrando dois defeitos de produção nas peças sem cobertura.
+
+*Analítico servidor:*
+- Medi o custo real do analítico servidor, 580% de CPU num host de 8 vCPU, e limitei o orçamento, corrigindo o tamanho de entrada do modelo e fazendo a PTZ rodar os dois analíticos numa única decodificação.
+- Troquei o perfil de stream que o YOLO consome: pedia o perfil do operador, quatro vezes os pixels e cinco vezes os quadros que o modelo precisa.
+
+*VMS, entrega de vídeo:*
+- Corrigi as duas causas dos tiles pretos do videowall: o reaper que derrubava tile ainda entrando, e a negociação de codec que escolhia H265 quando o Chrome não decodifica por hardware.
+- Documentei o modelo de fan-out que já existe no VMS e defini o orçamento de latência do publicador.
+
+*Infra e telas menores:*
+- Corrigi a face de Métricas que dava 502 no ambiente local, porque faltava o banco do detector-history no infra:up, e o tile de incidentes que zerava por divergência entre OPEN e DETECTED.
+- Medi a VM de desenvolvimento, uma t3a.2xlarge com 8 vCPU reais, e ajustei a miniatura de câmera, a lista de classes de objeto e o timeout do resolver de permissões.
+
+*PRs mergeadas:*
+(nenhuma)
+
+*PRs revisadas:*
+- 2215 - integração de quatro serviços transpila sem type-check (aprovada após correção)
+- 2194 - integração isola por worker nos 4 projetos restantes, SOFTWARE-2762 (aprovada após correção)
+- 2208 - as cinco maiores suítes de integração recebem um múltiplo do orçamento de workers (aprovada após correção)
+- 2794 - auditoria e notificação da superfície de escrita, SOFTWARE-2928 (aprovada após correção)
+- 2262 - follow-ups da stack SOFTWARE-2760 (aprovada após correção)
+- 2220 - filtros de enum numerico param de depender de coercao implicita (aprovada, com apontamentos)
+- 3282 - CROSS-112 e CROSS-113, o que falta de câmera e do Analítico para a prioridade seletiva (aprovada após correção)
+
+*PRs em andamento:*
+- 34 PRs abertas hoje, distribuídas nas frentes acima.
+```
