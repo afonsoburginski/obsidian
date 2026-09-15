@@ -26,5 +26,4 @@ decision: ''
 
 ## Ambiente
 
-Usar o gateway da Dell conforme [[Ambiente de validação — Dell]]. A URL de API não permite, por si só, subir a branch da PR no computador remoto; é preciso que a versão já esteja implantada ou haver acesso de execução na Dell.
-
+Usar o gateway da Dell conforme [[Ambiente de validação — Dell]]. A URL de API não permite, por si só, subir a branch da PR no computador remoto; é preciso que a versão já esteja implantada ou haver acesso de execução na Dell. Em 15/09, o host respondeu ao ping do Tailscale, mas `:8000` recusou conexão.

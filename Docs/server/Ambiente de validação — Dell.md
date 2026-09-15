@@ -11,8 +11,9 @@ atualizado: 2026-09-15
 
 ## Acesso à API
 
-- Gateway Kong da Dell: `http://afonso-dell-dc14250.tailca0a03.ts.net:8000`
-- Variável para o front: `ATTLAS_API=http://afonso-dell-dc14250.tailca0a03.ts.net:8000`
+- Gateway Kong da Dell: `http://afonso-dell-14-dc14250.tail4b16e5.ts.net:8000`
+- IP atual (não usar como configuração): `100.87.237.98`; preferir o hostname MagicDNS, que permanece estável quando o IP muda.
+- Variável para o front: `ATTLAS_API=http://afonso-dell-14-dc14250.tail4b16e5.ts.net:8000`
 - O gateway cobre as rotas `/api/*`.
 
 ## Usar pelo Mac
@@ -26,9 +27,9 @@ atualizado: 2026-09-15
 - Testes pesados, infraestrutura e microsserviços devem rodar na Dell, que está dedicada a isso.
 - O `docker:up` completo cria cerca de 57 containers e já esgotou os 15 GiB de RAM quando a máquina também tinha outras cargas. Monitorar memória antes e durante a subida.
 - A URL acima dá acesso ao gateway HTTP. Para iniciar uma branch ou containers diretamente na Dell ainda é necessário acesso de execução remoto (por exemplo SSH), se a versão da PR não estiver já implantada.
+- Em 15/09, o nó respondeu ao ping do Tailscale, mas a conexão a `:8000` foi recusada: o Kong não estava em execução ou não estava exposto nessa porta. Não é possível provar uma PR de backend até o gateway/serviço estar de pé ou até haver acesso de execução remoto.
 
 ## Regra de validação
 
 - Não fazer merge; o merge é decisão do usuário.
 - Validar comportamento da PR em execução, não apenas CI ou leitura do diff.
-
