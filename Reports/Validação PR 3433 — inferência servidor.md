@@ -40,13 +40,17 @@ A PR #3433 é a fase 2/2 e tem a #3432 como base. Validar #3433 exercita as duas
 - Configuração inválida: `VIRTUAL_LOOP_MODEL_INPUT_SIZE=500` encerra o processo com `must be divisible by 32`.
 - Grafo incompatível: `VIRTUAL_LOOP_MODEL_INPUT_SIZE=416` com o modelo fixo `[1, 3, 640, 640]` é recusado no carregamento, antes de produzir inferência enganosa.
 - Testes focados na Dell: 18/18 verdes em `onnx-inference.session.spec.ts` e `frame-publisher.service.spec.ts`, incluindo o primeiro publish com relógio relativo e os três casos de shape.
+- Fluxo RTSP real: após aplicar o seed oficial na base isolada, dois caminhos RTSP válidos ficaram online; a readiness confirmou `targets=2`, `ingesting=2` e `producing=2`.
+- Publicação real: o tópico Kafka `attlas.virtual-loop.frame-detections` recebeu bounding boxes de pessoas, carros e moto para as duas câmeras, com região, identidade e coordenadas percentuais. Isso prova o caminho RTSP → decoder → ONNX → Kafka.
 
 ### Limite desta sessão
 
-Não houve prova com uma câmera real: o serviço de câmeras informou zero alvos e os RTSPs de demonstração da Dell não estavam acessíveis. A regressão da primeira caixa está coberta pelo teste focado; a prova de campo exige um RTSP alcançável e uma região configurada.
+As duas câmeras de demonstração da Dell foram alcançadas após o seed oficial. A primeira publicação também é coberta pelo teste focado; a observação visual depende apenas de abrir o front conectado à Dell.
 
 ## Ambiente
 
 Usar o gateway da Dell conforme [[Ambiente de validação — Dell]]. A URL de API não permite, por si só, subir a branch da PR no computador remoto; é preciso que a versão já esteja implantada ou haver acesso de execução na Dell.
 
 Após a validação, a imagem da #3433 foi restaurada como serviço ativo; o gateway `/api/video-analytics/health/ready` respondeu 200.
+
+O front está compilado na Dell e acessível no Mac em `http://127.0.0.1:14200` por túnel SSH; o processamento não roda no Mac.
