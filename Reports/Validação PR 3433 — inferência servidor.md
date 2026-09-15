@@ -55,13 +55,12 @@ O gateway foi corrigido na Dell: `ms-organization` e suas dependências foram in
 
 O front está compilado na Dell e acessível no Mac em `http://127.0.0.1:4200/#/auth/login` por túnel SSH; o processamento não roda no Mac.
 
-### EC2 dev — desligamento pendente
+### EC2 dev — desligamento
 
 A instância `i-06e8f8cf75102367e` (`dev.v2`, `3.15.199.101`) foi identificada, mas SSH/SSM/AWS CLI
-não estão acessíveis nesta sessão. O endpoint HTTPS devolve `503 name resolution failed` para a rota
-do analítico. Não foi desligada a instância inteira. Quando houver acesso ao host, parar somente o
-serviço com `docker compose stop ms-video-analytics` (ou `docker stop attlas-ms-video-analytics`) e
-confirmar com `docker ps`; isso preserva Kong, `ms-cameras`, Kafka e as câmeras.
+não estavam acessíveis nesta sessão. O user confirmou que já desligou o analítico no EC2. A regra
+segura é parar somente `ms-video-analytics` (não a instância inteira), preservando Kong, `ms-cameras`,
+Kafka e as câmeras.
 
 ### Decisão sobre o merge
 
