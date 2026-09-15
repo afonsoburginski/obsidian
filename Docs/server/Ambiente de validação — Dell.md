@@ -21,6 +21,7 @@ atualizado: 2026-09-15
 1. Configurar `ATTLAS_API` no `.env` do checkout a validar.
 2. O `apps/web-attlas/proxy.conf.mjs` já lê essa variável; não alterar o código do proxy.
 3. Rodar o `web-attlas` localmente aponta as requisições de API para a Dell.
+4. Acesso de execução: Tailscale SSH como `afonso@afonso-dell-14-dc14250.tail4b16e5.ts.net`.
 
 ## Carga e limites
 
@@ -28,6 +29,12 @@ atualizado: 2026-09-15
 - O `docker:up` completo cria cerca de 57 containers e já esgotou os 15 GiB de RAM quando a máquina também tinha outras cargas. Monitorar memória antes e durante a subida.
 - A URL acima dá acesso ao gateway HTTP. Para iniciar uma branch ou containers diretamente na Dell ainda é necessário acesso de execução remoto (por exemplo SSH), se a versão da PR não estiver já implantada.
 - Em 15/09, o nó respondeu ao ping do Tailscale, mas a conexão a `:8000` foi recusada: o Kong não estava em execução ou não estava exposto nessa porta. Não é possível provar uma PR de backend até o gateway/serviço estar de pé ou até haver acesso de execução remoto.
+
+## Sessão de validação atual
+
+- Worktree isolado da pilha #3432/#3433: `/home/afonso/Área de trabalho/Developer/attlas-2026/.codex/worktrees/validate-pr-3433`.
+- Projeto Compose: `attlas-2026-pr3433`; estão de pé apenas Kong, Kafka/Zookeeper, MinIO, MediaMTX, banco/Redis de câmeras, `ms-cameras` e `ms-video-analytics`.
+- A imagem do `ms-video-analytics` foi construída no worktree da #3433; não reutilizar a antiga `:dev` sem reconstruí-la.
 
 ## Regra de validação
 
