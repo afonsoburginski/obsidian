@@ -34,7 +34,7 @@ A PR #3433 é a fase 2/2 e tem a #3432 como base. Validar #3433 exercita as duas
 ### Provas executadas na Dell
 
 - Build: imagem `ms-video-analytics` construída do commit `f9e3ab63` da #3433, não a imagem `:dev` anterior.
-- Fase 1: log do runtime confirmou orçamento `intraOpNumThreads=2`, `interOpNumThreads=1`, execução sequencial e otimização `all`.
+- Fase 1: log do runtime confirmou orçamento `intraOpNumThreads=2`, `interOpNumThreads=1`, execução sequencial e otimização `all`; o container em execução tem teto real de `3.0` CPUs (`NanoCpus=3000000000`).
 - Fase 2: modelo ONNX de 12,2 MiB provisionado com metadados válidos; a sessão carregou e o `/api/video-analytics/health/ready` respondeu 200 pelo Kong.
 - Configuração inválida: `VIRTUAL_LOOP_MODEL_INPUT_SIZE=500` encerra o processo com `must be divisible by 32`.
 - Grafo incompatível: `VIRTUAL_LOOP_MODEL_INPUT_SIZE=416` com o modelo fixo `[1, 3, 640, 640]` é recusado no carregamento, antes de produzir inferência enganosa.
