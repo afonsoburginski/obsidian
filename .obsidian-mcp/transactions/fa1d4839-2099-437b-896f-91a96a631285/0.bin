@@ -9,7 +9,7 @@ date: 2026-09-15
 ```
 Report Diário - 15/09/2026
 
-Hoje mergeei 28 PRs na consolidação da Sprint 33. As entregas cobriram correções de Detecção e Analítico, sincronização e distribuição de vídeo, estabilidade do videowall, melhorias na tela de Métricas, contagem de incidentes, persistência de regiões, infraestrutura e cobertura de testes, incluindo 63 novos casos. Também revisei 2 pull requests de colegas, listadas abaixo.
+Hoje mergeei 28 PRs na consolidação da Sprint 33. As entregas cobriram correções de Detecção e Analítico, sincronização e distribuição de vídeo, estabilidade do videowall, melhorias na tela de Métricas, contagem de incidentes, persistência de regiões, infraestrutura e cobertura de testes, incluindo 63 novos casos. Também revisei 1 PR sobre a listagem de dispositivos órfãos.
 
 Vou continuar trabalhando localmente na PR unificada, que concentra toda essa entrega e será a base para os próximos ajustes e validações.
 
@@ -18,10 +18,6 @@ O trabalho incluiu a correção do vínculo entre regiões e detectores embarcad
 Como débito técnico, permanece detalhar as responsabilidades do ms-video-analytics nas demais funcionalidades do módulo após essa mudança de arquitetura.
 
 PRs mergeadas: 28
-
-PRs revisadas:
-- 3380 - specs da listagem de dispositivos órfãos (aprovada)
-- 3572 - fixa contrato do gatilho por alarme CROSS-125 (aprovada, com apontamentos)
-
-PRs em andamento: nenhuma
+PRs revisadas: 1
+PRs em andamento: 0
 ```

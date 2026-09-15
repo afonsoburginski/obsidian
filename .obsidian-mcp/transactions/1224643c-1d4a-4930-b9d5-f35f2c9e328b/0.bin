@@ -8,8 +8,8 @@ aliases:
   - "Sprint 33 - validação das PRs"
   - "Checklist de validação da Sprint 33"
 sprint: Sprint 33 (14/9/26 - 20/9/26)
-status: "CRIADA em 14/09 quando as 22 tasks fecharam com PR aberta. ATUALIZADA em 15/09: o usuário mandou mergear as 34 PRs em develop antes da validação (não depois) - feito via PR intermediária #3573, histórico preservado, branches de origem deletadas. A validação agora acontece numa única PR guarda-chuva, #3596 (branch shared/chore/NO-CARD-sprint33-validation), cortada da develop - achado vira commit ali, não branch nova. Nada aqui está validado ainda."
-atualizado: 2026-09-15
+status: "CRIADA em 14/09 quando as 22 tasks fecharam com PR aberta. É a lista de conferência: uma linha por PR, o que tem de funcionar, como provar, e o que só o usuário pode confirmar. Nada aqui está validado ainda."
+atualizado: 2026-09-14
 ---
 
 # Validação - as 34 PRs, uma a uma
@@ -17,16 +17,6 @@ atualizado: 2026-09-15
 Porta de entrada da conferência da [[Attlas - Sprint 33]]. As 22 tasks entregaram **34 PRs**, 7 delas
 em stack. Esta nota existe para responder uma pergunta por PR: **ela entrega o valor que o card
 pediu, e isso funciona de verdade?**
-
-> [!info] 15/09 — as 34 já estão em `develop`, a validação virou uma PR só
-> O usuário decidiu mergear tudo primeiro (PR intermediária
-> [#3573](https://github.com/atmanadmin/attlas-2026/pull/3573), merge commits preservados, sem
-> squash) em vez de esperar a validação. As 34 branches de origem foram deletadas depois do merge -
-> **não existe mais checkout por PR**. A validação e qualquer ajuste agora acontecem em
-> [**#3596**](https://github.com/atmanadmin/attlas-2026/pull/3596) (`shared/chore/NO-CARD-sprint33-validation`,
-> draft), cortada da `develop` atual. Checklist espelhado no repo em
-> `docs/planning/sprint33-validation-checklist.md`. As regras abaixo que falavam de branch por PR
-> ficam de registro histórico; a regra vigente é "tudo na #3596".
 
 > [!warning] Nada nesta nota está validado
 > Toda linha começa em `a validar`. O estado muda quando alguém rodar, não quando o CI ficar verde -
@@ -40,25 +30,19 @@ pediu, e isso funciona de verdade?**
 > [#3550](https://github.com/atmanadmin/attlas-2026/pull/3550) (SPEC + INT-001 + INT-002).
 >
 > **As PRs #3432, #3433, #3437, #3465, #3482 e #3489 (seção "Analítico servidor" abaixo) NÃO foram
-> fechadas** - foram atualizadas (review resolvido, threads fechadas) e já estão mergeadas em
-> `develop` junto das demais, mesmo com a decisão de arquitetura tendo mudado. O código delas estava
-> certo contra a decisão de quando foi escrito; regra que muda não é motivo para fechar PR, é motivo
-> para atualizar. **Validar contra a regra atual, não contra a intenção original.**
+> fechadas** - foram atualizadas (review resolvido, threads fechadas) e seguem o fluxo normal até o
+> merge, mesmo com a decisão de arquitetura tendo mudado. O código delas estava certo contra a
+> decisão de quando foi escrito; regra que muda não é motivo para fechar PR, é motivo para atualizar.
 
-## Regras da conferência (vigente: tudo na #3596)
+## Regras da conferência
 
-1. **Uma vez só, tudo em `develop` / na #3596.** Não há mais 34 branches pra dar checkout - o
-   conteúdo já está unificado. Validar é rodar e ler contra a branch da #3596, não contra branch de
-   PR nenhuma.
-2. **Nunca mergear a #3596.** O merge para `develop` (essa branch já É a `develop` + o que for
-   ajustado) é decisão do usuário.
-3. **Proibido `nx test`, `nx lint`, `nx build` e `tsc` na máquina local.** PC fraco. O CI da #3596 é
-   o gate.
+1. **Uma PR por vez.** Checkout da branch, subir o que ela precisa, provar, anotar.
+2. **Nunca mergear.** O merge é decisão do usuário.
+3. **Proibido `nx test`, `nx lint`, `nx build` e `tsc` na máquina local.** PC fraco. O CI é o gate.
 4. O `web-attlas` já roda em modo dev no `:4200`. **Nunca subir `nx serve`** - o usuário sobe.
 5. Tela se prova com Playwright no `:4200`, não com `curl`. `curl` dá 200 com build quebrado.
-6. **EC2 (`aws-attlas-26`) é somente leitura**, a não ser que o item peça mudança lá.
-7. **Achado de verdade vira commit na #3596**, referenciando a PR original (`Ajusta #NNNN — ...`), e
-   a linha da tabela abaixo sai de `a validar`.
+6. **EC2 (`aws-attlas-26`) é somente leitura**, a não ser que a PR peça mudança lá.
+7. Achado de verdade vira comentário na PR, não nota solta.
 
 ## Ambientes
 
@@ -79,7 +63,7 @@ pediu, e isso funciona de verdade?**
 | 2 | #3431 | Só decisão e procedimento: a VM é t3a.2xlarge burstable, não 16 núcleos | a validar |
 | 17 | #3447 | `npm run infra:up` sobe o banco do detector-history, e a face Métricas para de dar 502 | a validar |
 
-### 2. Analítico servidor (stack) — ⚠️ ler contra a correção de arquitetura acima
+### 2. Analítico servidor (stack)
 
 | # | PR | O que tem de estar certo | Estado |
 | --- | --- | --- | --- |
