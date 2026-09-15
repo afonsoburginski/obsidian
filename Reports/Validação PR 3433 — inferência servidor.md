@@ -33,6 +33,7 @@ A PR #3433 é a fase 2/2 e tem a #3432 como base. Validar #3433 exercita as duas
 
 ### Provas executadas na Dell
 
+- PR #3432 isolada: imagem construída do commit `8dae1e4108`; o container recebeu o teto real de `3.0` CPUs (`NanoCpus=3000000000`), iniciou com orçamento ONNX `2/1`, respondeu health 200 via Kong e passou 3/3 testes focados de orçamento.
 - Build: imagem `ms-video-analytics` construída do commit `f9e3ab63` da #3433, não a imagem `:dev` anterior.
 - Fase 1: log do runtime confirmou orçamento `intraOpNumThreads=2`, `interOpNumThreads=1`, execução sequencial e otimização `all`; o container em execução tem teto real de `3.0` CPUs (`NanoCpus=3000000000`).
 - Fase 2: modelo ONNX de 12,2 MiB provisionado com metadados válidos; a sessão carregou e o `/api/video-analytics/health/ready` respondeu 200 pelo Kong.
@@ -46,4 +47,6 @@ Não houve prova com uma câmera real: o serviço de câmeras informou zero alvo
 
 ## Ambiente
 
-Usar o gateway da Dell conforme [[Ambiente de validação — Dell]]. A URL de API não permite, por si só, subir a branch da PR no computador remoto; é preciso que a versão já esteja implantada ou haver acesso de execução na Dell. Em 15/09, o host respondeu ao ping do Tailscale, mas `:8000` recusou conexão.
+Usar o gateway da Dell conforme [[Ambiente de validação — Dell]]. A URL de API não permite, por si só, subir a branch da PR no computador remoto; é preciso que a versão já esteja implantada ou haver acesso de execução na Dell.
+
+Após a validação, a imagem da #3433 foi restaurada como serviço ativo; o gateway `/api/video-analytics/health/ready` respondeu 200.
