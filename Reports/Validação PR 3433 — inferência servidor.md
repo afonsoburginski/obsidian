@@ -8,7 +8,7 @@ workflowType: 'pr-review'
 targetPR: '#3433'
 outputPath: 'Reports/Validação PR 3433 — inferência servidor.md'
 date: '2026-09-15'
-status: 'validada parcialmente'
+status: 'reclassificada — arquitetura corrigida'
 prSize: 'média (222 adições, 51 remoções, 13 arquivos)'
 decision: ''
 ---
@@ -17,13 +17,12 @@ decision: ''
 
 **PR**: [Back] Analítico servidor: entrada do modelo medível e a primeira caixa da câmera de volta (fase 2/2)
 
-## Contexto
+## Contexto corrigido
 
-- Tipo: correção de backend e instrumentação de desempenho.
-- Pilha: esta é a fase 2/2; a base é a PR #3432, que limita o orçamento de CPU.
-- Valor esperado: configurar o lado da entrada do ONNX por ambiente, distinguir as métricas por tamanho de entrada, reduzir trabalho do letterbox e publicar a primeira caixa quando o relógio de captura é relativo.
-- Foco da validação: a configuração incompatível deve falhar no carregamento; uma entrada válida deve produzir a primeira detecção e publicar métricas com o rótulo `model_input`; o teto da fase #3432 deve continuar respeitado.
-- Estado inicial: `CHANGES_REQUESTED`. O último commit corrige a validação de shape do ONNX e exige múltiplos de 32; a validação funcional deve verificar esse estado mais recente.
+- A premissa de inferência local foi corrigida em 15/09/2026: `ms-video-analytics` **não decodifica RTSP nem executa ONNX**.
+- Ele recebe os resultados normalizados do analítico embarcado e do analítico servidor externo. Este último é outra máquina e não está acessível nesta sessão.
+- Portanto orçamento de CPU, modelo ONNX, letterbox e teste RTSP local não são critérios de aceite do fluxo real; os registros abaixo permanecem apenas como evidência de que o caminho experimental chegou a executar, não como validação funcional do produto.
+- Bounding boxes são publicação de overlay: o produtor servidor publica `attlas.virtual-loop.frame-detections` e `ms-cameras` somente encaminha o evento para a tela. A demo de laço virtual não publica caixas; as ATMN PTZ e as câmeras explicitamente habilitadas podem publicar.
 
 ## Resultado da validação
 
@@ -31,7 +30,7 @@ decision: ''
 
 A PR #3433 é a fase 2/2 e tem a #3432 como base. Validar #3433 exercita as duas fases, mas o merge obrigatório é **#3432 primeiro, depois #3433**.
 
-### Provas executadas na Dell
+### Evidência histórica — não é critério de aceite
 
 - PR #3432 isolada: imagem construída do commit `8dae1e4108`; o container recebeu o teto real de `3.0` CPUs (`NanoCpus=3000000000`), iniciou com orçamento ONNX `2/1`, respondeu health 200 via Kong e passou 3/3 testes focados de orçamento.
 - Build: imagem `ms-video-analytics` construída do commit `f9e3ab63` da #3433, não a imagem `:dev` anterior.
@@ -40,17 +39,18 @@ A PR #3433 é a fase 2/2 e tem a #3432 como base. Validar #3433 exercita as duas
 - Configuração inválida: `VIRTUAL_LOOP_MODEL_INPUT_SIZE=500` encerra o processo com `must be divisible by 32`.
 - Grafo incompatível: `VIRTUAL_LOOP_MODEL_INPUT_SIZE=416` com o modelo fixo `[1, 3, 640, 640]` é recusado no carregamento, antes de produzir inferência enganosa.
 - Testes focados na Dell: 18/18 verdes em `onnx-inference.session.spec.ts` e `frame-publisher.service.spec.ts`, incluindo o primeiro publish com relógio relativo e os três casos de shape.
-- Fluxo RTSP real: após aplicar o seed oficial na base isolada, dois caminhos RTSP válidos ficaram online; a readiness confirmou `targets=2`, `ingesting=2` e `producing=2`.
-- Publicação real: o tópico Kafka `attlas.virtual-loop.frame-detections` recebeu bounding boxes de pessoas, carros e moto para as duas câmeras, com região, identidade e coordenadas percentuais. Isso prova o caminho RTSP → decoder → ONNX → Kafka.
+- Fluxo RTSP e ONNX foram exercitados numa base isolada, mas **não representam o fluxo de produção** após a correção arquitetural acima.
 
-### Limite desta sessão
+### Regra operacional vigente
 
-As duas câmeras de demonstração da Dell foram alcançadas após o seed oficial. A primeira publicação também é coberta pelo teste focado; a observação visual depende apenas de abrir o front conectado à Dell.
+- Não subir nem dimensionar `ms-video-analytics` para processamento de vídeo local.
+- Para validar o fluxo real, usar uma ATMN PTZ — por exemplo `10.1.1.80` — com o analítico servidor externo ativo e observar o evento normalizado/overlay.
+- A câmera demo é somente laço virtual; `boundingBoxes=false` é uma capacidade explícita da câmera, não uma dedução por IP nem apenas por ARTPEC.
 
 ## Ambiente
 
 Usar o gateway da Dell conforme [[Ambiente de validação — Dell]]. A URL de API não permite, por si só, subir a branch da PR no computador remoto; é preciso que a versão já esteja implantada ou haver acesso de execução na Dell.
 
-Após a validação, a imagem da #3433 foi restaurada como serviço ativo; o gateway `/api/video-analytics/health/ready` respondeu 200.
+O gateway foi corrigido na Dell: `ms-organization` e suas dependências foram iniciados e ligados à rede da pilha. `POST /api/organization/auth/login` deixou de responder `502` e passou a atingir o serviço (`400` para corpo vazio, como esperado).
 
-O front está compilado na Dell e acessível no Mac em `http://127.0.0.1:14200` por túnel SSH; o processamento não roda no Mac.
+O front está compilado na Dell e acessível no Mac em `http://127.0.0.1:4200/#/auth/login` por túnel SSH; o processamento não roda no Mac.

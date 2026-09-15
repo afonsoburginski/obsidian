@@ -10,10 +10,23 @@ aliases:
   - "Blocos de configuração da Detecção no EC2 (14/09)"
   - "Registro - habilitar os quatro blocos da Detecção"
 fonte: sessão de 14/09/2026 no box aws-attlas-26 por Tailscale (ubuntu@100.101.165.32), banco attlas_cameras, e o código da develop em 0d4e1655fb
-atualizado: 2026-09-14
+atualizado: 2026-09-15
 ---
 
 # Registro - os quatro blocos de configuração da Detecção no EC2 em 14 de setembro
+
+## Atualização de arquitetura (15/09/2026)
+
+O `ms-video-analytics` não é o motor que faz inferência neste ambiente: ele recebe o resultado do
+analítico embarcado e do analítico servidor externo. Não iniciar processamento RTSP/ONNX local para
+validar a tela. A demo continua somente laço virtual, sem bounding boxes; a capacidade de publicar
+caixas é explícita no cadastro da câmera (`boundingBoxes=false`), sem derivar a regra por IP ou só por
+ARTPEC. Para observar caixas, usar uma ATMN PTZ real, como `10.1.1.80`, com o analítico servidor
+externo ligado.
+
+O frontend da Dell está acessível no Mac por `http://127.0.0.1:4200` (túnel SSH); a sessão autenticada
+abriu `#/organization`. O Kong foi reparado ao ligar o `ms-organization` e suas dependências: a rota
+de login passou de `502` para alcançar o serviço (`400` com corpo vazio).
 
 Parte do [[Analítico]]. Continua o [[Registro - prova de campo do analítico servidor no EC2 em 11 de setembro]].
 O user pediu, em 14/09: "preciso de todas as opções configuradas e habilitadas para todas as cameras -

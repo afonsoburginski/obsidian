@@ -12,7 +12,7 @@ titulo: "[Back] Analítico servidor - a inferência passa a caber num orçamento
 frente: Analítico
 tamanho: 5 pts
 pr: "#3432 (fase 1/2) e #3433 (fase 2/2), stack #3434"
-status: "Stack #3434 aberta. Fase 1: sessão ONNX com `intraOpNumThreads` 2, `interOpNumThreads` 1, execução sequencial e otimização total; `VIRTUAL_LOOP_TARGET_FPS` de 10 para 5; `cpus: 3.0` no Compose; INT-002 ganha a seção 4.2 com a medição de 580%. Fase 2: `VIRTUAL_LOOP_MODEL_INPUT_SIZE` para medir 416 contra 640, rótulo `model_input` no histograma, letterbox mais barato, e o defeito que a suíte apontava - o teto de intervalo lia 'nunca publicou' como 'publicou em zero' e engolia a primeira caixa de cada câmera. Suíte do serviço inteira verde (21 suítes, 217 testes). Os números do depois exigem o deploy."
+status: "Reclassificada em 15/09/2026: ms-video-analytics é receptor/encaminhador de eventos do analítico embarcado e do analítico servidor externo; não deve decodificar RTSP nem executar ONNX. A capacidade de bounding box é explícita por câmera (`boundingBoxes=false` para a demo; ATMN PTZ pode publicar). PRs #3432/#3433 seguem abertas para merge após CI, mas a validação ONNX/CPU abaixo é histórica e não é critério do fluxo real."
 sprint: "[[Attlas - Sprint 33]]"
 estudo: "[[Analítico - Estudo de caso de captura, inferência e sincronização]]"
 atualizado: 2026-09-14
@@ -23,10 +23,10 @@ atualizado: 2026-09-14
 Contexto completo, medições e fontes em
 [[Analítico - Estudo de caso de captura, inferência e sincronização]] (seções 1 e 2, decisão 3.2).
 
-Resumo do que foi medido: `attlas-ms-video-analytics` a **580% de CPU** num box de 8 vCPU (4 núcleos
-Zen 1, só AVX2), carga 15; dentro dele `node main.js` a 581% e os dois `ffmpeg` a 1,9% e 1,6%. A
-sessão ONNX é criada sem opções (pool de threads do tamanho do host), com 10 quadros por segundo por
-câmera e o pré-processamento em laço JavaScript.
+Correção de arquitetura: a inferência pertence ao analítico servidor externo. `ms-video-analytics`
+recebe os eventos normalizados e não deve abrir RTSP, carregar ONNX ou fazer pré-processamento local.
+Os números de CPU/ONNX registrados abaixo são evidência de um experimento antigo, não um requisito para
+o deploy atual.
 
 ## O que o card faz
 
@@ -41,11 +41,20 @@ câmera e o pré-processamento em laço JavaScript.
    `pad`), e o JavaScript só normaliza.
 6. INT8 estático fica registrado como medição posterior: nesta CPU sem VNNI o ganho é incerto.
 
-## Critério de aceite
+## Critério de aceite histórico (arquivado)
 
 Analítico abaixo de 200% de CPU com as duas câmeras ingeridas, carga do host abaixo de 8, zero
-`reader is too slow` no MediaMTX em 30 minutos, e os números de antes e depois (métrica
-`inferenceDuration` e `docker stats`) no corpo da PR.
+`reader is too slow` no MediaMTX em 30 minutos, e os números de antes e depois. Esse critério não se
+aplica enquanto a inferência estiver fora deste serviço.
+
+## Estado operacional vigente
+
+- O produtor externo publica as detecções; o Attlas encaminha o evento para o overlay.
+- A demo é laço virtual sem bounding boxes. ATMN PTZ (por exemplo `10.1.1.80`) é a câmera de teste
+  para o overlay quando o analítico externo estiver ativo.
+- O front roda na Dell e fica visível no Mac em `http://127.0.0.1:4200/#/organization`.
+- O Kong da Dell foi reparado ao ligar `ms-organization` + Postgres + Redis na rede da stack; login
+  deixou de retornar 502.
 
 ## Onde olhar
 
