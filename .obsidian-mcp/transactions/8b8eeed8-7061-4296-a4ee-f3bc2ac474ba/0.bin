@@ -1,0 +1,77 @@
+---
+tags:
+  - report
+date: 2026-09-15
+---
+
+# Report diário - 15/09/2026
+
+```
+Report Diário - 15/09/2026
+
+O dia fechou oito PRs mergeadas, cobrindo detecção, leitura de instâncias do analítico, contador de incidentes, renomeação de artefato de desenho, medição real da VM de desenvolvimento, a face de Métricas do Laço Virtual, vínculo de detector da câmera embarcada e orçamento de CPU do analítico servidor. Revisei também 2 pull requests de colegas, listadas abaixo.
+
+Detecção:
+- Escrevi a especificação e a suíte de testes das seis funções puras de detecção que estavam sem cobertura, fechando 63 casos novos.
+- Renomeei os artefatos de desenho da caixa de detecção, que ainda descreviam um volume 3D removido; hoje o desenho é uma caixa plana com cantoneiras.
+- Vinculei a região de detecção da câmera embarcada de demonstração a um detector, cuja ausência descartava a ocupação antes de chegar ao histórico e deixava a leitura de Métricas zerada sem nenhum erro visível; a tela passa a avisar quando esse vínculo falta.
+
+Analítico:
+- Corrigi a leitura de uma unidade de analítico por id, que consultava o sistema inteiro (vínculos, saúde de câmeras e estado da frota) para devolver uma única linha; agora o alcance é só o da unidade consultada.
+- Limitei o orçamento de CPU do analítico servidor, que processava sem teto de threads e disputava o processador com o resto do sistema até deixar o vídeo travando; reduzi também a taxa de amostragem para conter o consumo.
+
+Incidentes:
+- Corrigi o contador de incidentes na origem do ciclo, que aparecia zerado com a lista abaixo dele cheia: o filtro já traduzia o status do backend para o da tela, mas os contadores voltavam sem essa tradução.
+
+Métricas:
+- Corrigi a face de Métricas do Laço Virtual, que remontava o painel do zero a cada troca de aba, e a lateral de câmeras, que abria buscando uma miniatura por câmera; a aba visitada passa a permanecer montada, e a lateral abre por uma lista enxuta.
+
+Infraestrutura:
+- Medi a VM de desenvolvimento e documentei que ela é uma instância burstable de 8 vCPU, não os 16 núcleos presumidos, com o plano de troca para um tipo com AVX-512.
+
+Débitos técnicos identificados (a tratar):
+- Duas falhas na escrita da geometria de detecção: uma região com contagem de pontos diferente de quatro é apagada no próximo salvamento, e um vértice ausente é substituído pela borda do quadro em vez de recusado. O conserto fica para a fase seguinte, que mexe na camada de escrita.
+
+PRs mergeadas:
+- 3464 - [Front] Deteccao: spec UF-057 e suite dos seis utilitarios puros (fase 1/3) (SOFTWARE-3204)
+- 3460 - [Back] Ler uma unidade de analítico sem compor a frota inteira (SOFTWARE-3203)
+- 3459 - [Front] Métricas: a face que sai fica montada, e a lateral abre na lista em vez de quinze miniaturas (SOFTWARE-3208)
+- 3449 - [Full] Incidentes: o tile da origem do ciclo conta o que a lista mostra (SOFTWARE-3185)
+- 3444 - [Front] Detecção: o nome da peça volta a descrever o que ela desenha, e a UF-053 ganha o contrato do relógio (SOFTWARE-3183)
+- 3443 - [Full] A câmera embarcada endereça um detector, e a tela diz quando não há (SOFTWARE-3197)
+- 3432 - [Back] Analítico servidor: a inferência passa a caber num orçamento de CPU (fase 1/2) (SOFTWARE-3176)
+- 3431 - [Infra] A VM de desenvolvimento é uma t3a.2xlarge burstable, não 16 núcleos: decisão e procedimento do redimensionamento (SOFTWARE-3175)
+
+PRs revisadas:
+- 3468 - nodeIds das interseções no fetch de trajetos (aprovada após correção)
+- 3380 - listagem de dispositivos órfãos (Permissões) (aprovada)
+
+PRs em andamento:
+- 3550 - [Back] Analítico: revoga DD-1 do ms-video-analytics, inferência embutida sai de escopo
+- 3492 - [Front] Detecção: UF-059 fecha as peças de superfície, com dois defeitos que a suíte guardava (fase 3/3)
+- 3490 - [Infra] Analítico embarcado: o consumidor salta o atraso em vez de caminhar por ele (fase 2/2)
+- 3489 - [Back] Detecção: o analítico carimba o quadro com o relógio da câmera, lido dos sender reports (fase 3/3)
+- 3487 - [Full] VMS: orçamento de latência do publicador, e o tile diz quando caiu para HLS (fase 3/3)
+- 3482 - [Full] Analitico servidor: a PTZ ganha os dois analiticos, com uma decodificacao por quadro (fase 3/3)
+- 3480 - [Full] Sessao de video compartilhada por camera e perfil: lease de espectador e encerramento so no ultimo (fase 2/2)
+- 3478 - [Front] ACOM desenha pelo overlay compartilhado e a copia sai do repo (fase 2/2)
+- 3476 - [Front] Detecção: afere o erro da caixa em frenagem e conversão contra o teto de predição de 400 ms
+- 3474 - [Full] Deteccao: servicos, estrategias de cabeca e o fim do apagamento de regiao no salvamento (fase 2/3)
+- 3472 - [Back] Detecção: o relógio da câmera só no caminho do analítico, com a prova do risco do MediaMTX antes (fase 2/3)
+- 3471 - [Infra] Broker do analitico embarcado por ambiente e aviso quando a camera nao publica nele (fase 1/2)
+- 3469 - [Full] VMS: prova do decoder no cliente e queda automática para H264 (fase 2/3)
+- 3465 - [Full] Analitico servidor: o relay vira excecao e o decoder para de esperar (fase 2/3)
+- 3462 - [Front] Overlay compartilhado aceita a geometria e a pintura da ACOM (fase 1/2)
+- 3461 - [Front] Paridade dos slices de traducao nas quatro locales do Analitico
+- 3453 - [Back] 503 quando o resolver de permissões não responde, e um nome só para o timeout
+- 3452 - [Front] Uma lista só de classes de objeto, no contrato e nos quatro idiomas
+- 3451 - [Front] Miniatura de câmera fora do ar para de ser pedida de novo a cada montagem
+- 3447 - [Infra] O banco do detector-history entra no infra:up, e a face Métricas para de dar 502
+- 3441 - [Full] Detecção: a cor e o nome da região sobrevivem ao reload
+- 3440 - [Full] Entrega de vídeo: o modelo de fan-out que já existe, o caminho de escala e a decisão sobre CDN (fase 1/2)
+- 3439 - [Back] VMS: o reaper para de derrubar o tile que está entrando (fase 1/3)
+- 3438 - [Front] Detecção: a caixa desenha no tempo de captura do quadro, não numa estimativa dele (fase 1/3)
+- 3437 - [Full] Analítico servidor: o YOLO pede o stream à câmera, num perfil só dele (fase 1/3)
+- 3433 - [Back] Analítico servidor: entrada do modelo medível e a primeira caixa da câmera de volta (fase 2/2)
+- 3402 - [Back] A suíte dos projetos da #3328 volta ao verde, com três defeitos de produção que ela guardava
+```

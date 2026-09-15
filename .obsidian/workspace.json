@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Reports/2026-09-14.md",
+                "file": "Reports/2026-09-15.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "2026-09-14"
+              "title": "2026-09-15"
             }
           }
         ]
@@ -211,8 +211,11 @@
   },
   "active": "d6f1ecfe9df44260",
   "lastOpenFiles": [
-    "Reports/2026-09-12.md",
     "Reports/2026-09-14.md",
+    "Reports/2026-09-15.md",
+    "Reports/2026-09-12.md",
+    "Reports/Validação PR 3433 — inferência servidor.md",
+    "PRs abertas.md",
     "Reports/2026-09-11.md",
     "Prompt - continuar a validação das PRs da Sprint 33.md",
     "Sprint/33/Laço virtual - consolidar o overlay e apagar a cópia da ACOM.md",
@@ -234,9 +237,6 @@
     "Sprint/33/Attlas - Sprint 33.md",
     "Sprint/33/Câmeras - miniatura fora do ar para de poluir o console.md",
     "Sprint/33/Analítico servidor - orçamento de inferência na CPU.md",
-    "Sprint/33/Detecção do Analítico - gaps para polir.md",
-    "Docs/Analítico/Analítico - Estudo de caso de captura, inferência e sincronização.md",
-    "Sprint/33/Analítico servidor - custo de CPU no EC2 e a PTZ com os dois analíticos.md",
     "Docs/Analítico/attlas-vl-atspm.pdf",
     "Sem título.canvas",
     "Sprint/33",
