@@ -2,7 +2,7 @@
 tags:
   - doc
   - analitico
-atualizado: 2026-09-12
+atualizado: 2026-09-18
 servico: ms-video-analytics (o analitico servidor, hoje ms-virtual-loop e scaffold). ms-atspm, ms-dai e ms-connector-virtual-loop nao nascem - CROSS-077, 31/08
 fonte: auditoria de código de 24/08 (embarcado, servidor, ACOM/ATSPM, detector-history) + 14 PRs da Sprint 27, fechadas em 24/08 (#1342 a #1357) + notas do user + PDF do squad de CV
 ---
@@ -57,6 +57,29 @@ aqui - são de [[Analítico - Embarcado x Servidor]].
 >    draft, o que valia até o fim da tarde de 24/08.
 
 ## O furo do `deviceSourceId`: o binding não tem writer
+
+> [!warning] Estado em 18/09: o binding tem writer, mas o seed local o APAGA a cada boot
+> Medido na máquina de dev com a câmera 10.1.1.80 (`...0101`). Quatro fatos que faltavam aqui:
+>
+> 1. **O `nx serve ms-cameras` roda `prisma:seed` como dependência (`dependsOn` no `project.json`), e o
+>    seed zera o `deviceSourceId`** em `CameraAnalytic` e em `Camera.analyticsCapabilities` quando
+>    `SEED_ATMAN_EMBEDDED_SOURCE_ID` está vazia. O próprio boot avisa: "SEED_ATMAN_EMBEDDED_SOURCE_ID is
+>    unset: the embedded analytic is seeded with no source id". É a causa recorrente de "as caixas
+>    sumiram depois que reiniciei o serviço". Correção local: preencher a env no `apps/ms-cameras/.env`
+>    com o uuid que o device reporta em `GET /local/atman_traffic_edge_atspm/api/config`.
+> 2. **Existe um segundo writer, que conserta sozinho**: `CameraRegionsController.reconcileDeviceSourceId`
+>    lê o `/config` do device quando a tela de Detecção abre e realinha o banco ("device now reports
+>    source_id ... (bound to none) - realigning"). Por isso o vínculo reaparece sem ninguém cadastrar nada.
+> 3. **O mapa de binding do `DeviceStreamConsumer` só era reconstruído quando chegava mensagem Kafka**, e
+>    isso fechava um ciclo: mapa vazio descarta todo quadro, quadro descartado nunca dispara o refresh, e
+>    a câmera vinculada depois do boot ficava fora do mapa para sempre. Corrigido com timer próprio de 30s,
+>    independente de quadro, mais log de quantas câmeras foram descartadas e por quê (commit `ec5fe568a4`).
+> 4. **O produtor Kafka do device volta desligado** depois de uma escrita de config, que reinicia o
+>    pipeline do ACAP. Medido: `GET /api/producer` devolvendo `{"enabled": false}` com o tópico
+>    `traffic-motion-detection.detections` sem uma única mensagem em 30s; `POST /api/producer?enable=true`
+>    devolveu 440 mensagens em 25s. O `AnalyticsProducerRepair` existe para religar isso sozinho, mas só
+>    age sobre câmera que o consumer está rastreando - com o mapa vazio, ninguém conserta.
+
 
 > [!success] Estado em 12/09: este furo está fechado, e a seção abaixo é retrato de 24/08
 > O `deviceSourceId` **tem writer** desde a Sprint 30 (card 2, mergeado em 27-28/08). A sonda de

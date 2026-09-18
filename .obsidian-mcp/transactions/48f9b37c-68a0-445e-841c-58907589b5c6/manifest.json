@@ -1,0 +1,21 @@
+{
+  "id": "48f9b37c-68a0-445e-841c-58907589b5c6",
+  "state": "committed",
+  "createdAt": "2026-09-16T13:53:38.413Z",
+  "snapshots": [
+    {
+      "path": "Docs/Analítico/Analítico - Embarcado x Servidor.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "c6e267f3670a08b168037b83a06a0eb6af6a205916e743f72e2023110988974e",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33204,
+      "etag": "25dea502460f140756b898fdcce4b02b43d23187c11e299a417f00e50c4aaa52",
+      "snapshot": "0.bin",
+      "committedEtag": "c6e267f3670a08b168037b83a06a0eb6af6a205916e743f72e2023110988974e"
+    }
+  ],
+  "completedAt": "2026-09-16T13:53:38.563Z"
+}

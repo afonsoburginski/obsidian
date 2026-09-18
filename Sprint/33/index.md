@@ -9,7 +9,7 @@ aliases:
   - "Sprint 33 - o que entrega"
 sprint: Sprint 33 (14/9/26 - 20/9/26)
 status: "CRIADA em 09/09 como a semana do prazo externo de 18/09. REPLANEJADA em 12/09 depois do merge da #3328 (console do Analítico consolidado): virou sprint de acabamento, com os gaps levantados na própria PR. AMPLIADA em 14/09 com o estudo de caso do analítico servidor e do vídeo, a pedido do usuário: 22 tasks, uma nota e uma PR cada, 90 pts, em ordem de execução. FECHADA em 14/09 à noite: as 22 tasks têm PR aberta, 7 delas em stack registrada no GitHub, num total de 31 PRs. ATUALIZADA em 15/09: o usuário decidiu mergear as 34 PRs em develop ANTES da validação, via PR intermediária #3573 (merge commits preservados, branches de origem deletadas). A conferência agora roda numa PR guarda-chuva só, #3596, ver [[Validação - as 34 PRs, uma a uma]]."
-atualizado: 2026-09-15
+atualizado: 2026-09-17
 ---
 
 # Sprint 33 - o que entrega
@@ -169,6 +169,9 @@ lista de conferência, uma linha por PR com o que tem de funcionar e como provar
 
 ## Ver também
 
+[[Detecção - a caixa desliza a sessenta quadros por segundo]] ·
+[[Registro - o EC2 dev alinhado com a bancada local em 17 de setembro]] ·
+[[Streaming - a queda para HLS e a tela preta que vinha com ela]] ·
 [[Validação - as 34 PRs, uma a uma]] ·
 [[Analítico - Estudo de caso de captura, inferência e sincronização]] ·
 [[Detecção do Analítico - gaps para polir]] · [[Analítico - O que falta para fechar o módulo]] ·

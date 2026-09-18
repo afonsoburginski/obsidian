@@ -1,0 +1,72 @@
+---
+tags:
+  - report
+date: 2026-09-16
+---
+```
+Report Diário - 16/09/2026
+
+Dia leve, sem entregas próprias registradas até o momento. Revisei também 8 pull requests de colegas, listadas abaixo.
+
+PRs mergeadas:
+(nenhuma)
+
+PRs revisadas:
+- 3572 - fixa contrato do gatilho por alarme, execution-plans (aprovada após correção)
+- 3380 - specs da listagem de dispositivos órfãos, permissões (aprovada)
+- 3542 - self-heal de UPDATED de dispositivo desconhecido, organização (mudanças solicitadas)
+- 3240 - diálogo de geração pelo catálogo com recorte de período e guarda de conflito, reports (aprovada)
+- 3241 - versiona gerações e regenerar pelo designer, reports (aprovada)
+- 3360 - o ordinal de execução por plano, execution-plans (aprovada, com apontamentos)
+- 3457 - disparo por evento com origem tipada, execution-plans (aprovada)
+- 3543 - persiste o gatilho autorado da Etapa 1, execution-plans (aprovada após correção)
+
+PRs em andamento:
+- 3596 - chore: validação da sprint 33 (34 PRs em develop)
+```
+
+## Validação da Sprint 33 - sessão da tarde
+
+Trabalho na branch `shared/chore/NO-CARD-sprint33-validation`, nada mergeado.
+
+**Provas de tela fechadas** (Playwright no `:4200`, bancada com `ms-cameras`, `ms-organization`,
+mediamtx e infra local): #3480 (sessão compartilhada aguenta o espectador que sai), #3459 (a face que
+sai fica no DOM e a lateral abre na lista), #3451 (miniatura fora do ar não é pedida de novo),
+#3452 (nenhum código cru de classe na Detecção). #3438 medida no caminho real: `captureTime` não
+existe com o relay `ffmpeg` no meio, o fallback está correto e o ganho é inerte até as fases #3472 e
+#3489.
+
+**Dois achados viraram commit:**
+
+1. `8a7a13568c` - sessão de stream cujo relay morre dentro da janela de grace ficava `ACTIVE` com o
+   processo morto, e o próximo espectador recebia a URL WHEP sem respawn (tile preto por 60 s).
+2. `a16696a4fb` - os parâmetros do incidente não atravessavam o device: o mapper copiava a chave
+   snake_case na leitura (a tela pedia camelCase e mostrava "Não informado pelo analítico") e
+   descartava os parâmetros inteiros na escrita.
+
+**Para o usuário decidir**: o ACAP do analítico da `10.1.1.80` está fora (503 desde as 14h38, porta
+2001 recusando, câmera respondendo ping) - reiniciar o app é decisão dele.
+
+**Atualização das 16h - o ACAP voltou, e mais três commits.** O 503 era a **atualização do ACAP de
+0.6.0 para 0.7.0**, não queda: `GET /axis-cgi/applications/list.cgi` responde
+`atman_traffic_edge_atspm` 0.7.0 `Running`, e nada precisou ser reiniciado. Com o device de volta,
+apareceu a segunda perna do achado dos parâmetros:
+
+3. `a19c97f672` - registra a rodada de provas de tela de 16/09 no checklist da sprint 33.
+4. `32b0c9f190` - o silêncio do equipamento parava de apagar o parâmetro do incidente. O ACAP 0.7.0
+   responde cada condição com `enable` e `event_classes` e **nenhum parâmetro** (a escrita é aceita:
+   `incidents` é objeto livre no `openapi.json` do próprio app), então a leitura crua zerava a tela
+   com a câmera online e o cache respondia com ela offline. O merge do `withStoredPresentation`
+   completa com a linha guardada o que o device não reporta, sem inventar condição.
+5. `1ed0101375` - `event_classes` vazio passa a ler "Todas as classes da região" (chave nova
+   `analytics.detection.value.allRegionClasses` nas quatro locales) em vez de "Não informado pelo
+   analítico".
+
+Provado na tela com o device online: Contramão, Veículo parado, Veículo lento e Congestionamento
+ligados conforme o device, com 5 s, 5 km/h, 60 s, 10 km/h, 40 veíc/km e 360 s. Fica uma divergência
+registrada (o device reporta `SLOW_MOVING` ligado e o banco local tem desligado - quem manda é o
+device) e uma pergunta aberta: sem limiar por incidente no aparelho, quem avalia a condição, ele com
+a config global ou o Attlas?
+
+Detalhe em [[Validação - as 34 PRs, uma a uma]] e
+[[Detecção - os parâmetros do incidente não atravessavam o device]].

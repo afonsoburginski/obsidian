@@ -4,7 +4,7 @@ tags:
   - task
   - sprint-33
   - analitico
-card: SOFTWARE-3181
+card: SOFTWARE-3189
 clickup: https://app.clickup.com/t/86akhp5e1
 titulo: "[Full] Detecção - alterar região, cor e nome não persiste"
 frente: Analítico

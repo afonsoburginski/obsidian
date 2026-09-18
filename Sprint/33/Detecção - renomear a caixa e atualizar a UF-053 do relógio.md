@@ -4,7 +4,7 @@ tags:
   - task
   - sprint-33
   - analitico
-card: SOFTWARE-3183
+card: SOFTWARE-3198
 clickup: https://app.clickup.com/t/86akhpa44
 titulo: "[Front] O nome `cuboid` mente desde que a caixa virou plana"
 frente: Analítico

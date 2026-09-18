@@ -1,0 +1,21 @@
+{
+  "id": "5650cf08-623a-4d75-bc11-58430b2d2633",
+  "state": "committed",
+  "createdAt": "2026-09-16T14:48:20.897Z",
+  "snapshots": [
+    {
+      "path": "Sprint/33/Validação - as 34 PRs, uma a uma.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "5c3c44c4fe00b8f9fd9457b0e51cef8808926a4b6c811964fb37601356c68f20",
+      "recoverable": true,
+      "existed": true,
+      "mode": 33204,
+      "etag": "10d308e2993604b4da2da6edd7887ff94aff7c3c0d18b0c61f1bf85729496551",
+      "snapshot": "0.bin",
+      "committedEtag": "5c3c44c4fe00b8f9fd9457b0e51cef8808926a4b6c811964fb37601356c68f20"
+    }
+  ],
+  "completedAt": "2026-09-16T14:48:20.905Z"
+}

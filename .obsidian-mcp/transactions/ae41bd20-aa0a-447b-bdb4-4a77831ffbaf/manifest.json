@@ -1,0 +1,18 @@
+{
+  "id": "ae41bd20-aa0a-447b-bdb4-4a77831ffbaf",
+  "state": "committed",
+  "createdAt": "2026-09-16T14:49:08.198Z",
+  "snapshots": [
+    {
+      "path": "Sprint/33/Detecção - os parâmetros do incidente não atravessavam o device.md",
+      "operation": "write",
+      "entryType": "file",
+      "phase": "applied",
+      "plannedEtag": "9462741bd33bd5c30700bdc26df0fa360f9ec4de1bc18f448925c38bf31cd329",
+      "recoverable": true,
+      "existed": false,
+      "committedEtag": "9462741bd33bd5c30700bdc26df0fa360f9ec4de1bc18f448925c38bf31cd329"
+    }
+  ],
+  "completedAt": "2026-09-16T14:49:08.207Z"
+}

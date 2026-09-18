@@ -6,12 +6,13 @@ tags:
   - attlas
   - incidente
   - streaming
-atualizado: 2026-08-27
+atualizado: 2026-09-18
 frente: Streaming
 ambiente: EC2 dev (dev.v2.attlas.atmansystems.com)
 host: ip-172-31-46-250
 aliases:
   - "Incidente - vazamento de sessões de stream (banda das câmeras)"
+  - "Incidente - dois publicadores na mesma câmera (reap e adoção se revezando)"
   - "Incidente - câmeras instáveis por perda de pacote RTP no caminho até a EC2"
 ---
 
@@ -393,3 +394,57 @@ Decisão tomada com o dono do serviço após o achado de crédito de CPU/rede bu
 - Stack essencial (`attlas-ms-cameras`, `attlas-kong`, `attlas-mediamtx`) seguiu de pé, sem impacto.
 - **Não removido oficialmente da lista de runners do GitHub** (fica "offline" lá) — o token do `gh` usado não tem escopo `admin:org`, necessário pro endpoint de remoção. Quem tiver esse escopo pode limpar pela UI (Settings → Actions → Runners) ou rodar `gh auth refresh -h github.com -s admin:org` e reexecutar a remoção completa.
 - Efeito na fila de CI do time: um runner a menos no pool aberto (só sumo resta). Fila do dia estava com dezenas de jobs `queued` no momento da remoção — não medido o impacto exato na vazão, mas o pool aberto já vinha sendo esvaziado pela PR #2210 (Build/Integration Test só na sumo desde hoje 15:10).
+
+## Responsabilidade: ms-cameras (backend) - reap e adoção se revezando para sempre
+
+**Status:** diagnosticado, correção planejada · **Data:** 18/09/2026 · **Ambiente:** máquina de dev (não é a EC2) · **Plano:** [[Task - Streaming de câmeras sem vazamento de publicador]]
+
+### Incidente - dois ffmpeg puxando a mesma câmera, com zero espectadores
+
+O operador relatou queda abrupta de FPS. O que estava acontecendo:
+
+- **Dois `ffmpeg` publicando o mesmo path** `<cameraId>-secondary`, argv byte a byte idêntico, um com 20h
+  de vida e outro com 2h. `ss -tnp` confirmou **duas sessões RTSP estabelecidas** na câmera. O
+  equipamento codificava e enviava dois streams de ~3 Mbps e ainda dividia CPU com o analítico embarcado.
+- **O path tinha ZERO leitores.** Ninguém assistindo, e a câmera sendo puxada mesmo assim.
+- **PPID dos dois era `systemd --user`**, não 1: o `nx serve` morreu e o subreaper da sessão adotou os filhos.
+- **A credencial da câmera estava no argv**, legível por qualquer processo do host via `/proc/<pid>/cmdline`.
+- O MediaMTX estava saudável o tempo todo: ingestão de 2,9 a 3,5 Mbps, `inboundFramesInError: 0`.
+
+#### O mecanismo, visível no log
+
+```
+17:50 StreamSessionReaperService  Reaping orphan session ...:SECONDARY: 0 readers
+17:52 FfmpegSessionService        Adopting the live publisher of ...-secondary instead of starting a second one
+17:53 StreamSessionReaperService  Reaping orphan session ...:SECONDARY: 0 readers
+17:54 FfmpegSessionService        Adopting the live publisher of ...-secondary ...
+```
+
+O reaper reapa uma sessão **adotada** (`state.process` é `null`, porque o processo não é filho dele),
+então `stopSession` não mata nada; o próximo GET adota o mesmo órfão. Reap e adoção se revezam
+indefinidamente enquanto a câmera continua sendo puxada por um processo que ninguém controla.
+
+#### Por que o maquinário existente não pegou
+
+Reaper (PROJ-007), lease por espectador (UC-079), adoção de publisher vivo e teto de sessões existem e
+estão corretos. Todos reconciliam **registry para mediamtx**, e o registry é um `Map` em memória que todo
+restart zera, enquanto o processo `ffmpeg` sobrevive ao restart. Falta a direção inversa, a única que
+enxerga publicador que o processo atual não criou. Some-se a isso que a escalada para SIGKILL é código
+morto (`proc.killed` fica `true` assim que o SIGTERM é **enviado**) e que, em container, o `CMD` com
+`sh -c` sem `exec` impede o SIGTERM de chegar ao node.
+
+#### Dois efeitos colaterais de ambiente, no mesmo dia
+
+- **URL de navegador defasada.** `MEDIAMTX_WEBRTC_BASE_URL` fica com o IP da máquina, então toda troca de
+  rede (wifi para cabo, DHCP novo) entrega ao player uma URL de WHEP para um endereço que não existe mais.
+  Em dev a saída é `http://localhost:8889`, que não depende de rede. A decisão tomada foi passar a URL a
+  ser relativa, servida pelo mesmo proxy do SPA - está no plano.
+- **Lock do NX segurando o restart.** Matar só o processo node deixa a cadeia `npm exec nx serve` viva, e
+  o serviço novo fica em "Waiting for ms-cameras:serve:development in another nx process" sem subir. Tem
+  de matar a cadeia inteira.
+
+#### Correção
+
+Planejada em fases na [[Task - Streaming de câmeras sem vazamento de publicador]], aprovada em 18/09 e
+ainda não implementada. Fase 0 são 43 linhas: o SIGKILL que nunca dispara e o `exec` no Dockerfile.
+

@@ -1,0 +1,27 @@
+---
+tags:
+  - report
+date: 2026-09-17
+---
+
+```
+Report Diário - 17/09/2026
+
+Consolidei a validação da sprint 33 em develop. Revisei também 4 pull requests de colegas, listadas abaixo.
+
+Validação da sprint 33:
+- Consolidei numa unica branch a validacao das 34 pull requests da sprint 33, cobrindo CI, analitico servidor e embarcado, sincronizacao de relogio da camera, streaming e deteccao.
+- Removi do contrato compartilhado o topico Kafka e o payload de quadro do analitico servidor, descontinuado por saturacao de CPU, junto com o produtor e o consumidor correspondentes.
+
+PRs mergeadas:
+- 3596 - chore: validação da sprint 33 (34 PRs em develop)
+
+PRs revisadas:
+- 3457 - disparo por evento com origem tipada (aprovada após correção)
+- 3603 - [Notificações] Ingerir pedido de mensagem interna (mudanças solicitadas)
+- 3556 - balde na prontidão dos dois processos, com socket provado por cliente real (aprovada)
+- 3531 - backfill do espelho de lifecycle para câmeras pré-existentes (mudanças solicitadas)
+
+PRs em andamento:
+- 3712 - [Front] Telas do Analítico: mapa do Laço Virtual, Incidentes paginados, laço que acende por ocupação e sessão presa ao endereço antigo
+```

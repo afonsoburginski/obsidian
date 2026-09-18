@@ -2,7 +2,7 @@
 tags:
   - doc
   - analitico
-atualizado: 2026-08-24
+atualizado: 2026-09-18
 servico: ms-video-analytics (o analitico servidor, hoje ms-virtual-loop e scaffold). ms-connector-virtual-loop nao nasce - CROSS-077, 31/08
 fonte: attlas-vl-atspm.pdf (squad de Visão Computacional, 10/08) + decisões preservadas das 14 PRs fechadas da Sprint 27 + auditoria de código de 24/08
 ---
@@ -69,6 +69,13 @@ Sem app embarcado, tudo em servidor, desdobrado conforme a necessidade:
 | 4 | O device publica a detecção num tópico próprio, num broker separado do resto da plataforma | Real |
 | 5 | O consumidor do `ms-cameras` lê esse tópico e faz o vínculo entre o identificador do device e a câmera | Real, mas só acha a câmera se o passo 0 tiver acontecido |
 | 6 | Retransmite pro frontend via WebSocket, que desenha o overlay ao vivo | Real |
+
+> [!success] Estado em 18/09: o passo 0 existe, e o problema virou outro
+> Há dois writers hoje: a sonda de credencial grava o `deviceSourceId` no cadastro (Sprint 30) e o
+> `CameraRegionsController.reconcileDeviceSourceId` realinha o banco lendo o `/config` do device quando a
+> tela de Detecção abre. O que sobrou de armadilha é local: o `nx serve` roda o `prisma:seed` como
+> dependência e o seed **apaga** o vínculo quando `SEED_ATMAN_EMBEDDED_SOURCE_ID` está vazia, então as
+> caixas somem a cada restart do serviço. Detalhe em [[Analítico - Arquitetura e estratégias]].
 
 > [!danger] Lacuna: o passo 0 não existe em código
 > **Nenhum código escreve `analyticsCapabilities.deviceSourceId` no banco.** Só o seed e edição manual do

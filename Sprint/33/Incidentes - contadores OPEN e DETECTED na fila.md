@@ -4,7 +4,7 @@ tags:
   - task
   - sprint-33
   - analitico
-card: SOFTWARE-3185
+card: SOFTWARE-3211
 clickup: https://app.clickup.com/t/86akhpeuv
 titulo: "[Full] Contadores `OPEN` e `DETECTED` na fila de incidentes"
 frente: Analítico

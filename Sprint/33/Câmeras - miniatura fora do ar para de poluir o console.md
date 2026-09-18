@@ -5,7 +5,7 @@ tags:
   - sprint-33
   - analitico
   - cameras
-card: SOFTWARE-3186
+card: SOFTWARE-3200
 clickup: https://app.clickup.com/t/86akhphg1
 titulo: "[Front] Miniatura de câmera fora do ar polui o console de toda tela com lista"
 frente: Câmeras

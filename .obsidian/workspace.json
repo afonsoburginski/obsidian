@@ -4,21 +4,21 @@
     "type": "split",
     "children": [
       {
-        "id": "0c7b252ec76f6abc",
+        "id": "75874b71343d6068",
         "type": "tabs",
         "children": [
           {
-            "id": "d6f1ecfe9df44260",
+            "id": "39aa8287f6b11c1d",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Reports/2026-09-15.md",
+                "file": "Reports/2026-09-18.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "2026-09-15"
+              "title": "2026-09-18"
             }
           }
         ]
@@ -194,7 +194,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 279.5
+    "width": 279.5,
+    "collapsed": true
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -209,34 +210,34 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "d6f1ecfe9df44260",
+  "active": "39aa8287f6b11c1d",
   "lastOpenFiles": [
+    "Task - Streaming de câmeras sem vazamento de publicador.md",
+    "AJUSTES-ANALITICO-17-18-09-2026.md",
+    "Reports/2026-09-17.md",
+    "Sprint/index.md",
+    "Reports/Templates/Report diário.md",
+    "Reports/2026-09-16.md",
+    "Sprint/33/Registro - o EC2 dev alinhado com a bancada local em 17 de setembro.md",
+    "Sprint/33/Validação - as 34 PRs, uma a uma.md",
     "Reports/2026-09-14.md",
     "Reports/2026-09-15.md",
     "Reports/2026-09-12.md",
-    "Reports/Validação PR 3433 — inferência servidor.md",
-    "PRs abertas.md",
-    "Reports/2026-09-11.md",
+    "Sprint/33/Telas do Analítico - mapa do Laço Virtual e paginação dos Incidentes.md",
+    "Restaurar a EMBEDDED 080 - comando.md",
     "Prompt - continuar a validação das PRs da Sprint 33.md",
+    "Sprint/33/Detecção - os parâmetros do incidente não atravessavam o device.md",
+    "Sprint/33/Prompt - handoff da sessão de 16 de setembro (anterior).md",
+    "Sprint/33/Prompt - continuar a validação e os fixes de 16 de setembro.md",
+    "PRs abertas.md",
+    "Reports/Validação PR 3433 — inferência servidor.md",
+    "Reports/2026-09-11.md",
     "Sprint/33/Laço virtual - consolidar o overlay e apagar a cópia da ACOM.md",
     "Docs/Analítico/Registro - os quatro blocos de configuração da Detecção no EC2 em 14 de setembro.md",
     "Sprint/33/Instâncias - ler uma unidade sem compor a frota.md",
     "Sprint/33/Incidentes - contadores OPEN e DETECTED na fila.md",
     "Sprint/33/Entrega de vídeo - sessão compartilhada, réplicas e a pergunta da CDN.md",
     "Sprint/33/Detecção - uma lista só de classes de objeto nos quatro idiomas.md",
-    "Sprint/33/Detecção - sincronização exata da caixa com o vídeo.md",
-    "Sprint/33/Detecção - renomear a caixa e atualizar a UF-053 do relógio.md",
-    "Sprint/33/Detecção - cor e nome da região não persistem.md",
-    "Sprint/33/CI - job de teste unitário e suíte dos projetos da 3328.md",
-    "Sprint/33/Analítico servidor - captura direta da câmera com perfil de analítico.md",
-    "Sprint/33/Ambiente - infra up volta a subir a infraestrutura inteira.md",
-    "Sprint/33/Analítico embarcado - broker por ambiente e consumidor sem atraso.md",
-    "Sprint/33/index.md",
-    "Sprint/33/VMS - tiles pretos e vídeo travando no videowall.md",
-    "Sprint/33/Infra - a VM do EC2 é t3a.2xlarge, burstable, e não 16 núcleos.md",
-    "Sprint/33/Attlas - Sprint 33.md",
-    "Sprint/33/Câmeras - miniatura fora do ar para de poluir o console.md",
-    "Sprint/33/Analítico servidor - orçamento de inferência na CPU.md",
     "Docs/Analítico/attlas-vl-atspm.pdf",
     "Sem título.canvas",
     "Sprint/33",
