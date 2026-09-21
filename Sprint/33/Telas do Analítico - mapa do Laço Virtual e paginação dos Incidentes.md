@@ -140,4 +140,4 @@ clique duplo e o aviso de falha viraram uma peça só, usada pelas quatro telas.
 [[Registro - o EC2 dev alinhado com a bancada local em 17 de setembro]] ·
 [[Validação - as 34 PRs, uma a uma]] ·
 [[Métricas - por que as telas não mostram nada no dev2]] ·
-[[Task - Streaming de câmeras sem vazamento de publicador]]
+[[Plano - Streaming sem vazamento de publicador]]

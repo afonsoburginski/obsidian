@@ -3,7 +3,7 @@ tags:
   - doc
   - attlas
   - plano
-atualizado: 2026-08-24
+atualizado: 2026-09-21
 status: TODOS os lotes de conteúdo executados em 24/08 (0 revisado, 1 a 8 feitos, 9 removido a pedido). Domínio Dashboard de câmeras criado do zero. Lote 10 (web-attlas geral) segue aberto e não escopado. O plano vira registro de método e de lições, não mais fila de trabalho.
 ---
 
@@ -89,8 +89,9 @@ backend que serve, seguindo o precedente do VMS. Não fazer de improviso dentro 
 - **3 a 4 notas por assunto**: `index.md` (não repete conteúdo das filhas), Arquitetura e estratégias,
   Fluxos, mais uma temática quando o assunto pedir. O Analítico ganhou a quinta
   ([[Analítico - Embarcado x Servidor]]) porque a distinção era o assunto.
-- Não tocar em [[Edital - Attlas nova definição de módulos]] nem reescrever `Reports/` antigos: são
-  registro histórico.
+- Não tocar em [[Edital - Attlas nova definição de módulos]]. Relatórios diários e prompts não fazem parte
+  da base de conhecimento: fatos que mereçam permanência devem ser consolidados em uma nota técnica.
+
 
 ## Lições acumuladas
 

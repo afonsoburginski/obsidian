@@ -4,7 +4,7 @@ tags:
   - index
 aliases:
   - "Sprints - índice raiz"
-atualizado: 2026-09-09
+atualizado: 2026-09-21
 ---
 
 # Sprints - índice raiz
@@ -24,7 +24,7 @@ Fonte de verdade: **este vault**. O ClickUp é publicação para o gestor, não 
 | [[Attlas - Sprint 31\|31]] | 31/08-06/09 | **Analítico servidor** - Virtual Loop em container | **Fechada em 05/09**: 10 de 10 cards, 32 pts. Ingestão de stream, detecção por frame, ocupação, vínculo com detector, publicação do raw, mais a tela de métricas do Laço Virtual. No sábado entraram 4 PRs fora do plano: peso do modelo, `MOD-002` de escala, pedestre como segundo agente e a remoção dos três scaffolds |
 | [[Attlas - Sprint 32\|32]] | 07-13/09 | **Analítico** - fechamento da cadeia | **Replanejada em 09/09** contra o inventário do módulo ([[Analítico - O que falta para fechar o módulo]]): 12 PRs (11 em cascata + o refinamento de emergência), 35 pts nos cinco dias restantes. Entram o modo edição da aba Detecção (recurso Visão Geral do edital, construído e desligado), a base de docs que faltava e a face default de Métricas, além dos 3 cards. ACOM, Dashboard e decisão automatizada ficam fora do prazo, declarados |
 
-| [[Attlas - Sprint 33\|33]] | 14-20/09 | **Analítico** - a semana do prazo | **Criada em 09/09.** O prazo externo de 18/09 cai na quinta desta janela, então não é semana de desenvolvimento cheio: carrega 15 pts em 4 tasks (ATSPM Split Monitor e Yellow/Red, a face lendo os dois grupos novos, e o histórico de configuração se sobrar) mais a entrega. Sem lista no ClickUp por ora, porque três das quatro dependem do que a 32 fechar |
+| [[Attlas - Sprint 33\|33]] | 14-20/09 | **Analítico** - entrega e validação | **Fechada.** As 34 PRs foram integradas; a validação consolidada e os ajustes posteriores ficam registrados na sprint e nas notas técnicas do domínio. |
 
 > [!important] Prazo externo do módulo Analítico: 18/09/2026, front e backend
 > A data cai na **[[Attlas - Sprint 33|Sprint 33]]**, que agora tem nota própria - as sprints 30, 31 e 32

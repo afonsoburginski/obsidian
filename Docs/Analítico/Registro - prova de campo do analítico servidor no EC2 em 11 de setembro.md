@@ -213,8 +213,7 @@ derrubaria a detecção até alguém reiniciar o ms-cameras.
   Obsidian -> ClickUp não fecha card.
 - PRs anteriores mergeadas: #3297 (runbook da MinIO) e #3300 (links da referência removida nas specs de
   Detecção). Permanecem abertas #3303, #3304, #3305 e #3306, todas com CI verde e aguardando review.
-- O handoff transitório foi consumido e removido; este registro, a sprint, o card e o report diário são
-  a fonte permanente do fechamento.
+- O handoff transitório foi consumido e removido; este registro, a sprint e o card são a fonte permanente do fechamento.
 
 ## Como conferir de novo
 

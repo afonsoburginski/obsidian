@@ -8,7 +8,7 @@ aliases:
   - "VL e ATSPM"
 servico: ms-video-analytics (o analitico servidor, real desde 03/09; renome do ms-virtual-loop feito em 02/09). ms-atspm, ms-dai e ms-connector-virtual-loop foram REMOVIDOS do repo em 05/09 (PR 2530) - CROSS-077
 fonte: auditoria de código de 24/08 (embarcado, servidor, ACOM/ATSPM) + Anotações sobre Analítico de vídeo (notas do user) + attlas-vl-atspm.pdf (squad de Visão Computacional, 10/08) + decisões preservadas das 14 PRs fechadas da Sprint 27 + prazo externo fechado em 25/08
-atualizado: 2026-09-14
+atualizado: 2026-09-21
 ---
 
 # Analítico (Virtual Loop, ATSPM, DAI, ACOM)
@@ -120,6 +120,14 @@ atualizado: 2026-09-14
 > mas a imagem oficial é `scratch` - três arquivos, sem shell -, então o restart nunca acontecia; agora
 > compara contra sentinela de hash no host).
 
+## Atualização operacional — 21/09/2026
+
+A leitura ATSPM no produto não consulta `ms-atspm`: esse serviço foi removido. A tela resolve o
+detector pelo vínculo da região e lê o histórico agregado. A falta de vínculo é um estado configurável
+da câmera, não um erro de infraestrutura. O módulo também compartilha eventos analíticos por câmera
+para manter as Métricas atualizadas sem polling; só a fila global de Incidentes aguarda um evento de
+sistema próprio.
+
 ## As duas capacidades e a placa
 
 - **Virtual Loop (VL)** - detecção de cruzamento por laço virtual desenhado sobre o vídeo. Não tem
@@ -217,6 +225,8 @@ notas de alinhamento do user pedem. Nenhum destes tem uma linha de spec:
 - [[Registro - os quatro blocos de configuração da Detecção no EC2 em 14 de setembro]] - onde cada um
   dos quatro blocos abaixo do player lê o estado dele, o inventário das sete analíticas do EC2 dev que
   mostrou por que os quatro apareciam desabilitados, e o script que fecha isso.
+
+- [[Registro - ajustes do módulo em 17 e 18 de setembro]] - decisões de interface e comportamento registradas nas PRs #278, #281 e #283.
 
 ## Planejamento
 

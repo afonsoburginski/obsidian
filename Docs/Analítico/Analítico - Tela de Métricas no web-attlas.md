@@ -7,7 +7,7 @@ tags:
 aliases:
   - "Tela de Métricas no web-attlas"
   - "Métricas do Analítico - estado da tela"
-atualizado: 2026-09-12
+atualizado: 2026-09-21
 fonte: leitura direta de apps/web-attlas/src/app/modules/analytics-metrics na ponta da pilha (cameras/feat/SOFTWARE-2797-map) contra modulo-analitico/entrega-frontend do attlas-design, em 03/09/2026
 ---
 
@@ -18,6 +18,26 @@ nota de estado da rota `/analytics/metrics` no produto: o que está no ar, o que
 divergiu da referência e em que ordem o resto entra. Existe porque o Lote 10 do
 [[Plano - atualização da documentação do vault]] nunca foi escopado e a tela entregue não tinha casa
 em `Docs/`.
+
+## Estado atual — 21/09/2026
+
+> [!success] Métricas está em produção como três faces: **ATSPM**, **Laço Virtual** e **Incidentes**. A
+> tela é reativa; ela não faz polling para atualizar leituras.
+
+- **Laço Virtual e ATSPM** compartilham o cache da tela e o canal de eventos analíticos da câmera. Um
+  evento de ocupação invalida somente os escopos que ele alimenta, com coalescência de dois segundos;
+  detecções mantêm o indicador de vida, mas não relêem agregados que elas não alteram.
+- **ATSPM não é um microsserviço.** `ms-atspm` não existe no monorepo: a face compõe o vínculo da região
+  com o detector (`virtual-loop-bindings`) e a janela do `ms-detector-history`. Sem vínculo é o estado
+  explícito **sem vínculo**; com vínculo e sem amostras, o estado é vazio.
+- Hoje há produtor para quatro leituras do catálogo ATSPM. As demais métricas continuam visíveis como
+  sem leitura, sem fabricar número; não é falha de renderização.
+- **Incidentes** ainda não possui evento de frota no backend. A fila usa leitura cacheada e atualização
+  confirmada localmente na própria sessão; atualização global por WebSocket depende de um evento de
+  sistema que ainda não existe.
+
+> [!note] As seções datadas abaixo preservam o histórico da implantação. Onde discordarem deste bloco,
+> este é o estado de referência.
 
 ## Onde a tela mora
 

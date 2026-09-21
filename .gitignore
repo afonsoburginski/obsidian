@@ -3,3 +3,7 @@
 
 # Artefatos de automação de browser (capturas, snapshots, logs de console)
 .playwright-mcp/
+
+# Artefatos transitórios do conector MCP não são conteúdo do vault.
+/.obsidian-mcp/transactions/
+/.obsidian-mcp/locks/

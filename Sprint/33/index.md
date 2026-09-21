@@ -9,7 +9,7 @@ aliases:
   - "Sprint 33 - o que entrega"
 sprint: Sprint 33 (14/9/26 - 20/9/26)
 status: "CRIADA em 09/09 como a semana do prazo externo de 18/09. REPLANEJADA em 12/09 depois do merge da #3328 (console do Analítico consolidado): virou sprint de acabamento, com os gaps levantados na própria PR. AMPLIADA em 14/09 com o estudo de caso do analítico servidor e do vídeo, a pedido do usuário: 22 tasks, uma nota e uma PR cada, 90 pts, em ordem de execução. FECHADA em 14/09 à noite: as 22 tasks têm PR aberta, 7 delas em stack registrada no GitHub, num total de 31 PRs. ATUALIZADA em 15/09: o usuário decidiu mergear as 34 PRs em develop ANTES da validação, via PR intermediária #3573 (merge commits preservados, branches de origem deletadas). A conferência agora roda numa PR guarda-chuva só, #3596, ver [[Validação - as 34 PRs, uma a uma]]."
-atualizado: 2026-09-17
+atualizado: 2026-09-21
 ---
 
 # Sprint 33 - o que entrega
@@ -161,7 +161,7 @@ exportação e OTA do embarcado), item por item em [[Analítico - O que falta pa
 
 As 22 tasks (34 PRs) fecharam com PR aberta e **em 15/09 foram todas mergeadas em `develop`** pelo
 usuário, antes da validação (PR intermediária [[#3573|https://github.com/atmanadmin/attlas-2026/pull/3573]],
-branches de origem deletadas). **Nenhuma foi validada ainda.** A conferência agora roda numa PR
+branches de origem deletadas). A validação consolidada foi executada na PR guarda-chuva; os ajustes posteriores de Métricas e da fila foram concentrados na PR #3932. A conferência agora roda numa PR
 guarda-chuva só, [#3596](https://github.com/atmanadmin/attlas-2026/pull/3596)
 (`shared/chore/NO-CARD-sprint33-validation`) — achado vira commit ali, não branch nova por PR. A
 lista de conferência, uma linha por PR com o que tem de funcionar e como provar, está em

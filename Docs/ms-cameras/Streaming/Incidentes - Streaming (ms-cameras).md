@@ -397,7 +397,7 @@ Decisão tomada com o dono do serviço após o achado de crédito de CPU/rede bu
 
 ## Responsabilidade: ms-cameras (backend) - reap e adoção se revezando para sempre
 
-**Status:** diagnosticado, correção planejada · **Data:** 18/09/2026 · **Ambiente:** máquina de dev (não é a EC2) · **Plano:** [[Task - Streaming de câmeras sem vazamento de publicador]]
+**Status:** diagnosticado, correção planejada · **Data:** 18/09/2026 · **Ambiente:** máquina de dev (não é a EC2) · **Plano:** [[Plano - Streaming sem vazamento de publicador]]
 
 ### Incidente - dois ffmpeg puxando a mesma câmera, com zero espectadores
 
@@ -445,6 +445,6 @@ morto (`proc.killed` fica `true` assim que o SIGTERM é **enviado**) e que, em c
 
 #### Correção
 
-Planejada em fases na [[Task - Streaming de câmeras sem vazamento de publicador]], aprovada em 18/09 e
+Planejada em fases na [[Plano - Streaming sem vazamento de publicador]], aprovada em 18/09 e
 ainda não implementada. Fase 0 são 43 linhas: o SIGKILL que nunca dispara e o `exec` no Dockerfile.
 

@@ -7,18 +7,18 @@ tags:
 aliases:
   - "Convenções de escrita"
   - "Como escrever"
-atualizado: 2026-07-31
+atualizado: 2026-09-21
 ---
 
 # Convenções de escrita
 
-Fonte de verdade de **como escrever** no contexto Attlas: report diário, descrição e título de PR,
+Fonte de verdade de **como escrever** no contexto Attlas: descrição e título de PR,
 comentário de review, e documento de público misto. Saiu da memória do Claude em 31/07/2026 e passou a
 morar aqui, porque é conhecimento de projeto e precisa ser lido, revisado e corrigido como qualquer outra
 nota, em vez de ficar invisível num arquivo de memória.
 
-O formato do report diário não está repetido aqui: ele vive em [[Report diário]], que é o template mais
-completo e mais recente. Esta nota cobre o resto e as regras que valem para tudo.
+O vault registra apenas conhecimento técnico reutilizável: decisões, contratos, arquitetura, runbooks,
+incidentes e planos. Atualizações diárias e prompts efêmeros não são fonte de verdade e não entram aqui.
 
 ## Regras que valem para todo texto
 
@@ -104,5 +104,4 @@ precisam entender.
 
 ## Relacionado
 
-- [[Report diário]], template e exemplos canônicos do report.
 - [[Docs - índice raiz]], convenção de nome e frontmatter das notas deste vault.

@@ -33,7 +33,7 @@ Registro histórico (não é referência do comportamento atual):
 
 - [[Pesquisa - codec, protocolo e latência]] - as duas investigações de julho/2026 que definiram H264 baseline, H265 oportunístico e ABR por substream.
 - [[Incidentes - Streaming (ms-cameras)]] - registro consolidado dos incidentes de streaming, separado por responsabilidade: vazamento de sessão (ms-cameras, 03/07) e saturação de banda de saída da EC2 sob carga concorrente de visualização (infra + ms-cameras, 24/08, confirmado via dados de healthcheck no banco), mais os dois publicadores na mesma câmera com zero espectadores (dev, 18/09).
-- [[Task - Streaming de câmeras sem vazamento de publicador]] - plano aprovado em 18/09 para acabar com o publicador órfão, em quatro fases, ainda não implementado.
+- [[Plano - Streaming sem vazamento de publicador]] - plano aprovado em 18/09 para acabar com o publicador órfão, em quatro fases, ainda não implementado.
 - [[Plano - Banda por câmera (bitrate configurado ONVIF + VAPIX)]] - a decisão que virou o bitrate device-truth.
 
 Visual: [[04 - MOD-004 hls-streaming-pipeline.excalidraw|Diagrama - pipeline (Excalidraw)]] · [[09 - Streaming - estratégia de codec.excalidraw|estratégia de codec]].

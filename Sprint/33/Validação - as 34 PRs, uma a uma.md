@@ -216,8 +216,7 @@ provas de tela de 16/09 ficou registrada no commit `a19c97f672`.
 
 ## Ver também
 
-[[Prompt - continuar a validação e os fixes de 16 de setembro]] ·
-[[Prompt - validar as 34 PRs em duas sessões]] · [[Attlas - Sprint 33]] ·
+[[Attlas - Sprint 33]] ·
 [[Analítico - Embarcado x Servidor]] ·
 [[Registro - os quatro blocos de configuração da Detecção no EC2 em 14 de setembro]] ·
 [[Analítico]]
