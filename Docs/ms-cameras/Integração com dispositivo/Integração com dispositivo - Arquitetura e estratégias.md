@@ -2,147 +2,177 @@
 tags:
   - doc
   - ms-cameras
-  - cameras
   - dispositivo
-  - hardware
-atualizado: 2026-08-24
+aliases:
+  - "Carga desnecessária nas câmeras - reconciler do analítico e conexões duplicadas"
+atualizado: 2026-10-01
 ---
 
 # Integração com dispositivo - Arquitetura e estratégias
 
-> Padrões centrais do adaptador multi-protocolo. Índice: [[Integração com dispositivo]]. Diagrama: [[02 - MOD-002 multi-protocol-adapter.excalidraw|diagrama]].
+Parte da [[Integração com dispositivo]]. Caminhos relativos a `apps/ms-cameras/src/`.
+
+## Mapa de código
+
+| Peça | Arquivo | Papel |
+| --- | --- | --- |
+| Porta do driver | `hardware/drivers/i-camera-driver.interface.ts` | `ICameraDriver`, com estado: connect, disconnect, status, URL do stream, PTZ, analítico, `getEncoderConfig` opcional |
+| Factory | `hardware/drivers/camera-driver.factory.ts` | Resolve o driver por `ProtocolType` |
+| Driver ONVIF | `hardware/drivers/onvif/onvif.driver.ts` | Única implementação de `ICameraDriver`, ONVIF Profile S genérico sobre `@atmanadmin/node-onvif-ts` |
+| Porta da estratégia | `hardware/communication/i-camera-communication-strategy.interface.ts` | `ICameraCommunicationStrategy`, sem estado: `supports()` e `buildLiveStreamDescriptor()` |
+| Seletor e estratégias | `hardware/communication/camera-communication-strategy.selector.ts`, `strategies/{rtsp,onvif,isapi}-camera-communication.strategy.ts` | Montam o descritor de stream por protocolo |
+| URL RTSP | `hardware/communication/strategies/helpers/rtsp-source-url.helper.ts`, `rtsp-defaults.constants.ts` | Fonte única de montagem e normalização da URL (default `rtsp://host:554/stream1`) |
+| Enums e tipos | `hardware/enums/`, `hardware/types/` | `ProtocolType` (`ONVIF`, `ISAPI`, `RTSP`, `PROPRIETARY`), `StreamType`, `ConnectionState`, comandos PTZ, `ICameraStream`, `IDeviceBitrateConfig` |
+| PTZ e zoom VAPIX | `cameras/utils/vapix-ptz.utils.ts`, `vapix-zoom.utils.ts` | Comandos Axis em `/axis-cgi/com/ptz.cgi` |
+| Digest | `health/utils/digest-auth.utils.ts` (`AxisDigestClient`) | HTTP Digest, usado por VAPIX e ISAPI |
+| Clientes de saúde | `health/clients/axis-ws.client.ts`, `onvif-pullpoint.client.ts`, `hikvision-alert-stream.client.ts`, `hikvision-isapi-heartbeat.client.ts` | WebSocket de eventos Axis, PullPoint ONVIF, alertStream e poll ISAPI |
+| Bitrate configurado | `health/device-bitrate.reader.ts`, `health/utils/resolve-provisioned-bitrate.ts`, `axis-rate-control.utils.ts`, `hikvision-rate-control.utils.ts` | Lê o teto ou alvo configurado no equipamento |
+| Sondagem | `cameras/services/camera-credential-probe.service.ts`, `hikvision-isapi-probe.util.ts`, `hikvision-onvif-provisioning.util.ts` | Descoberta no cadastro, fallback ISAPI, ativação do ONVIF na Hikvision |
+| Inventário de perfis | `cameras/services/camera-onvif-media-profile.reader.ts`, `camera-isapi-media-profile.reader.ts` | Leitura ONVIF com fallback ISAPI para `CameraMediaProfile` |
+| Credenciais | `database/schema/camera/camera_credential.prisma` | Usuário e senha 1:1 por câmera |
 
 ## Duas portas, dois padrões
 
-A integração separa **operação stateful** de **construção stateless de URL** em dois contratos TS distintos:
+| Porta | Padrão | Natureza | Quem escolhe |
+| --- | --- | --- | --- |
+| `ICameraDriver` | Adapter mais Factory | Com estado: abre conexão, mede status, executa PTZ, lê o encoder | `CameraDriverFactory` |
+| `ICameraCommunicationStrategy` | Strategy | Sem estado: só monta o descritor de stream | `CameraCommunicationStrategySelector` |
 
-| Porta | Contrato | Padrão | Natureza | Quem escolhe |
-| --- | --- | --- | --- | --- |
-| Driver | `ICameraDriver` (`hardware/drivers/i-camera-driver.interface.ts`) | **Adapter** + **Factory** | Stateful - abre conexão, mantém status, executa PTZ, lê bitrate configurado | `CameraDriverFactory` |
-| Comunicação | `ICameraCommunicationStrategy` (`hardware/communication/i-camera-communication-strategy.interface.ts`) | **Strategy** | Stateless - só monta o descritor de stream | `CameraCommunicationStrategySelector` |
+Regra de fronteira, comentada nos dois contratos: o que é só streaming fica atrás da estratégia, o que tem
+estado fica atrás do driver. Isolar o protocolo atrás de contrato é o que permite integrar fabricante novo
+sem tocar em streaming, PTZ e saúde (RF-INT-05). Na prática o `OnvifDriver` genérico cobre qualquer câmera
+Profile S, e adaptador dedicado só entra quando o ONVIF não basta: recurso que ele não expõe (zoom Axis em
+câmera fixa) ou firmware que chega com ONVIF desligado (Hikvision, INT-018 a INT-020).
 
-Regra de fronteira (comentada em ambos os contratos): **streaming-only vive atrás da estratégia; operação com estado vive atrás do driver**. RTSP, por não ter estado, **não tem driver** - pedir `createDriver(RTSP)` lança `RTSP_HAS_NO_DRIVER`. ISAPI (Hikvision) segue a mesma lógica só que sem erro dedicado - ver seção "Factory" abaixo.
+## Protocolos
 
-## Factory - driver por protocolo
+| Protocolo | Estado | Como |
+| --- | --- | --- |
+| ONVIF Profile S | Obrigatório e preferido (RNF-CAM-02) | `OnvifDriver`; PTZ por `ContinuousMove`, `AbsoluteMove`, `RelativeMove` e `Stop`; bitrate configurado por `getEncoderConfig` |
+| RTSP e RTSPS | Streaming | Sem driver; `RtspCameraCommunicationStrategy` só monta a URL |
+| VAPIX (Axis) | Proprietário, chamado direto | Zoom em câmera fixa, PTZ absoluto em unidades nativas, eventos por WebSocket, posição PTZ, `RateControl` do bitrate; fora do par factory e driver |
+| ISAPI (Hikvision) | Proprietário, chamado direto | Firmware sai de fábrica com `/onvif/device_service` respondendo 404; a estratégia ISAPI monta o stream pelo IP e canal; saúde por alertStream com poll de `GET /ISAPI/System/status` como fallback; bitrate em `Streaming/channels/<id>`. No cadastro o ONVIF é ligado no equipamento (INT-020) e PTZ e perfis seguem pelo `OnvifDriver` |
+| Dahua, Bosch e outros | Via ONVIF | Sem adaptador dedicado |
+| `PROPRIETARY` como driver | Não implementado | A factory lança `PROPRIETARY_PROTOCOL_NOT_SUPPORTED`; o registro de drivers por fabricante (`INT-004-proprietary-registry.md`) não existe |
 
-`CameraDriverFactory.createDriver(protocol, options?)` (`hardware/drivers/camera-driver.factory.ts`) despacha por `ProtocolType`:
+## Factory
 
 | `ProtocolType` | Resultado |
 | --- | --- |
-| `ONVIF` | `new OnvifDriver(options.onvif)`; sem `options.onvif` → lança `ONVIF_OPTIONS_REQUIRED` |
-| `RTSP` | Lança `RTSP_HAS_NO_DRIVER` (usar a estratégia) |
-| `PROPRIETARY` | Lança `PROPRIETARY_PROTOCOL_NOT_SUPPORTED` - **registry não implementado** |
-| _default_ (inclusive `ISAPI`) | Lança `UNSUPPORTED_CAMERA_PROTOCOL` |
+| `ONVIF` | `new OnvifDriver(options.onvif)`; sem `options.onvif`, `ONVIF_OPTIONS_REQUIRED` |
+| `RTSP` | `RTSP_HAS_NO_DRIVER` (usar a estratégia) |
+| `PROPRIETARY` | `PROPRIETARY_PROTOCOL_NOT_SUPPORTED` |
+| qualquer outro, inclusive `ISAPI` | `UNSUPPORTED_CAMERA_PROTOCOL` |
 
-`ISAPI` não tem `case` próprio no switch - cai no `default` genérico, ao contrário de `RTSP` (que ganhou um erro dedicado `RTSP_HAS_NO_DRIVER` pela mesma razão de não ter driver). Na prática isso nunca é exercitado: a Hikvision usa o `OnvifDriver` comum para tudo que é stateful (PTZ, perfis de mídia) depois que o cadastro **ativa o ONVIF automaticamente** no device (INT-020 - a firmware sai de fábrica com o ONVIF desligado). ISAPI só entra pela estratégia de comunicação (streaming) e pelos clients de saúde, nunca pela factory.
+`ISAPI` cair no default nunca é exercitado: a Hikvision usa o `OnvifDriver` para tudo que tem estado depois
+que o cadastro liga o ONVIF, e o ISAPI só entra pela estratégia de streaming e pelos clientes de saúde.
 
-Hoje **só `OnvifDriver` implementa `ICameraDriver`**. A extensão prevista: implementar a interface em `hardware/drivers/<vendor>/`, registrar via `ProprietaryDriverRegistry` (`INT-004`) e rotear por `manufacturer.code` - ainda não existe (cabeçalho de `i-camera-driver.interface.ts` e `camera-driver.factory.ts`).
+### `OnvifDriver`
 
-### `OnvifDriver` (Profile S)
+- `connect()`: `servicesInit()`, heartbeat, e guarda a URL do PRIMARY (e do SECONDARY se houver
+  `secondaryMediaProfileToken`).
+- `getStreamUrl(type)`: a URL guardada no connect; ausente, `ONVIF_STREAM_URL_NOT_CACHED`.
+- `movePTZ(command)`: despacha para `absoluteMove`, `relativeMove`, `continuousMove` ou `stop`. O contínuo
+  manda `Timeout` como número, para a biblioteca serializar `PT<n>S` e o equipamento parar sozinho.
+- `executeHeartbeat()`: latência medida sobre `deviceInformationInit()`; atualiza `ConnectionState`.
+- A URI RTSP devolvida pela câmera recebe credenciais e o host de `ipSocketAddresses.rtsp` (NAT, proxy, túnel).
+- `getEncoderConfig(mediaProfileToken?)`: bitrate, encoding e resolução do encoder sem abrir stream; o
+  sentinela "sem limite" do VBR é substituído por estimativa pela resolução (`estimate-bitrate.util.ts`, teto
+  `MAX_SANE_BITRATE_KBPS` de 1.000.000 kbps).
+- `getNativeAnalytics()`: não implementado, `ONVIF_NATIVE_ANALYTICS_NOT_IMPLEMENTED`.
 
-- **`connect()`**: `servicesInit()` → `executeHeartbeat()` → cacheia URL do stream `PRIMARY` (e `SECONDARY` se houver `secondaryMediaProfileToken`).
-- **`getStreamUrl(type)`**: devolve a URL cacheada no connect; se ausente → `ONVIF_STREAM_URL_NOT_CACHED`.
-- **`movePTZ(command)`**: despacha por `PTZCommandType` para `absoluteMove`/`relativeMove`/`continuousMove`/`stop` da lib. `CONTINUOUS` popula eixos condicionalmente e passa `Timeout` numérico (auto-stop ONVIF - a lib serializa `PT<n>S` só se for `number`; detalhe crítico comentado no código).
-- **`executeHeartbeat()`**: mede latência (`ChronometerUtils` sobre `deviceInformationInit()`), atualiza `ICameraStatus` (`ConnectionState` CONNECTED/ERROR).
-- **`buildRewrittenRtspUri()`**: a URI RTSP devolvida pela câmera tem credenciais injetadas e o host trocado por `ipSocketAddresses.rtsp` (NAT/proxy/túnel).
-- **`getEncoderConfig(mediaProfileToken?)`** (INT-006, agosto): método **opcional** do contrato - lê `mediaGetProfiles()` e devolve o bitrate/encoding/resolução configurados no encoder, sem abrir stream. Sentinela "sem limite" do VBR (bitrate ≥ teto seguro) é tratado estimando pela resolução em vez de propagar o valor absurdo. Base universal do bitrate configurado (ver seção própria abaixo).
-- **`getNativeAnalytics()`**: **não implementado** - lança `ONVIF_NATIVE_ANALYTICS_NOT_IMPLEMENTED`.
+## Estratégias e descritor de stream
 
-Lib: `@atmanadmin/node-onvif-ts` (`OnvifDevice`). Opções: `IOnvifConnectionOptions` (`hardware/types/onvif-connection-options.interface.ts`) - `ipSocketAddresses.{onvif,rtsp}`, user/pass, `mediaProfileToken` (+ secundário opcional).
+Registro em `camera-communication-strategies.provider.ts`, na ordem `[rtsp, onvif, isapi]` (protocolos
+disjuntos); o seletor devolve a primeira cujo `supports()` casa, senão
+`UNSUPPORTED_CAMERA_COMMUNICATION_PROTOCOL`.
 
-## Strategy - descritor de stream por protocolo
-
-`CameraCommunicationStrategySelector.select(protocol)` (`camera-communication-strategy.selector.ts`) percorre as estratégias registradas e retorna a primeira cujo `supports(protocol)` é `true`; nenhuma → `UNSUPPORTED_CAMERA_COMMUNICATION_PROTOCOL`.
-
-Registro (ordem, disjunta hoje): `[rtsp, onvif, isapi]` em `camera-communication-strategies.provider.ts` sob o token `CAMERA_COMMUNICATION_STRATEGIES_TOKEN`; módulo `communication.module.ts` exporta só o selector.
-
-| Estratégia | `supports()` | `buildLiveStreamDescriptor()` |
+| Estratégia | `supports()` | Descritor |
 | --- | --- | --- |
-| `RtspCameraCommunicationStrategy` | `RTSP` ou `RTSPS` | Usa `primaryStreamUrl` se houver (normalizada); senão monta `rtsp(s)://ip:porta/stream1` a partir de `ipAddress`+`primaryStreamPort`. Valida porta 1..65535 |
-| `OnvifCameraCommunicationStrategy` | `ONVIF` | **Exige `primaryStreamUrl` já populada** (descoberta em runtime pelo `OnvifDriver.connect`); senão → `ONVIF_STREAM_URL_NOT_DISCOVERED`. Devolve o descritor com `protocol: 'RTSP'` |
-| `IsapiCameraCommunicationStrategy` (agosto, PR #1738 - INT-018) | `ISAPI` | Usa `primaryStreamUrl` se já registrada; senão monta a URL a partir do IP + canal principal Hikvision (`hikvisionChannelPath`, helper do domínio de Streaming). **Não** anexa parâmetros de codec/resolução na URL - a Hikvision configura isso via ISAPI e ignora query params (INT-007). Ao contrário da estratégia ONVIF, não depende de descoberta SOAP prévia - por isso funciona mesmo com `/onvif/device_service` respondendo 404 |
+| RTSP | `RTSP`, `RTSPS` | `primaryStreamUrl` normalizada, ou `rtsp(s)://ip:porta/stream1`; porta 1 a 65535 |
+| ONVIF | `ONVIF` | Exige `primaryStreamUrl` já descoberta, senão `ONVIF_STREAM_URL_NOT_DISCOVERED` |
+| ISAPI | `ISAPI` | `primaryStreamUrl` registrada ou a URL do canal principal Hikvision; não anexa parâmetros de codec na URL, porque a Hikvision os ignora (INT-007) |
 
-Ponto-chave: nenhuma estratégia faz descoberta de verdade além da ONVIF (que reaproveita a URL que o driver ONVIF já resolveu). RTSP e ISAPI constroem a URL a partir de dados já conhecidos (IP, porta, canal). O output é sempre RTSP.
+O descritor é sempre RTSP: `ICameraStream { protocol: 'RTSP', sourceUrl, suggestedCodec, metadata? }`. É o
+que o [[Streaming]] entrega ao MediaMTX, que puxa a câmera sob demanda (INT-027). `RtspSourceUrl.normalize`
+mantém `rtsp`, `rtsps`, `http` e `https` e prefixa `rtsp://` sem esquema; IPv6 vai entre colchetes.
 
-## Descritor de stream / URL RTSP
+## Bitrate configurado
 
-`ICameraStream` (`hardware/types/camera-stream.interface.ts`) é o contrato entregue ao streaming:
+Do lado do equipamento, o `DeviceBitrateReader` (`health/device-bitrate.reader.ts`) lê o bitrate que a
+câmera vai usar, sem abrir stream, e `resolveProvisionedBitrate` combina as leituras:
 
-```
-{ protocol: 'RTSP'; sourceUrl: string; suggestedCodec: string; metadata?: { cameraId } }
-```
-
-Entrada: `ICameraStreamSource` (`camera-stream-source.interface.ts`) - protocolo, IP, codec, URL/porta primárias, cameraId.
-
-Montagem em `RtspSourceUrl` (`helpers/rtsp-source-url.helper.ts`), fonte única para as três estratégias (RTSP, ONVIF, ISAPI):
-
-- **`build({ipAddress, port, secure})`** → `rtsp://host:554/stream1` (defaults em `rtsp-defaults.constants.ts`: `PORT=554`, `PATH=/stream1`, `SECURE_SCHEME=rtsps`). IPv6 é colchetado na autoridade.
-- **`normalize(raw)`** → mantém `rtsp/rtsps/http/https` como estão; prefixa `rtsp://` quando não há esquema. (Algumas Axis expõem HTTP em campos "rtsp" do SDK; `GetStreamUri(RTSP)` devolve `rtsp://` real.)
-
-Independentemente do protocolo de entrada (ONVIF, RTSP ou ISAPI), o descritor final é **sempre RTSP** - é o denominador comum que o pipeline de [[Streaming\|Streaming]] (ffmpeg → mediamtx) consome.
-
-## Bitrate configurado (device-truth)
-
-INT-006/PROJ-008 - lê o bitrate **configurado** no device (o teto/target que a câmera vai usar), não o consumo instantâneo (esse vem do mediamtx via PROJ-006, camada de Streaming). Orquestrado por `DeviceBitrateReader` (`health/device-bitrate.reader.ts`), chamado pelo coletor periódico (`health/workers/provisioned-bandwidth-collector.service.ts`, domínio de Saúde); tipo de saída `IDeviceBitrateConfig` (`hardware/types/device-bitrate-config.interface.ts`).
-
-Três fontes, combinadas por `resolveProvisionedBitrate` (`health/utils/resolve-provisioned-bitrate.ts`):
-
-| Fonte | Onde | Papel |
+| Leitura | Onde no equipamento | Regra |
 | --- | --- | --- |
-| ONVIF `getEncoderConfig` | `OnvifDriver` (universal) | Valor-base - funciona em qualquer câmera ONVIF |
-| VAPIX `Image.I0.RateControl` | `health/utils/axis-rate-control.utils.ts` (`readAxisRateControl`) | Enriquece Axis: modo (MBR/ABR/VBR) e, se ABR, substitui o bitrate pelo target planejado |
-| ISAPI `Streaming/channels/<id>` | `health/utils/hikvision-rate-control.utils.ts` (`readHikvisionRateControl`) | Enriquece Hikvision: modo e `constantBitRate`/`vbrUpperCap`, que sempre vence o valor final (ONVIF em Hikvision VBR costuma reportar o sentinela int-max) |
+| ONVIF | `GetProfiles`, pelo `OnvifDriver.getEncoderConfig` | Valor base, qualquer câmera ONVIF |
+| VAPIX | `param.cgi` grupo `Image.I0.RateControl` (`axis-rate-control.utils.ts`) | Axis: modo (MBR, ABR, VBR); em ABR o alvo planejado substitui o valor |
+| ISAPI | `Streaming/channels/<id>` (`hikvision-rate-control.utils.ts`) | Hikvision: `constantBitRate` ou `vbrUpperCap` sempre vence, porque o ONVIF da Hikvision VBR reporta o sentinela |
 
-Uma câmera é Axis **ou** Hikvision, nunca as duas - no máximo um enriquecimento é aplicado. Read-only e best-effort: qualquer falha devolve `null` e o coletor mantém o valor em cache.
+Uma câmera é Axis ou Hikvision, então no máximo um enriquecimento se aplica. Somente leitura e best-effort:
+falha devolve `null`. Quem chama, com que frequência, o sentinela VBR e como o número é usado:
+[[Streaming - Banda e bitrate]].
 
-> [!warning] Achado de código - comentário desatualizado em `hikvision-rate-control.utils.ts`
-> O comentário do arquivo diz "NOT VALIDATED AGAINST A DEVICE: no Hikvision camera exists on the
-> network yet" - verdadeiro quando o reader foi escrito (03/08), mas defasado desde meados de agosto:
-> `database/seed.ts` cadastra uma Hikvision real (DS-2CD1023G0E-I, `192.168.210.80`), com streaming,
-> saúde e credencial validados em campo em 14/08 e 18/08 (ver [[Runbook - câmeras reais para teste]]).
-> Não fica claro se a leitura de bitrate ISAPI especificamente já foi exercitada contra esse device -
-> vale conferir/atualizar o comentário na próxima vez que alguém tocar o arquivo.
+> [!warning] Comentário do código diz que a leitura ISAPI nunca foi validada
+> `hikvision-rate-control.utils.ts` afirma que não há Hikvision na rede. Há uma de bancada
+> ([[Runbook - câmeras reais e teste por terminal]]),
+> validada em streaming, saúde e credencial; a leitura de bitrate ISAPI especificamente segue sem prova
+> registrada contra ela.
 
-## Digest auth (VAPIX + ISAPI)
+## Digest e credenciais
 
-`AxisDigestClient` (`health/utils/digest-auth.utils.ts`) - HTTP Digest RFC 7616, cliente único e genérico, hoje reusado bem além do VAPIX:
+`AxisDigestClient` faz o desafio Digest (probe, `401` com `WWW-Authenticate`, MD5, reenvio com
+`Authorization: Digest`). Autentica VAPIX e também os dois clientes ISAPI e a leitura de bitrate ISAPI; o
+nome ficou por decisão registrada no código (renomear toca uma dúzia de chamadas).
 
-- `get` / `getBuffer`: faz probe → recebe `401` + `WWW-Authenticate` → calcula MD5 (`ha1`/`ha2`/`response`) → reenvia com `Authorization: Digest …`.
-- `getStream` (agosto, INT-019 seção 2): mesmo handshake, mas devolve a resposta como stream em vez de esperar o corpo terminar - necessário para o alertStream ISAPI da Hikvision, que é uma conexão HTTP que nunca fecha. Lança `DigestRequestError` (carrega o status) para o caller distinguir 404 (endpoint ausente na firmware) de 401 (credencial rejeitada).
-- Trata **qualquer 2xx** como sucesso (AxisOS ≥ 11 devolve `204 No Content` no `ptz.cgi`; tratá-lo como falha gerava 502 fantasma).
-- `fetchWsSessionToken`: obtém token wssession (válido ~15 s) para abrir o WebSocket de eventos Axis.
-- Timeouts: 5 s (texto) / 8 s (buffer, ex. `image.cgi`).
+- `get` e `getBuffer` com timeouts de 5 s (texto) e 8 s (buffer, como `image.cgi`).
+- `getStream` devolve a resposta em fluxo, para o alertStream ISAPI, que nunca fecha; lança
+  `DigestRequestError` com o status para distinguir 404 (firmware sem o endpoint) de 401.
+- Qualquer 2xx é sucesso (AxisOS 11 responde `204` no `ptz.cgi`).
+- `fetchWsSessionToken`: token de cerca de 15 s para abrir o WebSocket de eventos Axis.
 
-Apesar do nome, o mesmo cliente autentica os dois clients ISAPI da Hikvision (`hikvision-isapi-heartbeat.client.ts`, `hikvision-alert-stream.client.ts`) e a leitura de bitrate ISAPI - o próprio código documenta a decisão ("`AxisDigestClient` is reused despite the name... renaming it touches 12 call sites and is deliberately deferred"). É a mesma nuance de nomenclatura que a estratégia ISAPI, só que já registrada no código-fonte em vez de precisar de callout aqui.
+`CameraCredential` guarda usuário e senha em texto puro, 1:1 com a câmera; o acesso aos equipamentos é
+restrito por VPN. O provedor de credencial do gateway de autenticação (`CAMERA_CREDENTIAL_PROVIDER`) é TODO.
 
-Credenciais: `CameraCredential` (`database/schema/camera/camera_credential.prisma`) - user/pass **texto puro**, 1:1 com `Camera`; ONVIF/VAPIX/ISAPI convertem em digest no handshake e o acesso é restrito por VPN. Integração com auth gateway (`ICameraCredentialProvider` / `CAMERA_CREDENTIAL_PROVIDER`) é **TODO** - provider ainda não implementado.
+## Conexão por equipamento físico
 
-> [!info] Dedupe de conexão por device físico - documentado no domínio de Saúde
-> Os clients desta camada (`axis-ws.client.ts`, `onvif-pullpoint.client.ts` e os dois clients ISAPI
-> acima) não abrem mais uma conexão por linha de `Camera`: há dedupe por device físico e, sob N
-> réplicas, um lease Redis por device (`health/leases/`) garantindo um único monitor cluster-wide.
-> Mecânica, números e histórico do fix ficam em
-> [[Saúde e monitoramento - Arquitetura e estratégias]] seção "Worker" - não duplicado aqui porque já
-> foi revisado no mesmo dia (24/08) contra o código. Este domínio só aponta que os clients dedupados
-> são os mesmos que ele documenta.
-
-## Por que isolar protocolos atrás de contratos TS
-
-RF-INT-05 (novo fabricante **sem** desenvolvimento específico de protocolo) e RNF-CAM-02 (ONVIF obrigatório, resto fallback): o par porta + factory/selector permite adicionar um fabricante implementando um contrato e registrando, **sem tocar** nos consumidores (streaming/PTZ/saúde). Na prática hoje isso é entregue pelo **`OnvifDriver` genérico** cobrindo qualquer câmera Profile S; adaptadores dedicados entram quando o ONVIF não é suficiente - seja para expor um recurso que ele não cobre (zoom Axis em câmera fixa, `AutoFlip`), seja porque a firmware chega com ONVIF desligado e HTTP proprietário é o único caminho até ele ser ativado (Hikvision/ISAPI, INT-018 a INT-020). Ver [[Integração com dispositivo - Requisitos e SLA]] para o estado por requisito.
+Os clientes de saúde abrem uma conexão por equipamento, não por linha `Camera`: a chave do device é o canal
+mais o endereço (`health/leases/device-key.util.ts`), e uma lease Redis por chave garante um único monitor no
+cluster. As escritas abrem em leque para todas as linhas do mesmo equipamento. Mecânica em
+[[Saúde e monitoramento - Arquitetura e estratégias]].
 
 ## Erros e timeouts
 
-`DomainException` (`@attlas/core-common`) - nunca `Error`/`HttpException` cru. Códigos estáveis (`errorCode` não é traduzido):
+`DomainException` de `@attlas/core-common`, nunca `Error` cru.
 
-| Código | Origem | Quando |
+| Código | Exceção | Quando |
 | --- | --- | --- |
-| `CAMERA_UNREACHABLE` | `ExternalServiceException` | Timeout/falha de I/O no driver ONVIF ou VAPIX (PtzService `runWithTimeout` / catch) |
-| `ONVIF_OPTIONS_REQUIRED` | `InvalidInputException` | `createDriver(ONVIF)` sem `options.onvif` |
-| `RTSP_HAS_NO_DRIVER` | `InvalidInputException` | `createDriver(RTSP)` |
-| `PROPRIETARY_PROTOCOL_NOT_SUPPORTED` | `InvalidInputException` | `createDriver(PROPRIETARY)` |
-| `UNSUPPORTED_CAMERA_PROTOCOL` | `InvalidInputException` | `createDriver(ISAPI)` ou qualquer protocolo sem `case` na factory |
-| `ONVIF_STREAM_URL_NOT_CACHED` / `_NOT_DISCOVERED` | `InvalidInputException` | Stream URL pedida antes do `connect()` (driver / estratégia) |
+| `CAMERA_UNREACHABLE` | `ExternalServiceException` | Timeout ou falha de I/O no ONVIF ou VAPIX |
+| `ONVIF_OPTIONS_REQUIRED`, `RTSP_HAS_NO_DRIVER`, `PROPRIETARY_PROTOCOL_NOT_SUPPORTED`, `UNSUPPORTED_CAMERA_PROTOCOL` | `InvalidInputException` | Factory |
+| `ONVIF_STREAM_URL_NOT_CACHED`, `ONVIF_STREAM_URL_NOT_DISCOVERED` | `InvalidInputException` | URL pedida antes da descoberta |
 | `ONVIF_NATIVE_ANALYTICS_NOT_IMPLEMENTED` | `BusinessRuleViolationException` | `getNativeAnalytics()` |
-| `UNSUPPORTED_CAMERA_COMMUNICATION_PROTOCOL` | `InvalidInputException` | Selector sem estratégia para o protocolo |
+| `UNSUPPORTED_CAMERA_COMMUNICATION_PROTOCOL` | `InvalidInputException` | Seletor sem estratégia |
 
-Timeouts (env → default): ONVIF connect `ONVIF_CONNECT_TIMEOUT_MS`→5 s, comando `ONVIF_COMMAND_TIMEOUT_MS`→4 s (PtzService); RTSP porta `RTSP_DEFAULT_PORT`→554; digest 5 s/8 s; probe de credenciais 10 s; poll ISAPI `HIKVISION_ISAPI_POLL_INTERVAL_MS`→15 s (tolerância `HIKVISION_ISAPI_FAILURE_TOLERANCE`→2 falhas consecutivas); alertStream ISAPI `HIKVISION_ALERT_STREAM_CONNECT_TIMEOUT_MS`→8 s e janela de inatividade `HIKVISION_ALERT_STREAM_IDLE_TIMEOUT_MS`→30 s.
+Timeouts: tabela completa em [[Integração com dispositivo - Requisitos e SLA]].
+
+## Armadilhas conhecidas
+
+- **Escrita periódica no equipamento derruba o equipamento.** No ACAP do analítico embarcado, um `PUT /config`
+  de `source_id` reinicia o pipeline e desliga o producer por cerca de 20 s. Um laço que religa o producer e
+  reescreve o `source_id`, rodando em mais de uma instalação, mantém o equipamento reiniciando para sempre.
+  Por isso não existe reconciliador periódico: o `source_id` e o broker só são escritos pelo gesto do
+  operador (`BindAnalyticDeviceCommand`, UC-216, no Sincronizar da instância e no cadastro), e o reparo
+  automático (`analytics-realtime/analytics-producer-repair.service.ts`, INT-026) só liga o producer, só dos
+  equipamentos declarados em `ANALYTICS_OWNED_DEVICE_SOURCE_IDS`, no máximo uma vez a cada 120 s por câmera.
+  Com a env vazia, nada automático escreve em equipamento. Detalhe do vínculo em [[Analítico]].
+- **Seed que aponta para equipamento real vira escritor sem dono.** Valor gravado num equipamento compartilhado
+  não pode ser constante versionada; por isso o `source_id` da câmera embarcada do seed vem de
+  `SEED_ATMAN_EMBEDDED_SOURCE_ID`.
+- **O IP de origem no log do equipamento não identifica o cliente.** Pedido que atravessa o subnet router da
+  tailnet chega com o IP do router (SNAT). Para achar quem escreveu, compare o `source_id` corrente do
+  equipamento com o `deviceSourceId` do banco de cada instalação candidata.
+- **Uma linha por tenant multiplica a carga no equipamento.** Como a mesma câmera física é cadastrada uma vez
+  por sistema, tudo que fala com o equipamento precisa deduplicar por endereço; sem isso, seis sistemas
+  abriam seis conexões VAPIX por câmera, cada uma com ping de 5 s, e o rastreio de posição PTZ (fetch digest a
+  cada 750 ms, dois round-trips) chegava a cerca de 16 pedidos por segundo no mesmo equipamento.
+- **A biblioteca ONVIF devolve `http://` no `GetStreamUri`.** A sondagem força `rtsp://` antes de gravar.
+- **A biblioteca ONVIF preenche `ptz.range` com zeros.** Só faixa real de pan ou tilt prova PTZ.

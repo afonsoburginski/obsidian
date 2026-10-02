@@ -37,9 +37,9 @@ Expor a rota/endpoints de perfis de mídia por câmera para a tela do frontend i
 
 - [x] Contrato/endpoint(s) de perfis de mídia por câmera (o que a tela precisa: listar, detalhar, mapear).
 - [x] Fonte dos dados: puxar media profiles ao vivo da câmera (ONVIF `GetProfiles`) x servir o `CameraStreamProfile` persistido x descobrir na câmera e persistir.
-- [x] Spec `UC-*` (REST) do(s) endpoint(s) — MOD-012 + UC-031 reescritas pra arquitetura final.
-- [x] Contratos em `@attlas/contracts` — reusa o `camera-media-profile` existente (sem contrato novo).
-- [~] Testes — user valida manualmente no web-attlas (pediu pra ignorar unit/integration agora).
+- [x] Spec `UC-*` (REST) do(s) endpoint(s) - MOD-012 + UC-031 reescritas pra arquitetura final.
+- [x] Contratos em `@attlas/contracts` - reusa o `camera-media-profile` existente (sem contrato novo).
+- [~] Testes - user valida manualmente no web-attlas (pediu pra ignorar unit/integration agora).
 
 ## Definido no planejamento (08/07, Fase 0 concluída)
 
@@ -47,7 +47,7 @@ Expor a rota/endpoints de perfis de mídia por câmera para a tela do frontend i
 - **Fonte dos dados: híbrido.** O `CameraStreamProfile` persistido é fino (role/codec/resolução/bitrate/fps do encoder, só PRIMARY/SECONDARY, sem áudio/PTZ/fonte de vídeo/quality/encodingInterval/h264Profile/name). O dado rico ONVIF (todos os perfis, PTZ range, snapshot, encoder por perfil) já é buscado ao vivo pelo `CameraCredentialProbeService`/`OnvifDriver.getEncoderConfig` mas é descartado, nada persiste. Decisão: servir o contrato do front mapeando o persistido + enriquecer com ONVIF ao vivo o que falta. O `ICameraMediaProfile` novo proposto na MOD-012 fica **superado** (reusa o `camera-media-profile` existente).
 - **Realtime.** A lista de perfis não é realtime. O que varia ao vivo (bitrate/fps transmitido, connectionStatus) já tem infra própria (2 gateways Socket.IO no ms-cameras: `/cameras` streaming e `/api/cameras/status/realtime`) e contrato `ICameraStatusPayload`, fora do escopo desta lista.
 
-## Implementação final (08/07) — commitada e pushada na #708 (`8524b1c73`)
+## Implementação final (08/07) - commitada e pushada na #708 (`8524b1c73`)
 
 **Reframe importante (do próprio user):** "perfil de mídia" = o inventário ONVIF **da própria câmera** (device-truth), NÃO a config de streaming da Attlas (`CameraStreamProfile`: PRIMARY/SECONDARY, codec negociado, escada de substream do SOFTWARE-2023). São coisas diferentes; a tela quer o que a câmera TEM.
 
@@ -58,13 +58,13 @@ Arquitetura entregue (tabela + persistência + atualização):
 - **Endpoint** `GET /api/cameras/:id/media-profiles` serve **do banco** (payload verbatim), escopado por tenant (MOD-011), paginado/busca/ordenação, PRIMARY primeiro; 404 cross-tenant; página vazia sem inventário.
 - **Front** consome o endpoint real (media-profiles `useMock=false` + event-log via HTTP).
 
-**Verificado local (real, não seed):** a DEMO foi repontada pra `10.1.1.80` (uma AXIS P1475-LE achada na rede — a M1135/10.1.1.78 e a PTZ estavam offline). No boot, a descoberta populou **12 câmeras / 34 perfis reais**; DEMO com `profile_1_h264` (GOP 32, H264 Main, do encoder config) e `profile_1_jpeg`; PTZ desligada = vazio (honesto, sem dado fake).
+**Verificado local (real, não seed):** a DEMO foi repontada pra `10.1.1.80` (uma AXIS P1475-LE achada na rede - a M1135/10.1.1.78 e a PTZ estavam offline). No boot, a descoberta populou **12 câmeras / 34 perfis reais**; DEMO com `profile_1_h264` (GOP 32, H264 Main, do encoder config) e `profile_1_jpeg`; PTZ desligada = vazio (honesto, sem dado fake).
 
 Merge da develop feito na branch (traz o front de cameras atualizado). Testes unit/integration ficam pro user validar manualmente no web-attlas.
 
 Follow-up: PTZ completo (node/spaces/timeouts via `getNode`), áudio (canais), estimar bitrate no VBR, push WS na mudança; corrigir o modelo cosmético da DEMO (aparece M1135, device real é P1475-LE); warning de Redis do cache de status (à parte).
 
-## Log de eventos (ampliação de escopo, 08/07) — commitada e pushada na #708
+## Log de eventos (ampliação de escopo, 08/07) - commitada e pushada na #708
 
 A aba de Log de Eventos (UF-032) do detalhe da câmera deixou de puxar uma janela fixa e filtrar no cliente: agora filtra, ordena e pagina no backend via `GET /api/cameras/:id/events`.
 

@@ -11,8 +11,8 @@ clickup: https://app.clickup.com/t/86aju62ta
 titulo: "[Back] Como o vídeo chega no analítico em container (banda, CPU e teto por instância)"
 frente: Analítico em container
 tamanho: 3 pts
-status: SEM PRAZO desde 10/08 (frente do analítico despriorizada; a Sprint 27 fechou sem entrega e a 28 foi para VMS e videowall externo). PR em draft segue aberta. Histórico: comprometido, primeiro card da semana (segunda). Aberto em 31/07 a partir da pergunta do planejamento - o analítico em container vai ser feito, e como o vídeo chega nele de forma performática e escalável é a decisão que ainda não existe. Validado contra a develop em 03/08, sem mudança de escopo. PR aberta em draft: [#1342](https://github.com/atmanadmin/attlas-2026/pull/1342). ClickUp movido para `in progress`.
-sprint: "[[00 - Sem prazo (backlog)]]"
+status: 'SEM PRAZO desde 10/08 (frente do analítico despriorizada; a Sprint 27 fechou sem entrega e a 28 foi para VMS e videowall externo). PR em draft segue aberta. Histórico: comprometido, primeiro card da semana (segunda). Aberto em 31/07 a partir da pergunta do planejamento - o analítico em container vai ser feito, e como o vídeo chega nele de forma performática e escalável é a decisão que ainda não existe. Validado contra a develop em 03/08, sem mudança de escopo. PR aberta em draft: [#1342](https://github.com/atmanadmin/attlas-2026/pull/1342). ClickUp movido para `in progress`.'
+sprint: "[[Sem prazo (backlog)]]"
 atualizado: 2026-08-10
 ---
 

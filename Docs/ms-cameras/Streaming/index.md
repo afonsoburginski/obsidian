@@ -7,57 +7,24 @@ tags:
 aliases:
   - "Streaming"
   - "00 - Streaming"
-atualizado: 2026-09-18
+atualizado: 2026-10-01
 ---
 
-# Streaming de câmeras (ms-cameras)
+# Streaming
 
-> Submódulo do [[ms-cameras]] (MOD-004 hls-streaming-pipeline).
-
-Documentação do pipeline de vídeo ao vivo do Attlas, puxada do código do `ms-cameras`.
-Cobre como o vídeo sai da câmera e chega no navegador por dois caminhos (HLS e WebRTC),
-e o diagnóstico do travamento que só acontece no WebRTC.
+Vídeo ao vivo das câmeras no Attlas, submódulo do [[ms-cameras]] (MOD-004 e INT-027). O MediaMTX puxa
+cada câmera sob demanda, uma conexão RTSP por path (câmera, tier e codec), abre com o primeiro espectador,
+fecha 30 s depois do último e serve o mesmo vídeo, sem transcodificar, a N operadores por WebRTC
+(primário) ou LL-HLS (reserva). O `ms-cameras` só garante a config do path e devolve onde tocar; o player do
+`web-attlas` cuida da recuperação, da reserva e da volta ao WebRTC. Banda e bitrate de câmera também moram
+aqui.
 
 ## Notas deste domínio
 
-- [[Streaming - Arquitetura]] - visão geral do pipeline RTSP, ffmpeg, mediamtx e os dois caminhos de saída.
-- [[Streaming - Estratégias de entrega]] - o Strategy que escolhe HLS ou WebRTC por sessão.
-- [[Streaming - HLS]] - caminho de fallback, sobre HTTP/TCP com buffer.
-- [[Streaming - WebRTC e WHEP]] - caminho primário, baixa latência sobre UDP.
-- [[Streaming - Codecs e fallbacks]] - estratégia de codec no ffmpeg (copy, hvc1, transcode) mais as 3 camadas de fallback, com exemplos ponta a ponta.
-- [[Streaming - Fluxos e SLA]] - use cases, ciclo de vida da sessão e SLA.
-- [[Streaming - Diagnóstico de travamento no WebRTC]] - causa raiz e como medir (PR 566).
-- [[Streaming - Diagnóstico de oscilação WHEP-HLS no videowall]] - player preso reconectando WebRTC sem back-off, reproduzido ao vivo no EC2 dev (24/08).
+- [[Streaming - Arquitetura e estratégias]] - pipeline, portas, MediaMTX, config do path, teto, codecs e fallbacks, player WHEP e LL-HLS, por que assim, armadilhas e pendências.
+- [[Streaming - Fluxos e SLA]] - `GET /hls` passo a passo, fluxo do player, WebSocket, latência, TTFF, métricas, diagnóstico e envs.
+- [[Streaming - Banda e bitrate]] - banda provisionada e bitrate medido, o snapshot de banda do VMS e o consumo do dashboard.
+- [[Streaming - Realce de imagem no cliente]] - regra de realce só na estação e o desenho que vive na PR em draft.
+- [[Runbook - Streaming]] - comandos de diagnóstico no host e no navegador.
 
-Registro histórico (não é referência do comportamento atual):
-
-- [[Pesquisa - codec, protocolo e latência]] - as duas investigações de julho/2026 que definiram H264 baseline, H265 oportunístico e ABR por substream.
-- [[Incidentes - Streaming (ms-cameras)]] - registro consolidado dos incidentes de streaming, separado por responsabilidade: vazamento de sessão (ms-cameras, 03/07) e saturação de banda de saída da EC2 sob carga concorrente de visualização (infra + ms-cameras, 24/08, confirmado via dados de healthcheck no banco), mais os dois publicadores na mesma câmera com zero espectadores (dev, 18/09).
-- [[Plano - Streaming sem vazamento de publicador]] - plano aprovado em 18/09 para acabar com o publicador órfão, em quatro fases, ainda não implementado.
-- [[Plano - Banda por câmera (bitrate configurado ONVIF + VAPIX)]] - a decisão que virou o bitrate device-truth.
-
-Visual: [[04 - MOD-004 hls-streaming-pipeline.excalidraw|Diagrama - pipeline (Excalidraw)]] · [[09 - Streaming - estratégia de codec.excalidraw|estratégia de codec]].
-- [[09 - Streaming - estratégia de codec.excalidraw|Diagrama - estratégia de codec]] - decisão de codec (copy/hvc1/transcode) e fallback.
-
-## Resumo de uma linha
-
-Uma única conexão RTSP por câmera entra no mediamtx via ffmpeg em modo copy, e o mediamtx
-serve o mesmo vídeo para N operadores por WebRTC (primário, baixa latência) ou HLS (fallback).
-
-## Mapa de portas
-
-| Porta | Protocolo | Para que serve |
-| --- | --- | --- |
-| 8554 | RTSP/TCP | ffmpeg publica o vídeo da câmera no mediamtx |
-| 8889 | HTTP | WebRTC WHEP (negociação SDP) |
-| 8189 | UDP | WebRTC, mídia ICE (o vídeo de fato trafega aqui) |
-| 8888 | HTTP | HLS (LL-HLS, segmentos e playlist) |
-| 9997 | HTTP | API REST do mediamtx (readiness e diagnóstico) |
-| 9998 | HTTP | Métricas Prometheus do mediamtx (PR 566) |
-
-## Fontes no repo
-
-- `apps/ms-cameras/src/streaming/` - controllers, gateway, services e estratégias.
-- `apps/ms-cameras/docs/modules/MOD-004-hls-streaming-pipeline.md` - spec do pipeline HLS.
-- `docker/mediamtx.yml` - configuração do servidor de mídia.
-- `apps/web-attlas/src/app/core/shared/components/camera-stream-player/` - player no frontend.
+Documento executivo para gestão e time: [[Streaming - Vídeo ao vivo, WebRTC, SFU, TURN e codecs.pdf]].

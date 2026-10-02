@@ -7,145 +7,186 @@ tags:
 aliases:
   - "Video Wall - Arquitetura e estratégias"
   - "Video Wall - Requisitos e SLA"
-atualizado: 2026-08-24
+atualizado: 2026-10-01
 ---
 
 # VMS - Arquitetura e estratégias
 
-> Parte do [[VMS]] (MOD-006). Canvas: [[06 - MOD-006 VMS.excalidraw|diagrama]]. Nomenclatura: VMS é o mosaico no browser; o painel físico externo é [[Videowall externo (NovaStar H9)]].
+Volta para [[VMS]]. Backend MOD-006 video-wall; frontend `MOD-001-videowall`. Fluxos em [[VMS - Fluxos]];
+banda da sessão em [[Streaming - Banda e bitrate]]; painel físico em [[Videowall externo (NovaStar H9)]].
+Visual: [[Diagrama - MOD-006 VMS.excalidraw]].
+
+## Nomenclatura
+
+- **VMS** é o interno: o mosaico de feeds ao vivo que o Attlas desenha no navegador, "Monitoramento de
+  Vídeo" na interface (chave `camera.navbar.vms`).
+- **Videowall** é o externo: o painel físico de Quito, comandado pelo processador NovaStar H9, um **alvo
+  de exibição** do VMS (aba "Videowall" do módulo Câmeras, `/cameras/videowall-panel`).
+- **NVR** é o gravador externo que recebe o stream primário; o Attlas não o dirige.
+- No `ms-pmv`, VMS é Variable Message Sign: colisão resolvida por contexto, sem renome.
+
+O renome para VMS (CROSS-045) atingiu só o observável: rotas `/api/vms/*` e `/api/cameras/vms`, rota do
+front `/cameras/vms`, i18n `vms.json`, ícones `vms.*` e `localStorage` `vms.lastSceneBySystem`. **Continuam
+dizendo video-wall de propósito**: a pasta `apps/ms-cameras/src/video-wall/` e as classes `VideoWall*`
+(operam sobre models `VideoWall*`), os contratos `lib/videowall/` e `IVideoWall*`, as tabelas
+`VideoWallLayout`, `VideoWallScene` e `VideoWallSceneCell` (renome custa migration), os valores de
+`EnumVideowallLayout` e os `errorCode` `VIDEOWALL_*` (contrato estável), os IDs de spec e a pasta
+`modules/videowall/` do front. Se a implementação for renomeada, vai junto da migration das tabelas, num
+card só. Os models do alvo externo usam outra grafia (`VideowallProcessor`, `VideowallSession`,
+`VideowallGroup`); o schema tem as duas.
+
+## O que o backend faz e não faz
+
+Guarda e serve **layouts** e **cenas**, oferece o **picker** de câmeras, calcula o **snapshot de banda** e
+publica auditoria das escritas de cena. A ativação de cena é também a porta do painel físico
+(`target: VIDEOWALL`). Não renderiza vídeo, não roda rotação e não guarda estado PTZ de célula. Nenhuma
+resposta traz URL de stream: o player resolve o stream sozinho, via [[Streaming]].
+
+## Mapa de código
+
+| Área | Caminho |
+| --- | --- |
+| Layouts e cenas (MOD-006) | `apps/ms-cameras/src/video-wall/` (controller, handlers, repositórios, `video-wall.module.ts`) |
+| Alvos de exibição | `apps/ms-cameras/src/video-wall/targets/` (`browser-session/`, `novastar-h9/` e os demais do painel) |
+| Auditoria de cena | `video-wall/video-wall-scene.audit.ts` + `shared/audit/cameras-audit.publisher.ts`, tópico `attlas.audit.cameras` |
+| Picker | `apps/ms-cameras/src/cameras/handlers/list-video-wall-cameras/`, rota em `cameras/cameras.controller.ts` |
+| Banda (MOD-008) | `apps/ms-cameras/src/dashboard/bandwidth/` |
+| Persistência | `apps/ms-cameras/src/database/schema/video_wall/`; seed `VIDEO_WALL_LAYOUTS` em `database/seed.ts` |
+| Contratos | `libs/contracts/src/lib/videowall/` (view, célula, rotação, enum) e `libs/contracts/src/lib/camera/video-wall.validation.ts` |
+| Frontend | `apps/web-attlas/src/app/modules/videowall/` (mosaico; o painel externo em `display-target/`) |
 
 ## Modelo: layout, cena, célula
 
-Três entidades encadeadas (`src/database/schema/video_wall/`):
+- **`VideoWallLayout`**: grade `columns x rows`, `isDefault`, `organizationId`. Predefinidos 1x1, 2x2, 3x3 e
+  4x4 vêm do seed na organização global `00000000-0000-0000-0000-000000000000` (`GLOBAL_ORGANIZATION_ID`);
+  customs pertencem à organização do usuário.
+- **`VideoWallScene`**: `layoutId` (FK cascade), `name`, `isActive`, `sortOrder`.
+- **`VideoWallSceneCell`**: `cameraId?` (null é slot vazio; FK restrict, não deixa apagar câmera usada em
+  cena), `gridColumn`/`gridRow` 1-based, `columnSpan`/`rowSpan` (padrão 1).
 
-- **`VideoWallLayout`** - a grade. `columns × rows`, `isDefault` (predefinido vs custom), `organizationId`. Predefinidos (1x1, 2x2, 3x3, 4x4, via seed) vivem na org global; customs pertencem à org do usuário.
-- **`VideoWallScene`** - o mosaico salvo. Aponta para um layout (`layoutId`, FK **cascade**), tem `name`, `isActive`, `sortOrder`. Uma cena por linha; `cells` compõem o conteúdo.
-- **`VideoWallSceneCell`** - a célula. `cameraId?` (null = **slot vazio**), posição (`gridColumn`, `gridRow`, 1-indexed) e ocupação (`columnSpan`, `rowSpan`, default 1). FK câmera **restrict** (não deixa apagar câmera ainda usada em cena).
+Limites da validação compartilhada back e front: `name` de 1 a 120, grade de 1 a 1000x1000, no máximo 100
+células por cena. Não existe coluna `version`.
 
-Limites de validação (`libs/contracts/src/lib/camera/video-wall.validation.ts`, fonte única back+front):
-`name` 1 a 120; grade `min 1`, `max 1000×1000`; **máx. 100 células** por cena.
+**Custom grid**: a cena informa exatamente um de `layoutId` ou `customGrid` (os dois ou nenhum dá 400
+`LAYOUT_SOURCE_AMBIGUOUS`). O `customGrid` é materializado no save, dentro da transação (`resolveLayoutId`
+em `video-wall-scenes.repository.ts`): reusa um custom da organização com as mesmas dimensões ou cria
+`Custom {C}x{R}`; ao trocar o layout, o custom que fica órfão é removido. A grade vai até 1000x1000 porque o
+front projeta a árvore de tiling do mosaico numa grade percentual virtual.
 
-## Escopo por organização
+**Validação de células** (`handlers/_helpers/validate-scene-cells.ts`): cabe na grade (409
+`CELL_OUT_OF_BOUNDS`/`INVALID_CELL_POSITION`); sem sobreposição, O(n²) sobre no máximo 100 células (409
+`CELL_OVERLAP`); toda câmera existe, não está deletada e não é `STOCK` (409 `CAMERA_NOT_ELIGIBLE`). No
+`PATCH` só de layout, as células atuais são revalidadas; `cells` no update é substituição total.
 
-Layouts e cenas são **org-scoped** pelo `organizationId` do JWT. Todo repositório filtra por org;
-cross-org devolve 404 sem vazar existência (BR-VWS-001). Layouts predefinidos são compartilhados via a
-org sentinela `GLOBAL_ORGANIZATION_ID` (`00000000-0000-0000-0000-000000000000`), e a listagem usa
-`organizationId IN (org, GLOBAL)`, com ordenação fixa `isDefault desc, columns asc, rows asc`
-(BR-VWL-003). Cenas listam por `sortOrder asc, name asc`.
+## Escopo e autorização
 
-## Custom grid (D3/D4)
+- Layouts e cenas são escopados pela **organização do JWT**; acesso de outra organização dá 404 sem vazar
+  existência (BR-VWS-001). A listagem de layouts usa `organizationId IN (org, GLOBAL)`, ordenada por
+  `isDefault desc, columns asc, rows asc`; cenas por `sortOrder asc, name asc`.
+- Escritas de cena exigem `cameras.videoWall:configure`; ativar e desativar, `cameras.videoWall:operate`;
+  leituras não carregam chave (o alcance vem do Alcance Operacional, CROSS-032). Avaliação fail-closed
+  contra o `ms-organization` (`enablePermissionEvaluation: true`).
+- O `VideoWallController` é o único controller do domínio **sem** `@RequireSystemDuty()` de classe, de
+  propósito (CROSS-078): a ativação padrão não exige `System-Id` e precisa ficar idêntica (BR-VWS-007). Com
+  `target: VIDEOWALL` o header é lido de forma opcional (malformado dá 400 `SYSTEM_ID_HEADER_INVALID`) e
+  exigido só pelo adaptador do painel.
+- O picker exige que o requisitante seja membro do sistema do `System-Id` (`@RequireSystemDuty()` de
+  classe do `CamerasController`).
+- No front, controle sem a permissão fica na tela desabilitado, com cadeado e tooltip (`[permissionBlock]`).
 
-Uma cena informa **exatamente um** de `layoutId` ou `customGrid` (BR-VWS-005; ambos ou nenhum → 400
-`LAYOUT_SOURCE_AMBIGUOUS`). O `customGrid` só é **materializado no `save`**, dentro da transação
-(`resolveLayoutId` em `video-wall-scenes.repository.ts`):
+## Superfície HTTP
 
-1. Procura um layout custom (`isDefault=false`) da org com as mesmas dimensões → **reusa** (dedup por org).
-2. Não achou → cria `Custom {C}x{R}` (`isDefault=false`).
-3. Ao trocar o layout de uma cena, o custom anterior é **removido se ficar órfão** (`isDefault=false` e nenhuma cena o referencia).
+| Método e rota | UC | Autorização | O que faz |
+| --- | --- | --- | --- |
+| `GET /api/vms/layouts` | UC-015 | JWT | layouts da organização mais os globais |
+| `POST /api/vms/scenes` | UC-016 | `configure` | cria cena (`layoutId` XOR `customGrid`, mais `cells`) |
+| `GET /api/vms/scenes` | UC-016 | JWT | lista slim com contadores |
+| `GET /api/vms/scenes/:id` | UC-016 | JWT | detalhe com layout e células enriquecidas (`ICameraVideoWallItem`) |
+| `PATCH /api/vms/scenes/:id` | UC-016 | `configure` | nome, layout e células |
+| `DELETE /api/vms/scenes/:id` | UC-016 | `configure` | remove (204) |
+| `POST /api/vms/scenes/:id/activate` | UC-016, UC-051 | `operate` | corpo `{ target?, takeover? }`; sem alvo, `isActive = true`; com `target: VIDEOWALL`, projeta no painel |
+| `POST /api/vms/scenes/:id/deactivate` | UC-016, UC-051 | `operate` | espelho do anterior; com `VIDEOWALL`, limpa a parede |
+| `GET /api/cameras/vms` | UC-014 | membro do sistema | picker paginado |
+| `GET /api/dashboard/bandwidth?cameraIds=` | UC-019 | membro do sistema | snapshot de banda ([[Streaming - Banda e bitrate]]) |
 
-O teto de grade em 1000×1000 (D4) existe porque o frontend projeta a **árvore de tiling do mosaico**
-numa grade percentual virtual (até 0,1% por passo); o backend só valida e persiste posições/spans nessa
-grade, não conhece o layout visual.
+No Kong, `/api/vms` é a rota `ms-cameras-vms-route`, e o picker tem rota própria, `ms-cameras-vms-picker`
+(`~/api/cameras/vms$`, com JWT e `regex_priority: 10`), porque sem ela o allowlist público por id de câmera
+casaria `/api/cameras/vms` e a listagem responderia sem JWT.
 
-## Validação de células (BR-VWS-003/004)
+## Ativação por alvo, não exclusiva
 
-No create/update (`handlers/_helpers/validate-scene-cells.ts`):
+O `SetVideoWallSceneActiveHandler` pede ao `VideoWallDisplayTargetSelector` o alvo do campo `target`
+(`VideoWallDisplayTarget`, padrão `BROWSER_SESSION`):
 
-- **Cabe na grade**: `gridColumn/Row ≥ 1` e `col+span-1 ≤ columns` / `row+span-1 ≤ rows` (senão 409 `CELL_OUT_OF_BOUNDS`/`INVALID_CELL_POSITION`).
-- **Sem sobreposição**: interseção de retângulos par a par, O(n²) sobre as células (limitado a 100), independente da resolução da grade → 409 `CELL_OVERLAP`.
-- **Câmeras elegíveis**: toda célula com `cameraId` referencia câmera que existe, não deletada e **diferente de `STOCK`** (`findEligibleCameraIds`); ineligível → 409 `CAMERA_NOT_ELIGIBLE`. Mesma regra do picker. Slots vazios (`cameraId: null`) são ignorados.
+| Alvo | O que faz |
+| --- | --- |
+| `BROWSER_SESSION` (`targets/browser-session/`) | `setSceneActive` só alterna `isActive` da cena; ativar uma **não desativa** as outras, e exclusividade e rotação são do front |
+| `VIDEOWALL` (`targets/novastar-h9/novastar-h9-display.target.ts`) | projeta a cena salva no painel externo, ou limpa a parede no `deactivate`; nunca escreve `isActive`. `takeover` confirma deslocar quem ocupa o painel |
 
-No `PATCH`, quando só o layout muda (sem novas células), as células **atuais** são revalidadas contra a
-nova grade, então o update nunca deixa a cena fora dos limites. `cells` no update é **substituição
-total** do conjunto.
+O 404 de cena ausente ou de outra organização é decidido no handler, para os dois alvos. A ativação por
+operador emite auditoria com o antes e o depois de `isActive`; a projeção disparada por plano não emite.
+O que o painel mostra fica na ocupação do alvo externo, não em `VideoWallScene`.
 
-## Ativação de cena: não é exclusiva
+## Respostas e picker
 
-`activate`/`deactivate` chamam `SetVideoWallSceneActiveCommand(org, id, isActive)` → `setSceneActive`,
-que **apenas alterna `isActive` da cena alvo**. O backend **não** garante "uma cena ativa por org":
-ativar uma cena **não desativa** as outras. Exclusividade e rotação são decisão do frontend/sessão.
+- `VideoWallSceneResult` (create, update, activate, list) traz escalares e dois contadores derivados:
+  `allocatedCameraCount` (células com câmera) e `onlineCameraCount` (dessas, as com
+  `operationalSnapshot.connectionStatus` diferente de `OFFLINE`; sem snapshot conta como não online).
+- Picker `GET /api/cameras/vms`: filtros `q` (nome, interseção e IP), `cameraType[]`, `lifecycleState[]`,
+  paginação. Sem `lifecycleState` lista só `OPERATIONAL`; com o filtro aceita os estados pedidos menos
+  `STOCK` (`buildVideoWallWhere` em `cameras/repositories/cameras.repository.ts`). A regra é mais estreita
+  que a da cena, que aceita qualquer câmera não deletada fora de `STOCK`. Item: `id`, `name`, `cameraType`,
+  `lifecycleState`, `ptz`, `status`, `intersection`, `hasSecondaryStream`.
 
-## Contadores derivados na resposta
+## Frontend (`apps/web-attlas/src/app/modules/videowall/`)
 
-`VideoWallSceneResult` (create/update/activate/list) deriva das células, sem campo persistido:
+- **Vocabulário**: o operador salva **visualizações** (`IVideowallView`), que no backend são cenas.
+- **Rota**: `/cameras/vms` e `/cameras/vms/:viewId` resolvem o mesmo `VideowallPageComponent`;
+  `videowallDirtyGuard` (UF-011) pede confirmação ao sair com edição pendente.
+- **Camadas**: a página só orquestra; o estado vive em seis stores `@Injectable()` com `signal` e
+  `computed`, providas no `providers` da página (`pages/videowall/`): `videowall-stream-session.store.ts`
+  (sessões de vídeo por câmera, degrau de qualidade por tile e o veredito de abertura `streamStatus`),
+  `videowall-camera-directory.store.ts`, `videowall-mosaic-scene.store.ts` (geometria viva),
+  `videowall-immersive.store.ts`, `videowall-ptz.store.ts` (qual tile o controle PTZ compartilhado dirige) e
+  `videowall-view-catalog.store.ts` (catálogo, persistência e envio ao painel). `services/videowall.service.ts`
+  só fala HTTP e converte o view model 0-based no contrato 1-based. É o padrão de camadas a seguir em
+  feature module grande do front.
+- **Mosaico**: `mosaic-board`, `mosaic-tile`, `mosaic-splitter` (tiling redimensionável,
+  `mosaic-tree.util.ts`), painel lateral, seletor de layout e diálogos.
+- **Presets**: `EnumVideowallLayout` vai de `GRID_1X1` a `GRID_6X6` mais `CUSTOM`; preset sem layout seedado
+  (5x5 e 6x6) vira `customGrid` quadrado (`toSceneWrite`). "Mandar para a grade" dimensiona o menor preset
+  quadrado que cabe na seleção, até 6x6, e descarta o excedente avisando.
+- **Rotação**: `IRotationConfig` (`items[] {viewId, dwellSeconds}`, `loop`) vai na URL e não tem endpoint;
+  timer local, `dwellSeconds` mínimo de 5 s, presets de 10 a 120 s.
+- **Vídeo**: uma sessão por câmera, compartilhada pelos tiles da mesma câmera, no perfil secundário e com
+  degrau adaptativo com histerese. Tile cuja abertura falha mostra "Sem sinal" sobre a miniatura; o 429 do
+  teto vira o estado `cap-reached`.
+- **Chave de mídia**: `wall:<cameraId>` é a chave do `LiveMediaRegistry` tanto no mosaico quanto nas
+  células de cena do palco do painel (`modules/videowall/utils/videowall-media-key.util.ts`), para trocar
+  de tela sem renegociar o WebRTC; o espelho usa `vw-stage:<shareId>`.
+- **Enviar ao painel**: o botão da toolbar chama `sendToPanel`, que ativa a cena salva com
+  `target: VIDEOWALL`, salvando antes se há edição pendente, porque o painel recebe o que está persistido.
 
-- `allocatedCameraCount` = células com `cameraId`.
-- `onlineCameraCount` = dessas, quantas têm `operationalSnapshot.connectionStatus` diferente de `OFFLINE` (sem snapshot conta como não-online).
+## Requisitos e estado
 
-O detalhe (`VideoWallSceneDetailResult`) enriquece cada célula com `ICameraVideoWallItem` (mesma forma do
-picker), incluindo `layout {columns, rows, name}`. **Nenhuma resposta traz URL de stream**: o player
-resolve o stream por conta própria via [[Streaming]].
-
-## Picker de câmeras elegíveis
-
-`GET /cameras/vms` (UC-014, `ListVideoWallCamerasHandler`, no domínio `cameras`) devolve as
-câmeras montáveis: paginado, com filtros `q` (texto), `cameraType[]` e `lifecycleState[]`, escopado por
-`systemId` (header). Cada item (`ICameraVideoWallItem`): `id`, `name`, `cameraType`, `lifecycleState`,
-`ptz` (kind PTZ ou capability `ptz`), `status` (conexão), `intersection`, `hasSecondaryStream` (tem
-perfil SECONDARY ativo, o que sinaliza aptidão ao mosaico).
-
-> [!success] Estado em 24/08: rota confirmada `/cameras/vms`
-> O path `/cameras/video-wall` não existe mais desde `c9766ab960` (18/08, mergeado na develop) - só
-> `/cameras/vms` responde. Ver [[VMS]] callout "Estado em 24/08".
-
-## O frontend (MOD-001-videowall)
-
-O front não é uma casca fina; boa parte do comportamento da tela vive nele
-(`apps/web-attlas/src/app/modules/videowall/`):
-
-- **Vocabulário próprio**: o operador salva **"visualizações"** (`IVideowallView` em `libs/contracts/src/lib/videowall/`), que no backend são **cenas**. Mesmo objeto, dois nomes.
-- **Rota**: `/cameras/vms` e `/cameras/vms/:viewId` resolvem o mesmo `VideowallPageComponent`, reaproveitado entre trocas de `:viewId`. `videowallDirtyGuard` (UF-011) abre o diálogo de descarte ao sair com edição pendente. Rota confirmada em 24/08 - não existe mais redirect de `/cameras/videowall`, o path legado foi removido de vez (ver callout acima e [[VMS]]).
-- **Arquitetura em camadas (PR #1884, mergeada)**: a página deixou de guardar estado de domínio; virou
-  casca fina orquestrando componentes filhos e 6 SignalStores próprios em `pages/videowall/`
-  (`videowall-stream-session.store.ts`, `videowall-camera-directory.store.ts`,
-  `videowall-mosaic-scene.store.ts`, `videowall-immersive.store.ts`, `videowall-ptz.store.ts`,
-  `videowall-view-catalog.store.ts`). Detalhe completo em [[VMS]] seção "Arquitetura do frontend".
-- **Mosaico**: `mosaic-board`, `mosaic-tile`, `mosaic-splitter` (tiling redimensionável, `mosaic-tree.util.ts`), mais side panel, layout picker, diálogo de criar view e diálogo de rotação - hoje montados dentro da `videowall-mosaic-scene.store.ts` em vez de estado solto na página.
-- **Presets de grade**: `EnumVideowallLayout` vai de `GRID_1X1` a `GRID_6X6` mais `CUSTOM`. Como o seed só tem até 4x4, `toSceneWrite` mapeia o preset para o `layoutId` seedado quando existe e **cai para `customGrid` quadrado** quando não existe (é assim que 5x5 e 6x6 funcionam).
-- **Coordenadas**: o view model é **0-based**; o contrato HTTP é **1-based**. A conversão acontece no `videowall.service.ts`.
-- **Rotação**: `IRotationConfig` (`items[] {viewId, dwellSeconds}`, `loop`) mora em `@attlas/contracts` porque é serializada na URL, mas **não tem endpoint**: o timer é local, `dwellSeconds` mínimo 5s, presets de 10/20/30/60/120s.
-- **Envio em lote**: "mandar para a grade" dimensiona o menor preset quadrado que cabe na seleção, com teto de 6x6, e **descarta o excedente** avisando por overflow.
-
-> [!warning] Divergência viva entre contrato e implementação
-> `IVideowallView` documenta `version` como valor de `If-Match` num `PUT /api/video-wall/scenes/:id`
-> (locking otimista) - path que já não existe mais (ver rota atual acima; o verbo também é `PATCH`, não
-> `PUT`). O backend só expõe `PATCH`, não tem coluna `version`, e o front **abandonou** o
-> locking: não manda `If-Match` e ecoa `version: 0`. O campo sobrevive nos contratos sem semântica.
-> Candidato a limpeza junto com o renome para VMS.
-
-## Divisão backend x frontend, requisitos e estado
-
-Requisitos de `docs/modules/cameras.md` (8.2 e 9) cruzados com o código:
+Regra de negócio em `docs/modules/cameras.md`, seção 3.2 (RF-VW-01 a RF-VW-06) e seção 9.
 
 | ID | Requisito | Onde vive | Estado |
 | --- | --- | --- | --- |
-| RF-VW-01 | Layouts configuráveis | Backend | Predefinidos 1x1 a 4x4 (seed, org global) + custom por org via `GET /vms/layouts`; 5x5 e 6x6 chegam como `customGrid` |
-| RF-VW-02 | Gestão de cenas, ativável em ação única | Backend | CRUD completo + `activate` num único POST |
-| RF-VW-03 | Rotação automática | **Frontend** | Backend serve as cenas e o toggle; timer, ordem e `dwellSeconds` são do cliente (`IRotationConfig`) |
-| RF-VW-04 | PTZ inline por célula | **Frontend** | Comandos e estado via [[PTZ e presets]]; estado por célula vive hoje na `videowall-ptz.store.ts` |
-| RF-VW-05 | Popup detalhe / tela cheia | Parcial | Backend dá `GET /vms/scenes/:id` + status/detalhe da câmera; o popup é do cliente |
-| RF-VW-06 | Monitoramento de banda | Parcial | Backend agrega total + nível de alerta; consumo por câmera e proatividade ficam no front ([[VMS - Banda e alertas]]) |
-| RNF-CAM-04 | Desempenho do mosaico | Parcial | Ver abaixo |
-| RNF-CAM-12 | Alertas de banda | Parcial | Total + `alertLevel` no backend; por câmera e o aviso proativo são do front |
+| RF-VW-01 | Layouts configuráveis | backend | predefinidos 1x1 a 4x4 e custom por organização; 5x5 e 6x6 como `customGrid` |
+| RF-VW-02 | Cenas ativáveis em ação única | backend | CRUD e `activate` num POST, que também projeta no painel |
+| RF-VW-03 | Rotação automática | front | timer, ordem e `dwellSeconds` no cliente |
+| RF-VW-04 | PTZ inline por célula | front | um controle compartilhado dirige o tile escolhido, com a confirmação do RNF-CAM-10 fora de `OPERATIONAL`; comandos via [[PTZ e presets]] |
+| RF-VW-05 | Popup de detalhe e tela cheia | parcial | backend dá cena e detalhe da câmera; popup é do cliente |
+| RF-VW-06 | Monitoramento de banda | parcial | só o snapshot provisionado no backend, sem tela ([[Streaming - Banda e bitrate]]) |
+| RNF-CAM-04 | Desempenho do mosaico | parcial | respostas slim, validação limitada a 100 células, vídeo fora do `ms-cameras`; o limite prático é o navegador (players simultâneos, GPU) |
+| RNF-CAM-12 | Alertas de banda | parcial | total e `alertLevel` no backend; por câmera e proativo, não |
 
-### Desempenho (RNF-CAM-04)
+> [!warning] `IVideowallView.version` sem semântica
+> O contrato documenta `version` como `If-Match` de um `PUT /api/video-wall/scenes/:id`, rota que não
+> existe. O backend só tem `PATCH`, sem coluna `version`, e o front não manda `If-Match` e ecoa
+> `version: 0`. Candidato a limpeza no contrato.
 
-O backend contribui por **desenho de dados**, não por otimização de vídeo (vídeo é mediamtx/player, ver
-[[Streaming]]):
-
-- **Respostas slim**: listagem e ativação usam `VideoWallSceneResult` (escalares + 2 contadores), **sem URL de stream** nem payload por frame. O custo de rede é O(nº de cenas), não O(nº de câmeras × frames).
-- **Validação limitada**: sobreposição O(n²) sobre no máx. **100 células**, desacoplada da resolução da grade (até 1000×1000), barata mesmo em mosaicos densos.
-- **Carga de vídeo fora do ms-cameras**: cada célula abre o stream **secundário** direto no mediamtx; adicionar células não sobrecarrega o backend de negócio.
-- **Limite prático**: a responsividade independente do nº de células é majoritariamente **frontend** (nº de players WebRTC/HLS simultâneos, GPU). O backend não impõe teto por cena além das 100 células de validação.
-
-## Decisões
-
-- **D3** - custom grid materializa um `VideoWallLayout` no save (não em memória); dedup por org, limpeza de órfãos no update.
-- **D4** - grade virtual até 1000×1000 para o mosaico percentual; validação O(n²) desacoplada da resolução.
-- **MOD-008 reusa telemetria** - a banda não cria tabela nem worker novos; reusa perfil de stream + snapshot de health (ver [[VMS - Banda e alertas]]).
-- **Locking otimista descartado** no front, sem contrapartida no backend (ver aviso acima).
-- **Página vira casca, estado vira store própria** (PR #1884, mergeada) - ver [[VMS]] seção "Arquitetura do frontend".
-
-## Relacionados
-
-[[VMS]] · [[VMS - Fluxos]] · [[VMS - Banda e alertas]] · [[Videowall externo (NovaStar H9)]] · [[Streaming]] · [[PTZ e presets]] · [[Cameras]]
+> [!warning] Spec do front defasada
+> `apps/web-attlas/docs/modules/videowall/MOD-001-videowall.md` ainda descreve `/cameras/videowall` e
+> `/api/video-wall/*` no corpo.

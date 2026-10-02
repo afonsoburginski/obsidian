@@ -8,14 +8,29 @@ aliases:
   - "ms-video-analytics"
   - "Um analítico servidor"
 frente: Analítico
-status: "DECIDIDO em 31/08 com o user. Registrado no repo como CROSS-077 e ADR-31, e propagado pela pilha da Sprint 31. Dois cards de execução saem daqui e seguem sem prazo (ver seção final)."
-atualizado: 2026-08-31
+status: "DECIDIDO em 31/08 com o user e registrado como CROSS-077 e ADR-31. Os dois cards de execução foram feitos: o renome em 02/09 e a remoção dos scaffolds em 05/09 (PR 2530). Em 16/09 o modo servidor saiu do produto (71d57f274b) e o ms-connector-virtual-loop voltou com outro papel, então o desenho desta nota é histórico."
+atualizado: 2026-09-23
 ---
 
 # Analítico - Topologia de serviço do analítico de vídeo
 
 Quantos microsserviços o analítico de vídeo precisa. A resposta fechada em 31/08 é **um novo**, e
 não os cinco que o `services.md` reservava.
+
+> [!warning] Estado em 23/09: a decisão foi executada e depois superada
+> - **Os dois cards da seção final foram feitos.** O renome `ms-virtual-loop` para
+>   `ms-video-analytics` entrou em 02/09 (`ef3e027eb0`), e os scaffolds `ms-atspm`, `ms-dai` e
+>   `ms-connector-virtual-loop` saíram em 05/09 pela PR 2530.
+> - **O analítico servidor saiu do produto em 16/09** (`71d57f274b`, "remove o modo servidor do
+>   analítico, fica só o embarcado"). O `ms-video-analytics` segue no repo em espera: não ingere stream
+>   nem infere, só traduz a ocupação dos caminhos embarcados em evento de detector.
+> - **O `ms-connector-virtual-loop` voltou em 16/09 com outro papel**: é o driver TCP do app de laço
+>   embarcado, que disca para ele e publica a ocupação no contrato comum. Não é o tradutor que esta
+>   nota dizia não nascer.
+> - **O `ms-acom` continua scaffold**, como o user decidiu em 31/08.
+>
+> A regra que decidiu a divisão, capacidade e não lugar de execução, continua valendo. O estado de
+> hoje dos serviços está em [[Analítico]].
 
 ## A pergunta
 
@@ -126,4 +141,4 @@ que torna a separação requisito de escala, e não preferência.
 ## Ver também
 
 [[Analítico]] · [[Analítico - Embarcado x Servidor]] · [[Analítico - Arquitetura e estratégias]] ·
-[[Analítico - Visão do produto]] · [[Attlas - Sprint 31]] · [[00 - Sem prazo (backlog)]]
+[[Analítico - Visão do produto]] · [[Attlas - Sprint 31]] · [[Sem prazo (backlog)]]

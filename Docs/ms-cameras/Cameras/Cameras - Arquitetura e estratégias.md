@@ -3,182 +3,328 @@ tags:
   - doc
   - ms-cameras
   - cameras
-  - crud
-atualizado: 2026-08-24
-servico: ms-cameras
-fonte: apps/ms-cameras/src/cameras
+aliases:
+  - "Cameras - Arquitetura"
+atualizado: 2026-10-01
 ---
 
 # Cameras - Arquitetura e estratégias
 
-> Parte do domínio [[Cameras]] · [[ms-cameras]]. Ver também [[Cameras - Fluxos]] e [[Cameras - Requisitos e SLA]]. Diagrama: [[01 - MOD-001 cameras-crud.excalidraw|diagrama]].
->
-> [!info] Nota de 24/08: Lote 6 (Cameras) completo
-> Primeira passada do dia cobriu só "Topologia de produção" (preservada abaixo). Esta segunda passada
-> fechou o resto do checklist do [[Plano - atualização da documentação do vault]]: seção multi-tenant
-> reescrita contra `MOD-011-tenant-scoping.md` (estava incompleta), seção nova de validação de IP
-> duplicado/reativação (PR #1137), seção nova de perfis de mídia (UC-031, card 2008), e confirmação de
-> que a listagem ainda monta `where`/`orderBy` à mão (não migrou pro toolkit `list-query`). Um achado à
-> parte, fora do checklist mas encontrado ao ler o código: esta nota, `Cameras - Fluxos` e
-> `Cameras - Requisitos e SLA` diziam que o cadastro "não cria `CameraStreamProfile` nem
-> `CameraCredential`" - isso deixou de ser verdade em SOFTWARE-2226 (finais de julho) e foi corrigido
-> nas três notas.
+Parte do domínio [[Cameras]]. Caminhos relativos a `apps/ms-cameras/src/` quando não começam por `apps/`
+ou `libs/`.
 
-Como o CRUD e o ciclo de vida da câmera estão construídos, e as decisões por trás.
+## Mapa de código
 
-## Camadas: controller → handler → repository
+| Arquivo | Papel |
+| --- | --- |
+| `cameras/cameras.controller.ts` | Rotas REST do cadastro (e de PTZ, presets, eventos, ver os domínios vizinhos); despacha para `CommandBus`/`QueryBus`; injeta `System-Id`, Bearer e o `userSubject` do JWT nos comandos |
+| `cameras/repositories/cameras.repository.ts` | `CamerasRepository` atrás do token `ICamerasRepositoryToken`; `where`/`orderBy` da listagem escritos à mão; `createMany` mistura criação e reativação na mesma `$transaction`; `replaceCamera`; `repointStreamProfiles` |
+| `cameras/mappers/camera.mapper.ts` | `toCreateInput` e `toReactivateInput` (projeções únicas do cadastro), `toCameraDetail`, `toLifecycleEvent` |
+| `cameras/helpers/lifecycle-transitions.helper.ts` | Máquina de estados (`assertValidTransition`) e `assertNotInStock`, que não tem chamador |
+| `cameras/services/camera-credential-probe.service.ts` | Sondagem ONVIF com fallback ISAPI e ativação do ONVIF em Hikvision (INT-020), detecção do analítico embarcado e de PTZ real; não grava no banco |
+| `cameras/services/camera-provisioning.service.ts` | Grava credencial e até três `CameraStreamProfile` a partir da sondagem, promove a câmera a `OPERATIONAL` e a PTZ, registra o analítico embarcado |
+| `cameras/services/manufacturer-resolver.service.ts` | Resolve marca por UUID, nome ou code e registra marca nova |
+| `cameras/services/cameras-background-tasks.service.ts` | Trabalho destacado da resposta (publicação de ciclo de vida, descoberta de perfis, vínculo do analítico), drenado no shutdown |
+| `cameras/events/camera-lifecycle.publisher.ts` | Publica `CREATED`/`UPDATED`/`DELETED` em `attlas.cameras.lifecycle`, com fila Redis de reenvio drenada por `camera-lifecycle-buffer-drain.job.ts` (MOD-020, INT-022) |
+| `cameras/consumers/node-camera-association/` | Projeta em `Camera.trafficElementId` o vínculo câmera e interseção feito no Modelo de Tráfego (PROJ-029) |
+| `shared/audit/cameras-audit.publisher.ts`, `cameras-notification.publisher.ts` | Ponto único de auditoria (`attlas.audit.cameras`) e de evento notificável do serviço (MOD-019) |
+| `shared/tenancy/camera-tenancy.service.ts` | `assertCameraInSystem`, a guarda de escopo da câmera por `systemId` (MOD-011) |
+| `internal-api/` | Rotas internas de leitura para outros serviços, fora do Kong |
+| `cameras/pipes/uuid-array-body.pipe.ts` | Valida corpo que é array cru de UUIDs (`/validate`, `/batch-get`), de 1 a 200 itens |
+| `cameras/cameras.constants.ts` | Lote máximo do cadastro (50), página do backfill do espelho (500), TTL do cache de status, formato do CSV de importação, espera do enquadramento de preset |
+| `apps/ms-cameras/scripts/backfill-lifecycle-mirror.ts` | Backfill do espelho de câmeras no `ms-organization` (INT-025), runbook em `apps/ms-cameras/docs/runbooks/backfill-lifecycle-mirror.md` |
 
-CQRS via `@nestjs/cqrs`. O `CamerasController` não tem lógica de negócio: valida entrada (class-validator nas classes de command/query), injeta contexto de request (`System-Id`, Bearer) e despacha para `CommandBus`/`QueryBus`. Cada operação é um handler dedicado (`src/cameras/handlers/<op>/`), com command/query e handler em arquivos separados (regra [CQRS] do `backend-standards.md`).
+A tabela `Camera` não tem dono único de acesso: o CRUD passa por `ICamerasRepository`, mas saúde,
+dashboard, streaming, VMS, eventos, analítico e as rotas internas fazem as próprias leituras com
+`prisma.camera`, e o `CameraProvisioningService`, o `CameraRegionsController` e os handlers de vínculo com
+interseção também escrevem nela.
 
-- **Commands** mutam estado (create, update, state, safe-mode, replace, soft-delete, validate-credentials, batch-update-locations).
-- **Queries** leem (list, get-by-id, media-profiles, manufacturers, models, validate, batch-get, bulk-template).
-- Handler → `ICamerasRepository` (nunca fala Prisma direto) → `PrismaService` (adapter-pg / PostgreSQL).
-- Resposta serializada com `plainToInstance(<Response>, result)` no controller; o shape wire (`ICameraResponse`, etc.) vem de `@attlas/contracts` - sem DTO de resposta local (evita duplicação, regra [HC]).
+## Rotas REST
 
-**Por quê**: uma responsabilidade por classe, testabilidade unitária por handler, e o repositório como única fronteira de dados - qualquer submódulo que precise de `Camera` reusa `ICamerasRepository` em vez de reabrir consultas.
+Prefixo `/api`. O `CamerasController` tem `@RequireSystemDuty()` na classe, então toda rota não pública
+exige que o requisitante seja membro do sistema do header `System-Id`. Rota por câmera passa ainda por
+`CameraTenancyService.assertCameraInSystem` (404 quando a câmera não é do sistema).
 
-## Repository com token de injeção + Prisma
+| Método | Rota | Spec | Permissão | Nota |
+| --- | --- | --- | --- | --- |
+| `POST` | `/cameras` | UC-001 | `cameras.camera:create` | Lote de até 50; valida IP único, reativa removida, sonda e provisiona no mesmo pedido |
+| `GET` | `/cameras` | UC-002 | - | Paginada; filtros `q`, `connectionStatus`, `lastConnection`, `model`, `cameraType`, `lifecycleState`, `ptz`, `dai`, `virtualLoop`, uptime e elementos de topologia; cada linha traz a interseção (`topologyElement`), resolvida numa chamada ao `POST /internal/nodes/lookup` do `ms-traffic-model` e omitida se ele estiver fora |
+| `GET` | `/cameras/:id` | UC-003 | - | 404 se removida ou de outro sistema |
+| `PATCH` | `/cameras/:id` | UC-004 | `cameras.camera:edit` | Só os campos presentes; valida IP único; endereço enviado reaponta os perfis de stream |
+| `PATCH` | `/cameras/:id/state` | UC-005 | `cameras.camera:edit` | Transição validada pela máquina de estados; 409 se inválida |
+| `POST` | `/cameras/:id/replace` | UC-012 | `cameras.camera:edit` | Substituição com herança e motivo |
+| `DELETE` | `/cameras/:id` | UC-006 | `cameras.camera:delete` | Remoção lógica, 204 |
+| `GET` | `/cameras/:id/media-profiles` | UC-031 | - | Inventário de perfis descoberto no equipamento; 404 só fora do sistema, inventário vazio é página vazia |
+| `PUT` | `/cameras/locations` | - | só pertencimento | Localização e azimute em lote, escopo de sistema na própria escrita |
+| `POST` | `/cameras/validate-credentials` | UC-013 | `cameras.camera:create` ou `cameras.camera:edit` | Sondagem em lote (até 50); não grava no banco |
+| `POST` | `/cameras/validate` | UC-018 | - | Existência em lote; 204 ou 404 com `missingIds` |
+| `POST` | `/cameras/batch-get` | UC-019 | - | Dados de exibição em lote (id, nome, modelo, tipo, status, estado, coordenadas, IP) |
+| `GET` | `/cameras/bulk-template` | UC-020 | - | CSV de importação com rótulos traduzidos e BOM UTF-8 |
+| `GET` | `/cameras/manufacturers` | UC-015 | - | Marcas ativas |
+| `GET` | `/cameras/manufacturers/:id/models` | UC-015 | - | Modelos já cadastrados da marca (agregação do inventário) |
+| `GET` | `/cameras/:id/thumbnail` | - | `@Public()` | JPEG do stream SECONDARY por VAPIX (Axis) ou ISAPI (Hikvision); 404 sem câmera ou credencial, 502 em falha |
+| `GET` | `/cameras/:id/frame` | UF-053 | - | Quadro atual em resolução nativa do PRIMARY, autenticado, `Cache-Control: no-store`; usado pelas telas que desenham sobre a imagem |
 
-`CamerasRepository implements ICamerasRepository`, exposto por `ICamerasRepositoryToken = Symbol('ICamerasRepository')` e injetado com `@Inject(...)`. Interface e implementação em arquivos próprios. O `where`/`orderBy`/paginação da listagem são montados em métodos privados (`buildWhere`, `buildOrderBy`, `buildConnectionStatusWhere`, `buildPtzWhere`, `buildJsonCapabilityWhere`, `buildLastConnectionWhere`) - filtros multivalor, busca ILIKE (`name`/`serialNumber`/`ipAddress`/`model`), filtros JSON de `analyticsCapabilities` (`ptz`/`dai`/`virtualLoop`), filtro por topologia (`trafficElementId IN`) e filtro de uptime (UC-029, resolvido via rollups + `id IN (...)`, não dá pra virar `where` simples).
+As leituras não declaram chave de permissão: a visibilidade de recurso espacializado vem do Alcance
+Operacional (CROSS-032). A chave é avaliada no `ms-organization` porque o serviço sobe com
+`CoreAuthModule.forRoot({ enableSystemMembershipCache: true, enablePermissionEvaluation: true })`, com
+`targetResourceType: 'device'` e o recurso tirado do `:id`. `PUT /cameras/locations` fica só com
+pertencimento porque o avaliador resolve um device por vez e o lote chega a duzentas câmeras.
 
-**Trade-off, confirmado em 24/08 (ainda válido)**: o `where` continua escrito à mão (não usa o toolkit `list-query` CROSS-027) porque combina derivações não triviais - status via relação 1:1 `operationalSnapshot`, JSON path, uptime agregado sobre rollups/janelas, e OR de status OFFLINE que também casa snapshot ausente. Nenhum PR desde 03/07 migrou isso para o toolkit.
+Rotas internas, fora do Kong (`@Public()` com `InternalServiceTokenGuard`):
 
-## Criação em batch atômica
+| Método | Rota | Quem chama |
+| --- | --- | --- |
+| `POST` | `/internal/cameras/lookup` | `ms-selective-priority` (CROSS-094): id, nome e IP por `ids` ou `search` |
+| `GET` | `/internal/cameras/geo-search` | `ms-execution-plans` (CROSS-064): câmeras num retângulo geográfico |
+| `GET` | `/internal/cameras/:id/resources` | `ms-execution-plans` (CROSS-147): candidatos para a busca de recursos |
+| `POST` | `/internal/cameras/condition-state` | `ms-execution-plans` (CROSS-140): estado de até 200 câmeras para as condicionais |
+| `POST` | `/internal/cameras/status` | `ms-execution-plans` (CROSS-185): estado e falha por candidato |
 
-`POST /cameras` recebe e devolve **array** (`ParseArrayPipe` com item `CreateCameraCommand`). `CreateCamerasHandler`:
+Outros grupos do mesmo controller pertencem a domínios vizinhos: `GET /cameras/vms` ([[VMS]]),
+`/:id/status` ([[Saúde e monitoramento]]), eventos e incidentes ([[Eventos, incidentes e alarmes]]), PTZ,
+presets e automações ([[PTZ e presets]]), imagens de evidência ([[Analítico]]), saúde e disponibilidade
+([[Saúde e monitoramento]]).
 
-1. Rejeita batch > `MAX_BATCH_SIZE` (50) → `InvalidInputException('BATCH_LIMIT_EXCEEDED')` (400).
-2. Resolve cada marca **distinta uma única vez**, sequencialmente (evita corrida ao auto-registrar a mesma marca duas vezes no mesmo batch).
-3. Valida `replacedByCameraId` de cada item (404 se não existir).
-4. Valida `ipAddress` (BR-CRUD-009, ver seção própria abaixo) e resolve reativação de soft-deleted quando aplicável.
-5. `repository.createMany` executa todos os `create`/reativações dentro de um `$transaction` → all-or-nothing.
-6. Probe ONVIF/ISAPI + `CameraProvisioningService.provisionFromProbe` **no mesmo request** (ver seção "Provisionamento no cadastro" abaixo) - sobe a câmera pra `OPERATIONAL` quando o device responde.
-7. Descoberta de perfis de mídia (UC-031) é disparada em background, sem bloquear a resposta.
+## Camadas e CQRS
 
-Projeção `Command → CameraCreateInput` centralizada em `CameraMapper.toCreateInput` (fonte única para create single e batch), que **força `lifecycleState=STOCK`** (BR-CRUD-001).
+CQRS com `@nestjs/cqrs`. O controller não tem regra de negócio: valida a entrada (class-validator nas
+classes de command e query, com limites de `CameraValidation` de `@attlas/contracts`), injeta o contexto
+do pedido e despacha. Cada operação tem pasta própria em `cameras/handlers/<op>/`.
 
-## Validação de IP único e reativação de soft-deleted (BR-CRUD-009, PR #1137 / SOFTWARE-2317)
+- Commands: criar em lote, editar, mudar estado, substituir, remover, validar credenciais, localização em
+  lote, vincular e desvincular câmera de interseção.
+- Queries: listar, detalhe, perfis de mídia, marcas, modelos, validar existência, leitura em lote, modelo
+  CSV.
+- A resposta é serializada por classes locais em `cameras/types/contracts/<op>/` que implementam a
+  interface do contrato (`plainToInstance` no controller); `media-profiles` e `batch-get` devolvem a
+  interface direto.
 
-Até 28/07 não havia checagem de unicidade de `ipAddress` - nem no schema, nem na aplicação - no create nem no update; a UI de cadastro já tinha a tratativa de erro pronta pra um `CAMERA_DUPLICATE_IP` que o backend nunca emitia. Fechado em três camadas:
+O `where`, o `orderBy` e a paginação da listagem são montados à mão (`buildWhere`, `buildOrderBy` e
+afins), de propósito: combinam status pela relação 1:1 com `CameraOperationalSnapshot` (OFFLINE também
+casa snapshot ausente), filtros JSON de `analyticsCapabilities`, PTZ mecânico ou digital, topologia por
+`trafficElementId IN` e uptime agregado sobre os rollups, que o toolkit `list-query` (CROSS-027) não cobre.
+A ordenação sempre desempata por `id` para a página não repetir nem pular linhas.
 
-1. **Dentro do batch** (`CreateCamerasHandler.assertNoDuplicateIpWithinBatch`): dois itens do mesmo `POST /cameras` não podem repetir `ipAddress`.
-2. **Contra o já ativo** (`CamerasRepository.findActiveByIpAddress`): rejeita se outra câmera ativa do mesmo tenant (`deletedAt: null`) já usa o IP - aplicado no create e no `UpdateCameraHandler` (só quando `ipAddress` está de fato no delta do PATCH).
-3. **Índice único parcial no banco** (`Camera_active_ip_unique`, migration `20260729114417_camera_active_ip_unique`): `UNIQUE (systemId, ipAddress) WHERE deletedAt IS NULL`, criado `CONCURRENTLY`. A checagem de aplicação lê fora da transação de escrita (READ COMMITTED), então dois submits concorrentes (duplo-clique, retry, import paralelo) podiam ambos passar a checagem e inserir; o índice fecha essa janela. O P2002 do índice é traduzido para o mesmo `CAMERA_DUPLICATE_IP` (`errorCode` novo, aditivo em `@attlas/core-common`) que a checagem de aplicação usa - create e update respondem com o mesmo shape.
+## Persistência
 
-**Reativação em vez de linha nova**: se o `ipAddress` bate com uma câmera **soft-deleted** e nenhuma ativa usa o mesmo IP, o create reativa esse registro (`CamerasRepository.findMostRecentlyDeletedByIpAddress` escolhe a mais recente) em vez de inserir uma linha nova - preserva histórico (eventos, incidentes) sob o mesmo id. `CameraMapper.toReactivateInput` reescreve os campos técnicos do cadastro, força `lifecycleState=STOCK` e `deletedAt=null`; `CamerasRepository.createMany` mistura, na mesma `$transaction`, os `create` dos itens novos com o `update` dos reativados.
+Schema multi-arquivo em `database/schema/`.
 
-**Limpeza dos filhos da encarnação anterior** (achado A2 do review da PR, fix não-bloqueante no mesmo card): sem isso, a câmera revivida herdava filhos que pertenciam ao device que estava naquele IP antes, não ao que está sendo cadastrado agora:
+| Model | Arquivo | Papel |
+| --- | --- | --- |
+| `Camera` | `camera/camera.prisma` | Entidade; `systemId` (tenant), `deletedAt` (remoção lógica), `azimuth` (default 0), `lifecycleState` texto, auto-relação `replacedByCameraId`; índices em `manufacturerId`, `lifecycleState`, `trafficElementId`, `(systemId, lifecycleState)` e `(systemId, ipAddress)`; índice único parcial `Camera_active_ip_unique` (`systemId` e `ipAddress` onde `deletedAt IS NULL`), que mora só na migration |
+| `CameraCredential` | `camera/camera_credential.prisma` | Usuário e senha 1:1, senha em texto puro por decisão registrada no schema; `onDelete: Cascade` |
+| `CameraManufacturer` | `camera/camera_manufacturer.prisma` | Catálogo de marcas; `code` único; `onDelete: Restrict` na câmera |
+| `CameraStreamProfile` | `stream/camera_stream_profile.prisma` | Perfil por papel (PRIMARY, SECONDARY, TERTIARY): URL, codec, resolução, bitrate, fps, heartbeat, timeout, fallback; sem `@@unique(cameraId, role)` |
+| `CameraMediaProfile` | `stream/camera_media_profile.prisma` | Inventário de perfis descoberto no equipamento |
 
-- `CamerasRepository.createMany` apaga `cameraOperationalSnapshot`, `cameraPtzPreset` e `cameraPtzTour` do id reativado antes do `update` - sem isso o snapshot velho faria a câmera aparecer online sem heartbeat novo, e os presets/tours seriam do device antigo.
-- `CameraProvisioningService.provisionFromProbe` apaga os `CameraStreamProfile` antes de recriar - mas **só quando o probe devolve profile novo pra pôr no lugar** (`streamProfiles.length > 0`); sem essa guarda, um re-probe que falha apagaria a config de uma câmera que já funciona (tem teste fixando isso). `CameraStreamProfile` não tem `@@unique(cameraId, role)`, então sem o wipe os profiles duplicariam (PRIMARY/SECONDARY/TERTIARY repetidos, todos `isActive: true`).
+A pasta `camera/` também guarda `CameraEvidenceImage`, `CameraLprCapability` e `CameraServerAnalytic`, que
+são do [[Analítico]]. A coluna `Camera.safeMode` está órfã: nenhum código lê ou escreve nela.
 
-Pendência registrada no commit original (`cfc905f3ee`): a validação de aplicação foi entregue sem o ciclo shadow-db validado localmente (infra parada no momento); o commit seguinte (`9330ed47da`) já trouxe o índice parcial + `DBM-DRIFT.md` atualizado, então a lacuna foi fechada dentro da mesma PR.
+## Ciclo de vida
 
-## Provisionamento no cadastro (SOFTWARE-2226) - correção de achado
+Quatro estados de `CameraLifecycleState` (`@attlas/contracts`), em cadeia linear de ida e volta:
 
-`CreateCamerasHandler.probeAndProvision` roda o probe ONVIF/ISAPI (`CameraCredentialProbeService`) e `CameraProvisioningService.provisionFromProbe` **dentro do próprio `POST /cameras`**, uma câmera por vez em paralelo. É o único ponto onde a plataforma toca o device por primeira vez - não existe etapa separada de "ativação" (comentário do próprio handler: *"the create call is the SINGLE point where a camera is first hit by Attlas — no separate 'activate' step"*). `provisionFromProbe` persiste, na mesma transação: upsert de `CameraCredential`, `deleteMany` + `create` de `CameraStreamProfile` (quando o probe encontra ≥1 perfil H264/H265 utilizável) e o update da `Camera` para `lifecycleState=OPERATIONAL`. Sem perfil utilizável, ou com probe falho, a câmera fica em `STOCK`/`IN_FIELD` e a resposta do create carrega um warning por câmera com o `errorCode` classificado (`CAMERA_PROBE_FAILED`, `CAMERA_NO_STREAMABLE_PROFILE`, etc.) - soft-fail por design (BR-CRUD-001): a câmera e a credencial sempre são persistidas para o operador poder repetir.
+| Estado | Domínio | Transições permitidas | Aviso de RNF-CAM-10 |
+| --- | --- | --- | --- |
+| `STOCK` | Em estoque | `TESTING` | Não |
+| `TESTING` | Em testes | `IN_FIELD`, `STOCK` | Sim |
+| `IN_FIELD` | Em campo, sem configurar | `OPERATIONAL`, `TESTING` | Sim |
+| `OPERATIONAL` | Operativa | `IN_FIELD` | Não |
 
-Achado corrigido nesta revisão: esta nota, `Cameras - Fluxos` e `Cameras - Requisitos e SLA` diziam até 24/08 que "o CRUD não cria `CameraStreamProfile` nem `CameraCredential` - streams e credenciais são configurados na integração". Isso descrevia o serviço antes de SOFTWARE-2226; hoje o cadastro cria os dois inline, como parte do mesmo request.
+- `PATCH /cameras/:id/state` valida pela `LifecycleTransitions.assertValidTransition`; fora da tabela
+  responde `BusinessRuleViolationException` (409, detalhe `INVALID_STATE_TRANSITION`, chave
+  `cameras.errors.INVALID_LIFECYCLE_TRANSITION`).
+- No cadastro, `ICreateCameraRequest.lifecycleState` é opcional e aceita qualquer estado, sem validação de
+  transição; ausente, a câmera nasce `STOCK`. Quando o campo não vem e a sondagem acha um perfil H264 ou
+  H265, o provisionamento promove a câmera a `OPERATIONAL` por fora da máquina de estados; com o campo
+  enviado, não promove.
+- O wizard do `web-attlas` não manda o campo, então toda câmera cadastrada pela tela entra `OPERATIONAL`
+  quando há vídeo e `STOCK` quando não há. A edição da câmera não troca o estado, e nenhuma tela chama
+  `PATCH /cameras/:id/state`.
+- A substituição move estados por fora da máquina (seção própria abaixo).
+- `assertNotInStock` não tem chamador: o backend não bloqueia comando por estado, e a confirmação de
+  RNF-CAM-10 só existe no PTZ do VMS (ver [[PTZ e presets - Fluxos]]).
 
-## Resolução de marca (auto-registro)
+> [!warning] Divergência entre regra, spec e código
+> RF-CAM-02 diz que só o administrador transiciona e que o sistema nunca transiciona sozinho, mas o
+> cadastro pela tela promove a `OPERATIONAL`. E `docs/modules/cameras.md` seção 4 diz que o formulário de
+> cadastro pede o estado inicial, o que o wizard da `develop` não faz.
 
-`ManufacturerResolverService.resolve(value)` aceita UUID, nome ou code e devolve o id de `CameraManufacturer`, **auto-registrando** marca não catalogada (ex.: vendor code que o ONVIF reporta, "AXIS"). É concurrency-safe: `code` é `@unique`, então duas requisições que ambas erram o find e tentam criar caem P2002; o perdedor re-resolve pelo code derivado e devolve o vencedor (sem 500, sem marca duplicada). O `code` é derivado do nome (primeiro token, alfanumérico, upper, ≤32 chars). Decisão SOFTWARE-1195: cadastro de câmera **nunca** dá 404 por marca desconhecida.
+## Cadastro em lote e provisionamento
 
-## Multi-tenant por `systemId` (header `System-Id`)
+`POST /cameras` recebe e devolve array. O `CreateCamerasHandler`:
 
-O escopo de tenant vem **sempre** do header `System-Id`, nunca do body/query. `@SystemId()` é fail-closed (400 se ausente/UUID inválido). O controller sobrescreve `query.systemId`/`query.bearer` **após** a validação, para que qualquer `?systemId=` que o cliente mandar seja descartado.
+1. Recusa lote acima de 50 (`InvalidInputException`, detalhe `BATCH_LIMIT_EXCEEDED`).
+2. Resolve cada marca distinta uma única vez, em sequência, para o lote não registrar a mesma marca duas
+   vezes.
+3. Valida `replacedByCameraId` de cada item.
+4. Aplica a regra de IP único (seção seguinte) e decide quais itens reativam uma câmera removida.
+5. Grava tudo numa `$transaction` (tudo ou nada).
+6. Sonda e provisiona cada câmera em paralelo (`probeAndProvision`); câmera que respondeu é anexada já ao
+   monitoramento de saúde (`DeviceMonitorCoordinatorService.attachRegisteredCamera`), as outras entram na
+   próxima reconciliação. Câmera com analítico embarcado dispara em segundo plano o vínculo do equipamento
+   (`BindAnalyticDeviceCommand`, UC-216, sem tomar posse de equipamento que outra instalação governa).
+7. Dispara em segundo plano a descoberta de perfis de mídia, com permissão para ligar o ONVIF do
+   equipamento (único chamador autorizado, INT-020).
+8. Publica `CREATED` no ciclo de vida, audita uma linha por câmera e emite as notificações do lote.
+9. Relê as câmeras para a resposta já trazer o estado pós-provisionamento.
 
-> [!success] Confirmado e reescrito em 24/08 contra `MOD-011-tenant-scoping.md`
-> A versão anterior desta nota dizia o escopo "aplicado em create (todo o batch sob o tenant), list,
-> get-by-id, validate e batch-get" - isso era o estado de **SOFTWARE-1920** (PR #574, busca por
-> topologia), não o estado atual. O card **SOFTWARE-2007** (`MOD-011-tenant-scoping`, spec em
-> `apps/ms-cameras/docs/modules/MOD-011-tenant-scoping.md`) auditou **todas** as rotas do controller e
-> fechou o resto em 3 fases (leituras por câmera, mutações, PTZ/presets/automations). Hoje o inventário
-> da MOD-011 marca **toda** rota tenant-relevante de `CamerasController` como `OK`, por dois caminhos:
->
-> - **Filtro direto no `where`/`findFirst`**: `POST /cameras` (cria sob o tenant), `GET /cameras`
->   (lista), `GET /cameras/vms`, `GET /cameras/:id`, `POST /cameras/validate`, `POST
->   /cameras/batch-get`, `PUT /cameras/locations` (escopo na própria escrita, não num lookup prévio -
->   evita a janela onde um id deletado no meio do caminho ainda seria escrito), `GET
->   /cameras/incidents[/:id]`.
-> - **`CameraTenancyService.assertCameraInSystem(cameraId, systemId)`** (`src/shared/tenancy/`,
->   `CameraTenancyModule` sobre o `PrismaModule`) - checkpoint único reusado na borda HTTP antes de
->   qualquer mutação/comando por câmera: `PATCH /:id`, `PATCH /:id/state`, `DELETE /:id`, `POST
->   /:id/replace`, as 4 rotas de PTZ (`/ptz`, `/ptz/absolute`, `/ptz/continuous`, `/ptz/stop`), todas as
->   rotas de `/:id/presets*` e `/:id/automations*`. Lança `ResourceNotFoundException('Camera', id)`
->   (404) quando a câmera não existe, está soft-deletada ou é de outro sistema - indistinguível de
->   inexistente, sem vazar existência. `/:id/status` também assera no controller (a query em si segue
->   sem escopo porque o gateway realtime a despacha sem `System-Id`); `/:id/events[/:eventId]` assera
->   **no handler**, não no controller, porque a query já fazia essa checagem própria.
-> - `GET /:id/media-profiles` (UC-031, card 2008) escopa via `@SystemId()` direto no handler da query -
->   entrou na develop **depois** da auditoria inicial da MOD-011, mas já nasceu escopado (comentário no
->   controller confirma).
->
-> A MOD-011 também documenta, de propósito, que o VMS (`/vms/**`) escopa por `organizationId` (claim do
-> JWT), não por `systemId` - são dois eixos de tenancy intencionalmente distintos (câmera é por sistema,
-> cena/layout de VMS é por organização); reconciliar os dois fica fora do escopo deste módulo. Ver
-> `MOD-011-tenant-scoping.md` seção 2 para o detalhe (fora do domínio Cameras, não expandido aqui).
+O provisionamento (`CameraProvisioningService.provisionFromProbe`) grava numa transação: a credencial
+(sempre, mesmo com sondagem falha, para o operador repetir), os perfis de stream e o update da câmera.
 
-**Caveat de segurança (documentado no controller e na MOD-011, ainda vale)**: o header garante presença/validade do UUID, mas **não autoriza pertencimento** ao sistema - é client-controlled. A autorização multidimensional é do módulo Permissões (RF-INT-06); esta camada só aplica o escopo de leitura/escrita.
+- Perfis: os H264 e H265 do equipamento ordenados por área de imagem, até três papéis. Quando a URL do
+  PRIMARY é de fabricante que aceita redução pela própria URL, papel inferior que não é menor que o de
+  cima vira versão reduzida: SECONDARY 1280x720, 30 fps, 2000 kbps; TERTIARY 848x480, 30 fps, 500 kbps.
+- Os perfis só são apagados e recriados quando a sondagem devolve perfil novo; uma ressondagem falha não
+  apaga a configuração de uma câmera que já funciona.
+- PTZ: a sondagem marca `hasPtz` só com faixa real de pan ou tilt (a biblioteca ONVIF preenche `range`
+  com zeros e câmera fixa com zoom digital reporta faixa de zoom). Com PTZ real, o provisionamento promove
+  `physicalCameraKind` e `analyticsCapabilities.ptz`; nunca rebaixa (BR-CRUD-013).
+- Analítico embarcado: quando a sondagem lê o ACAP ATMAN, grava `hasEmbeddedAnalytics`, `dai`,
+  `virtualLoop`, `deviceSourceId` e a arquitetura ARTPEC em `analyticsCapabilities` e registra os
+  analíticos compatíveis em `CameraAnalytic` (ver [[Analítico]]).
+- Sem perfil utilizável ou com sondagem falha, a resposta carrega um aviso por câmera com o `errorCode`
+  classificado (`CAMERA_PROBE_FAILED`, o código da sondagem ou `CAMERA_NO_STREAMABLE_PROFILE`), soft-fail
+  por design (BR-CRUD-001).
 
-### Topologia de produção: a mesma câmera física, uma linha `Camera` por tenant
+## IP único e reativação (BR-CRUD-009)
 
-> [!success] Confirmado no código em 24/08
-> Em produção (EC2), a mesma câmera física é cadastrada **uma vez por tenant** - hoje **6
-> sistemas-tenant**. O comentário no código é literal:
-> `apps/ms-cameras/src/health/utils/device-stream-group.util.ts` - *"the same camera is registered
-> once per tenant (6 systems today)"*. Efeito prático: ~12 devices físicos reais hoje geram até 72
-> linhas `Camera` (6 tenants × device), e qualquer mecanismo que trate device físico (healthcheck,
-> telemetria, analytics) precisa dedupar por `streamUrl`/host, não por linha - ver
-> `groupByDeviceStream()` e [[Saúde e monitoramento - Arquitetura e estratégias]]. A PTZ Atman
-> (`10.1.1.79`, AXIS Q6135-LE) está `OPERATIONAL` nos 6 sistemas simultaneamente.
->
-> Mesma topologia sustenta o fan-out 1:N de analytics por `deviceAnalyticId`
-> (`apps/ms-cameras/docs/atomic/PROJ-013-analytics-multi-camera-fanout.md`,
-> `MOD-014-analytics-pipeline-resilience.md`) e a telemetria de bitrate por device físico
-> (`PROJ-006-bitrate-ttff-telemetry.md`, BR-TELE-006/007).
->
-> **Não confundir com o seed de dev** (`apps/ms-cameras/src/database/seed.ts`): o seed local usa **um
-> único** `SYSTEM_ID` para todas as câmeras de teste (PTZ Atman `10.1.1.79`, demo `10.1.1.78`,
-> Hikvision real `192.168.210.80` via ISAPI) - é sandbox de desenvolvimento, não reflete a replicação
-> por tenant de produção. A câmera do analítico embarcado (`10.11.20.101`) é a única com o app ATMAN
-> Traffic Edge de fato instalado (ver [[Integração com dispositivo]]).
+- Três camadas, todas respondendo 422 `CAMERA_DUPLICATE_IP`: dois itens do mesmo lote com o mesmo IP (com
+  `cardIndex` do item recusado, para o wizard abrir o card certo); IP já usado por câmera ativa do mesmo
+  sistema (no cadastro e na edição, só quando o IP está no delta); e o índice único parcial, que fecha a
+  corrida entre a checagem (lida fora da transação) e a escrita, com o P2002 traduzido para o mesmo código.
+- IP de câmera removida, sem ativa no mesmo IP, reativa a removida mais recente em vez de criar linha nova,
+  preservando o histórico sob o mesmo id. `toReactivateInput` reescreve os campos técnicos e zera
+  `deletedAt`.
+- Antes de reativar, o repositório apaga os filhos da encarnação anterior: snapshot operacional, tours (antes
+  dos presets, porque o passo de tour referencia o preset com `Restrict`), presets, capacidade LPR e
+  analítico servidor. Sem isso a câmera revivida apareceria online sem heartbeat e herdaria presets do
+  equipamento antigo.
 
-## Máquina de estados do ciclo de vida
+## Edição e troca de endereço
 
-`LifecycleTransitions.assertValidTransition(from, to)` consulta um mapa fixo `VALID_TRANSITIONS` (cadeia linear bidirecional STOCK↔TESTING↔IN_FIELD↔OPERATIONAL - ver tabela em [[Cameras]]). Transição inválida → `BusinessRuleViolationException` com `errorCode: INVALID_STATE_TRANSITION` + `translationKey` para o frontend. `ChangeCameraStateHandler` valida contra o estado atual (404 se câmera não existe) e incrementa o counter `cameras_state_transitions_total{from,to}`.
+O `UpdateCameraHandler` grava só os campos presentes. Pedido que traz endereço reaponta a URL de todos os
+perfis de stream antes de anunciar (`repointStreamProfiles`, idempotente, roda em todo save com endereço
+para um save repetido consertar perfis deixados no endereço antigo); se o endereço mudou de fato, publica
+`CameraOriginChangedEvent` para o streaming abrir a próxima sessão no equipamento novo. Depois invalida o
+dashboard (`INVENTORY`), audita o diff e publica `UPDATED` no ciclo de vida.
 
-O helper também expõe `assertNotInStock(state)` (guard para operações que exigem câmera no campo), mas **hoje não tem callers** em produção - a prevenção de comandos fora de "Operativa" (RNF-CAM-10) é aplicada no frontend, não no backend.
+## Substituição com herança (UC-012)
 
-## Soft-delete
+- A câmera velha precisa estar `OPERATIONAL` ou `IN_FIELD` (`CAMERA_REPLACEABLE_LIFECYCLE_STATES`), senão
+  422 `CAMERA_LIFECYCLE_PRECONDITION_NOT_MET`.
+- A nova precisa ser do mesmo sistema (senão 404, sem revelar que existe em outro) e estar `STOCK` (senão
+  409 `STOCK_CAMERA_NOT_FOUND`). Auto-substituição é 409 `CAMERA_SELF_REPLACE`.
+- O corpo exige `newCameraId` e `reason` (`CameraReplacementReason`: defeito técnico, upgrade, vandalismo,
+  obsolescência, outro).
+- `replaceCamera` numa `$transaction`: a nova herda o estado da velha, latitude, longitude, endereço,
+  interseção e `trafficElementId`; os tours e presets default da nova são apagados e os presets default da
+  velha copiados; os tours da velha migram; as células de cena do VMS são reapontadas; a velha vai a `STOCK`
+  com `replacedByCameraId`.
+- Publica `CameraReplacedEvent` in-process, que move o vínculo da Neural Labs para a câmera nova
+  (`server-analytics/handlers/move-neural-labs-links-on-replacement/`), audita `CAMERA_REPLACED` com
+  `replacedByCameraId` e `reason`, notifica e devolve o detalhe da velha.
+- O tópico `attlas.cameras.replaced` segue sem produtor (TODO do handler, PROJ-002).
 
-`DELETE /cameras/:id` grava `deletedAt=now()` (não apaga a linha). `findById`/`findAll`/`findExistingIds`/`findSummariesByIds` filtram `deletedAt: null`. Uma câmera deletada some das listagens, dá 404 no GET/:id, mas permanece no banco para integridade referencial com histórico (eventos, substituições). Não há endpoint de hard-delete. Reativação (revive a mesma linha em vez de recriar) só acontece por um caminho: recadastrar com o mesmo `ipAddress` no `systemId` (BR-CRUD-009, seção acima) - não há endpoint dedicado de "reativar por id".
+## Vínculo com interseção do Modelo de Tráfego (PROJ-029)
 
-## Perfis de mídia (UC-031, card 2008)
+O `NodeCameraAssociationListener` consome `attlas.node-devices.associated` e `attlas.node-devices.dissociated`
+do `ms-traffic-model`. Associação do tipo `CAMERA` grava `Camera.trafficElementId` com o nó; dissociação
+limpa só se o campo ainda aponta para aquele nó; payload inválido vai para a fila-morta. É daí que a tela
+deriva interseção, área e subárea. Vínculo feito antes do consumidor existir só aparece depois de
+reassociar a câmera.
 
-`GET /cameras/:id/media-profiles` serve o inventário ONVIF/ISAPI **descoberto no device** (device-truth) - resolução, codec, quality, fps, GOP, `h264Profile`, áudio e PTZ quando o device reporta. **Não é a mesma coisa que `CameraStreamProfile`** (que é a config de streaming que o player consome); é o inventário bruto que a tela de perfis de mídia do frontend usa para exibir o que o device tem. Reusa o contrato existente `camera-media-profile` de `@attlas/contracts` (`IListMediaProfilesResponse` = `IPaginatedResponse<IGetMediaProfileResponse>`), sem contrato novo. A descoberta roda em dois gatilhos: no cadastro (`CreateCamerasHandler.trackDiscovery`, background, não bloqueia o create) e periodicamente (`CameraMediaProfileDiscoveryWorker`). Persistido por câmera em `CameraMediaProfile` via `ICameraMediaProfileRepository`; `GetCameraMediaProfilesHandler` só lê o que já foi descoberto (nunca faz probe ao vivo na request). Escopo tenant via `@SystemId()` direto no handler da query (ver seção multi-tenant acima). Detalhe completo em `apps/ms-cameras/docs/modules/MOD-012-camera-media-profiles.md` e `apps/ms-cameras/docs/atomic/UC-031-list-camera-media-profiles.md`.
+## Autorização
 
-## Substituição com herança + auto-relação
+1. Pertencimento: `@RequireSystemDuty()` na classe faz o `JwtClaimsGuard` confirmar que o requisitante é
+   membro ativo do sistema do header (cache Redis com fallback no `ms-organization`, 403 `FORBIDDEN_ACTION`).
+   O MASTER da plataforma passa. Toda rota nova nasce protegida.
+2. Permissão funcional: `@RequirePermission` nas rotas de escrita (tabela acima); avaliador fora do ar
+   responde 503 `PERMISSION_RESOLVER_UNAVAILABLE`.
+3. Escopo da linha: `@SystemId()` é fail-closed (400 sem header ou UUID inválido) e o controller sobrescreve
+   `systemId` e `bearer` da query depois da validação. Leituras filtram pelo `systemId` no próprio `where`;
+   mutações e comandos por câmera passam por `assertCameraInSystem` (404 sem vazar existência). O VMS escopa
+   por organização, não por sistema (MOD-011, ver [[VMS]]).
 
-`ReplaceCameraHandler` valida que velha ≠ nova, que ambas existem e não estão deletadas, e chama `repository.replaceCamera` (tudo em `$transaction`). A nova câmera herda:
+## Auditoria e notificação (MOD-019, UC-065)
 
-- **Localização**: `latitude`, `longitude`, `address`, `intersection`, `trafficElementId`.
-- **Presets PTZ default**: os presets `isDefault` da velha são copiados para a nova (os tours e presets default pré-existentes da nova são apagados antes, respeitando o `Restrict` das referências).
-- **Cenas do VMS**: `VideoWallSceneCell` da velha são reapontadas para a nova (atualização automática, RF-CAM-07).
-- **Tours PTZ** da velha migram para a nova.
+Cada gesto publica um envelope em `attlas.audit.cameras` (consumido pelo `ms-audit`) e um evento
+notificável `cameras.camera.*`, fora do caminho crítico da resposta. O ator é o `userSubject` do JWT; sem
+sujeito, o envelope sai como `SYSTEM`.
 
-Ao fim, a **velha** vai para `lifecycleState=STOCK` e recebe `replacedByCameraId = nova` (auto-relação `Camera.CameraReplacement`, `onDelete: SetNull`).
+| Gesto | Auditoria | Notificação |
+| --- | --- | --- |
+| Cadastro | `CAMERA_CREATED`, uma por câmera, payload só com latitude e longitude; mais as declarações de LPR e de analítico servidor feitas no wizard | `cameras.camera.created`, agregável |
+| Edição | diff dos `AUDITED_FIELDS` que o patch trouxe; o IP entra só pelo nome do campo | `cameras.camera.updated`, só se algo mudou |
+| Estado | `fromState` e `toState` | `cameras.camera.stateChanged` |
+| Substituição | `CAMERA_REPLACED` com `replacedByCameraId` e `reason` | `cameras.camera.replaced` |
+| Remoção | `lifecycleState` | `cameras.camera.deleted` |
+| Localização em lote | uma linha para o lote | `cameras.camera.locationBatchUpdated`, uma por câmera |
 
-**Trade-off / gap**: a rastreabilidade da substituição é hoje só o ponteiro `replacedByCameraId` + `updatedAt`. **Não** há tabela de histórico dedicada, **não** se captura o operador responsável (o endpoint não injeta `@CurrentUser`), e o evento Kafka `attlas.cameras.replaced` é um TODO (aguarda client Kafka, PROJ-002). RNF-CAM-13 (histórico permanente com timestamp + operador) está portanto **parcial** - ver [[Cameras - Requisitos e SLA]]. Confirmado em 24/08: nenhum commit desde 03/07 mudou esse gap (o evento Kafka continua TODO).
+O payload leva identificadores, nunca a entidade, porque a senha da credencial fica em texto puro e o
+`audit_log` é exportável. A publicação é best-effort e sem reenvio. `@Audited` na rota só declara o par
+para o teste de superfície; quem publica é o handler.
 
-## Validação de credenciais (probe, sem persistência)
+## Publicação do ciclo de vida (MOD-020, INT-022)
 
-`ValidateCredentialsHandler` → `CameraCredentialProbeService.probe` roda em paralelo por item (batch ≤50, mesmo limite do create para conter esgotamento de sockets). Cada probe abre um `OnvifDevice`, faz `servicesInit` + (`deviceInformationInit` ‖ `mediaGetProfiles`) com timeout de 10s, e devolve device info (fabricante/modelo/serial/firmware/hardwareId), perfis de vídeo e range PTZ. Erros são classificados em `CAMERA_CREDENTIALS_INVALID` / `CAMERA_UNREACHABLE` / `CAMERA_CONNECTION_FAILED`. **Nada é persistido neste endpoint** - alimenta o wizard de cadastro no frontend (o probe equivalente roda de novo, com persistência, dentro do `POST /cameras` - ver "Provisionamento no cadastro" acima).
+`CameraLifecyclePublisher` publica `IDeviceLifecycleEvent` em `attlas.cameras.lifecycle` (chave `deviceId`),
+consumido pelo `ms-organization` (`apps/ms-organization/src/device/consumers/device-lifecycle.consumer.ts`).
 
-## safeMode
+- Publicam o cadastro (`CREATED`), a edição (`UPDATED`) e a remoção (`DELETED`); estado, substituição e
+  localização em lote não publicam.
+- O envelope leva `deviceId`, `systemId`, `name`, `actorUserId` e `occurredAt`, com `isMobile: false` e
+  `areaId: null`.
+- O envio roda destacado da resposta. Falha vai para uma fila Redis por câmera, drenada sob lock; evento
+  novo de câmera com pendência entra atrás da fila para não inverter a ordem. Só a falha dupla (Kafka e
+  Redis) descarta.
+- Câmeras anteriores ao produtor entram pelo script de backfill (INT-025).
 
-Flag booleana `Camera.safeMode` (default false), alternada por `PATCH /:id/safe-mode` (`UpdateCameraSafeModeHandler`) e exposta no detalhe. É apenas persistida/refletida - **não** há guard no backend que a use para bloquear operações; a semântica operacional é aplicada no frontend.
+## Marca, perfis de mídia, credenciais e remoção
 
-## Serialização e contratos
+- Marca: `ManufacturerResolverService.resolve` aceita UUID, nome ou code e registra a marca não catalogada;
+  `code` derivado do nome (primeiro token, alfanumérico, maiúsculo, até 32 caracteres) e único, então a
+  corrida entre dois pedidos cai em P2002 e o perdedor relê o vencedor. Cadastro nunca dá 404 por marca.
+- Perfis de mídia (UC-031): `CameraMediaProfile` é o inventário bruto do equipamento (resolução, codec,
+  qualidade, fps, GOP, perfil H264, áudio, PTZ), diferente de `CameraStreamProfile`, que é o que o player
+  consome. Descoberto no cadastro e periodicamente pelo `CameraMediaProfileDiscoveryWorker` (câmeras
+  `OPERATIONAL` e `TESTING`), com leitura ONVIF e fallback ISAPI; a rota só lê o que já foi descoberto.
+- Validação de credenciais: sondagem em lote, mesmo limite de 50 do cadastro para não esgotar sockets,
+  acrescida da arquitetura ARTPEC e da compatibilidade do analítico embarcado. Não grava no banco, mas numa
+  Hikvision com ONVIF desligado liga o ONVIF no equipamento. Os 10 s valem só para a conexão ONVIF; a
+  detecção do analítico e o caminho ISAPI podem estender o tempo do item. Detalhe da sondagem em
+  [[Integração com dispositivo - Fluxos]].
+- Remoção: grava `deletedAt`; as leituras filtram `deletedAt: null`; não há hard-delete nem rota de
+  reativar por id, só o recadastro pelo mesmo IP.
+- Serialização: `toCameraDetail` converte `Decimal` em número e `Date` em ISO, alinha `physicalCameraKind`
+  e `cameraType` e acrescenta `streamTiers`, `analytics` e o aviso de provisionamento. No detalhe, `status`
+  fica indefinido sem snapshot (a tela omite o selo até o WebSocket responder); na listagem, sem snapshot
+  sai `OFFLINE`.
 
-Commands/queries implementam interfaces de `@attlas/contracts` (`ICreateCameraRequest`, `IUpdateCameraRequest`, `IChangeCameraStateRequest`, …) e validam com `class-validator` referenciando `CameraValidation.<campo>` (sem magic numbers). `CameraMapper.toCameraDetail` converte `Decimal → number` (via `NumberHelper`), `Date → ISO string`, e alinha `physicalCameraKind (Int)` ↔ `cameraType (enum)`. `status` deriva de `operationalSnapshot.connectionStatus` (undefined/OFFLINE quando não há snapshot).
+## Topologia de produção e seed
+
+- Em produção a mesma câmera física é cadastrada uma vez por sistema-tenant (seis hoje), então cerca de
+  doze equipamentos viram dezenas de linhas `Camera`. Qualquer mecanismo que trate o equipamento físico
+  (saúde, telemetria, analítico) deduplica por endereço, não por linha (`health/utils/device-stream-group.util.ts`,
+  ver [[Saúde e monitoramento - Arquitetura e estratégias]]).
+- O seed de desenvolvimento (`database/seed.ts`) cria só três câmeras Axis da bancada num único sistema
+  (`SEED_SYSTEM_ID`): demo `10.1.1.78`, PTZ `10.1.1.79` e a do analítico embarcado `10.1.1.80`. Sem
+  `SEED_CAMERA_PASSWORD` não grava credencial, e o `source_id` do analítico vem de
+  `SEED_ATMAN_EMBEDDED_SOURCE_ID`, nunca de constante versionada. O seed só grava no banco, não fala com
+  equipamento.
+
+## Armadilhas conhecidas
+
+- Recadastrar pelo IP de câmera removida falhava com 409 de FK quando os presets eram apagados antes dos
+  tours; a ordem tours antes de presets é obrigatória em toda limpeza de filhos.
+- A biblioteca ONVIF reconstrói o `GetStreamUri` com esquema `http://`; a sondagem força `rtsp://` de volta
+  antes de gravar o perfil.
+- Câmera inserida à mão no banco precisa de UUID v4 válido (`gen_random_uuid()`): o gateway do analítico
+  recusa id derivado sem os bits de versão e a câmera nunca entra na sala do WebSocket.
+
+## Pendências
+
+- Histórico permanente de substituição (RNF-CAM-13): falta tabela própria e o produtor de
+  `attlas.cameras.replaced`; hoje o rastro é o `replacedByCameraId` mais a linha de auditoria.
+- A MOD-020 especifica o censo `GET internal/devices/count` (UC-076) e o teto de licença no cadastro
+  (UC-077); nenhum dos dois existe no código.

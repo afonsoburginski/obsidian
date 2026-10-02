@@ -10,8 +10,8 @@ clickup: https://app.clickup.com/t/86aju7c6y
 titulo: "[Back] Analítico em container: laço virtual e ocupação da região"
 frente: Analítico em container
 tamanho: 2 pts
-status: SEM PRAZO desde 10/08 (frente do analítico despriorizada; a Sprint 27 fechou sem entrega e a 28 foi para VMS e videowall externo). PR em draft segue aberta. Histórico: comprometido (quinta). Validado contra a develop em 03/08. PR aberta em draft: [#1349](https://github.com/atmanadmin/attlas-2026/pull/1349). ClickUp movido para `in progress`.
-sprint: "[[00 - Sem prazo (backlog)]]"
+status: 'SEM PRAZO desde 10/08 (frente do analítico despriorizada; a Sprint 27 fechou sem entrega e a 28 foi para VMS e videowall externo). PR em draft segue aberta. Histórico: comprometido (quinta). Validado contra a develop em 03/08. PR aberta em draft: [#1349](https://github.com/atmanadmin/attlas-2026/pull/1349). ClickUp movido para `in progress`.'
+sprint: "[[Sem prazo (backlog)]]"
 atualizado: 2026-08-10
 ---
 

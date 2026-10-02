@@ -14,10 +14,19 @@ pr: "#3431 - aberta, CI rodando"
 status: "PR #3431 aberta com o registro do que a máquina é, a consequência de ser burstable, o tipo alvo (`c7a.4xlarge`/`c7i.4xlarge`) e o procedimento da troca, em `docs/architecture/dev-environment.md`. A troca de tipo em si depende do console da AWS e de uma janela combinada - é o que falta para o critério de aceite fechar. Medições reconferidas no box em 14/09 por IMDS e `lscpu`."
 sprint: "[[Attlas - Sprint 33]]"
 estudo: "[[Analítico - Estudo de caso de captura, inferência e sincronização]]"
-atualizado: 2026-09-14
+atualizado: 2026-09-27
 ---
 
 # Infra - a VM do EC2 é t3a.2xlarge, burstable, e não 16 núcleos
+
+> [!info] Estado em 26/09: modo `unlimited` confirmado
+> O Zanini confirmou que a instância está em `unlimited`. A CPU não é estrangulada por crédito, e o uso
+> acima do baseline sai como custo excedente. O passo "confirmar o modo `unlimited` no console" abaixo
+> está feito. O Hadson também leu o CloudWatch pelo CloudShell, que usa a sessão do console e não pede
+> chave de acesso. A CPU ficou em 70,2% de média na semana de 12/09 e em 54,0% na de 19/09. O
+> `CPUCreditBalance` está zerado e o excedente no teto de 4.608, cerca de US$ 9,41 em 7 dias (uns
+> US$ 40 por mês). A troca de família se justifica pelo steal (média de 8%, picos de 18% a 22%), não
+> pela lentidão percebida, que em 26/09 se provou ser do front e da rede.
 
 Verificado direto no box em 14/09 (`i-06e8f8cf75102367e`, `us-east-2c`):
 

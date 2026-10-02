@@ -16,9 +16,10 @@ clickup_status: Closed
 merged: 2026-07-01
 clickup: https://app.clickup.com/t/86aj9aw2v
 sprint: "[[Attlas - Sprint 22]]"
+atualizado: 2026-07-03
 ---
 
-# SOFTWARE-1921 — Eventos de câmera (geração automática + duração)
+# SOFTWARE-1921 - Eventos de câmera (geração automática + duração)
 
 > Tarefa 3. **PR [#575](https://github.com/atmanadmin/attlas-2026/pull/575) MERGEADA (01/07)** · ClickUp **Closed**. Spec PROJ-004.
 

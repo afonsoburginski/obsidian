@@ -2,55 +2,56 @@
 tags:
   - doc
   - ms-cameras
-  - cameras
   - ptz
-atualizado: 2026-07-03
-servico: ms-cameras
-fonte: docs/modules/cameras.md
+atualizado: 2026-10-01
 ---
 
 # PTZ e presets - Requisitos e SLA
 
-Rastreabilidade dos RF/RNF de PTZ para o código, com estado de implementação. Fonte de negócio: `docs/modules/cameras.md`. Implementação: [[PTZ e presets - Arquitetura e estratégias]] e [[PTZ e presets]].
+Parte de [[PTZ e presets]]. Fonte de negócio: `docs/modules/cameras.md`. Legenda: **Implementado**,
+**Parcial**, **Não implementado**.
 
-## Requisitos funcionais e não-funcionais
+## Requisitos
 
-Legenda de estado: ✅ implementado · 🟡 parcial · ❌ não implementado (regra de domínio).
-
-| ID | Critério (domínio) | Onde no código | Estado |
+| ID | Critério | Onde no código | Estado |
 | --- | --- | --- | --- |
-| RF-CAM-05 | Pan/tilt contínuo, zoom óptico/digital, presets nomeados, tours, patrulha, rastreamento | `ptz.service.ts`, `onvif.driver.ts`, `vapix-*`, presets/automations, `tour-runner.service.ts` | 🟡 |
-| RF-INT-04 | Reposicionamento PTZ por Emergências com prioridade máxima, preemptando sessão ativa | Consumidor Kafka `attlas.emergencies.ptz-command` **declarado no SPEC, sem `@EventPattern`** | ❌ |
-| RF-INT-06 | Acesso governado por Permissões (funcional/espacial/recurso/prioridade) + preempção PTZ | `permissions.client.ts` (`cameras:ptz`) - só allow/deny booleano | 🟡 |
-| RNF-CAM-03 | Latência de PTZ baixa o bastante para uso durante incidentes | Timeouts curtos em ONVIF/permissões (ver SLA abaixo) | 🟡 |
-| RNF-CAM-06 | Toda ação de operador registrada com timestamp e identidade | `CameraEventLog` `PTZ_COMMAND` (`subType`, `operatorId`, `occurredAt`) | ✅ |
-| RNF-CAM-07 | Stream, PTZ e preset em ≤ 2 cliques a partir do mapa | Restrição de UX do frontend (feature modules de mapa) sobre os endpoints PTZ | 🟡 (frontend) |
-| RNF-CAM-08 | Autorização multidimensional com suporte a preempção PTZ | Dimensão de recurso via `cameras:ptz`; sem prioridade/preempção no backend | 🟡 |
+| RF-CAM-05 | Pan e tilt contínuo, zoom óptico e digital, presets, tours, patrulha e rastreamento | `ptz.service.ts`, `onvif.driver.ts`, utilitários VAPIX, presets, automações, `tour-runner.service.ts` | **Parcial** |
+| RF-INT-04 | Reposicionamento por Emergências com prioridade máxima, preemptando sessão ativa | `attlas.emergencies.ptz-command` só declarado, sem consumidor | **Não implementado** |
+| RF-INT-06 | Acesso governado por Permissões, com preempção | Chaves `cameras.ptz:control`, `cameras.ptzPreset:manage` e `cameras.automation:manage` por câmera; sem prioridade | **Parcial** |
+| RNF-CAM-03 | Latência de PTZ adequada a incidentes | Timeouts curtos (tabela abaixo) | **Parcial** |
+| RNF-CAM-06 | Toda ação do operador registrada com instante e identidade | `PTZ_COMMAND` no `CameraEventLog` e auditoria em `attlas.audit.cameras` | **Parcial** |
+| RNF-CAM-07 | Stream, PTZ e preset em até dois cliques a partir do mapa | Controle PTZ e presets no popup do Painel de Operações | **Parcial** (frontend) |
+| RNF-CAM-08 | Autorização multidimensional com preempção PTZ | Dimensões funcional e espacial pela chave por câmera; sem prioridade nem preempção | **Parcial** |
 
-### Detalhamento do que está e do que falta
+O que falta em cada um:
 
-- **RF-CAM-05 (🟡)**: pan/tilt (relativo, absoluto, contínuo), zoom, stop, presets nomeados (CRUD + goto) e tours (CRUD + play/pause com scheduler) existem. **Patrulha/rastreamento contínuos** não têm modo dedicado - o "rastreamento" hoje é apenas **observação** de posição (leitura via worker de saúde, Axis/VAPIX), não seguimento automático de alvo. Movimento relativo ignora magnitude (passo fixo). Presets/tours no caminho absoluto são **Axis/VAPIX**.
-- **RF-INT-04 (❌)**: nenhum `@EventPattern` de emergências em ms-cameras (só `EVENT_INGEST`, `EVENT_LOGGED`, `INCIDENT_CREATED`). Sem prioridade máxima nem preempção por emergência. Confirme no código antes de assumir cobertura.
-- **RF-INT-06 / RNF-CAM-08 (🟡)**: autorização por recurso funciona e é **fail-closed**. Faltam a dimensão de **prioridade**, o conceito de **sessão PTZ ativa** e a **preempção/cessão** de controle entre operadores - delegados ao módulo Permissões/frontend; o backend só concede ou nega.
-- **RNF-CAM-07 (🟡, frontend)**: contrato de UX; backend só expõe as rotas de PTZ/preset consumíveis pelo popup do mapa.
+- **RF-CAM-05**: patrulha e rastreamento não têm modo dedicado; "rastreamento" hoje é só observar a posição
+  (Axis, pelo worker de saúde). O relativo ignora magnitude e não tem tela. Goto e tour são Axis (VAPIX).
+- **RF-INT-04**: nenhum consumidor de emergências; o único PTZ automático é o de plano de resposta, sem
+  prioridade sobre o operador.
+- **RF-INT-06 e RNF-CAM-08**: faltam prioridade, sessão PTZ exclusiva e cessão de controle. As peças existem
+  fora do caminho do PTZ (chaves `cameras.ptz:preempt` e `cameras.ptz:release`, `ResourceLockType.PTZ` do
+  `ms-organization`, tópico `attlas.cameras.ptz-preempted`) e ninguém as liga.
+- **RNF-CAM-06**: criar, substituir e remover tour não deixam registro, só log de aplicação.
+- **RNF-CAM-07**: os cliques não foram medidos.
 
-## SLA e limites de latência (RNF-CAM-03)
+## Limites e timeouts (RNF-CAM-03)
 
-O requisito é **qualitativo** ("baixa o suficiente para uso operacional") - não há número contratual. Os guardrails implementados que limitam a latência/travamento:
+O requisito é qualitativo. Os limites que evitam travamento:
 
-| Parâmetro | Env | Default | Efeito |
+| Parâmetro | Env ou constante | Default | Efeito |
 | --- | --- | --- | --- |
-| Timeout de connect ONVIF | `ONVIF_CONNECT_TIMEOUT_MS` | 5000 ms | Estouro → `CAMERA_UNREACHABLE` |
-| Timeout de comando/disconnect ONVIF | `ONVIF_COMMAND_TIMEOUT_MS` | 4000 ms | Idem, por comando |
-| Timeout do check de permissão | `PERMISSIONS_CHECK_TIMEOUT_MS` | 1500 ms | Abort → fail-closed `PERMISSIONS_SERVICE_UNAVAILABLE` |
-| Cap de `timeoutSeconds` do contínuo | `PTZ_CONTINUOUS_MAX_TIMEOUT_SECONDS` | 30 s (hard max 60 s) | Auto-stop do device se não chegar novo comando |
-| Porta RTSP | `RTSP_DEFAULT_PORT` | 554 | Monta URI RTSP correta (ONVIF/HTTP usa a porta do perfil) |
+| Connect ONVIF | `ONVIF_CONNECT_TIMEOUT_MS` | 5000 ms | `CAMERA_UNREACHABLE` |
+| Comando e disconnect ONVIF | `ONVIF_COMMAND_TIMEOUT_MS` | 4000 ms | `CAMERA_UNREACHABLE` |
+| Avaliação de permissão (rota e ativação de tour) | `CORE_AUTH_PERMISSION_TIMEOUT_MS` | 800 ms | 503 `PERMISSION_RESOLVER_UNAVAILABLE` |
+| Circuit breaker do avaliador | `CORE_AUTH_PERMISSION_CIRCUIT_THRESHOLD`, `CORE_AUTH_PERMISSION_CIRCUIT_OPEN_MS` | 5 falhas, 5000 ms | Nega sem consultar enquanto aberto |
+| Teto do `timeoutSeconds` do contínuo | `PTZ_CONTINUOUS_MAX_TIMEOUT_SECONDS` | 30 s (máximo 60) | Auto-stop do equipamento |
+| Porta RTSP | `RTSP_DEFAULT_PORT` | 554 | URI RTSP; o ONVIF usa a porta do perfil |
+| Leitura da posição | `PTZ_TRACK_INTERVAL_MS` | 750 ms (piso 500) | Cadência enquanto a câmera se move |
+| Sessão de controle ociosa | `PtzSessionConfig.IDLE_TTL_SECONDS` | 120 s | Fecha e emite `CAMERA_PTZ_SESSION_ENDED` |
+| Eco ao plano de resposta | `PUBLISH_DEADLINE_MS` (`camera-events.publisher.ts`) | 20 s | Handler falha e o Kafka reentrega |
+| Ledger do comando por plano | chave `ms-cameras:ptz-command:<commandId>` | 1 h | Reentrega não move de novo |
+| Espera antes da captura | `PresetSnapshotCapture.PTZ_SETTLE_MS` | 3 s | A câmera assenta no preset |
 
-Notas:
-- O contínuo depende do **auto-stop ONVIF** (`Timeout` no envelope SOAP) como rede de segurança - evita movimento perpétuo se o `/ptz/stop` se perder.
-- A posição PTZ observada não é comando: é polling do worker de saúde (intervalo próprio), com dedup de posição inalterada - ver [[Status em tempo real]].
-
-## Ver também
-
-- [[PTZ e presets]] · [[PTZ e presets - Arquitetura e estratégias]] · [[PTZ e presets - Fluxos]]
-- [[Eventos, incidentes e alarmes]] · [[Status em tempo real]] · [[ms-cameras]]
+O contínuo depende do auto-stop do ONVIF (`Timeout` no envelope) como rede de segurança se o stop se perder;
+a tela usa 3 s e renova a cada 1,8 s enquanto o botão está pressionado.

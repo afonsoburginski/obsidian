@@ -2,163 +2,191 @@
 tags:
   - doc
   - ms-cameras
-  - cameras
   - eventos
   - analitico
-atualizado: 2026-08-25
+atualizado: 2026-10-01
 ---
 
 # Eventos, incidentes e alarmes - Catálogo e criticidade
 
-> Submódulo do [[ms-cameras]]. Índice: [[Eventos, incidentes e alarmes]]. Mecânica do pipeline: [[Eventos, incidentes e alarmes - Arquitetura e estratégias]]. Analítico: [[Analítico]].
+Índice: [[Eventos, incidentes e alarmes]]. Mecânica do pipeline:
+[[Eventos, incidentes e alarmes - Arquitetura e estratégias]].
 
-Catálogo de **todo evento que o módulo Câmeras produz hoje** (câmera e analítico), ordenado por criticidade, com a definição de o que torna um evento crítico neste módulo e onde essa definição vive no código. Levantado por leitura do código em 25/08 na linhagem da branch `cameras/feat/SOFTWARE-2731`.
+Todo evento que o módulo Câmeras produz hoje, ordenado por criticidade, o que torna um evento crítico e onde
+cada decisão mora no código.
 
-## 1. O que torna um evento crítico
+## O que torna um evento crítico
 
-Não existe um campo `critical` no evento. Criticidade neste módulo é o resultado de **três decisões diferentes**, tomadas em três lugares, e elas não coincidem:
+Não existe campo `critical`. Criticidade é o resultado de quatro decisões, em quatro lugares, que não
+coincidem:
 
 | Eixo | Onde vive | Vocabulário | Quem decide |
 | --- | --- | --- | --- |
-| Severidade da linha de evento | `CameraEventLog.severity` | `INFO` / `WARN` / `ERROR` | catálogo de marca (`axis-event-catalog.ts`, `hikvision-event-catalog.ts`) ou `resolveEventMeta` do worker de saúde |
-| Alarmabilidade | `consumers/emit-alarm/alarm-mapping.ts` (`isAlarmableEvent`) | booleano | `severity === 'ERROR'` sempre, `VAPIX_TAMPERING` sempre, o resto nunca |
-| Severidade de negócio (edital 4.13) | `alarm-mapping.mapToAlarm` (alarme) e `correlation-rules.deriveSeverity` (incidente) | `CRITICAL` / `HIGH` / `MEDIUM` / `LOW` | só o `causeCode` e o flag `fromCluster` |
+| Severidade da linha | `CameraEventLog.severity` | `INFO`, `WARN`, `ERROR` | Catálogo de marca (`health/workers/axis-event-catalog.ts`, `hikvision-event-catalog.ts`) ou `resolveEventMeta` do worker |
+| Chega ao tópico | `RecordCameraEventService` | Sim ou não | Evento de saúde só com par em `CORRELATABLE` |
+| Alarmabilidade isolada | `consumers/emit-alarm/alarm-mapping.ts` (`isAlarmableEvent`) | Sim ou não | `ERROR` sempre; `VAPIX_TAMPERING` sempre; `VAPIX_PTZ_ERROR` a partir de `WARN` |
+| Severidade de negócio | `mapToAlarm` (alarme) e `deriveIncidentSeverityAndType` (incidente) | `CRITICAL`, `HIGH`, `MEDIUM`, `LOW` | Só o `causeCode` e o flag `fromCluster` |
 
-O `ERROR` da primeira coluna é o que a tela chama de "Crítico" no tile de KPI (UC-040, `CameraEventsStatsConfig.SEVERITY_ERROR`). O `CRITICAL` da terceira só nasce depois, quando o evento virou alarme ou incidente. Um evento pode ser "crítico" na tela e não gerar alarme nenhum, e o inverso também acontece (tampering entra como `WARN` e alarma).
+O `ERROR` da primeira linha é o "Crítico" do tile de KPI (UC-040). O `CRITICAL` da última só nasce quando o
+evento vira alarme ou incidente. Um evento pode ser "crítico" na tela sem gerar alarme, e o inverso também
+acontece (tampering entra como `WARN` e alarma).
 
-### Definição (a regra como o código a aplica)
+**Definição de negócio aplicada pelo código**: crítico é o que indica perda de função ou de integridade do
+equipamento, não variação de qualidade.
 
-Um evento de câmera é crítico quando a causa reportada indica **perda de função ou de integridade do equipamento**, não variação de qualidade. Quatro testes, na ordem em que o código os aplica:
+1. **Perda de função** (energia, hardware, rede, sinal de vídeo): entra como `ERROR`.
+2. **Integridade violada** (tampering): único `WARN` que alarma isolado, com categoria `ROAD_SAFETY`.
+3. **Exige intervenção física** (energia e hardware): os únicos que sobem para `CRITICAL`; é o tier que
+   deveria gerar OS no Inventário (RF-INC-03, não atendido).
+4. **Escala**: a mesma causa em 2 câmeras ou 3 eventos em 60 s promove o cluster e eleva comunicação de
+   `MEDIUM` para `HIGH`. Escala multiplica a severidade, nunca a cria.
 
-1. **Perda de função** - a câmera deixou de entregar imagem ou controle: energia, hardware, rede, perda de sinal de vídeo. Entra como `ERROR`, alarma sempre.
-2. **Integridade violada** - alguém mexeu no equipamento: tampering, acesso não autorizado. Único caso em que um `WARN` alarma, porque a categoria do alarme é `ROAD_SAFETY`, não `SYSTEM_FUNCTIONING`.
-3. **Precisa de intervenção física** - energia e hardware não se resolvem sozinhos, e são os dois únicos que sobem para `CRITICAL` (o resto para em `HIGH`). É o tier que gera ordem de serviço no Inventário (RF-INC-03).
-4. **Escala** - a mesma causa em pelo menos 2 câmeras (ou 3 eventos na mesma câmera) dentro de 60 s promove o cluster e eleva comunicação de `MEDIUM` para `HIGH` (`fromCluster`). Escala é multiplicador de severidade, nunca o gatilho dela.
+Não é crítico: latência, bitrate adaptado, instabilidade parcial, movimento e estado de PTZ, dia e noite,
+recuperação (`HEALTH_ONLINE`) e o re-anúncio de tópico com estado (só transição vale linha).
 
-**Não é crítico, por definição**: qualidade e desempenho (latência, bitrate adaptado, instabilidade parcial), movimento e estado de PTZ, alternância dia/noite, recuperação (`HEALTH_ONLINE`), e re-anúncio de tópico stateful (o device reanuncia o estado atual a cada reconexão do WebSocket, e só transição vale linha).
+## Eventos de câmera
 
-## 2. Eventos de câmera, do mais crítico ao menos
+`Ev.` é a `severity` da linha; `Corr.` diz se o par está em `CORRELATABLE`; "Chega ao `ms-alarms`" considera
+o worker de saúde, único produtor real hoje.
 
-`Ev.` é a `severity` da linha; `Alarme` é o par categoria/severidade de `mapToAlarm`; `Incidente` é o par tipo/severidade de `deriveIncidentSeverityAndType`; `Corr.` diz se o par `(eventType, causeCode)` está em `CORRELATABLE`.
+### Tier 1 - perda de função com intervenção física
 
-### Tier 1 - CRITICAL (perda de função, exige intervenção física)
+| Causa | Evento | Ev. | Categoria | Incidente | Alarme | Corr. | Chega ao `ms-alarms` |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `VAPIX_POWER_FAILED` | `cameras.events.power_failed` | `ERROR` | `POWER` | `POWER` / `CRITICAL` | `SYSTEM_FUNCTIONING` / `CRITICAL` | sim | Sim, isolado ou pelo cluster |
+| `VAPIX_HW_FAILURE` | `cameras.events.hardware_failure` | `ERROR` | `HARDWARE` | `HARDWARE` / `CRITICAL` | `SYSTEM_FUNCTIONING` / `CRITICAL` | **não** | **Não** (fica fora do tópico) |
 
-| Causa | Evento | Ev. | Categoria | Alarme | Incidente | Corr. |
-| --- | --- | --- | --- | --- | --- | --- |
-| `VAPIX_POWER_FAILED` | `cameras.events.power_failed` | `ERROR` | `POWER` | `SYSTEM_FUNCTIONING` / `CRITICAL` | `POWER` / `CRITICAL` | sim |
-| `VAPIX_HW_FAILURE` | `cameras.events.hardware_failure` | `ERROR` | `HARDWARE` | `SYSTEM_FUNCTIONING` / `CRITICAL` | `HARDWARE` / `CRITICAL` | **não** |
+### Tier 2 - integridade e comunicação
 
-### Tier 2 - HIGH (integridade e comunicação)
+| Causa | Evento | Ev. | Categoria | Incidente | Alarme | Corr. | Chega ao `ms-alarms` |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `VAPIX_TAMPERING` | `cameras.events.tampering` | `WARN` | `HARDWARE` | `VANDALISM` / `HIGH` | `ROAD_SAFETY` / `HIGH` | sim | Sim, isolado ou pelo cluster |
+| `VAPIX_NETWORK_LOST` | `cameras.events.network_lost` | `ERROR` | `COMMUNICATION` | `COMMUNICATION` / `HIGH` | `SYSTEM_FUNCTIONING` / `MEDIUM` isolado, `HIGH` em cluster | via `CONNECTIVITY_CHANGED` | Só pelo cluster (o `HEALTH_EVENT` fica fora do tópico e o `CONNECTIVITY_CHANGED` que herda a causa sai como `WARN` ou `INFO`) |
+| `PROBE_TIMEOUT` | `cameras.events.camera_disconnected` | `WARN` | `COMMUNICATION` | `COMMUNICATION` / `HIGH` | idem acima | só em `HEALTH_OFFLINE` | **Não** (o worker grava a causa em `CONNECTIVITY_CHANGED`, par fora do catálogo) |
+| `PROBE_REFUSED`, `PROBE_UNREACHABLE` | `cameras.events.camera_disconnected` | `WARN` | `COMMUNICATION` | `COMMUNICATION` / `HIGH` | idem acima | sim | Sem produtor |
+| `PUSH_DISCONNECT` | `cameras.events.camera_disconnected` | `WARN` | `COMMUNICATION` | `COMMUNICATION` / `HIGH` | Não alarmável (`null`) | sim | Não; vira incidente |
 
-| Causa | Evento | Ev. | Categoria | Alarme | Incidente | Corr. |
-| --- | --- | --- | --- | --- | --- | --- |
-| `VAPIX_TAMPERING` | `cameras.events.tampering` | `WARN` | `HARDWARE` | `ROAD_SAFETY` / `HIGH` | `VANDALISM` / `HIGH` | sim |
-| `VAPIX_NETWORK_LOST` | `cameras.events.network_lost` | `ERROR` | `COMMUNICATION` | `SYSTEM_FUNCTIONING` / `MEDIUM` isolado, `HIGH` em cluster | `COMMUNICATION` / `HIGH` | sim |
-| `PROBE_TIMEOUT` | `cameras.events.camera_disconnected` | `WARN` | `COMMUNICATION` | idem acima | `COMMUNICATION` / `HIGH` | sim |
-| `PROBE_REFUSED` | `cameras.events.camera_disconnected` | `WARN` | `COMMUNICATION` | idem acima | `COMMUNICATION` / `HIGH` | sim |
-| `PROBE_UNREACHABLE` | `cameras.events.camera_disconnected` | `WARN` | `COMMUNICATION` | idem acima | `COMMUNICATION` / `HIGH` | sim |
-| `PUSH_DISCONNECT` | `cameras.events.camera_disconnected` | `WARN` | `COMMUNICATION` | **não alarmável** (`null` no mapa) | `COMMUNICATION` / `HIGH` | sim |
+`PUSH_DISCONNECT` é a queda da nossa conexão de eventos (WebSocket Axis, alertStream Hikvision, PullPoint
+ONVIF), não falha relatada pelo device: vira incidente, nunca alarme.
 
-`PUSH_DISCONNECT` é a queda da nossa própria conexão de eventos (WebSocket Axis, alertStream Hikvision, PullPoint ONVIF), não uma falha reportada pelo device. Por isso vira incidente mas nunca alarme.
+### Tier 3 - função degradada
 
-### Tier 3 - MEDIUM (função degradada)
+| Causa | Evento | Ev. | Categoria | Incidente | Alarme | Corr. | Chega ao `ms-alarms` |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `VAPIX_PTZ_ERROR` | `cameras.events.ptz_error` | `WARN` | `HARDWARE` | `OPERATIONAL` / `MEDIUM` | `SYSTEM_FUNCTIONING` / `MEDIUM` | não | **Não** (alarmável isolado, mas o `HEALTH_EVENT` fica fora do tópico) |
 
-| Causa | Evento | Ev. | Categoria | Alarme | Incidente | Corr. |
-| --- | --- | --- | --- | --- | --- | --- |
-| `VAPIX_PTZ_ERROR` | `cameras.events.ptz_error` | `WARN` | `HARDWARE` | `SYSTEM_FUNCTIONING` / `MEDIUM` | `OPERATIONAL` / `MEDIUM` | não |
+### Tier 4 - conectividade derivada (worker de saúde)
 
-### Tier 4 - conectividade derivada (worker de saúde, nunca alarma)
-
-Vêm do `ConnectivityHealthEvaluator`, não do device: janela de 3 amostras, score `Q = (latência + 3 × perda) / 4`, `Q ≥ 0,875` é `STABLE`, `Q ≥ 0,5` é `PARTIALLY_UNSTABLE`, abaixo disso `UNSTABLE`; offline exige 2 falhas consecutivas para sair. Limiares em env (`LATENCY_STABLE_MS=100`, `LATENCY_UNSTABLE_MS=300`, `LOSS_UNSTABLE_PCT=10`).
+Vêm do evaluator, não do device ([[Saúde e monitoramento - Arquitetura e estratégias#Evaluator|evaluator]]).
+Saem como `CONNECTIVITY_CHANGED` com a última causa conhecida.
 
 | Transição | Evento | Ev. | Observação |
 | --- | --- | --- | --- |
-| para `OFFLINE` | `cameras.events.camera_went_offline` | `WARN` | abre incidente de conectividade interno (contagem de duração) |
+| para `OFFLINE` | `cameras.events.camera_went_offline` | `WARN` | Abre o incidente de conectividade interno |
 | para `UNSTABLE` | `cameras.events.camera_unstable` | `WARN` | |
 | para `PARTIALLY_UNSTABLE` | `cameras.events.camera_partially_unstable` | `INFO` | |
-| para `STABLE` | `cameras.events.camera_recovered` / `camera_recovered_duration` | `INFO` | fecha o incidente e grava `durationMinutes` |
+| para `STABLE` | `cameras.events.camera_recovered` | `INFO` | Fecha o incidente e grava `durationMinutes` |
 
-### Tier 5 - operacionais informativos (`INFO`, nunca alarmam, nunca correlacionam)
+A mesma transição sai em `attlas.cameras.status-changed`, e é por ali que o `ms-alarms` abre e fecha
+`CAM_PARTIALLY_UNSTABLE`, `CAM_UNSTABLE` e `CAM_OFFLINE`.
 
-Axis: `stream_accessed` (nunca gravado, é auto-provocado pelo nosso relay), `ptz_ready`, `ptz_moved`, `ptz_queue_updated`, `bitrate_adapted`, `day_night_switch`, `device_ready`, `camera_connected`.
+### Tier 5 - informativos (`INFO`, nunca alarmam nem correlacionam)
 
-Hikvision: `motion_detected`, `line_crossing`, `intrusion` (`regionentrance` e `regionexiting` caem na mesma chave).
-
-Fallback de tópico desconhecido: `cameras.events.device_event` em `INFO`.
+- Axis: `stream_accessed` (nunca gravado, é provocado pela nossa relay), `ptz_ready`, `ptz_moved`,
+  `ptz_queue_updated`, `bitrate_adapted`, `day_night_switch`, `device_ready`, `camera_connected`.
+- Hikvision: `motion_detected`, `line_crossing`, `intrusion` (`regionentrance` e `regionexiting` caem na
+  mesma chave).
+- Tópico desconhecido: `cameras.events.device_event`.
 
 ### Hikvision com falha (causas ISAPI)
 
-| Causa | Evento | Ev. | Estado hoje |
+| Causa | Evento | Ev. | Estado |
 | --- | --- | --- | --- |
-| `ISAPI_HW_FAILURE` | `hardware_failure` (`diskfull`, `diskerror`, `badblock`) | `ERROR` | categoria cai em `OPERATIONAL`, sem alarme, sem incidente |
-| `ISAPI_NETWORK_LOST` | `network_lost` (`nicbroken`, `ipconflict`) | `ERROR` | idem |
-| `ISAPI_TAMPERING` | `tampering` (`shelteralarm`, `scenechangedetection`) | `WARN` | idem, e não pega a exceção de tampering (ela testa só o código VAPIX) |
-| sem causa | `video_loss`, `illegal_access`, `defocus` | `WARN` | informativos na prática |
+| `ISAPI_HW_FAILURE` | `hardware_failure` (`diskfull`, `diskerror`, `badblock`) | `ERROR` | Categoria `OPERATIONAL`, sem incidente, sem alarme |
+| `ISAPI_NETWORK_LOST` | `network_lost` (`nicbroken`, `ipconflict`) | `ERROR` | Idem |
+| `ISAPI_TAMPERING` | `tampering` (`shelteralarm`, `scenechangedetection`) | `WARN` | Idem; a exceção de tampering testa só o código VAPIX |
+| sem causa | `video_loss`, `illegal_access`, `tampering` (`defocus`) | `WARN` | Informativos na prática |
 
-## 3. Eventos do analítico, do mais crítico ao menos
+## Mapa de causa para incidente e alarme
 
-O caminho embarcado do analítico mora provisoriamente dentro do `ms-cameras` (`src/analytics-realtime/`), consumindo do broker Kafka do próprio device ATMAN Traffic Edge.
+Fontes: `consumers/correlate-events/correlation-rules.ts`, `incidents/incident-mapping.ts`,
+`consumers/emit-alarm/alarm-mapping.ts`.
 
-| Evento | Onde vive | Persiste | Criticidade hoje |
-| --- | --- | --- | --- |
-| `ANALYTICS_INCIDENT` (incidente DAI) | linha em `CameraEventLog`, `cameras.events.analytics_incident` | sim | `WARN`, categoria `ANALYTICS`, **sem alarme e sem correlação** |
-| Saúde do analítico | `CameraAnalyticsHealthService` (Redis + UC-059) | não, é leitura | `HEALTHY` até 30 s, `DEGRADED` até 180 s, `OFFLINE` acima, `NOT_CONFIGURED` sem analítico; **não emite evento na transição** |
-| `camera:analytics:detection` | WebSocket `cameras-analytics` | não | transitório, acende a região no player |
-| `camera:analytics:frame` | WebSocket `cameras-analytics` | não | transitório, caixas por objeto no overlay |
-| `ANLT_SEVERE_CONGESTION` | catálogo de alarmes (`ANALYTICS_ALARM_TYPES`) | - | `HIGH` declarado, **sem produtor no repo** |
-
-O incidente DAI vem do campo `region_incidents` do frame, é normalizado contra `EnumAtmanIncidentType` (token desconhecido é descartado como dado, não como bug) e deduplicado por `(câmera, região, tipo)` numa janela de 30 s (`ANALYTICS_INCIDENT_DEDUP_WINDOW_MS`, env) - sem isso uma condição levantada geraria uma linha por frame.
-
-### Os 8 tipos de incidente DAI
-
-Todos entram como `WARN` no mesmo evento; **o código não diferencia criticidade entre eles**. Ordem proposta, para quando alguém for atribuir severidade por tipo:
-
-| Ordem proposta | Tipo | Por quê |
+| `causeCode` | Incidente (severidade, tipo) | Alarme (categoria, severidade isolado e em cluster) |
 | --- | --- | --- |
-| 1 | `WRONG_WAY` | contramão, risco de colisão frontal |
-| 2 | `ANIMAL` | animal na via, risco imediato e imprevisível |
-| 3 | `STOPPED_FLOW` | fluxo parado, veículo imobilizado na pista |
-| 4 | `VIOLATION` | infração, exige registro e eventualmente autuação |
-| 5 | `TIME_EXCEEDED` | permanência acima do limite na região |
-| 6 | `CONGESTION` | congestionamento, operacional e não de segurança |
-| 7 | `SLOW_MOVING` | tráfego lento, sintoma do anterior |
-| 8 | `ANOMALY` | genérico, sem semântica definida no device |
+| `VAPIX_POWER_FAILED` | `CRITICAL`, `POWER` | `SYSTEM_FUNCTIONING`, `CRITICAL` |
+| `VAPIX_HW_FAILURE` | `CRITICAL`, `HARDWARE` | `SYSTEM_FUNCTIONING`, `CRITICAL` |
+| `VAPIX_TAMPERING` | `HIGH`, `VANDALISM` | `ROAD_SAFETY`, `HIGH` |
+| `VAPIX_NETWORK_LOST`, `PROBE_TIMEOUT`, `PROBE_REFUSED`, `PROBE_UNREACHABLE` | `HIGH`, `COMMUNICATION` | `SYSTEM_FUNCTIONING`, `MEDIUM` isolado e `HIGH` em cluster |
+| `PUSH_DISCONNECT` | `HIGH`, `COMMUNICATION` | Não alarmável |
+| `VAPIX_PTZ_ERROR` | `MEDIUM`, `OPERATIONAL` | `SYSTEM_FUNCTIONING`, `MEDIUM` |
+| Outro ou sem causa | `MEDIUM`, `OPERATIONAL` | Não alarmável |
 
-## 4. Eventos de integração (Kafka), não são eventos de câmera
+Pares correlacionáveis (10): `HEALTH_EVENT` com `VAPIX_POWER_FAILED` ou `VAPIX_TAMPERING`; `HEALTH_OFFLINE`
+com `VAPIX_NETWORK_LOST`, `PROBE_TIMEOUT`, `PROBE_REFUSED`, `PROBE_UNREACHABLE` ou `PUSH_DISCONNECT`;
+`CONNECTIVITY_CHANGED` com `VAPIX_NETWORK_LOST`, `VAPIX_TAMPERING` ou `PUSH_DISCONNECT`.
 
-Ficam aqui para não confundir a leitura da tela de Eventos com o fio.
+No `ms-alarms`, todas as causas acima existem em `CAMERA_ALARM_TYPES`
+(`libs/contracts/src/lib/alarms/catalog/types/cameras.ts`) com `generatesAlarm: false` e
+`defaultSeverity: MEDIUM`: elas só viram alarme por regra customizada (`AlarmRule`), que define a
+severidade. Já `CAM_PARTIALLY_UNSTABLE` (`LOW`), `CAM_UNSTABLE` (`MEDIUM`) e `CAM_OFFLINE` (`HIGH`), vindos de
+`status-changed`, geram alarme por padrão.
 
-| Tópico | Direção | Papel |
+> [!warning] Severidade de negócio do `ms-cameras` não chega ao alarme
+> O `mapToAlarm` emite `CRITICAL` para energia e hardware, mas o `ms-alarms` usa a severidade da regra (ou a
+> `defaultSeverity` `MEDIUM` do catálogo) e não lê o `severity` do envelope. As duas fontes não são
+> confrontadas.
+
+## Eventos do analítico
+
+O caminho embarcado do analítico mora dentro do `ms-cameras` (`src/analytics-realtime/`); detalhe em
+[[Analítico - Arquitetura e estratégias]].
+
+| Evento | Onde vive | Criticidade |
 | --- | --- | --- |
-| `attlas.cameras.event-logged` | produz | fan-out de cada evento registrado com `source: 'ingest'`, consumido pela correlação e pelo emissor de alarme |
-| `attlas.cameras.incident-created` | produz | cluster promovido a `DETECTED` |
-| `attlas.alarms.alarm-raised` | produz | alarme, com `alarmId` UUID v5 determinístico |
-| `attlas.cameras.event-ingest` | consome | ingestão de evento de fora do serviço, sem produtor no repo |
-| `attlas.cameras.status-changed` | produz | transição de `CameraConnectionStatus` |
-| `attlas.execution-plans.cameras.ptz-command-{executed,rejected}` | produz | resultado de comando PTZ vindo de plano de resposta |
-| `attlas.execution-plans.cameras.videowall-command-{executed,rejected}` | produz | idem para o videowall |
-| `attlas.cameras.lifecycle` e `attlas.cameras.areaChanged` | produz | ciclo de vida e mudança de área do dispositivo |
+| `ANALYTICS_INCIDENT` (incidente DAI) | Linha em `CameraEventLog`, `cameras.events.analytics_incident.<tipo>` | `WARN`, categoria `ANALYTICS`, sem correlação; alarma pelo tipo (abaixo) |
+| Saúde do analítico | `CameraAnalyticsHealthService` (UC-059), `analyticsHealth` do status | Leitura, não emite evento na transição |
+| `camera:analytics:detection`, `camera:analytics:frame` | WebSocket `cameras-analytics` | Transitórios, não persistem |
 
-## 5. Furos que este levantamento expôs
+Tipos do incidente DAI (`EnumAtmanIncidentType`) com a criticidade padrão (`DEFAULT_INCIDENT_CRITICALITY`,
+configurável por sistema no UC-227) e o alarme:
 
-> [!warning] O offline detectado pela plataforma nunca gera alarme
-> Evento com `source: 'health'` persiste e vai por WebSocket, mas **não** é publicado em `event-logged`. Todo o Tier 4 (e os eventos do catálogo de marca gravados pelo worker) fica fora da correlação e do alarme. Na prática, o pipeline de criticidade hoje só é alimentado por `event-ingest`, que não tem produtor no repo. Mecânica em [[Eventos, incidentes e alarmes - Arquitetura e estratégias]] seção 2.
+| Tipo | Criticidade padrão | Alarme (`ANALYTICS`) |
+| --- | --- | --- |
+| `ANOMALY` | `CRITICAL` | Não |
+| `ANIMAL` | `HIGH` | Não |
+| `WRONG_WAY` | `MEDIUM` | `ANLT_WRONG_WAY`, `HIGH`, gera alarme por padrão |
+| `VIOLATION` | `MEDIUM` | Não |
+| `STOPPED_FLOW` | `MEDIUM` | `ANLT_STOPPED_VEHICLE`, `MEDIUM`, só por regra |
+| `CONGESTION` | `MEDIUM` | `ANLT_SEVERE_CONGESTION`, `HIGH`, só por regra |
+| `SLOW_MOVING` | `LOW` | Não |
+| `TIME_EXCEEDED` | `LOW` | Não |
 
-> [!warning] Duas fontes de verdade divergentes para severidade
-> `CAMERA_ALARM_TYPES` (`libs/contracts/.../alarms/catalog/types/cameras.ts`) declara `defaultSeverity: MEDIUM` e `generatesAlarm: false` para as 8 causas, inclusive energia e hardware. O `alarm-mapping` do `ms-cameras` emite `CRITICAL` para essas duas. O emissor já loga divergência entre mapping e incidente e faz o mapping vencer, mas ninguém confronta o catálogo.
+A criticidade do tipo é lida na hora (nenhuma linha de incidente é reescrita) e aparece na exportação da
+fila; ela não muda a `severity` da linha nem o alarme.
 
-> [!warning] Causas ISAPI são cegas ao pipeline de criticidade
-> `ISAPI_HW_FAILURE`, `ISAPI_NETWORK_LOST` e `ISAPI_TAMPERING` existem no enum e nos catálogos de marca, mas estão fora de `derive-camera-event-category`, de `mapToAlarm`, de `CORRELATABLE` e de `deriveIncidentType`. Falha de hardware numa Hikvision é `ERROR` na tela e nada além disso.
+## Eventos de integração (Kafka)
 
-> [!warning] `VAPIX_HW_FAILURE` alarma `CRITICAL` mas não correlaciona
-> Fica fora de `CORRELATABLE`, então falha de hardware em N câmeras gera N alarmes isolados e nenhum cluster. Energia, ao lado dela no Tier 1, correlaciona.
+Não são eventos de câmera; ficam aqui para não confundir a tela de Eventos com o fio. Tabela completa de
+direção e payload em [[Eventos, incidentes e alarmes - Arquitetura e estratégias#Kafka|Kafka]].
 
-> [!warning] O analítico não tem caminho de criticidade
-> `ANALYTICS_INCIDENT` é `WARN` e não tem `causeCode`, então `isAlarmableEvent` responde não e `mapToAlarm` não teria entrada. Contramão e animal na via, que são os dois eventos mais graves que o módulo consegue detectar, não chegam ao módulo Alarmes. O único alarme de analítico previsto (`ANLT_SEVERE_CONGESTION`) não tem produtor.
+| Tópico | Papel |
+| --- | --- |
+| `attlas.cameras.event-logged` | Fan-out do evento registrado para correlação e alarme |
+| `attlas.cameras.incident-created` | Cluster promovido a `DETECTED` |
+| `attlas.alarms.alarm-raised` | Alarme com `alarmId` UUID v5 |
+| `attlas.cameras.event-ingest` | Ingestão de evento externo, sem produtor |
+| `attlas.cameras.status-changed` | Transição de `CameraConnectionStatus` |
+| `attlas.cameras.ptz-command-executed` / `-rejected` | Resultado do comando de PTZ de plano |
+| `attlas.cameras.videowall-command-executed` / `-rejected` | Resultado do comando de videowall de plano |
 
-> [!info] Estado do produtor de `ANALYTICS`
-> A nota de arquitetura afirmava (24/08) que a categoria `ANALYTICS` não tem produtor. Passou a ter em `6bc94d324d` (PROJ-021, `AnalyticsIncidentRecorder`), que está na linhagem `SOFTWARE-2676` e **ainda não na `develop`**. Enquanto não mergear, as duas afirmações valem, cada uma para uma base.
+## Furos do pipeline de criticidade
 
-## Relacionados
-
-[[Eventos, incidentes e alarmes - Arquitetura e estratégias]] · [[Eventos, incidentes e alarmes - Fluxos]] · [[Eventos, incidentes e alarmes - Requisitos e SLA]] · [[Saúde e monitoramento]] · [[Analítico]]
+- **Falha de hardware e erro de PTZ gravados pelo worker não chegam ao alarme.** `HEALTH_EVENT` com
+  `VAPIX_HW_FAILURE` ou `VAPIX_PTZ_ERROR` não está em `CORRELATABLE`, então o seam não publica, apesar de o
+  emissor saber alarmá-los.
+- **`PROBE_TIMEOUT` não chega ao tópico.** O worker põe a causa no `CONNECTIVITY_CHANGED`, mas o catálogo só
+  aceita `PROBE_TIMEOUT` em `HEALTH_OFFLINE`, que o worker só grava com `PUSH_DISCONNECT`.
+- **Causas ISAPI são cegas** a categoria, correlação, incidente e alarme: falha de hardware numa Hikvision é
+  `ERROR` na tela e nada além disso.
+- **`ANIMAL` e `ANOMALY`**, as duas criticidades mais altas do padrão do analítico, não têm código de alarme.

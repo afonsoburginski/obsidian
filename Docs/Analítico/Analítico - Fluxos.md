@@ -2,137 +2,104 @@
 tags:
   - doc
   - analitico
-atualizado: 2026-09-18
-servico: ms-video-analytics (o analitico servidor, hoje ms-virtual-loop e scaffold). ms-connector-virtual-loop nao nasce - CROSS-077, 31/08
-fonte: attlas-vl-atspm.pdf (squad de Visão Computacional, 10/08) + decisões preservadas das 14 PRs fechadas da Sprint 27 + auditoria de código de 24/08
+  - fluxos
+aliases:
+  - "Plano - o vínculo da região do analítico com o detector"
+  - "Vínculo região-detector"
+  - "Região associada continua sem vínculo"
+  - "Sem faixa vinculada"
+  - "Sem detector na ACOM"
+atualizado: 2026-10-01
 ---
 
 # Analítico - Fluxos
 
-Parte do [[Analítico]]. Fluxo de decisão ao cadastrar câmera/analítico (fonte: PDF do squad de CV) e os
-três pipelines de dado (fonte: código atual mais o planejamento da Sprint 27, ver
-[[Analítico - Arquitetura e estratégias]]).
+A ordem dos passos no [[Analítico]]. Onde cada peça mora está em
+[[Analítico - Arquitetura e estratégias]]; a placa ACOM, em [[Analítico - Vínculo com a ACOM]]; a
+leitura de placas, em [[Neural Labs - Arquitetura e estratégias]].
 
-> [!info] O fluxo de cadastro é a aplicação prática da matriz de compatibilidade
-> Cada bifurcação abaixo sai de uma linha da matriz de [[Analítico - Embarcado x Servidor]], que é a nota
-> que explica **por que** a opção existe ou não para aquele modelo de câmera. Aqui está só a ordem das
-> perguntas; a regra em si mora lá.
+## Pôr uma câmera para funcionar com o embarcado
 
-## Fluxo de decisão ao cadastrar câmera
-
-| # | Passo |
-| --- | --- |
-| 1 | Primeira pergunta: a câmera é Axis? Se não, tudo se resolve em servidor, sem nenhum app embarcado |
-| 2 | Se for Axis, o fluxo depende do modelo do processador |
-| 3 | Pra toda câmera Axis, o Attlas verifica o que já está instalado nela antes de oferecer qualquer opção |
-| 4 | App já instalado: aviso ao operador de que não é necessário vincular a um servidor |
-| 5 | App não instalado: oferece só as opções compatíveis com aquele modelo |
-
-### Processador antigo (ARTPEC 7)
-
-| Capacidade | Já instalado | Opções |
+| # | Passo | Onde |
 | --- | --- | --- |
-| Virtual Loop | Sim | Aviso, sem vínculo a servidor |
-| Virtual Loop | Não | Instalar o app na câmera, ou vincular a servidor analítico de VL |
-| ATSPM | - | O app não roda nesse processador. Única opção é vincular a servidor analítico de ATSPM |
+| 1 | Cadastrar a câmera. A sonda de credencial identifica a arquitetura ARTPEC e lê o `source_id` que o app já reporta | Cadastro de câmeras |
+| 2 | O cadastro oferece só os tipos que a matriz permite para aquela arquitetura | `analytics-compatibility.matrix.ts` |
+| 3 | Registrar a unidade em Instâncias, à mão ou pela descoberta na rede, que só lê o equipamento | Analítico > Instâncias |
+| 4 | **Vincular**: grava no app o `source_id` e o broker de destino, liga o producer, relê e só então guarda o `deviceSourceId`. Se o app publica com a identidade de outra instalação, pede confirmação (`confirmTakeover`) | Cartão do equipamento na página da instância |
+| 5 | Desenhar região e laço sobre o quadro congelado do preset, e salvar. Salvar é a única escrita de configuração no equipamento | Analítico > Detecção |
+| 6 | Escolher a faixa da região, que cria o vínculo região-detector | Bloco "Métricas de desempenho" da Detecção |
 
-### Processador novo (ARTPEC 8/9)
+## Os caminhos do dado
 
-| Capacidade | Já instalado | Opções |
-| --- | --- | --- |
-| Virtual Loop | Sim | Aviso, sem vínculo a servidor |
-| Virtual Loop | Não | Instalar o app, vincular a servidor de VL, ou pegar o VL embutido via ATSPM (app ou servidor) |
-| ATSPM | Sim | Aviso, sem vínculo a servidor |
-| ATSPM | Não | Instalar o app, ou vincular a servidor de ATSPM |
+```mermaid
+flowchart LR
+    APP["App embarcado<br/>Kafka do equipamento"] --> C["ms-cameras<br/>DeviceStreamConsumer"]
+    C -->|"caixas e presença"| WS["Socket cameras-analytics<br/>overlay ao vivo"]
+    C -->|"incidente"| LOG["CameraEventLog ANALYTICS<br/>com dedup"]
+    LOG --> FILA["Fila de incidentes<br/>Alarmes, Notificações"]
+    C -->|"objetos por região"| MIN["CameraRegionMinuteMetric"]
+    C -->|"ocupação na transição"| OCC["attlas.virtual-loop.region-occupancy"]
+    TCP["App de laço<br/>TCP 3091"] --> CON["ms-connector-virtual-loop"] --> OCC
+    OCC --> VA["ms-video-analytics<br/>tradução pelo vínculo"]
+    VA --> RAW["attlas.detectors.raw"] --> DH["ms-detector-history"]
+    OCC --> SP["ms-selective-priority"]
+```
 
-**Restrição**: o app de VL e o app de ATSPM nunca rodam juntos na mesma câmera. Pra ter os dois
-embarcados, instala-se só o ATSPM, que já entrega o VL embutido.
+### Tela ao vivo
 
-### Câmera não-Axis
+O consumidor casa o `source_id` do quadro com as câmeras vinculadas e emite na sala `camera:<id>`.
+Caixas só saem de build que as reporta (`FRAME_REPORTING`); o SDCT e o app de laço só acendem a região,
+pela ocupação. A presença ao vivo sai no primeiro quadro ocupado, sem esperar a histerese da ocupação
+do Kafka, e apaga quando o silêncio passa de 1,5 vez o maior intervalo recente entre quadros (de 250 ms
+a 2 s). O player compartilhado desenha região e caixa só com a imagem em `live`. Nada é gravado.
 
-Sem app embarcado, tudo em servidor, desdobrado conforme a necessidade:
+### Incidente
 
-| Necessidade | Opções |
+1. O quadro traz incidente (`obj_incidents` ou `region_incidents`), e o build declara que reporta
+   incidente.
+2. Vira linha em `CameraEventLog` com categoria `ANALYTICS`, uma por câmera, região, tipo e janela de
+   dedup.
+3. A fila e a página do incidente recebem `camera:incidents:changed` pela sala do Sistema.
+4. Tipo com código no catálogo de alarmes (congestionamento severo, contramão, veículo parado) vira
+   alarme no domínio `analytics`. A mudança de tratamento notifica.
+5. Ao abrir o incidente, a imagem do app e a gravação da câmera são lidas do equipamento. A lista fica
+   no Redis e os arquivos no object storage do `ms-cameras`, com prazo; mídia que o equipamento já
+   descartou aparece como ausente.
+
+### Ocupação até o detector
+
+1. O `ms-cameras` (build HTTP) ou o `ms-connector-virtual-loop` (app de laço) publica a ocupação na
+   transição.
+2. O `ms-video-analytics` acha o detector da região em `/internal/virtual-loop/sources` e publica em
+   `attlas.detectors.raw`. **Sem vínculo, descarta e nunca inventa endereço.**
+3. O `ms-detector-history` guarda a série igual à do laço físico.
+
+> [!warning] O caminho do app de laço por TCP não fecha sozinho
+> O conector atende o app e publica a ocupação, mas o `ms-cameras` nunca grava o `deviceId` que o
+> equipamento anuncia no handshake, então o adaptador `virtual-loop-tcp` não passa da sonda e o
+> endereçamento do conector (`PUT /internal/devices/:deviceId/addressing`) só é escrito à mão.
+
+### Métricas
+
+- **Laço Virtual**: as janelas do detector vinculado no `ms-detector-history` e as métricas por região
+  gravadas pelo `ms-cameras`.
+- **ATSPM**: as medidas que o app ATSPM calcula (`device-metrics`, só build `atspm-http`), as métricas
+  por região e os leitores de detector. Cartão sem fonte aparece vazio, nunca com zero.
+- A tela relê quando chega `camera:analytics:metrics` (janela gravada) ou ocupação da câmera em foco;
+  não há polling.
+
+## Vínculo região-detector
+
+O vínculo (`VirtualLoopDetectorBinding`, no `ms-cameras`) diz qual detector de faixa uma região
+alimenta. Um endereço de detector nunca é referenciado por duas regiões.
+
+| Quem escreve | Como |
 | --- | --- |
-| Só Virtual Loop | Vincular a servidor de VL (região pequena e padronizada), ou servidor de ATSPM com VL embutido (região grande com linha) |
-| Só ATSPM | Vincular a servidor de ATSPM (região arbitrária) |
-| Os dois | Um único servidor de ATSPM cobre tudo de uma vez, ou dois vínculos separados (servidor de VL mais servidor de ATSPM) |
+| Detecção | Select "Faixa associada" com os detectores da interseção da câmera (UF-722) |
+| Fiação da ACOM | Salvar a fiação no `ms-controllers` cria ou solta o vínculo depois do commit (UC-183). Endereço ocupado é 409 `DETECTOR_ADDRESS_ALREADY_BOUND`; `ms-cameras` fora é 503 `ACOM_BINDING_PROVIDER_UNAVAILABLE`; nos dois casos nada é gravado |
+| Métricas | Diálogo "Vincular laço a um detector" |
+| O próprio sistema | Detector que muda de slot ou canal no mesmo controlador leva o vínculo; detector que sai do controlador ou deixa de existir o desfaz (CROSS-146) |
 
-## Pipeline embarcado (real hoje)
-
-| # | Passo | Estado |
-| --- | --- | --- |
-| 0 | **No cadastro, o vínculo `deviceSourceId` é gravado na câmera** | ❌ **não acontece** - ver a lacuna abaixo |
-| 1 | Câmera Axis com o app ATMAN Traffic Edge instalado | Real |
-| 2 | `ms-cameras` fala com o app via proxy HTTP com autenticação digest, pra ler e escrever região e configuração de laço | Real |
-| 3 | No save de região, o `ms-cameras` carimba o `source_id` no device (`PUT /config`) e religa o producer | Real, mas carimba o valor que leu do banco |
-| 4 | O device publica a detecção num tópico próprio, num broker separado do resto da plataforma | Real |
-| 5 | O consumidor do `ms-cameras` lê esse tópico e faz o vínculo entre o identificador do device e a câmera | Real, mas só acha a câmera se o passo 0 tiver acontecido |
-| 6 | Retransmite pro frontend via WebSocket, que desenha o overlay ao vivo | Real |
-
-> [!success] Estado em 18/09: o passo 0 existe, e o problema virou outro
-> Há dois writers hoje: a sonda de credencial grava o `deviceSourceId` no cadastro (Sprint 30) e o
-> `CameraRegionsController.reconcileDeviceSourceId` realinha o banco lendo o `/config` do device quando a
-> tela de Detecção abre. O que sobrou de armadilha é local: o `nx serve` roda o `prisma:seed` como
-> dependência e o seed **apaga** o vínculo quando `SEED_ATMAN_EMBEDDED_SOURCE_ID` está vazia, então as
-> caixas somem a cada restart do serviço. Detalhe em [[Analítico - Arquitetura e estratégias]].
-
-> [!danger] Lacuna: o passo 0 não existe em código
-> **Nenhum código escreve `analyticsCapabilities.deviceSourceId` no banco.** Só o seed e edição manual do
-> registro. Todo o resto do pipeline lê essa chave: o controller de regiões para montar o alvo do device,
-> o provisioner para comparar com o `source_id` que o device reporta, e o consumer para montar o mapa de
-> binding - que pula a câmera sem a chave.
->
-> Consequência: **câmera cadastrada pela UI nunca entra no binding do consumer, logo nunca recebe
-> detecção ao vivo**. O frame chega do device, não casa com câmera nenhuma e é descartado em silêncio -
-> sem erro na tela, sem log de falha para o operador. O embarcado funciona só para as câmeras que o seed
-> criou. Detalhe da cadeia em [[Analítico - Arquitetura e estratégias]]; o conserto é card comprometido
-> da [[Attlas - Sprint 30]].
-
-## Pipeline servidor (desenho preservado; spec renasce na Sprint 31)
-
-| # | Passo |
-| --- | --- |
-| 1 | `ms-virtual-loop` consome o **relay que o `ms-cameras` já mantém**, no substream de menor resolução - nunca a câmera direto, pra não expor a credencial dela a mais um processo |
-| 2 | Decodifica com `ffmpeg` em processo filho, e detecta veículo por frame com inferência nativa embutida no próprio processo Node (não é serviço Python separado) |
-| 3 | Projeta a ocupação da região a partir das detecções, com uma janela de histerese antes de confirmar mudança de estado |
-| 4 | Publica em `attlas.analytics.region-occupancy` com `IRegionOccupancyEvent` - ocupação referenciada por `cameraId` e `regionIndex` |
-| 5 | O **analítico servidor** traduz `(cameraId, regionIndex)` para `(controllerId, detectorIndex)`, usando o vínculo cadastrado no `ms-cameras`. Não há connector separado ([[Analítico - Topologia de serviço do analítico de vídeo]]) |
-| 6 | Republica em `attlas.detectors.raw`, o mesmo tópico do caminho físico, e a partir daí segue o mesmo cano até `ms-detector-history` |
-
-Sem vínculo cadastrado, o connector **descarta o evento e nunca inventa endereço**.
-
-O contrato do passo 4 é o mesmo que o caminho embarcado passa a publicar (PR #1354): é ele que impede o
-domínio de rachar em dois pipelines com formatos diferentes. Ver
-[[Analítico - Embarcado x Servidor]], seção "O que NÃO pode mudar".
-
-> [!note] O sumidouro do passo 6 já está pronto
-> `ms-detector-history` aceita esse evento **sem nenhuma mudança**: `detection.service.ts` já deriva a
-> identidade com `deriveDetectorId({ controllerId, index })`, e os contratos de detector
-> (`IDetectorRawEvent`, `DetectorTechnology.VIRTUAL_LOOP`, `DETECTOR_SAMPLE_DURATION_MS`) todos existem. O
-> que falta é tudo **antes** do sumidouro: os passos 1 a 5 são 100% markdown em PR draft hoje.
-
-## Pipeline ACOM e detector físico (real hoje, outro domínio)
-
-| # | Passo |
-| --- | --- |
-| 1 | Laço físico, ou laço virtual atuando via placa ACOM, entrega presença ao controlador como contato seco |
-| 2 | `ms-controllers` detecta o fechamento de ciclo e publica o evento de ciclo completo |
-| 3 | O connector do protocolo do controlador publica a leitura bruta do detector |
-| 4 | `ms-detector-history` persiste a série e calcula falhas |
-
-**Regra que impede contagem duplicada**: se o mesmo endereço de detector já tem vínculo de câmera
-registrado (pipeline anterior), esse endereço não pode ao mesmo tempo ser lido como presença física por
-este pipeline.
-
-> [!warning] Falta o caller, e a falha cai no vazio
-> Os passos 1 e 2 pressupõem alguém que fecha o contato seco a partir do laço virtual, e esse caller não
-> existe: não há nenhum consumer Kafka no `AcomModule`. E a falha que o passo 4 calcula é publicada em
-> `attlas.detectors.fault`, que tem produtor real e **nenhum consumidor** - o `ms-alarms`, designado por
-> `docs/modules/detectors.md`, não assina o tópico.
-
-## Ver também
-
-- [[Analítico]] · [[Analítico - Embarcado x Servidor]] · [[Analítico - Requisitos e SLA]] · [[Analítico - Arquitetura e estratégias]]
-- [[Attlas - Sprint 30]] (onde as lacunas acima viraram card)
-- [[VMS - Fluxos]] (padrão de nota usado aqui) · [[ms-cameras]]
+Quem lê: o bloco "Métricas de desempenho" da Detecção ("Sem faixa vinculada"), a aba ACOM do
+controlador ("Sem detector", que é o comportamento contratado pela UC-173 para laço sem vínculo) e as
+duas faces de Métricas.

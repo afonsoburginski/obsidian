@@ -16,9 +16,10 @@ clickup_status: Closed
 merged: 2026-07-02
 clickup: https://app.clickup.com/t/86aj9aw54
 sprint: "[[Attlas - Sprint 22]]"
+atualizado: 2026-07-31
 ---
 
-# SOFTWARE-1922 — Janelas de 5 min de disponibilidade + latência (+ rollup 90d)
+# SOFTWARE-1922 - Janelas de 5 min de disponibilidade + latência (+ rollup 90d)
 
 > Tarefa 4. **PR [#576](https://github.com/atmanadmin/attlas-2026/pull/576) MERGEADA (02/07)**, review do neto-atman resolvido · ClickUp **Closed**. Spec PROJ-005.
 > Contexto: [[Saúde da câmera - regras de negócio e contratos]]. Pré-requisito das Tarefas 5 e 6.

@@ -249,4 +249,4 @@ PR #2246 usou, então não trava esperando spec aprovada, mas registra a dívida
 [[SOFTWARE-2003 - Ciclo de vida de sessões de streaming e telemetria de banda por câmera]] ·
 [[SOFTWARE-2009 - Escalabilidade horizontal do ms-cameras em Kubernetes]] ·
 [[SOFTWARE-2314 - Performance do streaming de vídeo]] · [[VMS - Banda e alertas]] ·
-[[Attlas - Sprint 30]] · [[00 - Sem prazo (backlog)]]
+[[Attlas - Sprint 30]] · [[Sem prazo (backlog)]]

@@ -2,112 +2,113 @@
 tags:
   - doc
   - ms-cameras
-  - cameras
   - dispositivo
-  - hardware
-atualizado: 2026-08-24
+atualizado: 2026-10-01
 ---
 
 # Integração com dispositivo - Fluxos
 
-> Fluxos técnicos do adaptador multi-protocolo. Índice: [[Integração com dispositivo]]. Diagrama: [[02 - MOD-002 multi-protocol-adapter.excalidraw|diagrama]].
+Parte da [[Integração com dispositivo]]. Camada transversal, sem tela própria: cada fluxo é acionado por um
+consumidor ([[PTZ e presets]], [[Streaming]], [[Saúde e monitoramento]], [[Cameras]]) e aqui fica só o trecho
+que fala com o equipamento. Caminhos relativos a `apps/ms-cameras/src/`.
 
-Camada **transversal**: não há user flow (UF-\*) próprio. Cada fluxo abaixo é acionado por um consumidor ([[PTZ e presets\|PTZ]], [[Streaming\|Streaming]], [[Saúde e monitoramento\|Saúde]], [[Cameras\|CRUD]]); aqui só o trecho de integração com o hardware.
+## 1. Comando PTZ por ONVIF
 
-## 1. Resolução de driver + comando PTZ (ONVIF)
+Origem: `cameras/services/ptz.service.ts`, `executeOnvifPtz`. O driver é por operação: instancia, conecta,
+executa e desconecta. A autorização acontece antes, na rota (ver [[PTZ e presets - Arquitetura e estratégias]]).
 
-Origem: `cameras/services/ptz.service.ts` → `executeOnvifPtz()`. Driver é **por operação** (instancia, conecta, executa, desconecta).
+| Passo | O quê |
+| --- | --- |
+| 1 | `findForPtz`: câmera, credencial e perfil PRIMARY |
+| 2 | Guards: protocolo ONVIF, câmera com PTZ mecânico ou digital, `mediaProfileToken`, credencial |
+| 3 | `IOnvifConnectionOptions`: ONVIF em `ip:porta do perfil`, RTSP em `ip:554`, token do perfil |
+| 4 | `driverFactory.createDriver(ONVIF, options)` |
+| 5 | `connect()` sob timeout de 5 s |
+| 6 | `movePTZ` de cada comando, em sequência, sob timeout de 4 s |
+| 7 | `disconnect()` no `finally`, best-effort |
+| 8 | Uma linha `PTZ_COMMAND` em `CameraEventLog` |
 
-| # | Passo | Detalhe |
-| --- | --- | --- |
-| 1 | Carrega câmera | `findForPtz` (credencial + perfil primário) |
-| 2 | Guards | `assertProtocolIsOnvif`, `assertCameraIsPtz`, `assertHasMediaProfile`; credencial presente; permissão `cameras:ptz` (ms-organization) |
-| 3 | Monta opções | `buildConnectionOptions` → `IOnvifConnectionOptions` (onvif=`ip:portaControle`, rtsp=`ip:554`, token de perfil) |
-| 4 | Resolve driver | `driverFactory.createDriver(ONVIF, options)` → `OnvifDriver` |
-| 5 | `connect()` | `servicesInit` + heartbeat + cache de URL; sob timeout `connect` (5 s) |
-| 6 | `movePTZ(cmd)` | Cada comando da lista, sequencial, sob timeout `movePTZ` (4 s) |
-| 7 | `finally disconnect()` | Best-effort (erros engolidos) |
-| 8 | Auditoria | 1 linha em `CameraEventLog` (`PTZ_COMMAND` + subType) |
+Timeout ou erro de I/O vira `ExternalServiceException('camera-onvif', ...)` com `CAMERA_UNREACHABLE`;
+`DomainException` de guard propaga sem reembrulhar. A Hikvision passa por este mesmo caminho depois que o
+cadastro liga o ONVIF (fluxo 6).
 
-Erro/timeout em qualquer I/O → `ExternalServiceException('camera-onvif', …)` com `errorCode = CAMERA_UNREACHABLE` (`runWithTimeout`). `DomainException` já lançada (guard) propaga sem reembrulhar.
+## 2. Comando VAPIX (Axis)
 
-Vale também para Hikvision: depois que o cadastro ativa o ONVIF automaticamente (INT-020, ver fluxo 6), o PTZ de uma Hikvision passa por este mesmo caminho - não existe um fluxo de PTZ separado por ISAPI.
+Origem: `ptz.service.ts`, `executeVapixAbsolute`, `executeVapixAbsoluteZoom`, `executeVapixZoom` e
+`executeVapixZoomStop`. Não passa pela factory nem pelo driver.
 
-## 2. Comando VAPIX (Axis proprietário)
+| Passo | O quê |
+| --- | --- |
+| 1 | `loadForVapix`: id, IP e credencial; sem guard de ONVIF nem de tipo, então vale para câmera fixa com zoom |
+| 2 | `vapixAbsolutePtz` (`ptz.cgi?pan&tilt&zoom&speed`), `vapixAbsoluteZoom` ou `vapixContinuousZoom` (`continuouszoommove`), em unidades nativas (graus, zoom 1 a 9999) |
+| 3 | `AxisDigestClient.get()`: probe, 401, reenvio com Digest; qualquer 2xx é sucesso |
+| 4 | Linha `PTZ_COMMAND`; o stop de zoom é best-effort e não grava linha |
 
-Origem: `ptz.service.ts` → `executeVapixZoom` / `executeVapixAbsolute` / `executeVapixZoomStop`. **Não** passa pela factory nem pelo `OnvifDriver` - chama os utils direto.
+Conversões em `vapix-ptz.utils.ts`: `presetZoomLevelToVapix` (0 a 100% para 1 a 9999) e `speedPercentToVapix`
+(0 a 100% para 1 a 100). Falha vira `ExternalServiceException('camera-vapix', ...)` com `CAMERA_UNREACHABLE`.
 
-| # | Passo | Detalhe |
-| --- | --- | --- |
-| 1 | Carrega câmera | `loadForVapix` (id + ip + credencial; sem guard de ONVIF/kind - vale p/ câmera fixa com zoom) |
-| 2 | Permissão | `cameras:ptz` se houver operador |
-| 3 | Chama VAPIX | `vapixAbsolutePtz` (`ptz.cgi?pan&tilt&zoom&speed`) ou `vapixContinuousZoom` (`continuouszoommove`) - unidades **nativas** (graus, zoom 1..9999) |
-| 4 | Digest auth | `AxisDigestClient.get()` - probe → 401 → reenvia com header Digest; 2xx = ok |
-| 5 | Auditoria | `CameraEventLog` (`PTZ_COMMAND`); stop é best-effort (não lança) |
+## 3. Descritor de stream (para o Streaming)
 
-Conversões em `vapix-ptz.utils.ts`: `presetZoomLevelToVapix` (0..100% → 1..9999), `speedPercentToVapix` (0..100% → 1..100). Falha → `ExternalServiceException('camera-vapix', …, CAMERA_UNREACHABLE)`.
+Origem: `streaming/services/camera-stream-source.resolver.ts`, `resolve(cameraId, quality)`.
 
-## 3. Construção do descritor de stream (consumido pelo Streaming)
+| Passo | O quê |
+| --- | --- |
+| 1 | Cadeia de fallback `QUALITY_FALLBACK_CHAIN`: SECONDARY para PRIMARY; TERTIARY para SECONDARY para PRIMARY |
+| 2 | Lê em paralelo o perfil ativo do papel, a câmera e a credencial |
+| 3 | `selector.select(camera.communicationProtocol)`: `rtsp`, `onvif` ou `isapi` |
+| 4 | `injectRtspCredentials` na URL do perfil |
+| 5 | Só em URL `/axis-media/`: `appendAxisVapixCodecParams` (codec, keyframe, resolução) e `buildAxisFallbackUrl` (variante H.264 quando o codec não é H.264). A Hikvision não recebe parâmetros na URL (INT-007) |
+| 6 | `strategy.buildLiveStreamDescriptor(source)`: `ICameraStream` com `protocol: 'RTSP'` |
 
-Origem: `streaming/services/camera-stream-source.resolver.ts` → `resolve(cameraId, quality)`.
+Nenhum perfil ativo na cadeia: `BusinessRuleViolationException('STREAM_PROFILE_NOT_CONFIGURED')`.
 
-| # | Passo | Detalhe |
-| --- | --- | --- |
-| 1 | Cadeia de fallback | `QUALITY_FALLBACK_CHAIN` (SECONDARY→PRIMARY, TERTIARY→SECONDARY→PRIMARY) |
-| 2 | Lookup | `cameraStreamProfile` (role, ativo) + `camera` + `cameraCredential` em paralelo |
-| 3 | Seleciona estratégia | `selector.select(camera.communicationProtocol)` - hoje `rtsp`, `onvif` ou `isapi` |
-| 4 | Injeta credenciais | `injectRtspCredentials` na URL do perfil (se houver user) |
-| 5 | Params Axis | `appendAxisVapixCodecParams` (só URLs `/axis-media/`: `videocodec`, keyframe, resolução) + `buildAxisFallbackUrl` (H.264 se codec ≠ H.264). Não se aplica à Hikvision - a estratégia ISAPI não anexa parâmetros na URL (INT-007) |
-| 6 | Descritor | `strategy.buildLiveStreamDescriptor(source)` → `ICameraStream` (`protocol: 'RTSP'`, `sourceUrl`, `suggestedCodec`) |
+## 4. Sondagem no cadastro
 
-Nenhum profile ativo em toda a cadeia → `BusinessRuleViolationException('STREAM_PROFILE_NOT_CONFIGURED')`. Detalhe do pipeline em [[Streaming|Streaming]].
+Origem: `cameras/services/camera-credential-probe.service.ts`, `probe(item)`, usado por
+`POST /cameras/validate-credentials` e de novo dentro do `POST /cameras`.
 
-## 4. Probe de credenciais (descoberta ONVIF no cadastro)
+| Passo | O quê |
+| --- | --- |
+| 1 | `new OnvifDevice({ address, user, pass })` e `servicesInit()`, com 10 s para a conexão |
+| 2 | `deviceInformationInit()` e `mediaGetProfiles()` em `Promise.allSettled`, depois `mediaGetStreamUri` |
+| 3 | Identidade: fabricante, modelo, serial, firmware, hardwareId |
+| 4 | Perfis: tokens, resolução, codec, fps, bitrate, `streamUrl` (com o esquema forçado para `rtsp://`), snapshot; PTZ só com faixa real de pan ou tilt |
+| 5 | Analítico embarcado: testa os transportes candidatos do ACAP com orçamento próprio; esgotar o orçamento deixa `hasEmbeddedAnalytics` indefinido, nunca `false` |
+| 6 | Erro classificado: 401 `CAMERA_CREDENTIALS_INVALID`; timeout, `ECONNREFUSED`, `EHOSTUNREACH` `CAMERA_UNREACHABLE`; 404 `CAMERA_CREDENTIALS_UNSUPPORTED`; resto `CAMERA_CONNECTION_FAILED` |
+| 7 | Em `CAMERA_CREDENTIALS_UNSUPPORTED` (ONVIF desligado): confirma a credencial por ISAPI em `/ISAPI/System/deviceInfo`, lê os canais em `/ISAPI/Streaming/channels` e tenta ligar o ONVIF (fluxo 6), sondando de novo por ONVIF se der certo |
 
-Origem: `cameras/services/camera-credential-probe.service.ts` → `probe(item)` (usado por `POST /cameras/validate-credentials`).
+Sem os perfis lidos por ISAPI, a Hikvision seria salva sem stream e o player responderia 409 ao pedir o
+vídeo. É a sondagem que sustenta cadastrar sem desenvolvimento por fabricante (RF-INT-05): a câmera declara
+as próprias capacidades.
 
-| # | Passo | Detalhe |
-| --- | --- | --- |
-| 1 | Conecta ONVIF | `new OnvifDevice({address, user, pass})` → `servicesInit()`, sob timeout 10 s |
-| 2 | Enriquece | `Promise.allSettled([deviceInformationInit(), mediaGetProfiles()])` |
-| 3 | Extrai device info | fabricante, modelo, serial, firmware, hardwareId |
-| 4 | Extrai perfis | tokens, resolução, encoding, framerate, bitrate, streamUrl, snapshotUrl; range PTZ → `hasPtz` |
-| 5 | Classifica erro | 401→`CAMERA_CREDENTIALS_INVALID`; timeout/ECONNREFUSED/EHOSTUNREACH→`CAMERA_UNREACHABLE`; resto→`CAMERA_CONNECTION_FAILED`; `/onvif/device_service` 404 numa Hikvision→reconhecido como "ONVIF desligado", não como falha de conectividade (ver fluxo 6) |
+## 5. Canais de saúde
 
-É a peça que sustenta "cadastrar sem dev por fabricante" (RF-INT-05, RF-CAM-01): a própria câmera declara suas capacidades via ONVIF.
+Origem: `health/workers/camera-health.worker.ts`; qual réplica monitora qual equipamento é decidido pelo
+`health/leases/device-monitor-coordinator.service.ts` (ver [[Saúde e monitoramento - Arquitetura e estratégias]]).
+`resolveMonitoringOptions` escolhe o canal pelo `manufacturer.code`, no bootstrap, na reconciliação e no
+cadastro.
 
-## 5. Heartbeat via WebSocket / PullPoint / ISAPI
-
-Origem: `health/workers/camera-health.worker.ts`; quem decide QUAL device cada réplica monitora (bootstrap + lease Redis) é o `health/leases/device-monitor-coordinator.service.ts` (ver [[Saúde e monitoramento\|Saúde e monitoramento]] para a mecânica de dedupe/lease). Quatro canais (`HealthChannel`):
-
-| Canal | Client | Heartbeat | Notas |
+| Fabricante | Canal | Cliente | Heartbeat |
 | --- | --- | --- | --- |
-| `AXIS_WEBSOCKET` | `AxisWsClient` (`health/clients/axis-ws.client.ts`) | `measurePing()` (RTT WS ping/pong) em loop auto-agendado | Token wssession via digest; filtros de tópico (NetworkLost, PTZError, Move, Tampering…); mapeia tópico→`CameraEventCauseCode`; rastreia posição PTZ enquanto `is_moving=1` |
-| `ONVIF_PULLPOINT` | `OnvifPullPointClient` (`health/clients/onvif-pullpoint.client.ts`) | cada `PullMessages` (long-poll `PT5S`) bem-sucedido = 1 heartbeat | Canal para fabricantes sem canal nativo (nem Axis nem Hikvision); subscription TTL `PT60S` |
-| `HIKVISION_ISAPI_ALERT_STREAM` (agosto, INT-019) | `HikvisionAlertStreamClient` (`health/clients/hikvision-alert-stream.client.ts`) | conexão HTTP que nunca fecha; cada parte `EventNotificationAlert` recebida = 1 heartbeat | Único canal Hikvision que entrega o que o device realmente viu (evento real, não só liveness); filtra o keep-alive `videoloss`/`inactive` (~1/s) para não gerar 1 evento/s por câmera; janela de inatividade 30 s |
-| `HIKVISION_ISAPI_POLL` (agosto, INT-018) | `HikvisionIsapiHeartbeatClient` (`health/clients/hikvision-isapi-heartbeat.client.ts`) | poll `GET /ISAPI/System/status` a cada 15 s = 1 heartbeat | Fallback quando a firmware não tem `alertStream` (o próprio client escolhe, não o coordinator); tolera 2 falhas consecutivas antes de reportar offline, para equiparar à tolerância do ping WS/PullPoint |
+| `AXIS` | `AXIS_WEBSOCKET` | `AxisWsClient` | RTT de ping e pong do WebSocket, em laço; token wssession pelo digest; mapeia tópicos de evento para `CameraEventCauseCode` e acompanha a posição PTZ enquanto `is_moving=1` |
+| `HIKVISION` | `HIKVISION_ISAPI_ALERT_STREAM` | `HikvisionAlertStreamClient` | Cada parte `EventNotificationAlert` da conexão HTTP aberta em `/ISAPI/Event/notification/alertStream`; filtra o keep-alive `videoloss`/`inactive`; 30 s de silêncio é desconexão |
+| `HIKVISION` sem alertStream | `HIKVISION_ISAPI_POLL` | `HikvisionIsapiHeartbeatClient` | `GET /ISAPI/System/status` a cada 15 s; 2 falhas seguidas antes de offline. O próprio cliente escolhe esse fallback |
+| outros | `ONVIF_PULLPOINT` | `OnvifPullPointClient` | Cada `PullMessages` (long-poll `PT5S`) bem-sucedido; assinatura com TTL `PT60S` |
 
-Fluxo comum: `startMonitoring` → abre client → eventos `connected`/`disconnected`/`error`/`heartbeat` alimentam snapshot + histórico + `EventBus`; reconexão com backoff+jitter. Avaliação de estado (STABLE/UNSTABLE/OFFLINE), incidentes e métricas pertencem a [[Saúde e monitoramento|Saúde e monitoramento]].
+Os eventos `connected`, `disconnected`, `error` e `heartbeat` alimentam snapshot, histórico e `EventBus`, com
+reconexão por backoff e jitter. Avaliação de estado, incidentes e métricas são da Saúde.
 
-> [!info] Correção - seleção de canal por fabricante já existe (era um "ainda não" até 03/07)
-> A versão anterior desta nota dizia que o bootstrap fixava `AXIS_WEBSOCKET` e que a seleção dinâmica
-> por fabricante "ainda não estava no bootstrap". Isso mudou: `resolveMonitoringOptions` (dentro do
-> `device-monitor-coordinator.service.ts`) escolhe o canal por `manufacturer.code` tanto no bootstrap/
-> reconcile quanto no cadastro (`attachRegisteredCamera`) - `AXIS`→`AXIS_WEBSOCKET`,
-> `HIKVISION`→`HIKVISION_ISAPI_ALERT_STREAM` (com `HIKVISION_ISAPI_POLL` como fallback interno do
-> client), qualquer outro→`ONVIF_PULLPOINT`. A motivação registrada no código (INT-020) é justamente
-> ter corrigido o caso em que uma Hikvision recém-cadastrada abria uma conexão Axis contra um device
-> sem VAPIX nenhum.
+## 6. Ativação do ONVIF na Hikvision (INT-020)
 
-## 6. Ativação automática do ONVIF no cadastro (Hikvision, INT-020)
+Origem: sondagem do cadastro e da validação de credenciais, quando o ISAPI confirmou a credencial e o ONVIF
+está desligado. Best-effort: se falhar, fica a leitura ISAPI e a câmera continua cadastrável.
 
-Origem: fluxo de cadastro/validação de credenciais, quando o fabricante é Hikvision e o probe detecta ONVIF desligado (fluxo 4).
+| Passo | O quê |
+| --- | --- |
+| 1 | `GET /ISAPI/System/Network/Integrate` mostra `<ONVIF><enable>false</enable></ONVIF>` |
+| 2 | `PUT` do mesmo recurso só com o bloco ONVIF |
+| 3 | `GET` e `POST /ISAPI/Security/ONVIF/users`: as contas ONVIF são separadas das contas web, e o ONVIF pode estar ligado sem ninguém autenticar |
+| 4 | Relê `enable=true` e sonda de novo por ONVIF (o `GetProfiles` passa a responder com cerca de 2 s de atraso) |
 
-| # | Passo | Detalhe |
-| --- | --- | --- |
-| 1 | Detecta ONVIF desligado | `GET /ISAPI/System/Network/Integrate` → `<ONVIF><enable>false</enable></ONVIF>` |
-| 2 | Ativa | `PUT /ISAPI/System/Network/Integrate` só com o bloco ONVIF → `statusCode 1, OK` |
-| 3 | Garante conta ONVIF | `GET`/`POST /ISAPI/Security/ONVIF/users` - contas ONVIF são uma lista separada das contas web/ISAPI; pode estar ligado sem ninguém autenticar |
-| 4 | Confirma | Releitura confirma `enable=true`; ONVIF `GetProfiles` autenticado passa a responder (validado: ~2 s de atraso até responder) |
-
-Validado em campo em 18/08/2026 contra uma DS-2CD1023G0E-I real (192.168.210.80, firmware V5.7.12) - ver [[Runbook - câmeras reais para teste]]. Depois deste passo, PTZ e leitura de perfis de mídia da Hikvision seguem o fluxo 1 (ONVIF comum) como qualquer outro fabricante; ISAPI continua sendo usado só para streaming (fluxo 3) e saúde (fluxo 5).
+Validado em campo contra a Hikvision de bancada (`192.168.210.80`). Depois disso, PTZ e perfis de mídia da
+Hikvision seguem o fluxo 1; ISAPI fica para streaming (fluxo 3) e saúde (fluxo 5).

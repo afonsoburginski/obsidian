@@ -7,18 +7,48 @@ tags:
 aliases:
   - "Convenções de escrita"
   - "Como escrever"
-atualizado: 2026-09-21
+  - "Plano - atualização da documentação do vault"
+atualizado: 2026-10-01
 ---
 
 # Convenções de escrita
 
 Fonte de verdade de **como escrever** no contexto Attlas: descrição e título de PR,
-comentário de review, e documento de público misto. Saiu da memória do Claude em 31/07/2026 e passou a
-morar aqui, porque é conhecimento de projeto e precisa ser lido, revisado e corrigido como qualquer outra
-nota, em vez de ficar invisível num arquivo de memória.
+comentário de review, documento de público misto e as próprias notas deste vault.
 
-O vault registra apenas conhecimento técnico reutilizável: decisões, contratos, arquitetura, runbooks,
-incidentes e planos. Atualizações diárias e prompts efêmeros não são fonte de verdade e não entram aqui.
+## Notas do vault
+
+- **Só a verdade atual.** `Docs/` guarda o estado de hoje: arquitetura, contratos, fluxos, requisitos,
+  regras, armadilhas conhecidas, pendências e runbooks. Decisão superada, registro datado, plano já
+  executado, incidente encerrado e pesquisa concluída não ficam como nota: o que ainda vale entra na
+  faceta certa (causa de incidente vira item de "Armadilhas conhecidas", conclusão de pesquisa vira o
+  "por que assim" da arquitetura, plano não feito vira "Pendências"), e a nota vai para a lixeira com o
+  nome dela em `aliases` de quem absorveu.
+- **Presente do indicativo, sem história.** Nada de "Estado em DD/MM", "antes era X, agora é Y", "na
+  rodada de", lista de PRs ou narrativa de investigação. Divergência atual entre regra e código entra
+  curta, num callout `[!warning]`.
+- **Um fato, uma nota.** As outras linkam para ela.
+- **O código da `develop` vence a nota.** Nota que discorda do código é bug da nota.
+- `Sprint/` e `Reports/` são registro do período e ficam como foram escritos.
+- **Explicação para usuário fica na raiz do vault**, com nome `<Assunto> - <pergunta respondida>`, e a nota
+  de domínio linka para ela. Não repete a arquitetura: explica com exemplo o que a faceta descreve.
+- Data e hora no horário de Brasília. Merge do GitHub vem em UTC e cai no dia seguinte se não for convertido.
+
+### Revisar uma nota contra o código
+
+Quatro medidas, aplicadas contra `origin/develop`, para a revisão não virar achismo:
+
+1. **Data da nota contra commits no código que ela descreve**: `git log --since=<atualizado>` restrito aos
+   caminhos citados. Muito commit em caminho descrito pela nota quer dizer nota defasada.
+2. **Referência morta**: todo caminho de repo citado entre crases precisa existir.
+3. **Termo do código sem menção no vault**: rota, domínio ou campo que existe hoje e não aparece em nota
+   nenhuma. É o sinal mais forte, porque indica assunto ausente, não só desatualizado.
+4. **Pergunta fechada ao código, aceitando "não existe" como resposta**: "existe healthcheck do analítico?"
+   vale mais que ler a nota antiga e presumir. Afirmação categórica de ausência pede uma segunda busca
+   antes de virar premissa, porque grep que conclui cedo demais já produziu nota errada.
+
+O `index.md` em dia não garante que as facetas da mesma pasta estejam: as duas coisas se conferem juntas, e
+achado de incidente só vale quando entra na faceta de arquitetura do domínio.
 
 ## Regras que valem para todo texto
 
@@ -100,6 +130,8 @@ precisam entender.
   dado" em vez de split-brain, "4 vCPU e 8 GB" em vez de "4c/8g".
 - Sem analogia caseira. Explicação técnica direta com unidade clara.
 - Documento enxuto: o mesmo fato importante não se repete em três seções.
+- **Documento que vai para o chefe ou para o time (PDF, apresentação) não leva nada do processo de desenvolvimento**: número de PR, nome de branch, "ainda não está na develop", sigla de spec (`CROSS-*`, `UC-*`, `INT-*`, `UF-*`) e aviso de estado do código ficam no vault e no repositório. O documento explica o que o sistema faz, como usar e onde cada coisa aparece.
+- **Formato do PDF corporativo**: curto, cerca de 4 páginas para explicar um fluxo como o da Neural Labs; bloco de título na primeira página no lugar de capa e sumário; seções numeradas em fluxo contínuo, sem forçar página nova por seção; tabelas que quebram entre linhas com cabeçalho repetido; cabeçalho e rodapé com "Página N de M", versão e data; no máximo dois diagramas e uma tela ilustrativa; linguagem impessoal e formal; referência técnica em anexo curto no fim. Número estimado vai rotulado como ilustrativo.
 - Nome de servidor em documento formal é o papel, não o apelido interno.
 
 ## Relacionado

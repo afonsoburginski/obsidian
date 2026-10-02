@@ -2,246 +2,105 @@
 tags:
   - doc
   - analitico
-atualizado: 2026-09-12
-servico: ms-cameras (hoje) + ms-video-analytics (o analitico servidor, hoje ms-virtual-loop). ms-atspm, ms-dai e ms-connector-virtual-loop nao nascem - CROSS-077, 31/08
-fonte: síntese das notas deste domínio + auditoria de código de 25/08 + as 16 decisões tomadas nas Sprints 30, 31 e 32
+  - visao
+aliases:
+  - "Analítico - Embarcado x Servidor"
+atualizado: 2026-10-01
 ---
 
 # Analítico - Visão do produto
 
-A nota de entrada para **entender o módulo por inteiro**: o que ele é, onde roda, por onde o dado passa,
-com o que se relaciona, e as decisões que o desenharam. É a vista de cima; cada faceta tem nota própria
-com a profundidade.
+O módulo por inteiro, para quem chega. O detalhe de código está em
+[[Analítico - Arquitetura e estratégias]] e o caminho do dado em [[Analítico - Fluxos]].
 
-> [!note] O que esta nota NÃO substitui
-> Ela é síntese de arquitetura e decisão. As **regras de negócio** das anotações de alinhamento vivem em
-> [[Analítico - Requisitos e SLA]], com o estado real auditado contra o código - inclusive requisitos que
-> esta nota nem menciona (grupo semafórico 1x1, snapshot de configuração, limites do ACOM, nomenclatura
-> "Periféricos ACOM"). Ler as duas: esta responde *como funciona*, aquela responde *o que foi pedido e o
-> que existe de fato*.
+## O que o módulo entrega
 
-> [!success] Estado em 12/09: o console do Analítico é um lugar só, e a aba Analíticos da câmera saiu
-> Na PR [#3328](https://github.com/atmanadmin/attlas-2026/pull/3328) - CI inteiramente verde, **ainda
-> não mergeada**, nada disto está na `develop`. A tela de **Detecção** do módulo `analytics` passou a ser
-> o **único** lugar onde região de detecção, laço virtual e configuração do analítico embarcado são lidos
-> e escritos; a aba Analíticos do detalhe da câmera foi removida (23 arquivos), e as specs `UF-033` e
-> `UF-036` viraram `superseded` apontando para a `UF-053`. Onde esta nota diz "aba Analíticos", leia
-> "tela de Detecção".
->
-> Mudaram também, na mesma PR: **Detecção sem autoplay** (`UF-055` - a sessão de vídeo abre por gesto do
-> operador, e o gate mora na página, não no player compartilhado), **instância de analítico como registro
-> próprio** (`UC-075` - `AnalyticInstance` com endereço, capacidade, intervalo de consulta e histórico de
-> disponibilidade), **edição de instância na tela** (`UF-056`), **ação em massa na fila de incidentes**
-> (`UC-074`) e **Dados Brutos paginado com unidade no cabeçalho** mais o mapa restaurado na tela do Laço
-> Virtual (`UF-054`). Inventário completo no [[Analítico|índice do domínio]].
-
----
-
-## 1. O que o Analítico é
-
-Módulo próprio do edital, **não submódulo de** [[ms-cameras]]. A relação com Câmeras é de dependência,
-não de posse. Duas capacidades de produto, e cada uma pode rodar de duas formas.
-
-| Peça | O que é | Detalhe que costuma confundir |
+| Capacidade | O que é | Quem calcula |
 | --- | --- | --- |
-| **Laço virtual (VL)** | Detecção de cruzamento por laço desenhado sobre o vídeo - o substituto do laço indutivo no asfalto | **Não tem geometria própria**: reaproveita as regiões de detecção de objeto da DAI |
-| **ATSPM** | Pacote de quatro: Tracker, DAI, TPM e o laço virtual embutido | Onde há ATSPM, o app de VL separado é dispensável. Cada uma das quatro é sub-produto endereçável |
-| **ACOM** | **Não é capacidade, é transporte**: a placa que converte laço virtual em contato seco para o controlador legado ler como laço físico | Vive em `ms-controllers/src/acom/` (DD-20). O serviço `ms-acom` existe como scaffold e é **esqueleto morto** |
+| **Laço virtual (VL)** | Região de vídeo que reporta presença como um laço indutivo. Não tem geometria própria: usa as regiões de detecção da câmera | App embarcado; o Attlas publica a ocupação como evento de detector |
+| **DAI** | Detecção automática de incidentes (contramão, fluxo parado, congestionamento e outros) por região | App embarcado ATSPM; o Attlas grava o incidente, deduplica e trata |
+| **ATSPM** | Métricas de desempenho por região e semafóricas | O app ATSPM calcula na câmera e o Attlas lê; o que o app não responde o Attlas agrega |
+| **Tempo de viagem por placa** | Tempo e velocidade média entre câmeras de um Trajeto | Neural Labs lê a placa; o Attlas pareia e mede. Ver [[Neural Labs]] |
+| **ACOM** | Não é capacidade, é transporte: a placa que entrega o laço virtual ao controlador legado como contato seco | O próprio app sinaliza a placa. Ver [[Analítico - Vínculo com a ACOM]] |
 
-O ACOM tem CRUD, TCP, codec e pollers reais - e **falta o caller que atua**. É a peça mais pronta que
-ainda não faz nada. Requisitos de ACOM (relação 1x1 com controlador, até 4 analíticos por ACOM, até 4
-laços por câmera, nomenclatura) estão em [[Analítico - Requisitos e SLA]].
+## Embarcado e servidor: as duas famílias
 
----
+Toda tela e todo documento dizem o fornecedor quando falam de servidor, para que o servidor da Neural
+Labs nunca seja lido como o da Atman.
 
-## 2. Onde o analítico roda, e por que existem dois caminhos
+| | Embarcado (Atman) | Servidor (Neural Labs) |
+| --- | --- | --- |
+| Onde processa | Dentro da câmera Axis, num app (ACAP) da Atman | No servidor físico do cliente, o NEURAL SERVER |
+| Câmeras | Só Axis, conforme a matriz abaixo | Qualquer câmera que o NEURAL SERVER leia |
+| O que entrega | Ocupação de região, caixas, incidentes, medidas ATSPM | Leitura de placa |
+| Como chega ao Attlas | Quadros no Kafka do equipamento; API HTTP do app; o app de laço disca por TCP | Socket TCP, XML `<infoplate>`, na porta 17000 do `ms-video-analytics` |
+| Tipo no código | `EnumCameraAnalyticType` (`VIRTUAL_LOOP`, `ATSPM`) | `EnumServerAnalyticType` (`NEURAL_LABS`), com `EnumAnalyticProvider`, reunidos no `AnalyticTypeCatalog` |
+| Na tela | Analítico > Instâncias, mesma página de instância | Idem |
 
-Não é escolha entre dois caminhos: são dois que **coexistem por tempo indeterminado**, porque o parque de
-câmeras é misto. Detalhe completo em [[Analítico - Embarcado x Servidor]], a nota central do domínio.
+O analítico servidor da Atman, que decodificava e inferia em contêiner próprio, foi descontinuado: rodar
+inferência no processo Node saturava o host (580% de CPU num host de 8 vCPU com duas câmeras), e a
+decisão de produto passou a ser resolver toda câmera pelo embarcado. O valor `SERVER` de
+`EnumCameraAnalyticExecutionMode` e o cadastro de unidade servidor continuam existindo, mas nada
+processa câmera nessa forma.
 
-```
-ONDE RODA                        O QUE EMITE                 QUEM CONSOME
+> [!warning] `docs/modules/analitico.md` ainda descreve o servidor Atman como forma de execução
+> As seções 2, 4, 6 e o `RF-VL-03` tratam "servidor em contêiner Attlas, qualquer câmera" como regra
+> de produto. Não há implementação. A família servidor real é só a Neural Labs (seção 2, parágrafo
+> "Duas famílias de analítico", e seções 3.8 e 3.9).
 
-EMBARCADO (existe)          ┐
-ACAP dentro da câmera Axis  │
-só ARTPEC 7 e 8/9           ├──► Ocupação de região  ──►  Cadeia de detectores
-zero servidor, zero banda   │    domínio `analytics`       mesmo tópico do laço FÍSICO
-                            │    em @attlas/contracts
-SERVIDOR (Sprint 31)        │                              o controlador não distingue
-ms-virtual-loop container   ┘    quem consome NÃO sabe     laço de asfalto de laço de
-qualquer câmera, comum       ►   de onde a ocupação veio    vídeo - é o ponto
-lê o relay do mediamtx           publica só na transição
-```
+### Cobertura de cada câmera
 
-O contrato é o que impede as duas origens de virarem dois sistemas. Sem ele, cada consumidor precisaria
-de um ramo por origem.
+Cada câmera cai numa de quatro coberturas, cruzando as famílias: embarcado e servidor, só embarcado,
+só servidor, nenhum. O lado servidor é a **associação** da câmera à Neural Labs, que nasce quando a
+leitura dela gera o vínculo (ver [[Neural Labs - Vínculo de câmeras]]).
 
-> [!warning] O embarcado ainda não fala o contrato comum
-> Ele emite formato próprio hoje. Fazer ele migrar é card da [[Sprint 31 - o que entrega|Sprint 31]] - e
-> sem isso o contrato não cumpre o papel, porque o consumidor volta a precisar de um ramo por origem.
+## Matriz de compatibilidade do embarcado
 
-### A matriz que decide onde roda
+| Arquitetura da câmera | App de laço virtual | App ATSPM |
+| --- | --- | --- |
+| Não Axis | Não | Não |
+| Axis ARTPEC 7 | Sim | Não |
+| Axis ARTPEC 8 e 9 | Sim, sozinho | Sim, sozinho (já entrega o laço) |
 
-| Forma de execução | Não-Axis | ARTPEC 7 | ARTPEC 8/9 |
-| --- | --- | --- | --- |
-| Laço virtual, app na câmera | Não | Sim | Sim |
-| Laço virtual, servidor analítico | Sim | Sim | Sim |
-| ATSPM, app na câmera | Não | Não | Sim |
-| ATSPM, servidor analítico | Sim | Sim | Sim |
+A arquitetura é **descoberta pelo backend**, nunca escolhida no cadastro, e arquitetura não identificada
+recusa o embarcado (fail-closed). Código em
+`apps/ms-cameras/src/cameras/analytics/analytics-compatibility.matrix.ts`.
 
-Duas restrições resumem a tabela: **não-Axis nunca roda app embarcado** e **ARTPEC 7 não roda o app de
-ATSPM**. Mais uma exclusão que vale só no 8/9 - os dois apps existem, nunca juntos na mesma câmera, e é
-liberável: remover o primeiro libera o outro. A coluna "servidor" ser toda "Sim" é o que torna o parque
-misto atendível por inteiro.
+> [!warning] A bancada contraria a exclusão do ARTPEC 8/9
+> A EMBEDDED 080 roda o app ATSPM e o app de laço ao mesmo tempo. A regra vale para o que o Attlas
+> oferece no cadastro; o que está instalado no aparelho fica como está.
 
-> [!important] Estado em 12/09: a exclusão entre modos de execução virou índice, não só regra escrita
-> A #3328 troca `CameraAnalytic_camera_type_embedded_unique` por
-> `CameraAnalytic_camera_type_active_unique` (RF-INST-04). A unicidade passou a valer por
-> `(câmera, tipo)` **ativo**, e não só no modo `EMBEDDED`: uma câmera com uma linha `EMBEDDED` e uma
-> `SERVER` do mesmo tipo era decodificada duas vezes e publicava a mesma detecção duas vezes. A exceção
-> que a `MOD-017` seção 4.2 abria para o modo servidor era especulativa e foi fechada. A migration traz
-> guarda que **aborta o deploy** com mensagem explícita se algum ambiente já tiver dado nessa forma.
-> Isso **não** contradiz a decisão **D-12** abaixo ("câmera com embarcado e servidor é caso conhecido"):
-> o que fica proibido é a duplicação do **mesmo tipo** de analítico na mesma câmera, não a coexistência
-> dos dois modos por tipos diferentes.
+## Os cinco recursos do edital
 
----
+Visão Geral (configurar a câmera: a tela de Detecção), Analíticos (as unidades e seus vínculos: a tela
+de Instâncias), Incidentes, ATSPM (a tela de Métricas) e Dashboard (não existe). O estado de cada um
+está em [[Analítico - O que falta para fechar o módulo]].
 
-## 3. Os três caminhos do dado
+## Com o que o módulo se relaciona
 
-O módulo tem três pipelines distintos, e confundi-los é a origem da maioria das dúvidas sobre "onde isso
-é gravado". Fluxos detalhados em [[Analítico - Fluxos]].
-
-| # | Pipeline | O que é | Para quem |
-| --- | --- | --- | --- |
-| 1 | **Tela ao vivo** | WebSocket, efêmero, acende a região na tela de **Detecção** (era a aba Analíticos até 12/09) | Operador olhando a câmera. Nada é gravado - saiu da tela, deixou de existir |
-| 2 | **Incidente contável** | `CameraEventLog` com categoria `ANALYTICS`, dedup por câmera + região + tipo | Fila de incidentes, e daí para Alarmes, Inventário e Notificações |
-| 3 | **Ocupação de laço** | Evento de detector, só na transição, com histerese | Controlador de semáforo, via ACOM ou direto, e o `ms-detector-history` |
-
-O mesmo frame alimenta os três. **O metadado do device nunca carrega pixel** - é 100% número (`labels`,
-`bboxes`, `ids`, `curr_speeds`), e é essa a razão de a imagem de evidência precisar de caminho próprio.
-
----
-
-## 4. Com o que o Analítico se relaciona
-
-| Depende de | Para que |
+| Módulo | Relação |
 | --- | --- |
-| [[Cameras]] / [[ms-cameras]] | a câmera, a credencial, o `hardwareId` |
-| [[PTZ e presets]] | o enquadramento a que a geometria pertence |
-| [[Streaming]] (mediamtx) | o relay que alimenta o analítico servidor |
-| Object storage | evidência de detecção e frame de preset |
+| [[Cameras]] | A câmera, a credencial e o stream. O pipeline embarcado mora dentro do `ms-cameras` |
+| [[PTZ e presets]] | A geometria pertence a um preset |
+| Detectores | A ocupação vira leitura de detector `VIRTUAL_LOOP` no `ms-detector-history`, igual ao laço físico |
+| Controladores | A placa ACOM e a fiação de cada saída são do `ms-controllers` |
+| Modelo de Tráfego | A faixa e o detector a que a região se liga; os Trajetos do tempo de viagem |
+| Alarmes | Incidente DAI de tipo de catálogo vira alarme no domínio `analytics` |
+| Prioridade Seletiva | Lê a ocupação de região para o avistamento de veículo prioritário |
+| Notificações | A mudança de tratamento do incidente notifica (`cameras.incident.treatmentChanged`) |
 
-| Entrega para | O que |
+## Decisões que desenham o módulo
+
+| Decisão | Por quê |
 | --- | --- |
-| Detectores e histórico de detecção | contagem, ocupação, timeline |
-| Controladores | evento de detector, via ACOM ou direto |
-| Alarmes | incidente crítico virando alarme |
-| Inventário e Notificações | ocorrência e envio - **declarados, sem produtor ainda** |
-
-A dependência de Câmeras é a mais forte e a mais mal entendida: o Analítico **vive hoje dentro do
-`ms-cameras`**, mas é módulo próprio. O analítico servidor existir é o que separa os dois de fato -
-e ele é **um só**, `ms-video-analytics` (CROSS-077), com ATSPM e DAI dentro como capacidades.
-
----
-
-## 5. Estado real de cada peça
-
-Auditado contra o código em 28/08, não contra o plano. Mapa de código detalhado no
-[[Analítico|índice do domínio]]. Estado de cada card da Sprint 30, entregue x a fazer, é sempre conferido
-contra [[Sprint 30 - o que entrega]] - fonte de verdade da semana.
-
-| Peça | Estado |
-| --- | --- |
-| Pipeline embarcado ao vivo, desenho de região e laço no frontend, contratos de região e detecção | Real. Desde 12/09 (#3328) o desenho mora só na tela de **Detecção**: a aba Analíticos do detalhe da câmera foi removida |
-| Contratos de detector e histórico de detecção | Real e maduro - aceita o evento do laço virtual sem mudança |
-| ACOM: CRUD, TCP, codec, pollers | Real, **falta o caller** |
-| Entidade Analítico + região em banco + unicidade, healthcheck do analítico | **Entregue na Sprint 30** (11 pts, com código e teste, 25/08). Em 12/09 a `UC-075` somou a `AnalyticInstance` - a **unidade de processamento** como registro próprio nos dois modos, com endereço, porta, capacidade, intervalo de consulta e histórico de disponibilidade |
-| Compatibilidade por arquitetura ARTPEC, incidente contável com dedup, preset PTZ com snapshot, fonte da imagem de evidência | **Entregue na Sprint 30** - mergeado na develop em 27 e 28/08, junto com o writer do `deviceSourceId` (bug P0). Os 8 cards de backend fecharam, 37 dos 51 pts |
-| Fila de incidentes, galeria de evidência, desenho sobre frame congelado (os 3 cards `[Front]`) | **Entregues.** Os 11 cards da Sprint 30 fecharam em 28/08, e a fila de incidentes mergeou pela #2306 em 29/08 (`SOFTWARE-2794`). Em 12/09 a fila ganhou seleção múltipla, chips de filtro multivalor e ação em massa (`UC-074`), ainda não mergeadas |
-| Analítico servidor e tradutor de endereço | **Real.** `ms-video-analytics` ingere stream, detecta por frame, projeta ocupação com histerese, traduz endereço e publica em `attlas.detectors.raw`. A Sprint 31 fechou os 10 cards em 05/09, e a tradução mora dentro do serviço, não num connector |
-| Telas de métricas ATSPM e Laço Virtual | **As duas estão no ar, e a face ATSPM está vazia por falta de produtor**: 4 das 38 métricas têm leitor. O `SOFTWARE-2797` fechou em 05/09, a casca de três sub-abas e o funil entraram com ele, e o Exportar mostra o resumo do que o arquivo levaria porque não há endpoint. O ATSPM **não é serviço novo**: o dado que falta se agrega de `detection_record` e `controller_cycle`, no `ms-detector-history` - ver [[Analítico - O que falta para fechar o módulo]] |
-| `ms-atspm`, `ms-dai` | **Removidos do repo em 05/09** (PR #2530), com banco, rota Kong e scrape. São capacidades do analítico servidor (CROSS-077) |
-| OTA do app embarcado | Não existe gestão nenhuma no device |
-
----
-
-## 6. As decisões que desenharam isso
-
-Dezesseis decisões nas três sprints, cada uma com o motivo. Decisão sem motivo é preferência, e a
-alternativa recusada é o que impede de reabrir a discussão depois. As de arquitetura e as preservadas das
-14 PRs fechadas estão em [[Analítico - Arquitetura e estratégias]].
-
-### Sprint 30 - gestão do embarcado (todas em código)
-
-| # | Decisão | Porque |
-| --- | --- | --- |
-| D-01 | Analítico é **entidade de banco**, não flag no JSON da câmera | Flag não tem tipo, unicidade nem região. A regra "um embarcado por tipo por câmera" virou índice único parcial - rede de segurança, não caminho feliz |
-| D-02 | A arquitetura da câmera é **descoberta, nunca escolhida** | O operador não tem como saber, e erraria. Rejeitados: campo de seleção, e sobrescrita manual (deixaria resposta errada sobreviver ao conserto da tabela) |
-| D-03 | Arquitetura não identificada é **fail-closed** | Dizer que uma câmera Axis não roda ACAP é fato errado, não fato ausente. Cair na linha mais permissiva ofertaria o que talvez não funcione |
-| D-04 | Incidente é **evento contável com janela de dedup** | O incidente fica levantado por muitos frames. Sem janela por (câmera, região, tipo), cada frame seria uma linha e a contagem não significaria nada |
-| D-05 | Geometria **pertence a um enquadramento** | Mover o preset mudava o enquadramento e a geometria seguia apontando para outro pedaço da via, **em silêncio**. O vídeo ao vivo não pertence a enquadramento nenhum: é sempre o de agora |
-| D-06 | "Device caiu" e "ninguém configurou" são **estados diferentes** | Os dois devolvem região vazia, e o operador não distingue equipamento com problema de câmera nunca configurada. São duas ações diferentes |
-| D-07 | A fila de incidentes é **o log filtrado**, não um segundo sistema | O protótipo tem ~7.900 linhas de fila e detalhe; o produto já tinha 2.314 de tratamento em produção. Duas implementações do mesmo assunto divergem |
-
-> [!important] D-05 quase se perdeu no caminho, e foi achada em 12/09
-> A tela de Detecção lia as regiões do **equipamento inteiro**, não as do **preset ativo** - ou seja, o
-> desenho tinha voltado a não pertencer a enquadramento nenhum, que é exatamente o que a D-05 proíbe.
-> Numa PTZ com mais de um enquadramento, a geometria de um preset aparecia em outro, em silêncio. Foi uma
-> das seis lacunas de paridade fechadas antes de a aba Analíticos ser removida (`UF-043`). **Decisão de
-> produto não se sustenta sozinha quando a superfície que a implementava é substituída por outra**: a
-> paridade precisa ser conferida item a item, não presumida da tela nova.
-
-### Sprint 31 - o analítico servidor (nenhuma tela, é o caminho do dado)
-
-| # | Decisão | Porque |
-| --- | --- | --- |
-| D-08 | O vídeo vem do **relay, no substream de menor resolução** | O custo de inferência escala com resolução, e é esse número que define o teto por instância. Rejeitados: ler a câmera direto (multiplicaria sessão RTSP e espalharia credencial) e vídeo por Kafka (antipadrão de retenção e tamanho) |
-| D-09 | Ocupação é **domínio próprio** em contracts, não subtipo de câmera | Ocupação de região é assunto do analítico, e quem consome é a cadeia de detectores. Em `camera` também bateria no guard da lista de tópicos |
-| D-10 | Publica **só na transição**, com histerese | Laço físico funciona assim: ocupou, desocupou. Emitir por frame entregaria ao controlador um fluxo que ele não sabe ler, e a histerese evita tremer na borda |
-| D-11 | O container **nunca recebe credencial** de câmera | Cada processo que guarda credencial de campo é superfície nova. O relay já existe e já a tem |
-| D-12 | Câmera com embarcado **e** servidor é **caso conhecido** | O hardware não sustenta dois encodes junto com a inferência. A combinação vai existir - melhor documentada que descoberta com o trânsito parado |
-| D-13 | O embarcado **também migra** para o contrato comum | Se só o servidor falar o contrato novo, o consumidor volta a precisar de um ramo por origem |
-| D-14 | A sessão do analítico tem **contador próprio** | Precedente concreto: relay preso mantendo `ffmpeg` vivo porque o `viewerCount` nunca zerava. No mesmo contador, o analítico nunca desliga |
-
-### Sprint 32 - escala e prova
-
-| # | Decisão | Porque |
-| --- | --- | --- |
-| D-15 | O teto de câmeras por instância é **medido, não estimado**, com política de saturação declarada | Estimativa de capacidade de inferência erra por múltiplos, não por percentual. Sem política, saturar significa "alguma câmera para de detectar" sem ninguém saber qual |
-| D-16 | A prova é **ponta a ponta, com contador coerente** | Cada elo passar isolado não prova a cadeia. O critério é o número no fim bater - o único que um operador consegue conferir |
-
-### Decisões de 12/09, na consolidação do console (ainda não mergeadas)
-
-| # | Decisão | Porque |
-| --- | --- | --- |
-| D-17 | **Um lugar só** para ler e escrever região, laço e configuração do embarcado: a tela de Detecção | Duas superfícies para o mesmo assunto divergem - é a mesma razão da D-07. A remoção da aba só entrou **depois** de fechar as seis lacunas de paridade, nunca antes: remover com lacuna aberta tiraria capacidade do operador em silêncio |
-| D-18 | A Detecção **não dá autoplay**; a sessão de vídeo abre por gesto do operador | Entrar na tela deixa de alocar um relay por abertura, o que é estritamente menos carga no `ms-cameras`. O gate mora **na página**, não no player compartilhado, então `camera-detail`, videowall e o painel ATSPM seguem abrindo sozinhos - nada é retirado de quem já tinha |
-| D-19 | Instância de analítico é **registro próprio**, não leitura derivada da frota | Endereço, capacidade, intervalo de consulta e histórico de disponibilidade não têm onde morar numa projeção. Sem linha própria, "a unidade cadastrada antes de ter câmera" não existe |
-| D-20 | Ação em massa devolve **resultado por item**, não tudo-ou-nada | Numa fila com item já tratado por outra pessoa, falha total obrigaria o operador a descobrir o culpado e repetir a seleção inteira |
-| D-21 | Sem agrupamento por padrão na fila de incidentes | Os badges do topo já fazem a agregação; agrupar a lista também seria a mesma resposta duas vezes, com dois jeitos de contar |
-
----
-
-## 7. O que está aberto
-
-| # | Pendência | Impacto se mudar |
-| --- | --- | --- |
-| A-01 | **De onde vem o pixel da evidência**. Implementado na opção recomendada (reler o device em resolução cheia), isolado num seam de um método. As outras: extrair frame do relay, ou pedir ao fornecedor do ACAP que publique a imagem | Muda o shape do que a galeria lista - uma imagem por incidente, sequência de frames, ou trecho de vídeo |
-| A-02 | **Qual chave do VAPIX carrega a geração do chip**. Nenhum ARTPEC 7 nem 8/9 estava disponível; o parser varre todos os valores do grupo em vez de apostar num nome de chave | Nenhum no contrato: quando um device real confirmar, o que estreita é um regex |
-| A-03 | **A tela de métricas do ATSPM não está em nenhuma sprint**, e o bloqueio é o backend, não o porte: desde CROSS-077 o ATSPM é capacidade do analítico servidor, e nenhuma sprint a orçou. As métricas do Laço Virtual saíram deste risco em 28/08 (`SOFTWARE-2797`, Sprint 31) ao se confirmar que elas leem o `ms-detector-history`, não o servidor de VL | Se o ATSPM precisa estar no ar em 18/09, o que falta orçar é o serviço |
-| A-04 | **ACOM e ATSPM entram no prazo de 18/09?** 28 pontos somados, no backlog sem prazo | É mais de uma sprint inteira entrando três semanas antes do prazo |
-
-> [!danger] A pendência que não é nossa
-> O contrato de ocupação precisa que a forma do evento seja conferida com quem consome do outro lado. É o
-> único ponto da cadeia que não se resolve dentro do time - e fica no caminho crítico da Sprint 31, não
-> numa ponta solta.
-
----
-
-## Ver também
-
-[[Analítico]] (índice do domínio) · [[Analítico - Embarcado x Servidor]] ·
-[[Analítico - Requisitos e SLA]] · [[Analítico - Arquitetura e estratégias]] · [[Analítico - Fluxos]] ·
-[[Analítico - Frontend do attlas-design]] · [[Sprint 30 - o que entrega]] ·
-[[Sprint 31 - o que entrega]] · [[Sprint 32 - o que entrega]]
+| O analítico é entidade de banco (`CameraAnalytic`), não flag no JSON da câmera | Flag não tem tipo, unicidade nem região |
+| Um analítico ativo por câmera e tipo (`CameraAnalytic_camera_type_active_unique`) | Dois do mesmo tipo publicam a mesma detecção duas vezes |
+| Incidente é evento contável com janela de dedup por câmera, região e tipo | O incidente fica de pé por muitos quadros; sem janela, a contagem não significa nada |
+| A geometria pertence a um preset | Mover o preset faria a geometria apontar para outro pedaço da via em silêncio |
+| "Equipamento caiu" e "ninguém configurou" são estados diferentes | São duas ações diferentes para o operador |
+| A fila de incidentes é o log de eventos filtrado (`CameraEventLog`, categoria `ANALYTICS`) | Duas implementações do mesmo assunto divergem |
+| A tela de Detecção é o único lugar que escreve região, laço e configuração | Duas superfícies de escrita divergem; o detalhe da câmera só lê |
+| Escrita no equipamento só por ação explícita do operador (`RNF-ANL-03`) | O equipamento é compartilhado entre ambientes e toda regravação reinicia o pipeline dele |
+| A ocupação tem um contrato só, publicado na transição, com histerese | O consumidor não precisa saber de que build veio, e o controlador lê como laço físico |
+| As medidas ATSPM do build `atspm-http` são lidas do equipamento (UC-229) | Decisão do PO: não recalcular no Attlas o que a câmera já calcula |
+| Na Neural Labs, é o dado que associa a câmera | A câmera passa a ser da Neural Labs quando a primeira leitura dela gera o vínculo |

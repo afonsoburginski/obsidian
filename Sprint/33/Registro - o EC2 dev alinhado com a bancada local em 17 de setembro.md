@@ -47,13 +47,13 @@ reportando "analítico ao vivo recebendo quadros".
 ## As instâncias, e por que havia várias com três câmeras
 
 `AnalyticInstance` é o registro do **equipamento que roda a inferência**, separado da câmera que
-produz a imagem (UC-075 §7.1). No modo SERVER a relação era N:1 - um processo `ms-video-analytics`,
+produz a imagem (UC-075 seção 7.1). No modo SERVER a relação era N:1 - um processo `ms-video-analytics`,
 com endereço e porta, atendia várias câmeras - e por isso a unidade precisa de registro próprio:
 capacidade, cadência de sondagem e saúde não pertencem a nenhuma câmera em particular. É o que
 alimenta a tela Instâncias.
 
 No embarcado a relação é 1:1 e **a câmera É a unidade**: `name`, `address` e `port` ficam nulos e o
-mapper os projeta da câmera hospedeira (§7.2), com o handler de update recusando escrita neles.
+mapper os projeta da câmera hospedeira (seção 7.2), com o handler de update recusando escrita neles.
 
 O que estava errado nos dois ambientes:
 

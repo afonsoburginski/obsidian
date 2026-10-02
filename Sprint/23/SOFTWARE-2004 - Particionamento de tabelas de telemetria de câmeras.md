@@ -63,11 +63,11 @@ Particionar por tempo (range/PostgreSQL declarative partitioning) as tabelas de 
 
 ## Andamento (12/07)
 
-- 2ª leva na PR #709 (commit `8a18498e8`): **métricas de saúde em tempo real ponta a ponta** — sampler/streaming publicam `camera:health:update` na sala WS (janela 5min / TTFF gravado); painel refaz o `GET /health` silencioso; gráfico null-aware (lacuna honesta, dot p/ medição isolada). Provado em runtime com cliente socket recebendo os frames `ttff` e `window`. Suítes completas verdes (856 + 6838).
+- 2ª leva na PR #709 (commit `8a18498e8`): **métricas de saúde em tempo real ponta a ponta** - sampler/streaming publicam `camera:health:update` na sala WS (janela 5min / TTFF gravado); painel refaz o `GET /health` silencioso; gráfico null-aware (lacuna honesta, dot p/ medição isolada). Provado em runtime com cliente socket recebendo os frames `ttff` e `window`. Suítes completas verdes (856 + 6838).
 
 ## Fechamento (12/07)
 
 - **MERGEADA na develop** (PR #709, merge `8521a8659`). Card fechado no ClickUp.
 - Review todo tratado (16 threads respondidas/resolvidas + re-review): specs do contrato sincronizadas, cache no probe de bitrate, bootstrap da migration com 8 semanas, cobertura dos novos caminhos, match 1006 ancorado, Record de ícones.
-- **Pendência única do escopo**: worker PROJ-009 (cria semanas futuras + drop coordenado com o rollup, substituindo o cleanup por DELETE) — abrir PR própria.
+- **Pendência única do escopo**: worker PROJ-009 (cria semanas futuras + drop coordenado com o rollup, substituindo o cleanup por DELETE) - abrir PR própria.
 - **Encaminhamento (13/07)**: worker PROJ-009 é a tarefa 1 (P0) da [[Attlas - Sprint 24]], com card novo no ClickUp. O bootstrap criou só 8 semanas de partições, então tem prazo real (início de setembro).

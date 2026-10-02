@@ -2,85 +2,89 @@
 tags:
   - doc
   - analitico
-atualizado: 2026-09-09
-servico: ms-video-analytics (o analitico servidor, REAL desde 03/09; renome do ms-virtual-loop feito em 02/09). ms-atspm, ms-dai e ms-connector-virtual-loop foram REMOVIDOS do repo em 05/09 (PR 2530) - CROSS-077
-fonte: Anotações sobre Analítico de vídeo.md (notas do user) + attlas-vl-atspm.pdf (squad de Visão Computacional, 10/08) + auditoria de código de 24/08
+  - requisitos
+aliases:
+  - "Anotações sobre Analítico de vídeo"
+atualizado: 2026-10-01
 ---
 
 # Analítico - Requisitos e SLA
 
-Regras de negócio das duas fontes de alinhamento, cada uma cruzada com o **código auditado em 24/08**.
-Compatibilidade por arquitetura de câmera e regras de desenho de região saíram desta nota e vivem em
-[[Analítico - Embarcado x Servidor]], que é onde a distinção importa.
+As regras de negócio do [[Analítico]] e o estado de cada uma no código da `develop`. A fonte de regra é
+`docs/modules/analitico.md` (IDs `RF-*` e `RNF-ANL-*`), que segue o edital seção 4.6; as regras das
+notas de alinhamento que o documento não cobre estão no fim. O trabalho que falta está em
+[[Analítico - O que falta para fechar o módulo]].
 
-> [!success] Estado em 09/09: o doc de módulo existe, e boa parte destas tabelas caducou
-> **Os IDs de regra deixaram de ser de trabalho.** `docs/modules/analitico.md` existe no repo desde a
-> Sprint 30 (`SOFTWARE-2680`), com 482 linhas e requisitos numerados `RF-DAI-*`, `RF-VL-*`, `RF-ATSPM-*`
-> e `RF-ACOM-*`. **Ele é a fonte de verdade de regra de negócio**, não esta nota - e ele se organiza por
-> quatro recursos (DAI, Virtual Loop, ATSPM, ACOM), não pelos cinco do edital: Visão Geral e Dashboard
-> não têm seção nenhuma lá, e reconciliar isso é a PR 1 da [[Attlas - Sprint 32]]
-> ([`SOFTWARE-3051`](https://app.clickup.com/t/86akffm6d)).
->
-> **As tabelas abaixo são a auditoria de 24/08 e não foram reescritas.** Muitos dos `❌` foram fechados
-> pelas Sprints 30 e 31: entidade Analítico em banco, unicidade, writer do `deviceSourceId`, healthcheck,
-> compatibilidade ARTPEC, incidente contável com dedup, preset com snapshot, imagem de evidência, e a
-> cadeia inteira do analítico servidor. Continuam de pé, conferidos no código em 09/09: **OTA do app
-> embarcado**, **sub-produtos do ATSPM**, **quatro laços por câmera**, **snapshot da configuração
-> semafórica** e **o ACOM inteiro, incluindo o caller que fecha o contato**.
->
-> Para o estado atual item por item, com pontos e quem é o dono, ler
-> [[Analítico - O que falta para fechar o módulo]] em vez destas tabelas.
+Legenda: **Atende**, **Parcial**, **Falta**.
 
-Legenda: ✅ satisfeito · 🟡 parcial · ❌ nada existe.
+## Detecção por objeto e incidentes
 
-## Ciclo de vida do analítico
+| Regra | Estado |
+| --- | --- |
+| `RF-DAI-01` a `RF-DAI-02`: regiões com tipo, classes e limiar | Atende. Polígono em porcentagem, sem conceito de linha; a geometria não é validada no backend além do formato |
+| `RF-DAI-03`: oito tipos de incidente com parâmetros | Parcial. O equipamento aceita os parâmetros e não os devolve; quem avalia a condição (o limiar global do app ou o da região) não está confirmado com o time do embarcado |
+| `RF-DAI-04`: região acende ao vivo, caixas por canal de tempo real; caixa só de analítico que a entrega; verde é só o sinal de detecção | Atende. Nenhuma cor de região é verde, nem na paleta nem na cor personalizada |
+| `RF-DAI-05`: criticidade é do tipo, definida pelo órgão gestor, em quatro níveis | Atende (UC-227) |
+| `RF-DAI-06`: não reconhecido, confirmado, em tratamento, resolvido e falso positivo, oferecendo só o que o ciclo permite | Atende no vocabulário e nas transições |
+| Edital: tempo por etapa do tratamento para SLA | Falta. `CameraEventTreatment` guarda só o status atual e a última mudança |
+| `RF-DAI-07` e `RF-DAI-08`: imagem e vídeo do equipamento, com o objeto destacado | Atende no build ATSPM. O SDCT não tem incidente |
+| `RF-DAI-09`: incidentes ao vivo por Sistema | Atende (UC-226) |
+| Edital: recorrência e padrões de incidente | Falta |
 
-| Regra | Descrição | Estado auditado |
-| --- | --- | --- |
-| Entidade Analítico persistida | Um analítico cadastrado numa câmera é uma entidade, não um campo livre | ❌ É a chave `deviceSourceId` dentro de `Camera.analyticsCapabilities Json`, coluna sem shape validado |
-| Unicidade do analítico embarcado | Não é possível cadastrar dois analíticos do mesmo tipo embarcados na mesma câmera; analítico servidor é a exceção | ❌ Sem entidade, não há o que restringir |
-| Writer do vínculo com o device | A chave que liga o frame do device à câmera precisa ser gravada quando o operador cadastra | ❌ **Nenhum código escreve `deviceSourceId` no banco.** Só o seed e edição manual. Câmera cadastrada pela UI nunca recebe detecção ao vivo - é o defeito mais grave do domínio |
-| Healthcheck da conexão analítico-câmera | Estado de saúde consultável pelo operador, não só métrica de infraestrutura | 🟡 Três métricas Prometheus (`frames_total`, `last_frame_timestamp_seconds`, `ws_subscribe_rejected_total`). Nenhuma rota REST, nada em `ICameraStatusPayload`, nenhum evento WS de falha. Device fora devolve região vazia com `warn` no log - indistinguível de "sem região configurada" |
-| Listar features e arquitetura da câmera no cadastro | O cadastro oferece só o que aquele modelo suporta | ❌ Ver [[Analítico - Embarcado x Servidor]]: nenhum campo de arquitetura existe |
-| Atualização remota do app embarcado | OTA do ACAP pela própria plataforma | ❌ Zero código de gestão de aplicação no device. Só há proxy para `/regions`, `/config` e `/producer` |
+## Laço virtual
 
-## Detecção, incidente e evidência
+| Regra | Estado |
+| --- | --- |
+| `RF-VL-01`: sem geometria própria, configuração única por câmera | Atende no dado (`CameraAnalytic.loopConfig`); a tela mostra o bloco do laço em cada região |
+| `RF-VL-02` e `RF-VL-04`: cruzamento vira leitura de detector `VIRTUAL_LOOP`, `VEHICLE` ou `PEDESTRIAN` | Atende pelos builds HTTP. O app de laço por TCP não fecha sem endereçamento manual ([[Analítico - Fluxos#Ocupação até o detector]]) |
+| `RF-VL-03`: embarcado ou servidor | Parcial. Só o embarcado existe; o servidor Atman descrito na regra não tem implementação |
+| `RF-VL-05` e `RF-ACOM-04`: contato seco pela ACOM, o analítico sabe para qual placa sinaliza | Atende. Ver [[Analítico - Vínculo com a ACOM]] |
+| O vínculo da região segue o detector quando ele muda de endereço | Atende (CROSS-146) |
 
-| Regra | Descrição | Estado auditado |
-| --- | --- | --- |
-| Ativação de laço | Toggle que ativa o Virtual Loop | ✅ `IVirtualLoopConfig.active` |
-| Sub-produtos do ATSPM | Tracker, DAI, TPM e VL embutido como sub-produtos endereçáveis, para exibição e possível licenciamento | ❌ sem spec. Desde 31/08 o ATSPM é **capacidade** do analítico servidor, não serviço próprio ([[Analítico - Topologia de serviço do analítico de vídeo]]) |
-| Contagem de detecções de incidente com dedup | O mesmo incidente pode aparecer várias vezes e precisa ser contado corretamente | ❌ Pior que ausente: o incidente DAI **é lido do frame e descartado**. Serve só para escolher o `kind` do WebSocket. Não vira `CameraEventLog` (`CameraEventCategory.ANALYTICS` tem zero produtores, comentado no próprio código), não vira alarme (`ANLT_SEVERE_CONGESTION` está `generatesAlarm: false` e sem produtor) |
-| Qualidade da imagem de evidência | Investigar se a baixa qualidade das imagens do histórico do Attlas 25 vem do lado Attlas ou da câmera | **Pergunta respondida pelo Attlas 26: não existe imagem nenhuma.** O payload Kafka do device carrega só metadado (`labels`, `bboxes`, `ids`, `curr_speeds`), zero pixel. Captura de snapshot JPEG do device **já existe** (`CameraThumbnailService`, VAPIX `axis-cgi/jpg/image.cgi` e ISAPI `/ISAPI/Streaming/channels/<n>/picture`, servida em `GET /cameras/:id/thumbnail`), mas é efêmera e de preview: 320x240, `compression=35`, substream secundário, `max-age=5`, sem persistência e sem vínculo com detecção. Não é "corrigir qualidade" nem partir do zero, é decidir se a evidência reusa esse caminho em resolução cheia com armazenamento - ver [[Attlas - Sprint 30]] |
+## ATSPM
 
-## Geometria e presets
+| Regra | Estado |
+| --- | --- |
+| `RF-ATSPM-03` AOG | Atende pela medida do equipamento (`arrivals_on_green`), só no build ATSPM |
+| `RF-ATSPM-01` Split Monitor, `02` Yellow e Red, `04` PCD, `05` Approach Delay, `06` TMC, `07` Preemption, `08` Priority | Falta. Nenhuma das sete tem fonte |
+| `RF-ATSPM-09`: legível para exportação | Atende para o que a tela mostra (exportação XLS e PDF) |
+| `RF-ATSPM-10`: o cálculo não roda na câmera | Substituída para o build `atspm-http` por decisão do PO (UC-229): o Attlas lê o que o app calcula |
+| `RNF-ANL-06`: snapshot da configuração semafórica por ciclo | Falta. O ciclo guarda o id do plano; o snapshot do `ms-controllers` é backup do operador, não por ciclo |
+| `RNF-ANL-07`: métrica sem produtor não mostra número | Atende. Cartão sem fonte aparece vazio |
 
-| Regra | Descrição | Estado auditado |
-| --- | --- | --- |
-| Persistência da geometria de região | A região desenhada precisa existir em algum lugar nosso | ❌ Nenhum arquivo de schema Prisma do `ms-cameras` tem model de região. É proxy HTTP direto pro device, sem escrita local |
-| Presets com snapshot de região | Câmera PTZ com mais de um preset guarda um conjunto de regiões por preset, e o operador desenha sobre o frame congelado daquele preset | 🟡 `CameraPtzPreset` não tem nenhuma relação com região ou imagem, e o front desenha um SVG sobre o `<video>` ao vivo. Mas o pixel já é buscável: `CameraThumbnailService` faz snapshot JPEG sob demanda em Axis e Hikvision. Falta persistir o frame por preset e ligá-lo à geometria; hoje mover a câmera de preset invalida a geometria em silêncio |
+## Visão Geral e unidades analíticas
 
-## ATSPM e grupos semafóricos
+| Regra | Estado |
+| --- | --- |
+| `RF-VG-01` a `RF-VG-05` e `RF-VG-07`: uma tela, imagem congelada na edição, salvar e descartar o conjunto, validação ao vivo | Atende na tela de Detecção |
+| `RF-VG-06`: histórico e versionamento da configuração, com reverter | Falta |
+| `RF-INST-01` a `RF-INST-03`: cadastro, estado e histórico de disponibilidade com intervalo configurável | Atende (`AnalyticInstance`, `AnalyticInstanceAvailability`, `pollingIntervalSeconds`) |
+| `RF-INST-04` e `RNF-ANL-01`: uma unidade por câmera e capacidade | Atende (`CameraAnalytic_camera_type_active_unique`) |
+| `RF-INST-05`: leitura alimenta decisão automatizada | Falta |
+| `RF-INST-06` a `RF-INST-08`: descoberta só lê, vínculo explícito e auditado, tomada exige confirmação | Atende (UC-216, UC-217) |
+| `RNF-ANL-03`: escrita no equipamento só por ação explícita | Atende |
 
-| Regra | Descrição | Estado auditado |
-| --- | --- | --- |
-| Associação grupo de movimento ↔ grupo semafórico | Relação 1 para 1, garantida no cadastro | 🟡 O campo existe (`MovementGroup.trafficSignalGroupId`), mas é `SmallInt` ordinal `[1,8]`, **não é FK**, e não há unique nenhuma - nem no banco, nem no domínio, nem no DTO. Hoje a cardinalidade real é N:1 |
-| Um movimento pertence a um único grupo de movimento | - | ✅ `Movement.movementGroupId` é FK escalar nullable: estruturalmente impossível estar em dois. Decidir se vira `NOT NULL` |
-| Snapshot da configuração do grupo semafórico | Guardar como a configuração estava no momento em que a métrica foi calculada | ❌ Nenhum snapshot, versão ou vigência de configuração semafórica em nenhum `ms-*`. O parente mais próximo é `ControllerCycle` (`ms-detector-history`), que guarda o **id** do plano, não o conteúdo - se o plano for editado, a leitura histórica passa a mentir |
+## Dashboard
 
-## ACOM: cardinalidade, nomenclatura e atuação
+`RF-DASH-01` a `RF-DASH-06`: falta inteiro. O módulo não tem aba nem rota de dashboard.
 
-| Regra | Descrição | Estado auditado |
-| --- | --- | --- |
-| ACOM ↔ Controlador é 1:1 | Motivo físico: a placa está cabeada a um único controlador. A possibilidade de uma ACOM apontar para controladores diferentes tem que sair | ❌ Hoje é **N:N** via `AcomAssociation`, unique `(acomId, slot, channel)` sem `controllerId` - a mesma placa comporta até 64 associações (slot 1-8 x canal 1-8), cada uma com o seu `controllerId` |
-| Remover a feature de associações | Consequência direta do 1:1 | ❌ Feature inteira presente e testada: cerca de 10 arquivos a deletar, 15 a tocar, 4 docs a reescrever |
-| Uma ACOM agrega até 4 analíticos | - | ❌ Não existe relação ACOM ↔ analítico. Nenhum limite de 4 em lugar nenhum (`maxOutputs` vai até 4096) |
-| Cada analítico tem até 4 laços por câmera | - | ❌ Requisito decidido (não é decisão em aberto), mas **contradiz o contrato atual**, que é laço único por câmera. Card próprio no sem prazo: [[SOFTWARE-2686 - Suportar até quatro laços virtuais por câmera|Analítico - Suportar até 4 laços virtuais por câmera]] - ver [[Analítico - Embarcado x Servidor]] |
-| Analítico servidor alimenta várias ACOMs | Limitação do sistema a manter como regra | ❌ Não existe a relação |
-| Nomenclatura "Periféricos ACOM" | A configuração se chama assim na interface, e a lógica de saída vira configuração avançada dentro dela | ❌ **Não existe tela nenhuma de ACOM no `web-attlas`** (zero referências). O i18n tem 18 linhas, sem nenhuma string de formulário. A lógica de saída já existe no backend (`IAcomOutput.logic`, AND/OR/inversão) e nunca foi exposta |
-| Atuação: fechar o contato seco | O laço virtual detecta e a placa atua | ❌ **Falta o caller.** `setDeviceParameters` tem um único chamador em produção, e é propagação de CRUD, não atuação. Nenhum consumer Kafka no `AcomModule` |
+## Tempo medido por placa
 
-## Ver também
+Regras do `docs/modules/analitico.md` seções 3.8 e 3.9, e o estado, em
+[[Neural Labs - Tempo de viagem]] e [[Neural Labs - Vínculo de câmeras]].
 
-- [[Analítico]] · [[Analítico - Embarcado x Servidor]] · [[Analítico - Arquitetura e estratégias]] · [[Analítico - Fluxos]]
-- [[Attlas - Sprint 30]] · [[PTZ e presets - Requisitos e SLA]] · [[ms-cameras]]
+## Regras das notas de alinhamento
+
+Pedidas nas reuniões de alinhamento do módulo e não escritas no `docs/modules/analitico.md`.
+
+| Regra | Estado |
+| --- | --- |
+| Associação grupo de movimento e grupo semafórico 1 para 1 | Parcial. `MovementGroup.trafficSignalGroupId` é ordinal sem FK e sem unicidade, então dois grupos podem apontar para o mesmo |
+| Um movimento pertence a um grupo de movimento só | Atende (`Movement.movementGroupId` é FK escalar) |
+| Até 4 laços por câmera | Falta. `IVirtualLoopConfig` é uma configuração por câmera; a UC-073 segue `planned` |
+| Uma ACOM agrega até 4 analíticos | Atende como padrão do equipamento (`analyticSlots`, padrão 4) |
+| Várias ACOMs por analítico servidor | Não se aplica: o embarcado guarda um destino só, e não há analítico servidor que sinalize placa |
+| Configuração da placa se chama "Periféricos ACOM", com a lógica de saída como configuração avançada | Parcial. A placa é a sub-aba ACOMs do controlador, com a lógica num diálogo próprio |
+| Atualização remota do app embarcado | Falta. O Vincular inicia e reinicia o app pela API de aplicações da Axis (`applications/control.cgi`), mas nada instala nem atualiza |
+| Contar detecções repetidas do mesmo incidente | Atende pela janela de dedup |
+| Qualidade da imagem de evidência | Atende: a imagem vem do app, em 640x360, e o vídeo da gravação da câmera, em 1080p |

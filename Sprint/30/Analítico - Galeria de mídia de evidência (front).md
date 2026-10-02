@@ -12,7 +12,7 @@ frente: Analítico
 tamanho: 3 pts
 status: "CÓDIGO MERGEADO na pilha em 27/08. Card criado na reestimativa de 25/08. Irmão de [[Analítico - Fonte da imagem de evidência]] (o backend, já mergeado na develop). Spec UF-035 escrita em 25/08, [PR #2023](https://github.com/atmanadmin/attlas-2026/pull/2023) mergeada em cameras/feat/SOFTWARE-2734 - chega à develop junto com a [[Analítico - Fila de incidentes (front)|fila de incidentes]] (#2022)."
 sprint: "[[Attlas - Sprint 30]]"
-atualizado: 2026-08-28
+atualizado: 2026-09-26
 ---
 
 # Analítico - Galeria de mídia de evidência (front)
@@ -31,6 +31,13 @@ De `modulo-analitico/entrega-frontend/src/app/modules/analytics/components/`, co
 
 O protótipo reaproveita uma única amostra (`public/analytics-sample-frame.jpg` e `.mp4`) nos 216
 incidentes mockados. Aqui a fonte é a evidência real que o card irmão persiste.
+
+> [!info] Estado em 26/09: a galeria também lê o equipamento
+> Desde a #4889 a galeria junta duas fontes: a evidência que o card irmão persiste e a imagem e o
+> vídeo que o app ATSPM e a câmera guardam do incidente, lidos na hora (UF-035 seção 8.1). O vídeo toca
+> num `<video>` nativo, com o arquivo baixado pelo `HttpClient` para levar o token. Uma fonte que falha
+> não derruba a outra: a galeria mostra o que chegou, e só cai no estado de erro quando alguma fonte
+> falhou e nada chegou. Ver [[Registro - imagem e vídeo do incidente lidos do equipamento em 26 de setembro]].
 
 ## O que precisa ser reescrito
 

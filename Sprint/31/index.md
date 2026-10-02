@@ -8,7 +8,7 @@ aliases:
   - "Attlas - Sprint 31"
   - "Sprint 31 - o que entrega"
 sprint: Sprint 31 (31/8/26 - 6/9/26)
-status: "FECHADA em 05/09. Planejada em 24/08 como a segunda das três semanas da frente do analítico. Frente única - analítico servidor (Virtual Loop em container), respecificado do zero depois do fechamento das 14 PRs da Sprint 27. Comprometido 32 pts em 10 cards. Revisada em 28/08 a pedido do user ("precisa fazer sentido"): entrou o card 2b (derivacao de ocupacao compartilhada, SOFTWARE-2798), entrou a tela de metricas do Laco Virtual (SOFTWARE-2797), e a pilha unica de 8 virou um grafo com caminho critico de 18 pts, porque os cards 7 e 9 nunca dependeram da escada. Lista própria criada no ClickUp em 28/08 e os 8 cards (SOFTWARE-2692 a 2699) migrados da lista da Sprint 30 com pontos preservados; em 28/08 todos ainda em backlog. Em 28/08 a Sprint 30 fechou os 11 cards, então esta semana começa sem rolo herdado. Em 31/08 os 10 cards saíram do backlog no mesmo dia e todos têm PR aberta (2365, 2366, 2367, 2368, 2369, 2371, 2372, 2373, 2376, 2380), nenhuma em draft, nenhuma revisada nem mergeada ainda - a semana abriu com as 10 frentes em paralelo, não em cascata. Em 03/09 as nove PRs de backend mergearam e sobrou só o SOFTWARE-2797, que virou duas PRs: a #2380 em changes requested por três valores CSS sem token e a #2517 aprovada e empilhada sobre ela. O resíduo SOFTWARE-2794 que a nota de 28/08 apontava mergeou (PR 2306). Prazo externo do módulo: 18/09. FECHADA em 05/09 com 10 de 10 cards: a tela do Laço Virtual entrou pelas #2380 e #2517, e no sábado 05/09 mergearam mais quatro PRs fora dos 32 pts (#2518, #2528, #2529, #2530)."
+status: 'FECHADA em 05/09. Planejada em 24/08 como a segunda das três semanas da frente do analítico. Frente única - analítico servidor (Virtual Loop em container), respecificado do zero depois do fechamento das 14 PRs da Sprint 27. Comprometido 32 pts em 10 cards. Revisada em 28/08 a pedido do user ("precisa fazer sentido"): entrou o card 2b (derivacao de ocupacao compartilhada, SOFTWARE-2798), entrou a tela de metricas do Laco Virtual (SOFTWARE-2797), e a pilha unica de 8 virou um grafo com caminho critico de 18 pts, porque os cards 7 e 9 nunca dependeram da escada. Lista própria criada no ClickUp em 28/08 e os 8 cards (SOFTWARE-2692 a 2699) migrados da lista da Sprint 30 com pontos preservados; em 28/08 todos ainda em backlog. Em 28/08 a Sprint 30 fechou os 11 cards, então esta semana começa sem rolo herdado. Em 31/08 os 10 cards saíram do backlog no mesmo dia e todos têm PR aberta (2365, 2366, 2367, 2368, 2369, 2371, 2372, 2373, 2376, 2380), nenhuma em draft, nenhuma revisada nem mergeada ainda - a semana abriu com as 10 frentes em paralelo, não em cascata. Em 03/09 as nove PRs de backend mergearam e sobrou só o SOFTWARE-2797, que virou duas PRs: a #2380 em changes requested por três valores CSS sem token e a #2517 aprovada e empilhada sobre ela. O resíduo SOFTWARE-2794 que a nota de 28/08 apontava mergeou (PR 2306). Prazo externo do módulo: 18/09. FECHADA em 05/09 com 10 de 10 cards: a tela do Laço Virtual entrou pelas #2380 e #2517, e no sábado 05/09 mergearam mais quatro PRs fora dos 32 pts (#2518, #2528, #2529, #2530).'
 atualizado: 2026-09-09
 ---
 
@@ -95,7 +95,7 @@ O resto da semana é backend e contrato: o caminho do dado.
 - **Escala** (quantas câmeras por instância) e **prova de campo** ponta a ponta - vão para a
   [[Attlas - Sprint 32]], porque só fazem sentido com esta cadeia de pé.
 - **Telas de métricas ATSPM** - sem backend: o ATSPM não existe, nem como serviço nem como capacidade construída. As do Laço Virtual entram, ver acima.
-- **ACOM e ATSPM** - seguem sem prazo, em [[00 - Sem prazo (backlog)]].
+- **ACOM e ATSPM** - seguem sem prazo, em [[Sem prazo (backlog)]].
 
 ---
 
@@ -136,7 +136,7 @@ debate. É por isso que os dois cards docs-only somam 5 pontos, não os 15 de re
 > [!danger] Os 12 cards antigos do ClickUp (Sprint 29) nunca foram fechados - deleção pendente
 > Reconfirmado em 28/08: `SOFTWARE-2385` a `2392`, `2394` a `2397` seguem abertos, em `backlog`, na lista
 > da Sprint 29, nunca migrados. Fechar as PRs no GitHub não fechou os cards. 11 deles são duplicados
-> diretos dos 8 cards novos desta sprint (mapa completo em [[00 - Sem prazo (backlog)]]); o 12º (`2392`,
+> diretos dos 8 cards novos desta sprint (mapa completo em [[Sem prazo (backlog)]]); o 12º (`2392`,
 > ACOM) não tem substituto e segue sem prazo. A deleção dos 11 está bloqueada pelo classificador de
 > permissão do Claude Code (tanto via MCP quanto via REST) - pendente de o user liberar ou deletar a mão.
 
@@ -192,7 +192,7 @@ supunha a escada sendo subida degrau por degrau; na prática a semana abriu com 
 > [!warning] PR aberta não é entrega
 > O texto abaixo é o registro de 31/08, quando nenhuma das 10 tinha mergeado nem recebido review. A coluna Estado marca 🔄 de propósito, não ✅. O gargalo desta semana deixou de ser escrever o
 > código e passou a ser vazão de review: são 10 PRs contra uma fila que ontem já consumiu 12 revisões de
-> colegas (ver [[2026-08-31]]).
+> colegas (ver 31/08).
 >
 > O caminho crítico do grafo (1 → 4 → 5 → 6 → 8, 18 pts) continua valendo para o **merge**, mesmo com as
 > PRs abertas fora de ordem: a 2376 (card 8) não pode entrar antes da 2372 (card 6) e da 2373 (card 7).
@@ -338,6 +338,6 @@ Vai para [[Attlas - Sprint 32]], porque só faz sentido com a cadeia acima de p�
 
 ## Ver também
 
-[[Attlas - Sprint 30]] · [[Attlas - Sprint 32]] · [[00 - Sem prazo (backlog)]] · [[Analítico]] ·
+[[Attlas - Sprint 30]] · [[Attlas - Sprint 32]] · [[Sem prazo (backlog)]] · [[Analítico]] ·
 [[Analítico - Embarcado x Servidor]] · [[Analítico - Arquitetura e estratégias]] · [[Analítico - Fluxos]] ·
 [[Analítico - Frontend do attlas-design]]

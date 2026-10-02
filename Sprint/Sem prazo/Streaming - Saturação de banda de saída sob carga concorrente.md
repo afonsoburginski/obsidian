@@ -12,8 +12,8 @@ titulo: "[Back] Saturação de banda de saída da EC2 sob carga concorrente de s
 frente: Streaming
 tamanho: a estimar
 status: "SAIU DO SEM PRAZO em 29/08: comprometido para sábado 30/08 em hora extra, decisão do report de 28/08. A execução, com os requisitos levantados contra o código, mora em [[SOFTWARE-2687 - Tráfego na origem, isolamento do controle e linha de base de carga]]. Esta nota fica como o registro do achado. Histórico: SEM PRAZO desde 24/08. Achado ao investigar instabilidade de câmeras relatada pelo usuário; causa raiz confirmada via dados de healthcheck no banco (CameraAvailabilityWindow) + sar do host + logs do mediamtx. Card criado no ClickUp em 24/08, na lista da Sprint 30 (vigente), status backlog; sem pontos (tamanho ainda a estimar)."
-sprint: "[[00 - Sem prazo (backlog)]]"
-atualizado: 2026-08-29
+sprint: "[[Sem prazo (backlog)]]"
+atualizado: 2026-09-23
 ---
 
 # Saturação de banda de saída da EC2 sob carga concorrente de streaming (mediamtx)
@@ -38,6 +38,14 @@ Dados de healthcheck persistidos em `CameraAvailabilityWindow` confirmam que, da
 > linha de sistema em vez de por câmera física, relays separadas para H264 e H265, a projeção do
 > videowall puxando direto da câmera em nível PRIMARY, e a sobreposição de 10 segundos durante a troca
 > de nível. O restante da frase, sobre a saturação da interface compartilhada, continua correto.
+
+> [!info] Estado em 23/09: um dos quatro multiplicadores encolheu
+> Desde a #4079, mergeada em 23/09, um pedido H265 que chega com a relay H264 da mesma câmera e nível
+> já viva entra nela em vez de abrir a segunda. As relays separadas para H264 e H265 só coexistem
+> agora quando a H265 abriu primeiro. Os outros três multiplicadores (relay por linha de sistema,
+> projeção do videowall puxando em PRIMARY e a sobreposição na troca de nível) seguem como estavam, e
+> a convergência por linha de tenant ficou para a fase estrutural de
+> [[Plano - Streaming sem vazamento de publicador]].
 
 
 ## Achado relacionado que agrava o mesmo problema

@@ -12,14 +12,15 @@ pr: 597
 pr_url: https://github.com/atmanadmin/attlas-2026/pull/597
 branch: shared/feat/public-webrtc-turn
 status: MERGED
-clickup_status: "—"
+clickup_status: " - "
 merged: 2026-07-01
 sprint: "[[Attlas - Sprint 22]]"
+atualizado: 2026-07-03
 ---
 
-# CROSS-032 — Fundação de WebRTC público via TURN
+# CROSS-032 - Fundação de WebRTC público via TURN
 
-> **PR [#597](https://github.com/atmanadmin/attlas-2026/pull/597) MERGEADA (01/07)**. Follow-up do [[SOFTWARE-1889 - WebRTC travamento (dívidas técnicas)]] (#566). Sem task própria no ClickUp — é fundação versionada e **INERTE até deploy**.
+> **PR [#597](https://github.com/atmanadmin/attlas-2026/pull/597) MERGEADA (01/07)**. Follow-up do [[SOFTWARE-1889 - WebRTC travamento (dívidas técnicas)]] (#566). Sem task própria no ClickUp - é fundação versionada e **INERTE até deploy**.
 
 Decisão do dono (01/07): o streaming vai ser exposto à internet pública, mas só consome quem já está logado no Attlas (sem stream anônimo).
 
@@ -32,7 +33,7 @@ Decisão do dono (01/07): o streaming vai ser exposto à internet pública, mas 
 ## Follow-ups travados no runbook (não feitos)
 
 - [ ] Auth do stream (URL WHEP assinada e curta validada pelo mediamtx, reusa permissões).
-- [ ] Abrir portas no SG da AWS (8189/udp, 3478, 5349, 49160-49200/udp) — **NÃO abrir enquanto a auth não estiver pronta**.
+- [ ] Abrir portas no SG da AWS (8189/udp, 3478, 5349, 49160-49200/udp) - **NÃO abrir enquanto a auth não estiver pronta**.
 - [ ] Certificado TLS no coturn.
 - [ ] Ligar os ICE servers no player (frontend) + deploy.
 

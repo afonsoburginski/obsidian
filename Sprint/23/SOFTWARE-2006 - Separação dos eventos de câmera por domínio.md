@@ -46,7 +46,7 @@ Isolar a funcionalidade de eventos de câmera num domínio próprio dentro do `m
 ## Andamento (11/07)
 
 - SOFTWARE-2008 mergeada; peguei a próxima da fila (o PR #710 estava só com a spec MOD-010). Branch rebaseada onto develop.
-- Decisão de paridade fechada: **opção A** (paridade estrita) registrada na MOD-010 §4. Spec atômica PROJ-010 escrita.
+- Decisão de paridade fechada: **opção A** (paridade estrita) registrada na MOD-010 seção 4. Spec atômica PROJ-010 escrita.
 - Implementação feita e commitada local (1 commit, `0b7aeb8c9`):
   - Port `ICameraEventRecorder` + token; `RecordCameraEventService` implementa e trata `source` (`ingest` = pipeline completo; `health` = só persistência + WS, sem Kafka/dedup/revalidação de escopo).
   - `CameraHealthWorker` vira detector puro (delega ao recorder, `source: 'health'`); some a dependência do `CameraHealthEventLogRepository` (repositório removido) e a montagem do evento de WS.

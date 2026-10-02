@@ -3,131 +3,131 @@ tags:
   - doc
   - ms-cameras
   - cameras
-  - crud
-atualizado: 2026-08-24
-servico: ms-cameras
-fonte: apps/ms-cameras/src/cameras
+atualizado: 2026-10-01
 ---
 
 # Cameras - Fluxos
 
-> Parte do domínio [[Cameras]] · [[ms-cameras]]. Ver [[Cameras - Arquitetura e estratégias]] e [[Cameras - Requisitos e SLA]]. Diagrama: [[01 - MOD-001 cameras-crud.excalidraw|diagrama]].
->
-> [!info] Nota de 24/08: fluxo de criação e a observação sobre stream/credencial corrigidos
-> O fluxo de `POST /cameras` abaixo ganhou os passos de validação de IP duplicado/reativação
-> (BR-CRUD-009, PR #1137) e de provisionamento inline (SOFTWARE-2226). A observação antiga, no fim da
-> seção, dizia que o cadastro "não cria `CameraStreamProfile` nem `CameraCredential`" - isso deixou de
-> ser verdade quando SOFTWARE-2226 uniu probe+provisionamento ao próprio `POST /cameras`; corrigida.
+Parte do domínio [[Cameras]]. Mecânica e regras em [[Cameras - Arquitetura e estratégias]]; aqui só a
+ordem dos passos. Diagrama: [[Diagrama - MOD-001 cadastro de câmeras.excalidraw|diagrama]].
 
-Fluxos de use case (backend) e user flow (frontend). Sem diagrama embutido - o visual está no canvas linkado.
+## Cadastro em lote (UC-001)
 
-## Backend - criação em batch (UC-001)
+`POST /cameras`, corpo `ICreateCameraRequest[]`.
 
-`POST /cameras`, body `ICreateCameraRequest[]`.
+1. Guarda de pertencimento e chave `cameras.camera:create`; `@SystemId()` exige o header.
+2. Lote acima de 50: 400 `BATCH_LIMIT_EXCEEDED`.
+3. Resolve as marcas distintas, registrando as não catalogadas.
+4. Confirma cada `replacedByCameraId` (404 se não existe).
+5. IP repetido no lote ou já usado por câmera ativa do sistema: 422 `CAMERA_DUPLICATE_IP`. IP de câmera
+   removida marca o item para reativação.
+6. `createMany` numa `$transaction`: cria os novos e reativa os marcados, limpando antes os filhos da
+   encarnação anterior. `lifecycleState` é o enviado ou `STOCK`.
+7. Para cada câmera, em paralelo: sondagem e provisionamento (credencial, perfis, promoção a `OPERATIONAL`
+   quando o estado não veio e há perfil utilizável, promoção a PTZ quando há faixa real de pan ou tilt);
+   câmera que respondeu entra já no monitoramento de saúde; analítico embarcado dispara o vínculo do
+   equipamento em segundo plano.
+8. Em segundo plano: descoberta de perfis de mídia e publicação de `CREATED` no ciclo de vida.
+9. Auditoria por câmera e notificação agregada do lote; invalidação do dashboard (`INVENTORY`).
+10. 201 com as câmeras relidas do banco, cada uma com o aviso de provisionamento quando houver.
 
-1. `@SystemId()` valida o header `System-Id` (400 se ausente/inválido). O controller monta `CreateCamerasCommand(body, systemId)`.
-2. `CreateCamerasHandler` rejeita batch > 50 → `InvalidInputException('BATCH_LIMIT_EXCEEDED')` (400).
-3. Resolve as marcas **distintas** uma vez cada (`ManufacturerResolverService`), auto-registrando as não catalogadas.
-4. Para cada item com `replacedByCameraId`, confirma existência (404 se não existir).
-5. **BR-CRUD-009**: rejeita `ipAddress` repetido dentro do próprio batch e `ipAddress` já usado por câmera ativa de outro registro (`CAMERA_DUPLICATE_IP`, 422/409 conforme o filtro global). Se o IP bate com uma câmera **soft-deleted** (nenhuma ativa), marca esse item para **reativação** em vez de criação nova.
-6. `CameraMapper.toCreateInput` (itens novos) / `toReactivateInput` (itens reativados) projeta cada item, **forçando `lifecycleState=STOCK`** e conectando a marca resolvida + o `systemId`.
-7. `repository.createMany` grava tudo em `$transaction` (all-or-nothing): `create` para os itens novos, `update` para os reativados - e, para reativação, apaga primeiro `cameraOperationalSnapshot`/`cameraPtzPreset`/`cameraPtzTour` do id revivido (filhos da encarnação anterior, ver [[Cameras - Arquitetura e estratégias]]). Devolve as câmeras com `manufacturer` incluído.
-8. **Provisionamento inline (SOFTWARE-2226)**: para cada câmera criada, roda o probe ONVIF/ISAPI (`CameraCredentialProbeService`) e `CameraProvisioningService.provisionFromProbe`, que grava `CameraCredential` e (quando o probe acha ≥1 perfil H264/H265) `CameraStreamProfile`, e sobe a câmera pra `OPERATIONAL`. Sem perfil utilizável ou com probe falho, a câmera fica em `STOCK`/`IN_FIELD` e a resposta carrega um warning por câmera (`CAMERA_PROBE_FAILED`, `CAMERA_NO_STREAMABLE_PROFILE`).
-9. Descoberta de perfis de mídia (UC-031) é disparada em background (não bloqueia a resposta).
-10. Incrementa `cameras_created_total`; devolve `ICameraResponse[]` (201) - já refletindo o estado pós-provisionamento (re-lido do banco).
+## Edição (UC-004)
 
-Observação (corrigida em 24/08): o cadastro **cria** `CameraCredential` e `CameraStreamProfile` no mesmo request desde SOFTWARE-2226 (passo 8) - não é mais uma etapa separada de integração. O que continua fora deste CRUD é a **configuração manual** de um stream (trocar codec/resolução/bitrate depois de provisionado), que é assunto de [[Integração com dispositivo]] / [[Streaming]].
+`PATCH /cameras/:id`.
 
-## Backend - atualização parcial com validação de IP (UC-004)
+1. Chave `cameras.camera:edit` e `assertCameraInSystem` (404).
+2. IP no delta e diferente do atual, já usado por câmera ativa: 422 `CAMERA_DUPLICATE_IP`; o índice único
+   fecha a corrida com o mesmo código.
+3. Resolve a marca se `manufacturerId` veio; grava só os campos presentes.
+4. Pedido com endereço reaponta os perfis de stream; endereço mudado publica `CameraOriginChangedEvent`.
+5. Invalida o dashboard, audita o diff, publica `UPDATED` e devolve o detalhe.
 
-`PATCH /cameras/:id`, body com campos opcionais.
+## Mudança de estado (UC-005)
 
-1. `findById` → 404 (`ResourceNotFoundException`) se não existir.
-2. **BR-CRUD-009**: se `ipAddress` está no delta e é diferente do atual, `findActiveByIpAddress` rejeita se outra câmera ativa do mesmo tenant já usa o IP (`CAMERA_DUPLICATE_IP`) - mesma checagem e mesmo `errorCode` do create.
-3. Resolve marca (se `manufacturerId` estiver no delta).
-4. Monta o patch só com os campos presentes (`Object.fromEntries` filtra `undefined`) e escreve via `repository.update`; o índice único parcial (`Camera_active_ip_unique`) fecha a corrida entre o passo 2 e a escrita, traduzindo P2002 para o mesmo `CAMERA_DUPLICATE_IP`.
-5. Invalida o dashboard do sistema (`DashboardInvalidateDomain.INVENTORY`) e devolve o detalhe atualizado.
+`PATCH /cameras/:id/state`, corpo `{ state }`.
 
-## Backend - transição de estado com warning (UC-005)
+1. Chave `cameras.camera:edit` e `assertCameraInSystem`.
+2. Câmera inexistente: 404.
+3. `assertValidTransition(from, to)`; fora do mapa: 409 `INVALID_STATE_TRANSITION`.
+4. Persiste, incrementa `cameras_state_transitions_total{from,to}`, audita, notifica e devolve o detalhe.
 
-`PATCH /cameras/:id/state`, body `{ state }`.
+Nenhuma tela do `web-attlas` chama esta rota. O aviso de RNF-CAM-10 é do frontend, antes de cada comando,
+e hoje só existe no PTZ do VMS.
 
-| Passo | O quê |
-| --- | --- |
-| 1 | Controller injeta `id` no `ChangeCameraStateCommand` |
-| 2 | `findById` → 404 (`ResourceNotFoundException`) se não existir |
-| 3 | `LifecycleTransitions.assertValidTransition(from, to)` - transição fora do mapa → `BusinessRuleViolationException` (`INVALID_STATE_TRANSITION`, 409) |
-| 4 | `repository.changeState` persiste o novo `lifecycleState` |
-| 5 | Incrementa `cameras_state_transitions_total{from,to}`; log com `from`/`to`; devolve detalhe (200) |
+## Substituição (UC-012)
 
-O **warning** de confirmação para comandos em câmera fora de "Operativa" (RNF-CAM-10) acontece **no frontend, antes** de disparar o comando; o backend não emite nem exige o warning (o guard `assertNotInStock` existe mas não está acoplado). Ver [[Cameras - Requisitos e SLA]].
+`POST /cameras/:id/replace`, corpo `{ newCameraId, reason }`.
 
-## Backend - substituição com herança (UC-012)
+1. Chave `cameras.camera:edit` e `assertCameraInSystem`.
+2. `id` igual a `newCameraId`: 409 `CAMERA_SELF_REPLACE`.
+3. Velha inexistente ou removida: 404. Velha fora de `OPERATIONAL` e `IN_FIELD`: 422
+   `CAMERA_LIFECYCLE_PRECONDITION_NOT_MET`.
+4. Nova inexistente, removida ou de outro sistema: 404. Nova fora de `STOCK`: 409 `STOCK_CAMERA_NOT_FOUND`.
+5. `replaceCamera` numa transação: a nova herda estado e localização, recebe os presets default da velha e
+   os tours, as cenas do VMS passam a apontar para ela, a velha vai a `STOCK` com `replacedByCameraId`.
+6. `CameraReplacedEvent` move o vínculo da Neural Labs; invalida o dashboard; audita com o motivo; notifica.
+7. 200 com o detalhe da velha.
 
-`POST /cameras/:id/replace`, body `{ newCameraId }`.
+## Remoção (UC-006)
 
-1. Rejeita auto-substituição (`id === newCameraId`) → `CAMERA_SELF_REPLACE` (409).
-2. Valida que velha e nova existem e não estão deletadas (404 caso contrário).
-3. `repository.replaceCamera` executa em `$transaction`:
-   - copia `latitude`/`longitude`/`address`/`intersection`/`trafficElementId` da velha para a nova;
-   - apaga tours + presets `isDefault` da nova, depois copia os presets `isDefault` da velha;
-   - migra tours da velha para a nova;
-   - reaponta `VideoWallSceneCell` da velha para a nova (cenas atualizadas automaticamente);
-   - marca a velha como `STOCK` + `replacedByCameraId = nova`.
-4. Devolve o detalhe da **velha** (agora em estoque). Evento Kafka `attlas.cameras.replaced` é TODO (PROJ-002); operador não é capturado.
+`DELETE /cameras/:id`: chave `cameras.camera:delete`, `assertCameraInSystem`, grava `deletedAt`, audita,
+notifica, publica `DELETED` e responde 204.
 
-## Backend - perfis de mídia (UC-031)
+## Validação de credenciais (UC-013)
 
-`GET /cameras/:id/media-profiles`, query paginada (`page`/`pageSize`/`query`/`sortBy`/`sortOrder`).
+`POST /cameras/validate-credentials`, corpo `{ items[] }` (`cardId`, `ip`, `username`, `password`), até 50.
+Chave `cameras.camera:create` ou `cameras.camera:edit`. Sonda cada item em paralelo e devolve
+`{ cardId, ok, device?, errorCode? }` com a arquitetura ARTPEC e a compatibilidade do analítico. Não grava
+no banco. A mesma sondagem roda de novo, com gravação, dentro do `POST /cameras`.
 
-1. `@SystemId()` valida o header; `GetCameraMediaProfilesQuery` recebe `id` + `systemId` direto (não passa por `CameraTenancyService`).
-2. `GetCameraMediaProfilesHandler` lê o inventário **já persistido** em `CameraMediaProfile` (nunca faz probe ao vivo na própria request) - câmera de outro tenant ou sem inventário descoberto vira 404, nunca vazando existência.
-3. Devolve `IListMediaProfilesResponse` (= `IPaginatedResponse<IGetMediaProfileResponse>`), contrato já existente que o front consome, sem contrato novo.
+## Perfis de mídia (UC-031)
 
-A descoberta que popula esse inventário roda em dois gatilhos, fora desta request: no cadastro (passo 9 do UC-001, background) e periodicamente (`CameraMediaProfileDiscoveryWorker`).
+`GET /cameras/:id/media-profiles`, paginada (`page`, `pageSize`, `query`, `sortBy`, `sortOrder`). O handler
+lê o inventário já persistido, sem sondagem ao vivo; câmera fora do sistema é 404, câmera sem inventário é
+página vazia. Responde `IListMediaProfilesResponse`.
 
-## Backend - consulta em lote para outros módulos (RF-INT-07)
+## Leituras em lote para outros módulos (RF-INT-07)
 
-Dois endpoints, ambos com dedup implícito (`[...new Set(ids)]`), escopo por `systemId` e `deletedAt: null`, sem efeito colateral. Aceitam câmeras em **qualquer** estado de ciclo de vida.
+`POST /cameras/validate` (UC-018) e `POST /cameras/batch-get` (UC-019) recebem array cru de UUIDs (1 a
+200), removem duplicados, escopam por sistema e `deletedAt: null` e aceitam câmera em qualquer estado.
+O primeiro responde 204 ou 404 `CamerasNotFoundBatchException(missingIds)`; o segundo, 200 com
+`{ cameras[] }`. Consumidor típico: `ms-traffic-model`, ao validar câmeras de interseção.
 
-| Endpoint | UC | Fluxo | Resposta |
-| --- | --- | --- | --- |
-| `POST /cameras/validate` | UC-018 | `findExistingIds` → calcula `missingIds` | 204 se todas existem; 404 `CamerasNotFoundBatchException(missingIds)` se falta alguma |
-| `POST /cameras/batch-get` | UC-019 | `findSummariesByIds` → `GetCamerasBatchResult` por linha | 200 com `{ cameras[] }` (id, name, model, cameraType, status, lifecycleState, latitude, longitude, ipAddress) |
+## Vínculo com interseção (PROJ-029)
 
-Consumidor típico: `ms-traffic-model` valida câmeras vinculadas a interseções e pega dados de exibição. Body é array cru de UUIDs → validado por `UuidArrayBodyPipe` (o `ValidationPipe` global ignora body sem classe).
-
-## Backend - validação de credenciais (UC-013)
-
-`POST /cameras/validate-credentials`, body `{ items[] }` (cardId, ip, username, password), batch ≤50. `ValidateCredentialsHandler` roda os probes ONVIF em paralelo (`CameraCredentialProbeService`, 10s por item). Cada item volta `{ cardId, ok, device? , errorCode? }`. **Não persiste** - usado pelo passo de credenciais do wizard de cadastro (o probe equivalente roda de novo, com persistência, dentro do `POST /cameras` real - ver UC-001 passo 8).
+1. O `ms-traffic-model` grava `NodeCamera` e publica `attlas.node-devices.associated`.
+2. O listener valida o payload (inválido vai à fila-morta), ignora tipo que não é `CAMERA` e executa
+   `AttachCameraToIntersectionCommand`, que grava `trafficElementId` e invalida o dashboard.
+3. Na dissociação, `DetachCameraFromIntersectionCommand` limpa o campo só se ainda aponta para o nó.
 
 ## Frontend - feature module `cameras`
 
-NgModule clássico (DD-007) em `apps/web-attlas/src/app/modules/cameras/`, com routing module dedicado (`cameras-routing-module.ts`). Consome exclusivamente `ms-cameras`.
-
-Rotas (nav `devices` / `videowall` / `dashboard`):
+NgModule em `apps/web-attlas/src/app/modules/cameras/`, rotas em `cameras-routing-module.ts`:
 
 | Rota | Componente | Papel |
 | --- | --- | --- |
-| `devices` | `CamerasListPageComponent` (`pages/cameras-list`) | Lista/tabela de câmeras + filtros + detalhe lateral |
-| `devices/:id` | `CameraDetailPageComponent` (`pages/camera-detail`) | Detalhe: header, saúde, presets, eventos, PTZ |
-| `devices/new`, `devices/:id/edit` | placeholder | Formulário (cadastro/edição) |
-| `videowall` (rota vira `vms`) | lazy `VideowallModule` | [[VMS]] |
-| `dashboard` | placeholder | Dashboard consolidado |
+| `devices` | `CamerasListPageComponent` | Tabela, filtros, colunas e detalhe lateral |
+| `devices/:id` | `CameraDetailPageComponent` | Detalhe: cabeçalho, player, saúde, perfis de mídia, presets, eventos, analítico |
+| `devices/new`, `devices/:id/edit` | `CamerasFormPlaceholderComponent` | Placeholder; cadastro e edição abrem por painel e sheet |
+| `vms`, `videowall-panel` | lazy | [[VMS]] e [[Videowall externo (NovaStar H9)]] |
+| `events` | lazy `CamerasEventsModule` | [[Eventos, incidentes e alarmes]] |
+| `dashboard` | lazy `CamerasDashboardModule` | [[Dashboard de câmeras]] |
 
-Componentes-chave do domínio CRUD/ciclo de vida:
+Componentes do cadastro e do ciclo de vida:
 
-- `camera-creation-panel` - **wizard de cadastro em 4 passos**: `device` → `credentials` (dispara `validate-credentials`) → `settings` → `review`.
-- `camera-edit-sheet` - edição parcial (`PATCH /cameras/:id`).
-- `camera-substitution-dialog` - substituição de equipamento (`POST /cameras/:id/replace`).
-- `camera-location-modal` - geoposicionamento (lat/long/address/intersection).
-- `cameras-filters`, `cameras-table`, `cameras-column-visibility`, `cameras-side-detail` - listagem e filtros.
+- `camera-creation-panel`: wizard em quatro passos, `device`, `credentials` (chama `validate-credentials`),
+  `settings` e `review`. O passo de configuração não tem campo de estado, e Marca e Modelo vêm da sondagem,
+  só leitura. Importação por planilha (`camera-bulk-import.service.ts`) respeita o lote de 50 e envia as
+  credenciais da planilha sem exigir Validar.
+- `camera-edit-sheet`: edição parcial; separa host e porta, trata IP duplicado; não troca o estado.
+- `camera-substitution-dialog`: lista as câmeras em estoque (`listStock`), exige o motivo e chama
+  `POST /cameras/:id/replace`; trata `STOCK_CAMERA_NOT_FOUND`.
+- `camera-location-modal` e `camera-intersection-picker`: geoposição, azimute e interseção.
+- `cameras-filters`, `cameras-table`, `cameras-column-visibility`, `cameras-side-detail`: listagem.
 
-## Frontend - user flow lista → detalhe → cadastro/edição
+Fluxo de uso: a lista abre o detalhe lateral ou o detalhe completo; o detalhe concentra saúde, perfis,
+presets, eventos e PTZ; cadastro, edição, substituição e localização abrem por painel, sheet e diálogos,
+cada um ligado à sua rota. Os controles sem permissão aparecem bloqueados em vez de falhar no clique.
 
-1. **Lista** (`devices`): operador filtra/busca; cada linha abre o detalhe lateral (`cameras-side-detail`) ou navega ao detalhe completo.
-2. **Detalhe** (`devices/:id`): dados técnicos, saúde, presets, eventos, PTZ; ações de estado, edição e substituição.
-3. **Cadastro** (`camera-creation-panel`): wizard de 4 passos; a validação de credenciais roda no passo de credenciais antes de persistir.
-4. **Edição / substituição / localização**: via sheet e dialogs, cada um mapeado ao endpoint correspondente.
-
-**≤2 cliques (RNF-CAM-07)**: a exigência de alcançar stream, PTZ e preset em até 2 cliques parte do **mapa operacional** (Painel de Operações), não da navegação interna deste feature module - é requisito de frontend fora desta camada. Ver [[Cameras - Requisitos e SLA]].
+O acesso em até dois cliques de RNF-CAM-07 parte do mapa do Painel de Operações, não deste módulo; ver
+[[PTZ e presets - Fluxos]].

@@ -1,5 +1,6 @@
 ---
 aliases: ["Attlas nova definicao modulos.docx"]
+atualizado: 2026-07-31
 ---
 
 
@@ -18,7 +19,7 @@ Documento de Referência Técnica e Funcional
 
 VINCEN SANTAELLA
 
-Versão 1.0 — Março 2026
+Versão 1.0 - Março 2026
 
 **Sumário**
 
@@ -70,7 +71,7 @@ Alarmes → Incidências → OS: Fluxo operacional integrado: alarmes persistent
 
 # **1\. Introdução**
 
-O presente documento descreve a nova estrutura modular do sistema Attlas, uma plataforma de Sistemas Inteligentes de Transporte (ITS — Intelligent Transportation Systems) voltada à gestão, monitoramento e controle do tráfego urbano. O Attlas integra semáforos, controladores, câmeras, painéis de mensagens variáveis, sensores e diversos outros dispositivos de campo, fornecendo aos operadores uma visão centralizada e ferramentas avançadas para otimizar a mobilidade urbana.
+O presente documento descreve a nova estrutura modular do sistema Attlas, uma plataforma de Sistemas Inteligentes de Transporte (ITS - Intelligent Transportation Systems) voltada à gestão, monitoramento e controle do tráfego urbano. O Attlas integra semáforos, controladores, câmeras, painéis de mensagens variáveis, sensores e diversos outros dispositivos de campo, fornecendo aos operadores uma visão centralizada e ferramentas avançadas para otimizar a mobilidade urbana.
 
 A reestruturação modular aqui documentada tem como objetivo principal reorganizar a disposição hierárquica dos elementos na interface, garantindo maior clareza funcional, escalabilidade do produto e flexibilidade comercial na composição de licenças e contratos.
 
@@ -110,7 +111,7 @@ A nova definição estabelece três categorias (tipos) de módulos, classificado
 
 Os **módulos core** representam a infraestrutura fundamental do sistema. Sem eles, o attlas simplesmente não pode operar. Eles fornecem as capacidades básicas que todos os outros módulos necessitam: gestão de usuários, controle de permissões e o modelo geográfico/topológico do tráfego.
 
-Características principais: coexistem sozinhos (independentes), não dependem de outros módulos, e não podem ser desligados por licença ou contrato — são obrigatórios em toda instalação.
+Características principais: coexistem sozinhos (independentes), não dependem de outros módulos, e não podem ser desligados por licença ou contrato - são obrigatórios em toda instalação.
 
 ## **2.2. Módulo Funcional**
 
@@ -191,11 +192,11 @@ Tipo: **Core**
 
 O módulo de **permissões** é o motor de autorização do attlas, responsável por controlar quem pode fazer o quê, onde, e com qual nível de prioridade dentro do sistema. Enquanto o módulo de Organização define "quem existe" (gestão de identidades, contas e estrutura organizacional), o módulo de permissões define o alcance operacional de cada usuário: quais funcionalidades pode acessar, quais dispositivos pode operar, quais zonas geográficas pode visualizar e como seu ambiente de trabalho se configura.
 
-A separação entre organização e permissões é intencional e segue o princípio de segregação de responsabilidades: gerenciar usuários (CRUD de contas, convites, licenças) é uma responsabilidade administrativa diferente de gerenciar as políticas de acesso que determinam o que esses usuários podem ver e fazer. Essa separação permite que diferentes administradores cuidem de cada domínio — um gestor de RH pode criar usuários, enquanto um gestor de segurança ou o administrador de um grupo define as permissões.
+A separação entre organização e permissões é intencional e segue o princípio de segregação de responsabilidades: gerenciar usuários (CRUD de contas, convites, licenças) é uma responsabilidade administrativa diferente de gerenciar as políticas de acesso que determinam o que esses usuários podem ver e fazer. Essa separação permite que diferentes administradores cuidem de cada domínio - um gestor de RH pode criar usuários, enquanto um gestor de segurança ou o administrador de um grupo define as permissões.
 
 No contexto de um sistema ITS como o Attlas, o controle de acesso vai muito além de permissões simples de telas. O modelo de autorização opera em múltiplas dimensões que convergem numa **única política de acesso integrada**: dimensão funcional (o que pode fazer), dimensão espacial (onde pode atuar), dimensão de recursos (quais dispositivos pode operar), dimensão de prioridade (com qual nível de controle) e dimensão de interface (como visualiza o sistema). 
 
-Essas dimensões não são gerenciadas de forma isolada — são atributos de configuração de um perfil de acesso.
+Essas dimensões não são gerenciadas de forma isolada - são atributos de configuração de um perfil de acesso.
 
 O módulo opera com um **modelo de configuração em cascata de três níveis**: a Administração **Hierárquica** define os perímetros máximos de cada grupo, os **Grupos de Usuários** organizam seus membros e perfis dentro desses limites, e os **Perfis de Acesso** definem a política de autorização concreta de cada papel operacional. Cada nível depende do anterior e herda seus limites.
 
@@ -209,11 +210,11 @@ Recurso de governança do modelo de permissões e pré-requisito para a existên
 
 **Grupos de Usuários**
 
-Recurso organizacional que reflete a estrutura real das equipes que operam o sistema. Um grupo deve ser criado pelo Administrador Geral (com seu perímetro definido) antes de poder operar. Cada grupo possui um Administrador de Grupo: figura administrativa com autonomia para gerenciar membros, criar e editar perfis de acesso, e associar perfis a membros — tudo dentro do perímetro definido pelo Administrador Geral e sem necessidade de sair do contexto do grupo. O administrador de grupo pode adicionar, ativar e desativar membros, organizar o grupo em subequipes ou turnos, e conceder acesso a usuários de outros grupos (perfis cruzados) atribuindo-lhes diretamente um perfil do seu grupo. Um usuário pode pertencer a múltiplos grupos simultaneamente se o administrador de cada grupo lhe conceder acesso com um perfil correspondente — não são necessárias solicitações nem convites, é uma decisão direta do administrador do grupo receptor. Quando um usuário possui perfis em mais de um grupo, ele pode visualizar/editar tudo o que o grupo permite.
+Recurso organizacional que reflete a estrutura real das equipes que operam o sistema. Um grupo deve ser criado pelo Administrador Geral (com seu perímetro definido) antes de poder operar. Cada grupo possui um Administrador de Grupo: figura administrativa com autonomia para gerenciar membros, criar e editar perfis de acesso, e associar perfis a membros - tudo dentro do perímetro definido pelo Administrador Geral e sem necessidade de sair do contexto do grupo. O administrador de grupo pode adicionar, ativar e desativar membros, organizar o grupo em subequipes ou turnos, e conceder acesso a usuários de outros grupos (perfis cruzados) atribuindo-lhes diretamente um perfil do seu grupo. Um usuário pode pertencer a múltiplos grupos simultaneamente se o administrador de cada grupo lhe conceder acesso com um perfil correspondente - não são necessárias solicitações nem convites, é uma decisão direta do administrador do grupo receptor. Quando um usuário possui perfis em mais de um grupo, ele pode visualizar/editar tudo o que o grupo permite.
 
 **Perfis de Acesso**
 
-Recurso de política de autorização. Todo perfil pertence obrigatoriamente a um grupo e opera dentro do seu perímetro — um perfil sem grupo não existe no sistema, e o grupo deve existir antes de qualquer perfil ser criado. Cada perfil define, de forma integrada, todas as dimensões de controle de acesso: permissões funcionais (quais telas, ações e funcionalidades são permitidas, desde leitura até controle operacional de equipamentos), restrição geográfica por zonas (quais áreas, interseções e vias o usuário pode visualizar e operar no mapa, sempre dentro das zonas do perímetro do grupo), restrição por dispositivos (quais controladores, câmeras, PMVs e nobreaks o usuário pode operar, sempre dentro dos dispositivos do perímetro do grupo), nível de prioridade e bloqueio de recursos (nível de precedência para acesso concorrente a dispositivos compartilhados — por exemplo, um supervisor pode assumir o controle de uma câmera em uso por um operador de menor prioridade), e workspace padrão (layout de janelas, camadas visíveis e disposição de painéis que o usuário verá ao iniciar sessão com esse perfil). Toda informação exibida na interface é filtrada automaticamente conforme as dimensões configuradas no perfil, sem necessidade de filtros manuais. Além do perfil base, o sistema suporta permissões individuais (overrides) a nível de usuário: um administrador pode conceder a um membro específico acessos adicionais pontuais (por exemplo, acesso a um dispositivo ou zona que não fazem parte do seu perfil, mas que estão dentro do perímetro do grupo) sem precisar criar um perfil exclusivo para essa exceção. Isso mantém os perfis genéricos e reutilizáveis, e as exceções são gerenciadas individualmente e rastreáveis.
+Recurso de política de autorização. Todo perfil pertence obrigatoriamente a um grupo e opera dentro do seu perímetro - um perfil sem grupo não existe no sistema, e o grupo deve existir antes de qualquer perfil ser criado. Cada perfil define, de forma integrada, todas as dimensões de controle de acesso: permissões funcionais (quais telas, ações e funcionalidades são permitidas, desde leitura até controle operacional de equipamentos), restrição geográfica por zonas (quais áreas, interseções e vias o usuário pode visualizar e operar no mapa, sempre dentro das zonas do perímetro do grupo), restrição por dispositivos (quais controladores, câmeras, PMVs e nobreaks o usuário pode operar, sempre dentro dos dispositivos do perímetro do grupo), nível de prioridade e bloqueio de recursos (nível de precedência para acesso concorrente a dispositivos compartilhados - por exemplo, um supervisor pode assumir o controle de uma câmera em uso por um operador de menor prioridade), e workspace padrão (layout de janelas, camadas visíveis e disposição de painéis que o usuário verá ao iniciar sessão com esse perfil). Toda informação exibida na interface é filtrada automaticamente conforme as dimensões configuradas no perfil, sem necessidade de filtros manuais. Além do perfil base, o sistema suporta permissões individuais (overrides) a nível de usuário: um administrador pode conceder a um membro específico acessos adicionais pontuais (por exemplo, acesso a um dispositivo ou zona que não fazem parte do seu perfil, mas que estão dentro do perímetro do grupo) sem precisar criar um perfil exclusivo para essa exceção. Isso mantém os perfis genéricos e reutilizáveis, e as exceções são gerenciadas individualmente e rastreáveis.
 
 **Exemplo de Uso**
 
@@ -278,7 +279,7 @@ A engenheira Ana Torres pertence ao grupo “Eng. Central” com o perfil "Engen
 
 **Como se resolve:**
 
-Carlos Mendoza (Admin EPMMOP), a partir da tela do seu grupo, concede acesso a Ana Torres atribuindo-lhe o perfil **"Consultor Externo"** do grupo EPMMOP. Não é necessária nenhuma solicitação formal nem convite — Carlos simplesmente busca Ana no sistema e associa o perfil.
+Carlos Mendoza (Admin EPMMOP), a partir da tela do seu grupo, concede acesso a Ana Torres atribuindo-lhe o perfil **"Consultor Externo"** do grupo EPMMOP. Não é necessária nenhuma solicitação formal nem convite - Carlos simplesmente busca Ana no sistema e associa o perfil.
 
 Ana Torres agora possui dois perfis ativos:
 
@@ -294,7 +295,7 @@ O operador João Silva pertence ao grupo EPMMOP com o perfil "Operador ZN" restr
 
 Carlos Mendoza (ou o supervisor, se tiver permissão delegada) adiciona um override individual a João Silva: acesso às câmeras CAM-N2-07, CAM-N2-08 e CAM-N2-12.
 
-João continua com seu perfil "Operador ZN" base (subárea N1), mas agora também visualiza e opera essas 3 câmeras adicionais.Nenhum perfil foi modificado — os demais operadores de N1 não são afetados.
+João continua com seu perfil "Operador ZN" base (subárea N1), mas agora também visualiza e opera essas 3 câmeras adicionais.Nenhum perfil foi modificado - os demais operadores de N1 não são afetados.
 
 Regra: overrides só podem conceder acessos dentro do perímetro do grupo. Carlos não poderia dar a João acesso a uma câmera da Zona Sul, pois está fora do perímetro da EPMMOP.
 
@@ -317,9 +318,9 @@ Tipo: **Core**
 
 O Modelo de Tráfego é o coração do domínio do attlas. Ele representa a abstração digital da malha viária real: cada interseção, via, área, subárea e ponto de medição são modelados aqui. Este módulo é Core porque todos os módulos funcionais e dependentes referenciam o modelo de tráfego para contextualizar suas operações: um controlador está em uma interseção, uma câmera monitora uma via, um plano semafórico se aplica a uma área.
 
-O módulo é **puramente topológico**: sua responsabilidade é definir a estrutura da rede viária e, através do mapa de construção, permitir a associação de dispositivos físicos (controladores, câmeras, detectores, PMVs) aos elementos dessa topologia. O Modelo de Tráfego não gerencia os dispositivos em si — não controla estado, comunicação nem configuração técnica dos equipamentos. Essas responsabilidades pertencem aos módulos de cada tipo de dispositivo (Controladores, Câmeras, PMV, Nobreaks). O que o Modelo de Tráfego faz é estabelecer o vínculo: "na interseção X existem 3 grupos semafóricos e 2 detectores", sem se preocupar com o funcionamento desses equipamentos.
+O módulo é **puramente topológico**: sua responsabilidade é definir a estrutura da rede viária e, através do mapa de construção, permitir a associação de dispositivos físicos (controladores, câmeras, detectores, PMVs) aos elementos dessa topologia. O Modelo de Tráfego não gerencia os dispositivos em si - não controla estado, comunicação nem configuração técnica dos equipamentos. Essas responsabilidades pertencem aos módulos de cada tipo de dispositivo (Controladores, Câmeras, PMV, Nobreaks). O que o Modelo de Tráfego faz é estabelecer o vínculo: "na interseção X existem 3 grupos semafóricos e 2 detectores", sem se preocupar com o funcionamento desses equipamentos.
 
-Cada elemento topológico funciona como um **ponto de convergência de informações**: ao acessar o detalhe de uma interseção, por exemplo, o usuário encontra não apenas os dados topológicos, mas também as métricas e informações operacionais provenientes dos dispositivos associados a ela — volume de tráfego dos detectores, estado dos controladores, imagens das câmeras. Essa informação é consumida dos respectivos módulos de dispositivos e apresentada no contexto do elemento topológico, oferecendo ao operador uma visão integrada sem sair do modelo.
+Cada elemento topológico funciona como um **ponto de convergência de informações**: ao acessar o detalhe de uma interseção, por exemplo, o usuário encontra não apenas os dados topológicos, mas também as métricas e informações operacionais provenientes dos dispositivos associados a ela - volume de tráfego dos detectores, estado dos controladores, imagens das câmeras. Essa informação é consumida dos respectivos módulos de dispositivos e apresentada no contexto do elemento topológico, oferecendo ao operador uma visão integrada sem sair do modelo.
 
 O agrupamento de todos os elementos topológicos num único módulo reflete o fato de que eles formam uma **rede interdependente**: interseções se conectam por vias, vias pertencem a áreas, áreas contêm subáreas, estratégias se aplicam a combinações desses elementos, e rotas traçam caminhos através da rede. Fragmentá-los seria romper a coerência do modelo.
 
@@ -335,18 +336,18 @@ Interface visual (mapa) onde o operador constrói e edita o modelo de tráfego. 
 * **Mapa de interseção:** Visão detalhada de uma interseção específica com seus grupos semafóricos, detectores, fases e movimentos. Permite visualizar a geometria do cruzamento e os dispositivos associados.  
 * **Mapa de rota:** Visualização de uma rota com as interseções que a compõem e os parâmetros de coordenação (velocidade de progressão, distâncias, defasagens).  
 * **Editor do mapa:** Modo de edição para criar, modificar e excluir elementos topológicos, definir conexões entre eles e configurar parâmetros de circulação (sentido de tráfego, número de faixas, velocidade regulamentar, restrições de movimento).  
-* **Associação de dispositivos físicos:** Dentro do editor, o operador vincula dispositivos de campo aos elementos topológicos. Isso inclui associação de grupos semafóricos e controladores a interseções, detectores a pontos de medição, câmeras a vias ou interseções, e PMVs a trechos de via. O mapa apenas registra o vínculo topológico — toda a gestão operacional dos dispositivos acontece nos seus respectivos módulos.
+* **Associação de dispositivos físicos:** Dentro do editor, o operador vincula dispositivos de campo aos elementos topológicos. Isso inclui associação de grupos semafóricos e controladores a interseções, detectores a pontos de medição, câmeras a vias ou interseções, e PMVs a trechos de via. O mapa apenas registra o vínculo topológico - toda a gestão operacional dos dispositivos acontece nos seus respectivos módulos.
 
 ### 
 
 ### **Elementos Topológicos**
 
-Os elementos topológicos são os componentes que definem a estrutura lógica da rede viária. Eles são organizados hierarquicamente e formam a base sobre a qual todo o sistema opera. Cada elemento topológico possui uma **tela de detalhe** onde o usuário encontra, além dos dados topológicos, as informações e métricas provenientes dos dispositivos associados a ele — dados de fluxo dos detectores, estado dos controladores, feeds de câmeras, alertas de equipamentos. Essas informações são consumidas em tempo real dos respectivos módulos de dispositivos, permitindo que o operador tenha uma visão integrada do que acontece naquele ponto da rede sem precisar navegar para outros módulos.
+Os elementos topológicos são os componentes que definem a estrutura lógica da rede viária. Eles são organizados hierarquicamente e formam a base sobre a qual todo o sistema opera. Cada elemento topológico possui uma **tela de detalhe** onde o usuário encontra, além dos dados topológicos, as informações e métricas provenientes dos dispositivos associados a ele - dados de fluxo dos detectores, estado dos controladores, feeds de câmeras, alertas de equipamentos. Essas informações são consumidas em tempo real dos respectivos módulos de dispositivos, permitindo que o operador tenha uma visão integrada do que acontece naquele ponto da rede sem precisar navegar para outros módulos.
 
 * **Interseções:** Pontos de cruzamento ou encontro de vias. São a unidade fundamental do modelo topológico, pois é na interseção que os movimentos conflitantes de tráfego se encontram. Cada interseção é definida por sua localização geográfica, geometria (número de aproximações, faixas por aproximação, movimentos permitidos) e os dispositivos físicos associados a ela. No detalhe de uma interseção, o usuário visualiza: dados topológicos (geometria, movimentos, fases), estado dos controladores e grupos semafóricos associados (consumido do módulo Controladores), dados de fluxo dos detectores posicionados nas aproximações (consumido do módulo Analítico) e feeds das câmeras que monitoram o cruzamento (consumido do módulo Câmeras).  
 * **Áreas:** Regiões geográficas que agrupam múltiplas interseções e vias. Permitem aplicar estratégias de controle coordenado ("onda verde") e segmentar a operação por região da cidade. A área é o primeiro nível de agrupamento lógico acima da interseção. No detalhe de uma área, o usuário visualiza: lista de interseções e subáreas que a compõem, métricas agregadas de tráfego da região (volume total, velocidade média, nível de serviço) e o estado consolidado dos dispositivos associados.  
 * **Subáreas:** Subdivisões de áreas, permitindo granularidade adicional no controle. Úteis quando uma área grande possui trechos com comportamentos de tráfego distintos. Cada subárea possui um **modo de funcionamento** (central, local, manual, intermitente, apagado) que determina como as interseções dentro dela se comportam operacionalmente. No detalhe, o usuário visualiza o modo atual, as interseções contidas e as métricas de tráfego do trecho.  
-* **Estratégias:** Mecanismo pelo qual o engenheiro de tráfego define **e executa** o comportamento operacional da rede semafórica. Uma estratégia é uma unidade completa de controle de tráfego composta por três componentes: o escopo (a qual subárea, área ou rota se aplica, determinando quais interseções e controladores serão afetados), as condições de ativação (quando se aplica — suporta três modos: **programada** por tabela horária, **por condição** quando métricas de tráfego atingem limiares, e **manual** por decisão do operador, sendo que a manual prevalece sobre por condição, que prevalece sobre programada) e a configuração semafórica (o que faz — define planos semafóricos por controlador, tempos de ciclo, defasagens entre interseções para ondas verdes, distribuição de verde por fase, velocidade de progressão em rotas e modo de operação da subárea). Quando ativada, a estratégia envia as configurações diretamente aos controladores do escopo sem intermediação de outro módulo. O operador acompanha a execução em tempo real: quais controladores receberam a configuração, quais estão em transição e se houve falhas. Quando duas estratégias tentam atuar sobre a mesma subárea, o sistema aplica regras de prioridade, notifica o operador sobre o conflito e registra a substituição. O sistema mantém histórico completo de ativações, desativações, quem ativou (sistema ou operador), duração efetiva e métricas de desempenho durante a vigência, alimentando o módulo Analítico para análise de eficácia.  
+* **Estratégias:** Mecanismo pelo qual o engenheiro de tráfego define **e executa** o comportamento operacional da rede semafórica. Uma estratégia é uma unidade completa de controle de tráfego composta por três componentes: o escopo (a qual subárea, área ou rota se aplica, determinando quais interseções e controladores serão afetados), as condições de ativação (quando se aplica - suporta três modos: **programada** por tabela horária, **por condição** quando métricas de tráfego atingem limiares, e **manual** por decisão do operador, sendo que a manual prevalece sobre por condição, que prevalece sobre programada) e a configuração semafórica (o que faz - define planos semafóricos por controlador, tempos de ciclo, defasagens entre interseções para ondas verdes, distribuição de verde por fase, velocidade de progressão em rotas e modo de operação da subárea). Quando ativada, a estratégia envia as configurações diretamente aos controladores do escopo sem intermediação de outro módulo. O operador acompanha a execução em tempo real: quais controladores receberam a configuração, quais estão em transição e se houve falhas. Quando duas estratégias tentam atuar sobre a mesma subárea, o sistema aplica regras de prioridade, notifica o operador sobre o conflito e registra a substituição. O sistema mantém histórico completo de ativações, desativações, quem ativou (sistema ou operador), duração efetiva e métricas de desempenho durante a vigência, alimentando o módulo Analítico para análise de eficácia.  
 * **Pontos de Medição:** Locais onde sensores (laços indutivos, radares, câmeras de contagem) coletam dados de fluxo veicular. Cada ponto de medição é posicionado no modelo topológico e associado ao detector físico correspondente. A definição do ponto (localização, tipo de medição, sentido de fluxo) pertence ao Modelo de Tráfego; o tratamento e análise dos dados coletados pertence ao módulo Analítico. No detalhe de um ponto de medição, o usuário visualiza: dados do detector associado, métricas em tempo real (volume, velocidade, ocupação) e histórico de medições.  
 * **Acessos:** Pontos de acesso à malha viária (entradas/saídas de regiões controladas). Relevantes para controle de áreas restritas e gestão de fluxo em perímetros específicos. Um acesso define onde o tráfego entra ou sai de uma zona controlada.  
 * **Rotas:** Sequências ordenadas de interseções e vias que formam um corredor. Utilizadas para planejamento de coordenação semafórica (onda verde ao longo de um corredor) e como referência para análise de tempos de viagem. Uma rota define o caminho e os parâmetros de progressão que serão utilizados pelos módulos de controle. No detalhe de uma rota, o usuário visualiza: sequência de interseções, distâncias entre elas, velocidade de progressão desejada e métricas de tempo de viagem real versus planejado.
@@ -407,10 +408,10 @@ Ainda no editor do mapa, o engenheiro associa os dispositivos (já cadastrados n
 | Interseção | Grupos Semafóricos | Controlador | Detectores |
 | ----- | ----- | ----- | ----- |
 | INT-001 | GS-1 a GS-4 (4 fases) | CTRL-001 | DET-LAC-001 (laço virtual) |
-| INT-002 | GS-1 a GS-5 (5 fases, conversão protegida) | CTRL-002 | — |
+| INT-002 | GS-1 a GS-5 (5 fases, conversão protegida) | CTRL-002 | - |
 | INT-003 | GS-1 a GS-6 (6 fases, BRT) | CTRL-003 | DET-LAC-003 (laço virtual) |
 | ... | ... | ... | ... |
-| INT-008 | GS-1 a GS-3 (3 fases) | CTRL-008 | — |
+| INT-008 | GS-1 a GS-3 (3 fases) | CTRL-008 | - |
 
 Câmeras e PMVs associados a trechos de via: CAM-012 (entre INT-002 e INT-003), CAM-015 (aproximação sul de INT-003), PMV-003 (aproximação de INT-005).
 
@@ -423,7 +424,7 @@ Com o modelo topológico construído e os dispositivos associados, o engenheiro 
 | Componente | Configuração |
 | ----- | ----- |
 | Escopo | Subárea "Corredor Av. 10 de Agosto" (INT-001 a INT-008) |
-| Ativação | Programada: Segunda a Sexta, 06:30–09:00 |
+| Ativação | Programada: Segunda a Sexta, 06:30-09:00 |
 | Objetivo | Priorizar sentido sul (direção centro) |
 | Ciclo | 80 segundos em todas as interseções |
 | Distribuição de verde | 60% movimentos N-S (sentido sul priorizado), 40% L-O |
@@ -436,7 +437,7 @@ Com o modelo topológico construído e os dispositivos associados, o engenheiro 
 | Componente | Configuração |
 | ----- | ----- |
 | Escopo | Subárea "Corredor Av. 10 de Agosto" (INT-001 a INT-008) |
-| Ativação | Programada: Segunda a Sexta, 09:00–17:00 |
+| Ativação | Programada: Segunda a Sexta, 09:00-17:00 |
 | Objetivo | Distribuição equilibrada entre sentidos |
 | Ciclo | 100 segundos |
 | Distribuição de verde | 50% N-S, 50% L-O |
@@ -449,7 +450,7 @@ Com o modelo topológico construído e os dispositivos associados, o engenheiro 
 | Componente | Configuração |
 | ----- | ----- |
 | Escopo | Subárea "Corredor Av. 10 de Agosto" (INT-001 a INT-008) |
-| Ativação | Programada: Segunda a Sexta, 17:00–20:00 |
+| Ativação | Programada: Segunda a Sexta, 17:00-20:00 |
 | Objetivo | Priorizar sentido norte (saída do centro) |
 | Ciclo | 80 segundos |
 | Distribuição de verde | 60% N-S (sentido norte priorizado), 40% L-O |
@@ -462,7 +463,7 @@ Com o modelo topológico construído e os dispositivos associados, o engenheiro 
 | Componente | Configuração |
 | ----- | ----- |
 | Escopo | Subárea "Corredor Av. 10 de Agosto" (INT-001 a INT-008) |
-| Ativação | Programada: Todos os dias, 22:00–06:00 |
+| Ativação | Programada: Todos os dias, 22:00-06:00 |
 | Objetivo | Reduzir consumo energético, manter segurança mínima |
 | Ciclo | N/A (modo intermitente) |
 | Distribuição de verde | N/A |
@@ -487,7 +488,7 @@ Com o modelo topológico construído e os dispositivos associados, o engenheiro 
 
 ### **Passo 4: Execução das Estratégias em Operação**
 
-**Cenário dia útil normal — ativação automática programada:**
+**Cenário dia útil normal - ativação automática programada:**
 
 São 06:30 de segunda-feira. O sistema verifica a tabela horária e ativa automaticamente a estratégia "Hora Pico Manhã". O sistema envia os planos aos controladores e o operador acompanha no painel:
 
@@ -497,14 +498,14 @@ São 06:30 de segunda-feira. O sistema verifica a tabela horária e ativa automa
 | CTRL-002 | Online | Plano 2 ativado | 06:30:02 |
 | CTRL-003 | Online | Plano 3 (BRT) ativado | 06:30:03 |
 | CTRL-004 | Online | Plano 2 ativado | 06:30:02 |
-| CTRL-005 | Offline | Falha de comunicação | — |
+| CTRL-005 | Offline | Falha de comunicação | - |
 | CTRL-006 | Online | Plano 2 ativado | 06:30:03 |
 | CTRL-007 | Online | Plano 2 ativado | 06:30:02 |
 | CTRL-008 | Online | Plano 2 ativado | 06:30:03 |
 
 O **CTRL-005** não respondeu, o sistema gera alerta no módulo **Alarmes**. A estratégia continua ativa nos demais controladores (a falha de um equipamento não bloqueia os outros). Às 09:00, "**Hora Pico Manhã**" expira e "Entre Picos" é ativada automaticamente.
 
-**Cenário evento especial — ativação manual com conflito:**
+**Cenário evento especial - ativação manual com conflito:**
 
 São 20:30, a estratégia **"Entre Picos"** está ativa. O jogo no Estádio Atahualpa terminou. O operador ativa manualmente **"Evento Estádio Atahualpa"**. O sistema detecta conflito (ambas atuam na mesma subárea) e aplica a regra de prioridade (manual prevalece sobre programada):
 
@@ -514,15 +515,15 @@ São 20:30, a estratégia **"Entre Picos"** está ativa. O jogo no Estádio Atah
 4. Registra conflito e substituição para auditoria  
 5. Notifica operador: "Estratégia **'Entre Picos'** suspensa parcialmente por ativação manual de **'Evento Estádio Atahualpa'**"
 
-Às 22:00 o operador desativa a estratégia de evento. O sistema restaura automaticamente a estratégia programada vigente naquele horário — **"Noturno".**
+Às 22:00 o operador desativa a estratégia de evento. O sistema restaura automaticamente a estratégia programada vigente naquele horário - **"Noturno".**
 
 **Visualização Integrada no Detalhe**
 
 | Seção | Informação | Origem |
 | ----- | ----- | ----- |
 | Dados Topológicos | 4 aproximações, 16 faixas, 12 mov. veiculares, 6 pedestres | Modelo de Tráfego |
-| Estratégia Ativa | "Hora Pico Manhã" — Plano 3 (BRT), ciclo 80s | Modelo de Tráfego |
-| Controlador | CTRL-003 — Online, Plano 3 ativo, ciclo 80s | Módulo Controladores |
+| Estratégia Ativa | "Hora Pico Manhã" - Plano 3 (BRT), ciclo 80s | Modelo de Tráfego |
+| Controlador | CTRL-003 - Online, Plano 3 ativo, ciclo 80s | Módulo Controladores |
 | Grupos Semafóricos | GS-1 a GS-6, fase atual: GS-2 (verde L-O) | Módulo Controladores |
 | Detectores | DET-LAC-003: 1.250 veíc/h, ocupação 45% | Módulo Analítico |
 | Câmeras | CAM-015: feed ao vivo da aproximação sul | Módulo Câmeras |
@@ -544,9 +545,9 @@ Esse paradigma define claramente a separação de responsabilidades entre módul
 
 O fluxo de execução das estratégias segue esta cadeia: a estratégia envia a configuração à interseção (que a persiste como sua configuração ativa), a interseção propaga a configuração ao controlador associado, o controlador executa a configuração recebida. Se o controlador estiver offline, a interseção mantém a configuração persistida e a reenvia automaticamente quando a comunicação for restabelecida.
 
-Além do controle via estratégias, o módulo permite que o operador envie comandos diretos a qualquer controlador a qualquer momento, independentemente da estratégia ativa. Essa autonomia é essencial para situações de emergência onde o operador precisa intervir rapidamente — por exemplo, colocar um cruzamento em intermitente após um acidente — sem depender da criação ou modificação de uma estratégia.
+Além do controle via estratégias, o módulo permite que o operador envie comandos diretos a qualquer controlador a qualquer momento, independentemente da estratégia ativa. Essa autonomia é essencial para situações de emergência onde o operador precisa intervir rapidamente - por exemplo, colocar um cruzamento em intermitente após um acidente - sem depender da criação ou modificação de uma estratégia.
 
-O agrupamento de controladores com seus eventos e incidentes reflete o ciclo de vida operacional completo: o operador monitora controladores, recebe eventos (mudanças de estado, alarmes de hardware), trata incidentes (falhas, conflitos, avarias) e envia comandos — tudo no mesmo contexto.
+O agrupamento de controladores com seus eventos e incidentes reflete o ciclo de vida operacional completo: o operador monitora controladores, recebe eventos (mudanças de estado, alarmes de hardware), trata incidentes (falhas, conflitos, avarias) e envia comandos - tudo no mesmo contexto.
 
 ### **Recursos**
 
@@ -561,16 +562,16 @@ Recurso central do módulo, responsável pelo cadastro, configuração técnica 
 
 | Estado | Descrição | Comandos Disponíveis |
 | ----- | ----- | ----- |
-| Em estoque | Equipamento cadastrado mas não instalado. Pode estar em almoxarifado ou aguardando designação. | Nenhum — apenas gestão de cadastro técnico. |
+| Em estoque | Equipamento cadastrado mas não instalado. Pode estar em almoxarifado ou aguardando designação. | Nenhum - apenas gestão de cadastro técnico. |
 | Em testes | Instalado em bancada de testes ou em campo para validação. Não opera tráfego real. | Todos disponíveis para fins de teste. Warning: "Controlador em modo de testes". |
-| Em campo — sem associar | Instalado fisicamente em uma interseção mas não associado logicamente no sistema. Pode estar operando com plano local interno. | Todos disponíveis. Warning permanente: "Controlador instalado em campo sem associação à interseção. Comandos não afetam configuração persistida." |
+| Em campo - sem associar | Instalado fisicamente em uma interseção mas não associado logicamente no sistema. Pode estar operando com plano local interno. | Todos disponíveis. Warning permanente: "Controlador instalado em campo sem associação à interseção. Comandos não afetam configuração persistida." |
 | Operativo | Associado a uma interseção e participando plenamente da operação semafórica. Recebe configurações das Estratégias via interseção. | Todos disponíveis. Operação normal. |
 
 * **Comunicação com controladores:** Gestão da conexão bidirecional entre a central Attlas e cada controlador de campo. O sistema realiza polling periódico para verificar conectividade e coletar dados operacionais, mantém canais abertos para envio de comandos em tempo real e monitora a qualidade da comunicação (latência, taxa de perda de pacotes). Suporta múltiplos protocolos simultaneamente, permitindo que a rede contenha controladores de diferentes fabricantes.
 
 * **Monitoramento em tempo real:** Visualização contínua do estado de cada controlador: status de conectividade (online/offline), plano semafórico em execução (recebido da interseção), fase atual, tempo restante da fase, modo de operação (normal, intermitente, apagado, manual), estado de luzes de cada grupo semafórico, intensidade luminosa (quando suportado pelo hardware) e modo de controle (central, local, manual). Essas informações também são exibidas no detalhe da interseção correspondente no Modelo de Tráfego.
 
-* **Controle direto:** Capacidade de enviar comandos a controladores individuais ou a grupos de controladores simultaneamente, independentemente da estratégia ativa. Os comandos incluem: trocar plano semafórico, alterar modo de operação (intermitente, apagar, retornar ao modo central), forçar uma fase específica, alterar tempos de ciclo e executar reset do equipamento. Quando o operador envia um comando direto que conflita com a estratégia ativa, o sistema registra a intervenção manual, notifica sobre o conflito e mantém o comando manual até que o operador libere o controlador de volta ao controle da estratégia. O comando manual opera diretamente sobre o controlador — a interseção registra que o controlador está sob intervenção manual, mas não altera sua configuração persistida.
+* **Controle direto:** Capacidade de enviar comandos a controladores individuais ou a grupos de controladores simultaneamente, independentemente da estratégia ativa. Os comandos incluem: trocar plano semafórico, alterar modo de operação (intermitente, apagar, retornar ao modo central), forçar uma fase específica, alterar tempos de ciclo e executar reset do equipamento. Quando o operador envia um comando direto que conflita com a estratégia ativa, o sistema registra a intervenção manual, notifica sobre o conflito e mantém o comando manual até que o operador libere o controlador de volta ao controle da estratégia. O comando manual opera diretamente sobre o controlador - a interseção registra que o controlador está sob intervenção manual, mas não altera sua configuração persistida.
 
 * **Substituição de equipamento:** Quando um controlador precisa ser substituído, o operador desassocia o controlador antigo da interseção (que mantém toda a sua configuração intacta) e associa o novo controlador. O novo equipamento recebe automaticamente a configuração persistida na interseção, planos, fases, tempos, defasagens e entra em operação sem necessidade de configuração manual. O controlador antigo retorna ao estado "Em estoque" ou "Em testes" para manutenção.
 
@@ -580,7 +581,7 @@ Recurso de registro e monitoramento de eventos operacionais dos controladores. E
 
 **Funcionalidades**
 
-* **Registro automático de eventos:** Captura automática de todos os eventos gerados pelos controladores: mudanças de plano (qual plano saiu, qual entrou, quem solicitou — estratégia ou operador), transições de modo de operação, alertas de hardware (porta do armário aberta, temperatura elevada, falha de ventilador, detecção de conflito de fases), eventos de comunicação (perda de conexão, reconexão, timeout) e eventos de energia (queda de alimentação, entrada em bateria via nobreak, retorno de energia).
+* **Registro automático de eventos:** Captura automática de todos os eventos gerados pelos controladores: mudanças de plano (qual plano saiu, qual entrou, quem solicitou - estratégia ou operador), transições de modo de operação, alertas de hardware (porta do armário aberta, temperatura elevada, falha de ventilador, detecção de conflito de fases), eventos de comunicação (perda de conexão, reconexão, timeout) e eventos de energia (queda de alimentação, entrada em bateria via nobreak, retorno de energia).
 
 * **Classificação e filtragem:** Cada evento é classificado por tipo (operacional, hardware, comunicação, energia), severidade (informativo, atenção, crítico) e origem (controlador específico, subárea, área). Filtragem por qualquer combinação desses atributos, período de tempo ou área geográfica.
 
@@ -602,7 +603,7 @@ Juan abre o módulo de Controladores e visualiza o Dashboard:
 | ----- | ----- |
 | Controladores online | 47 de 50 (94%) |
 | Controladores offline | 3 (CTRL-005, CTRL-023, CTRL-041) |
-| Estratégia ativa | "Hora Pico Manhã" — configuração enviada via interseções do corredor |
+| Estratégia ativa | "Hora Pico Manhã" - configuração enviada via interseções do corredor |
 | Incidentes abertos | 5 (2 críticos, 1 alto, 2 médios) |
 
 ### **Passo 2: Investigação de Controlador Offline**
@@ -611,13 +612,13 @@ Juan clica no **CTRL-005** (offline desde às 06:30). O sistema mostra que a int
 
 | Atributo | Informação |
 | ----- | ----- |
-| Identificação | CTRL-005 — Siemens ST900 / Firmware v4.2.1 |
-| Estado | Operativo (associado a INT-005 — Av. 10 de Agosto / Av. Amazonas) |
+| Identificação | CTRL-005 - Siemens ST900 / Firmware v4.2.1 |
+| Estado | Operativo (associado a INT-005 - Av. 10 de Agosto / Av. Amazonas) |
 | Status de comunicação | Offline desde 06:28:15 |
-| Interseção associada | INT-005 — configuração persistida: Plano 2 (Hora Pico Manhã). Aguardando reconexão para propagar. |
-| Modo de fallback | Local — executando plano interno do controlador (Plano 1 padrão) |
-| Último evento | 06:28:15 — Timeout de comunicação (3 tentativas sem resposta) |
-| Incidente | INC-2026-0847 — Criado automaticamente, severidade Alta, status: Aberto |
+| Interseção associada | INT-005 - configuração persistida: Plano 2 (Hora Pico Manhã). Aguardando reconexão para propagar. |
+| Modo de fallback | Local - executando plano interno do controlador (Plano 1 padrão) |
+| Último evento | 06:28:15 - Timeout de comunicação (3 tentativas sem resposta) |
+| Incidente | INC-2026-0847 - Criado automaticamente, severidade Alta, status: Aberto |
 
 A interseção **INT-005** mantém a configuração da estratégia "Hora Pico Manhã" persistida. Quando **CTRL-005** reconectar, a interseção propagará automaticamente o Plano 2 ao controlador, sem intervenção do operador.
 
@@ -627,35 +628,35 @@ A interseção **INT-005** mantém a configuração da estratégia "Hora Pico Ma
 
 | Ação | Detalhes |
 | ----- | ----- |
-| Controlador | CTRL-003 — estado: Operativo, associado a INT-003 |
+| Controlador | CTRL-003 - estado: Operativo, associado a INT-003 |
 | Comando | Alterar modo para Intermitente |
-| Conflito | Estratégia "Hora Pico Manhã" ativa — Plano 3 (BRT) em execução nesta interseção |
+| Conflito | Estratégia "Hora Pico Manhã" ativa - Plano 3 (BRT) em execução nesta interseção |
 | Ação do sistema | Comando manual enviado diretamente ao CTRL-003. INT-003 registra que o controlador está sob intervenção manual. Configuração persistida na interseção NÃO é alterada (continua sendo Plano 3 BRT). |
-| Registro | 07:52 — Juan Martínez colocou CTRL-003 em intermitente (motivo: acidente). Estratégia suspensa neste controlador. |
+| Registro | 07:52 - Juan Martínez colocou CTRL-003 em intermitente (motivo: acidente). Estratégia suspensa neste controlador. |
 
 Às 08:30, o acidente é liberado. Juan retorna **CTRL-003** ao modo central. A interseção **INT-003** propaga automaticamente a configuração persistida (Plano 3 BRT da estratégia ativa) e **CTRL-003** volta à operação coordenada.
 
-### **Passo 4 — Substituição de Equipamento**
+### **Passo 4 - Substituição de Equipamento**
 
 O **CTRL-005** é diagnosticado com falha no módulo de comunicação. A equipe de campo substitui o equipamento por um **CTRL-051** (novo, estado "Em estoque"):
 
 | Passo | Ação |
 | ----- | ----- |
 | 1\. Desassociar antigo | Operador desassocia CTRL-005 de INT-005. Estado de CTRL-005 muda para "Em estoque" (aguardando reparo). INT-005 mantém toda a configuração semafórica intacta. |
-| 2\. Configurar novo | CTRL-051 recebe configuração técnica: IP 10.0.5.105, protocolo UNE, parâmetros de polling. Estado muda de "Em estoque" para "Em campo — sem associar". |
+| 2\. Configurar novo | CTRL-051 recebe configuração técnica: IP 10.0.5.105, protocolo UNE, parâmetros de polling. Estado muda de "Em estoque" para "Em campo - sem associar". |
 | 3\. Associar à interseção | Operador associa CTRL-051 a INT-005. Estado muda para "Operativo". INT-005 propaga automaticamente ao CTRL-051: Plano 2 (Hora Pico Manhã, se ativa) ou último plano persistido. |
 | 4\. Verificação | CTRL-051 confirma recebimento do plano. INT-005 volta a operar normalmente. Nenhuma configuração semafórica foi perdida nem reconfigurada manualmente. |
 
 Esse fluxo garante que a troca de equipamento seja uma operação rápida e segura: a inteligência de tráfego (planos, tempos, estratégias) está na interseção, não no controlador.
 
-### **Passo 5 — Eventos do Turno**
+### **Passo 5 - Eventos do Turno**
 
 Ao final do turno, Juan consulta os eventos:
 
 | Hora | Controlador | Tipo | Descrição |
 | ----- | ----- | ----- | ----- |
 | 06:25:10 | CTRL-005 | Energia | Queda de energia na região |
-| 06:28:15 | CTRL-005 | Comunicação | Timeout — fallback para modo local |
+| 06:28:15 | CTRL-005 | Comunicação | Timeout - fallback para modo local |
 | 06:30:02 | INT-001 a 008 | Operacional | Estratégia "Hora Pico Manhã" enviada às interseções. INT-005 persiste config, aguarda reconexão. |
 | 07:52:00 | CTRL-003 | Operacional | Modo intermitente por Juan Martínez (acidente em INT-003). Config persistida em INT-003 não alterada. |
 | 08:30:00 | CTRL-003 | Operacional | Retorno ao modo central. INT-003 propagou Plano 3 (BRT) ao controlador. |
@@ -690,9 +691,9 @@ Recurso central do módulo, responsável pelo cadastro, configuração técnica 
 
 | Estado | Descrição | Comandos Disponíveis |
 | ----- | ----- | ----- |
-| Em estoque | Equipamento cadastrado mas não instalado. Pode estar em almoxarifado ou aguardando designação. | Nenhum — apenas gestão de cadastro técnico. |
+| Em estoque | Equipamento cadastrado mas não instalado. Pode estar em almoxarifado ou aguardando designação. | Nenhum - apenas gestão de cadastro técnico. |
 | Em testes | Instalada em bancada de testes para validação de stream, PTZ e configurações. Não participa do monitoramento operacional. | Visualização de stream e controle PTZ para fins de teste. *Warning: “Câmera em modo de testes”.* |
-| Em campo — sem configurar | Instalada fisicamente mas sem configuração de stream validada no sistema. Pode estar operando localmente. | Visualização e PTZ disponíveis. *Warning permanente: “Câmera instalada em campo sem configuração validada.”* |
+| Em campo - sem configurar | Instalada fisicamente mas sem configuração de stream validada no sistema. Pode estar operando localmente. | Visualização e PTZ disponíveis. *Warning permanente: “Câmera instalada em campo sem configuração validada.”* |
 | Operativa | Configurada, validada e participando plenamente do videomonitoramento em tempo real. Streams ativos e disponíveis para operadores. | Todos disponíveis. Operação normal. |
 
 
@@ -776,7 +777,7 @@ María abre o módulo de Câmeras e visualiza o Dashboard:
 | Indicador | Valor |
 | :---- | :---- |
 | Câmeras online | 14 de 15 (93%) |
-| Câmeras offline | 1 (CAM-007 — Av. América / Av. Mariana de Jesús) |
+| Câmeras offline | 1 (CAM-007 - Av. América / Av. Mariana de Jesús) |
 | Largura de banda | 320 Mbps de 500 Mbps disponíveis (64%) |
 | Incidentes abertos | 3 (1 crítico, 1 alto, 1 médio) |
 
@@ -788,12 +789,12 @@ María clica na CAM-007 (offline desde às 13:45). O sistema mostra:
 
 | Atributo | Informação |
 | :---- | :---- |
-| Identificação | CAM-007 — Hikvision DS-2DE4425IW / Firmware v5.7.3 / PTZ |
+| Identificação | CAM-007 - Hikvision DS-2DE4425IW / Firmware v5.7.3 / PTZ |
 | Estado | Operativa (Av. América / Av. Mariana de Jesús) |
 | Status de comunicação | Offline desde 13:42:30 |
-| Stream | RTSP://10.0.7.107/stream1 — sem resposta |
-| Último evento | 13:42:30 — Timeout de conexão (3 tentativas sem resposta) |
-| Incidente | INC-2026-1203 — Criado automaticamente, severidade Alta, status: Aberto |
+| Stream | RTSP://10.0.7.107/stream1 - sem resposta |
+| Último evento | 13:42:30 - Timeout de conexão (3 tentativas sem resposta) |
+| Incidente | INC-2026-1203 - Criado automaticamente, severidade Alta, status: Aberto |
 
 ### 
 
@@ -803,10 +804,10 @@ María clica na CAM-007 (offline desde às 13:45). O sistema mostra:
 
 | Ação | Detalhes |
 | :---- | :---- |
-| Layout ativado | 2x2 — CAM-003 (visão geral), CAM-004 (detalhe), CAM-002 (aproximação norte), CAM-005 (aproximação sul) |
+| Layout ativado | 2x2 - CAM-003 (visão geral), CAM-004 (detalhe), CAM-002 (aproximação norte), CAM-005 (aproximação sul) |
 | Controle PTZ | María direciona CAM-003 para o ponto exato do acidente usando controle PTZ inline. Zoom 12x ativado. |
 | Coordenação | Informação visual transmitida em tempo real ao módulo de Controladores para apoiar a decisão de colocar CTRL-009 em intermitente. |
-| Registro | 14:35 — María González ativou cena “Interseção América-Colón”. PTZ de CAM-003 direcionado manualmente. |
+| Registro | 14:35 - María González ativou cena “Interseção América-Colón”. PTZ de CAM-003 direcionado manualmente. |
 
 ### 
 
@@ -817,7 +818,7 @@ A CAM-007 é diagnosticada com falha no módulo de rede. A equipe de campo subst
 | Passo | Ação |
 | :---- | :---- |
 | 1\. Desativar antiga | Operador desativa CAM-007. Estado muda para “Em estoque” (aguardando reparo). Localização geográfica e presets PTZ padrão são mantidos como referência. |
-| 2\. Configurar nova | CAM-016 recebe configuração técnica: IP 10.0.7.107, protocolo ONVIF, parâmetros de stream. Estado muda de “Em estoque” para “Em campo — sem configurar”. |
+| 2\. Configurar nova | CAM-016 recebe configuração técnica: IP 10.0.7.107, protocolo ONVIF, parâmetros de stream. Estado muda de “Em estoque” para “Em campo - sem configurar”. |
 | 3\. Validar e ativar | Stream validado. Estado muda para “Operativa”. CAM-016 aparece no mapa na mesma posição de CAM-007. Presets PTZ reconfigurados. |
 | 4\. Verificação | CAM-016 visível no Video Wall e no mapa. Cenas que incluíam CAM-007 atualizadas automaticamente para CAM-016. |
 
@@ -829,7 +830,7 @@ Ao final do turno, María consulta os eventos:
 
 | Hora | Câmera | Tipo | Descrição |
 | :---- | :---- | :---- | :---- |
-| 13:42:30 | CAM-007 | Comunicação | Timeout — stream indisponível |
+| 13:42:30 | CAM-007 | Comunicação | Timeout - stream indisponível |
 | 13:42:35 | CAM-007 | Operacional | Incidente INC-2026-1203 criado automaticamente. |
 | 14:35:00 | CAM-003 | Operacional | PTZ direcionado manualmente por María González (acidente América/Colón). |
 | 15:20:00 | CAM-003 | Operacional | PTZ retornado a preset padrão (acidente liberado). |
@@ -845,11 +846,11 @@ O módulo Analítico é o cérebro de inteligência de dados do Attlas. Ele proc
 
 O paradigma fundamental deste módulo é a cadeia de valor dos dados: coleta \-\> configuração \-\> processamento \-\> análise \-\> apresentação \-\> ação. Embora o módulo consuma dados de múltiplas fontes (controladores, detectores, sensores), o foco primário está na videoanalítica: o Analítico é o módulo responsável por configurar os mecanismos de detecção de presença (laços virtuais), classificação de objetos (regiões de interesse) e processamento inteligente das imagens capturadas pelas câmeras. O módulo Câmeras fornece o stream de vídeo; o Analítico define o que fazer com ele.
 
-Além da videoanalítica, o módulo integra ferramentas ATSPM (Automated Traffic Signal Performance Measures) que consomem dados de alta resolução dos controladores semafóricos para gerar métricas de desempenho. Essa combinação — videoanalítica como core operacional e ATSPM como extensão analítica — permite ao Attlas oferecer uma visão completa: desde a detecção física de veículos e incidentes até a avaliação de eficiência da temporização semafórica.
+Além da videoanalítica, o módulo integra ferramentas ATSPM (Automated Traffic Signal Performance Measures) que consomem dados de alta resolução dos controladores semafóricos para gerar métricas de desempenho. Essa combinação - videoanalítica como core operacional e ATSPM como extensão analítica - permite ao Attlas oferecer uma visão completa: desde a detecção física de veículos e incidentes até a avaliação de eficiência da temporização semafórica.
 
 O módulo possui também capacidade de tomada de decisões automatizada: utilizando dados conhecidos de videoanalítica e detectores, o Analítico pode alimentar diretamente as Estratégias do Modelo de Tráfego, sugerindo ou ativando ajustes de temporização semafórica em resposta a condições de tráfego detectadas em tempo real. Essa capacidade transforma o Attlas de um sistema reativo em um sistema preditivo e adaptativo.
 
-A separação de responsabilidades é clara: o módulo Câmeras captura e transmite vídeo; o módulo Controladores coleta dados de detectores e executa comandos; o Analítico configura a inteligência sobre esses dados, processa resultados e gera insights — sem impactar a operação em tempo real dos equipamentos de campo.
+A separação de responsabilidades é clara: o módulo Câmeras captura e transmite vídeo; o módulo Controladores coleta dados de detectores e executa comandos; o Analítico configura a inteligência sobre esses dados, processa resultados e gera insights - sem impactar a operação em tempo real dos equipamentos de campo.
 
 ### **Recursos**
 
@@ -865,7 +866,7 @@ Recurso de visualização e configuração analítica das câmeras da rede. Apre
 
 * **Configuração de laços virtuais (detecção de presença):** Interface gráfica para desenhar, editar e posicionar laços virtuais diretamente sobre o stream de vídeo da câmera. Os laços virtuais são regiões definidas pelo operador que simulam o comportamento de detectores físicos indutivos: quando um veículo cruza o laço, o sistema registra a presença. O operador define: posição e geometria do laço (retângulo, polígono), direção de detecção (entrada, saída, bidirecional), sensibilidade de detecção e associação com faixas de tráfego.
 
-* **Configuração de regiões de classificação de objetos:** Interface gráfica para definir regiões de interesse (ROI — Regions of Interest) onde o sistema aplica algoritmos de classificação de objetos. Dentro de cada região, o sistema identifica e classifica: tipos de veículos (automóvel, ônibus, caminhão, motocicleta, bicicleta), pedestres, objetos estáticos (obstáculos na via, veículos parados). O operador configura: área da região (polígono sobre o stream), classes de objetos a detectar, limiares de confiança e ações automáticas por tipo de detecção (ex: gerar alerta quando pedestre detectado em faixa exclusiva).
+* **Configuração de regiões de classificação de objetos:** Interface gráfica para definir regiões de interesse (ROI - Regions of Interest) onde o sistema aplica algoritmos de classificação de objetos. Dentro de cada região, o sistema identifica e classifica: tipos de veículos (automóvel, ônibus, caminhão, motocicleta, bicicleta), pedestres, objetos estáticos (obstáculos na via, veículos parados). O operador configura: área da região (polígono sobre o stream), classes de objetos a detectar, limiares de confiança e ações automáticas por tipo de detecção (ex: gerar alerta quando pedestre detectado em faixa exclusiva).
 
 * **Validação em tempo real:** Feedback visual imediato após cada alteração de configuração: o sistema mostra em tempo real as detecções geradas pelos laços e regiões reciém-configurados, permitindo ao operador ajustar posição e parâmetros até obter a precisão desejada antes de confirmar a configuração.
 
@@ -978,12 +979,12 @@ Carlos abre a Visão Geral do módulo Analítico e localiza a CAM-018 (recém-in
 
 ### **Passo 2: Registro e Conexão de Servidor Analítico**
 
-Carlos acessa o recurso Analíticos para registrar o servidor de videoanalítica que processará as imagens da CAM-018. O servidor já foi configurado pela equipe de TI com os algoritmos de contagem e classificação — Carlos precisa apenas registrá-lo no Attlas e estabelecer a conexão:
+Carlos acessa o recurso Analíticos para registrar o servidor de videoanalítica que processará as imagens da CAM-018. O servidor já foi configurado pela equipe de TI com os algoritmos de contagem e classificação - Carlos precisa apenas registrá-lo no Attlas e estabelecer a conexão:
 
 | Atributo | Configuração |
 | ----- | ----- |
-| Nome | SVR-AN-012 — Servidor Analítico Av. 6 de Diciembre (Norte) |
-| Endereço | 10.0.12.50:8443 — API REST |
+| Nome | SVR-AN-012 - Servidor Analítico Av. 6 de Diciembre (Norte) |
+| Endereço | 10.0.12.50:8443 - API REST |
 | Tipo de dados fornecidos | Contagem veicular \+ Classificação de objetos \+ Detecção de incidentes |
 | Dispositivos associados | CAM-018, CAM-019 (câmeras) / ACOM-032 (placa de contato seco instalada em CTRL-018, converte detecção da CAM-018) |
 | Intervalo de polling | 30 segundos |
@@ -993,7 +994,7 @@ Após salvar, o sistema executa o primeiro polling. O servidor responde dentro d
 
 | Verificação | Resultado |
 | ----- | ----- |
-| Conectividade | Online — latência 12ms |
+| Conectividade | Online - latência 12ms |
 | Dados recebidos | Contagem: 342 veíc (5 min) / Classificação: 89% automóveis, 6% ônibus, 3% caminhões, 2% motos |
 | Estado | Online |
 
@@ -1007,11 +1008,11 @@ Carlos acessa o recurso ATSPM para avaliar o impacto da nova temporização na i
 
 | Indicador ATSPM | Resultado |
 | ----- | ----- |
-| Arrivals on Green (AOG) | 72% (melhoria de 58% para 72% — coordenação eficaz) |
-| Split utilization (Fase 2 — principal) | 85% (uso adequado do tempo verde alocado) |
-| Split utilization (Fase 4 — secundária) | 45% (tempo verde subutilizado — oportunidade de redistribuição) |
+| Arrivals on Green (AOG) | 72% (melhoria de 58% para 72% - coordenação eficaz) |
+| Split utilization (Fase 2 - principal) | 85% (uso adequado do tempo verde alocado) |
+| Split utilization (Fase 4 - secundária) | 45% (tempo verde subutilizado - oportunidade de redistribuição) |
 | Yellow/Red Actuations | 12 eventos/h (dentro do limiar aceitável de 15\) |
-| Approach Delay (médio) | 32s (redução de 45s para 32s — melhoria de 29%) |
+| Approach Delay (médio) | 32s (redução de 45s para 32s - melhoria de 29%) |
 
 ### 
 
@@ -1022,7 +1023,7 @@ Carlos acessa o recurso ATSPM para avaliar o impacto da nova temporização na i
 | Atributo | Informação |
 | ----- | ----- |
 | Anomalia detectada | Queda abrupta de fluxo na aproximação norte (de 800 para 200 veíc/h em 5 min) \+ veículo parado detectado na faixa 2\. |
-| Classificação | Possível acidente — severidade Alta |
+| Classificação | Possível acidente - severidade Alta |
 | Câmeras sugeridas | CAM-011 e CAM-012 (confirmação visual imediata) |
 | Ação automática | Sugestão enviada ao Modelo de Tráfego: ativar plano de emergência para INT-015. |
 
@@ -1038,7 +1039,7 @@ Ao final da manhã, Carlos consulta o Dashboard do Analítico:
 | ----- | ----- |
 | Analíticos ativos | 38 de 42 (90,5%) |
 | Analíticos em erro | 2 (AN-031: câmera offline, AN-039: degradação de precisão) |
-| Acom’s operacionais | 56 de 60 (93,3%) — 4 com falha de conversão de sinal |
+| Acom’s operacionais | 56 de 60 (93,3%) - 4 com falha de conversão de sinal |
 | Precisão média (videoanalítica) | 94,2% |
 | Incidentes detectados (hoje) | 3 (1 confirmado, 1 pendente, 1 falso positivo) |
 | AOG médio da rede | 68% (melhoria de 3pp vs. semana anterior) |
@@ -1169,7 +1170,7 @@ Painel visual com indicadores-chave do domínio de planos de execução, oferece
 
 ### **Cenário**
 
-São 16:45 de segunda-feira. A operadora Ana Herrera está monitorando o sistema Attlas no centro de controle da EPMMOP quando o módulo de Alarmes detecta um incidente de tráfego grave: acidente com bloqueio total da Av. 10 de Agosto na altura da Av. Colón. O sistema possui um plano de resposta pré-configurado para este tipo de incidente: “PLAN-ACC-001 — Acidente com Bloqueio Total em Corredor Principal”.
+São 16:45 de segunda-feira. A operadora Ana Herrera está monitorando o sistema Attlas no centro de controle da EPMMOP quando o módulo de Alarmes detecta um incidente de tráfego grave: acidente com bloqueio total da Av. 10 de Agosto na altura da Av. Colón. O sistema possui um plano de resposta pré-configurado para este tipo de incidente: “PLAN-ACC-001 - Acidente com Bloqueio Total em Corredor Principal”.
 
 ### **Passo 1: Lançamento Automático do Plano**
 
@@ -1177,9 +1178,9 @@ A alarme ALM-2026-0847 (acidente grave) é ativada. O plano PLAN-ACC-001 está a
 
 | Atributo | Informação |
 | ----- | ----- |
-| Plano | PLAN-ACC-001 — Acidente com Bloqueio Total em Corredor Principal |
+| Plano | PLAN-ACC-001 - Acidente com Bloqueio Total em Corredor Principal |
 | Tipo | Baseado em estado de alarma (ativação) |
-| Execução | EXE-2026-3421 — Lançada automaticamente às 16:45:12 |
+| Execução | EXE-2026-3421 - Lançada automaticamente às 16:45:12 |
 | Modo | Semi-automático (confirmação em fases críticas) |
 | Proprietária | Ana Herrera (herdou propriedade do evento EVT-2026-1547) |
 | Fases | 4 fases: Verificação \-\> Resposta Imediata \-\> Gestão de Tráfego \-\> Normalização |
@@ -1205,7 +1206,7 @@ Após confirmação visual, a fase 2 inicia. Tipo de execução: workflow com ra
 | Tarefa | Ação | Modo | Resultado |
 | ----- | ----- | ----- | ----- |
 | 2.1 | Enviar ordem ao CTRL-012: ativar plano de emergência na interseção 10 de Agosto / Colón. | Semi-automática | Ana confirma. Plano ativado. |
-| 2.2 | Enviar ordem ao PMV-003: exibir “ACIDENTE — DESVIO PELA AV. AMÉRICA”. | Automática | Mensagem exibida no painel. |
+| 2.2 | Enviar ordem ao PMV-003: exibir “ACIDENTE - DESVIO PELA AV. AMÉRICA”. | Automática | Mensagem exibida no painel. |
 | 2.3 | Enviar e-mail ao ECU-911 com dados do acidente (localização, imagens). | Automática | E-mail enviado às 16:47:30. |
 | 2.4 | Ativar onda verde no corredor alternativo Av. América (ordem ao Modelo de Tráfego). | Semi-automática | Ana confirma. Estratégia ativada. |
 
@@ -1355,21 +1356,21 @@ Roberto abre o módulo PMV e consulta o dashboard:
 | Indicador | Valor |
 | :---- | :---- |
 | Painéis online | 31 de 33 (93,9%) |
-| Painéis offline | 2 (PMV-017 móvel — bateria descarregada; PMV-028 fixo — falha de comunicação) |
-| Painéis no corredor Av. 10 de Agosto | 5 painéis fixos (PMV-001 a PMV-005) — todos online |
+| Painéis offline | 2 (PMV-017 móvel - bateria descarregada; PMV-028 fixo - falha de comunicação) |
+| Painéis no corredor Av. 10 de Agosto | 5 painéis fixos (PMV-001 a PMV-005) - todos online |
 | Mensagens ativas na rede | 12 mensagens distribuídas em 18 painéis |
 
 ### **Passo 2: Envio de Mensagem da Biblioteca**
 
-Roberto seleciona o grupo “Corredor 10 de Agosto — Desvio” (PMV-001, PMV-002, PMV-003) e busca na biblioteca a mensagem pré-configurada:
+Roberto seleciona o grupo “Corredor 10 de Agosto - Desvio” (PMV-001, PMV-002, PMV-003) e busca na biblioteca a mensagem pré-configurada:
 
 | Atributo | Configuração |
 | :---- | :---- |
-| Mensagem | MSG-DEV-012 — “CONGESTIONAMENTO — DESVIO PELA AV. AMÉRICA” |
+| Mensagem | MSG-DEV-012 - “CONGESTIONAMENTO - DESVIO PELA AV. AMÉRICA” |
 | Layout | Gráfico \+ Texto (seta direcional \+ texto de desvio) |
-| Destino | Grupo “Corredor 10 de Agosto — Desvio” (3 painéis) |
+| Destino | Grupo “Corredor 10 de Agosto - Desvio” (3 painéis) |
 | Prioridade | Alta (sobrescreve mensagens informativas atuais) |
-| Caducidade | Automática — quando o nível de serviço do corredor retornar ao normal (condição baseada em evento). |
+| Caducidade | Automática - quando o nível de serviço do corredor retornar ao normal (condição baseada em evento). |
 
 Roberto pré-visualiza a mensagem na interface, confirmando que a seta e o texto estão corretamente posicionados no formato dos painéis PMV-001 a PMV-003. Após aprovação visual, envia a mensagem ao grupo.
 
@@ -1381,11 +1382,11 @@ Roberto cria uma mensagem adicional para os painéis PMV-004 e PMV-005 (localiza
 
 | Atributo | Configuração |
 | :---- | :---- |
-| Mensagem | Nova — “AV. 10 DE AGOSTO: {tempo\_percurso} MIN ATÉ EL EJÉRCITO” |
-| Variável dinâmica | {tempo\_percurso} — alimentada pelo módulo Analítico (tempo de viagem no corredor, atualização a cada 5 min) |
+| Mensagem | Nova - “AV. 10 DE AGOSTO: {tempo\_percurso} MIN ATÉ EL EJÉRCITO” |
+| Variável dinâmica | {tempo\_percurso} - alimentada pelo módulo Analítico (tempo de viagem no corredor, atualização a cada 5 min) |
 | Layout | Somente texto (2 linhas, fonte grande) |
 | Prioridade | Média (abaixo da mensagem de desvio) |
-| Caducidade | Manual — Roberto remove quando a situação normalizar. |
+| Caducidade | Manual - Roberto remove quando a situação normalizar. |
 
 O sistema exibe a pré-visualização: “AV. 10 DE AGOSTO: 32 MIN ATÉ EL EJÉRCITO”. O valor 32 é atualizado automaticamente pelo Analítico sem intervenção de Roberto.
 
@@ -1395,9 +1396,9 @@ Roberto verifica a pilha de mensagens do PMV-003:
 
 | Prioridade | Mensagem | Origem | Caducidade |
 | :---- | :---- | :---- | :---- |
-| Alta | MSG-DEV-012 — CONGESTIONAMENTO — DESVIO PELA AV. AMÉRICA | Roberto (manual) | Evento |
-| Média | MSG-INFO-005 — Informação geral de tráfego (programação semanal) | Automático | Sexta 23:59 |
-| Baixa | MSG-INS-001 — “EPMMOP — Mobilidade Inteligente para Quito” (mensagem institucional padrão) | Sistema | Sem caducidade |
+| Alta | MSG-DEV-012 - CONGESTIONAMENTO - DESVIO PELA AV. AMÉRICA | Roberto (manual) | Evento |
+| Média | MSG-INFO-005 - Informação geral de tráfego (programação semanal) | Automático | Sexta 23:59 |
+| Baixa | MSG-INS-001 - “EPMMOP - Mobilidade Inteligente para Quito” (mensagem institucional padrão) | Sistema | Sem caducidade |
 
 O PMV-003 está exibindo a mensagem de prioridade Alta (desvio). Quando essa mensagem caducar (congestionamento normalizado), o painel exibirá automaticamente a mensagem de prioridade Média (informação semanal).
 
@@ -1512,7 +1513,7 @@ Recurso de gestão completa das ordens de trabalho de manutenção para qualquer
 * **Criação de OS preventiva:** Gerada automaticamente pelo calendário de manutenção preventiva. O sistema cria OS preventivas com base em regras configuráveis por tipo de dispositivo: periodicidade (dias, semanas, meses), contador de operações ou condição técnica. Cada tipo de ativo possui um plano de manutenção preventiva com tarefas pré-definidas (checklist).  
 * **Calendário de manutenção preventiva:** Programação visual de manutenções preventivas por ativo, por tipo de dispositivo ou por região geográfica. O calendário mostra: manutenções programadas, executadas, pendentes e atrasadas. Permite reprogramação com justificativa.  
 * **Estados visuais de manutenção preventiva:** Indicadores visuais por cores conforme estado da manutenção preventiva: Verde \-\> Manutenção preventiva em dia e correta. Amarelo \-\> A ponto de vencer (próximo ao prazo). Vermelho \-\> Não realizada (prazo excedido). Os estados são visíveis tanto na lista de OS quanto no mapa geoposicionado de ativos.  
-* **Estados visuais de manutenção corretiva:** Indicadores visuais por cores conforme estado da OS corretiva: Azul \-\> OS corretiva aberta com tempo de resolução dentro do prazo. Amarelo \-\> OS aberta com tempo de resolução próximo ao limite. Vermelho — Tempo de resolução excedido.  
+* **Estados visuais de manutenção corretiva:** Indicadores visuais por cores conforme estado da OS corretiva: Azul \-\> OS corretiva aberta com tempo de resolução dentro do prazo. Amarelo \-\> OS aberta com tempo de resolução próximo ao limite. Vermelho - Tempo de resolução excedido.  
 * **Fluxo de execução:** Estados da OS: Criada \-\> Atribuída \-\> Em deslocamento \-\> Em execução \-\> Pendente (aguardando peças/condições) \-\> Concluída \-\> Validada \-\> Fechada. Cada transição registra data/hora, técnico, observações e evidências (fotos, assinaturas).  
 * **Atribuição e despacho:** Atribuição de OS a técnicos ou equipes de campo. O sistema sugere o técnico mais adequado com base em: proximidade geográfica, especialização por tipo de dispositivo, carga de trabalho atual e disponibilidade. O despacho pode ser manual (operador seleciona) ou automático (via auto-regras de incidência).  
 * **Checklist de tarefas por tipo de dispositivo:** Cada OS possui uma lista de tarefas a executar, configurável por tipo de manutenção e tipo de dispositivo. Exemplos: para controladores (inspeção visual, teste de comunicação, teste de temporização, verificação de cabeação); para câmeras (limpeza de lente, ajuste de foco, teste de streaming); para nobreaks (teste de carga, verificação de baterias, limpeza). Tarefas obrigatórias impedem o fechamento da OS se não completadas.  
@@ -1549,8 +1550,8 @@ María Fernanda abre o módulo Inventário e Manutenção e consulta o Dashboard
 | :---- | :---- |
 | Total de ativos registrados | 4.287 equipamentos (1.240 controladores, 890 câmeras, 650 detectores, 320 nobreaks, 33 PMVs, 1.154 outros) |
 | Ativos operativos | 4.185 (97,6%) |
-| Incidências abertas | 11 (3 críticas, 4 altas, 4 médias) — 3 novas na Av. Amazonas/Naciones Unidas |
-| Manutenção preventiva esta semana | 15 controladores — Corredor 10 de Agosto (0 de 15 concluídas) |
+| Incidências abertas | 11 (3 críticas, 4 altas, 4 médias) - 3 novas na Av. Amazonas/Naciones Unidas |
+| Manutenção preventiva esta semana | 15 controladores - Corredor 10 de Agosto (0 de 15 concluídas) |
 | Taxa de auto-despacho (mês) | 78% das incidências resolvidas sem triagem manual |
 | Estoque: alertas ativos | 2 itens abaixo do mínimo (módulos de potência, fusíveis 10A) |
 
@@ -1572,7 +1573,7 @@ A auto-regra para correlação de múltiplos dispositivos gera uma única OS par
 
 | Atributo | Configuração |
 | :---- | :---- |
-| OS | OS-2024-01523 (Corretiva — Causa Raíz) |
+| OS | OS-2024-01523 (Corretiva - Causa Raíz) |
 | Incidências vinculadas | INC-2024-01205, INC-2024-01206, INC-2024-01207 |
 | Causa raíz sugerida | Falha elétrica / nobreak NBK-015 |
 | Ativos afetados | NBK-015 (nobreak), CTRL-087 (controlador), CAM-042 (câmera), DET-019 (detector) |
@@ -1590,10 +1591,10 @@ Carlos chega ao local às 07:20 e registra o início da execução:
 | Ação | Detalhes |
 | :---- | :---- |
 | Diagnóstico | Nobreak NBK-015 com batería esgotada após queda de energia noturna. Dispositivos alimentados ficaram sem energia. |
-| Materiais consumidos | 2x Baterias 12V 7Ah para nobreak (EST-00456) — baixa automática do estoque. |
+| Materiais consumidos | 2x Baterias 12V 7Ah para nobreak (EST-00456) - baixa automática do estoque. |
 | Evidências | Foto antes: painel do nobreak com indicador de falha. Foto depois: baterias substituídas, todos os dispositivos operativos. |
 | Checklist | 8 de 8 tarefas concluídas (inspeção elétrica, troca baterias, teste nobreak, reset controlador, teste temporização, verificação câmera, teste streaming, teste detector). |
-| Conclusão | 08:30 — Interseção totalmente operativa. Tempo: 1h45. SLA cumprido (\< 4h). |
+| Conclusão | 08:30 - Interseção totalmente operativa. Tempo: 1h45. SLA cumprido (\< 4h). |
 
 Ao concluir a OS, o sistema fecha automaticamente as três incidências correlacionadas e atualiza o histórico de todos os ativos envolvidos (NBK-015, CTRL-087, CAM-042, DET-019).
 
@@ -1606,7 +1607,7 @@ Enquanto a corretiva era resolvida, María Fernanda consulta o calendário de ma
 | CTRL-001 | OS-PREV-0891 | Concluída (verde) | Ana Torres |
 | CTRL-002 | OS-PREV-0892 | Em execução (azul) | Pedro Gómez |
 | CTRL-003 | OS-PREV-0893 | Atribuída (amarelo) | Carlos Mendoza |
-| CTRL-004 a CTRL-015 | OS-PREV-0894 a 0905 | Programadas para Qua-Sex | — |
+| CTRL-004 a CTRL-015 | OS-PREV-0894 a 0905 | Programadas para Qua-Sex | - |
 
 **Passo 6: Alerta de Estoque**
 
@@ -1670,11 +1671,11 @@ Os elementos topológicos são a estrutura lógica da rede semafórica. Ao clica
 | :---- | :---- | :---- | :---- |
 | Dados topológicos | Geometria: nº de aproximações, faixas por aproximação, movimentos permitidos, fases | Sim, diagrama visual da interseção no popup |  |
 | Controlador | Estado do controlador associado: online/offline, modo (central/local/manual/intermitente), plano ativo, fase atual, tempo restante, estado de cada grupo semafórico | Sim, consumido do módulo Controladores em tempo real |  |
-| Controlador | Indicador de controlador sem associação (interseção sem controlador — ícone cinza) | Sim, visual no mapa |  |
+| Controlador | Indicador de controlador sem associação (interseção sem controlador - ícone cinza) | Sim, visual no mapa |  |
 | Detectores | Dados de fluxo dos detectores nas aproximações: volume, velocidade, ocupação em tempo real | Sim,consumido do módulo Detectores/Analítico |  |
 | Câmeras | Feeds ao vivo das câmeras que monitoram a interseção (thumbnails com click para expandir) | Sim, consumido do módulo Câmeras |  |
 | Alarmes | Alarmes ativos nesta interseção (de qualquer dispositivo associado) | Sim,  lista integrada no popup |  |
-| Ação rápida | Comandar controlador associado (mudar plano, modo intermitente, forçar fase) — mesmas ações do popup do controlador, acessíveis pelo popup da interseção | Sim, botões de ação no popup |  |
+| Ação rápida | Comandar controlador associado (mudar plano, modo intermitente, forçar fase) - mesmas ações do popup do controlador, acessíveis pelo popup da interseção | Sim, botões de ação no popup |  |
 | Ação rápida | Abrir incidência para a interseção | Sim,  formulário simplificado |  |
 | Configuração | Editar geometria, movimentos, fases, associar/desassociar controlador |  | Modelo de Tráfego |
 
@@ -1854,10 +1855,10 @@ O Dashboard mostra: 97,2% operativo, 4 alarmes, 0 emergências, 2 estratégias d
 
 | Evento no Mapa | O que Diego Vê |
 | :---- | :---- |
-| Às 07:50 — Estratégia ativa | Subárea “Zona Norte Centro” ganha borda reforçada com label “EST-PICO-AM-NORTE (programada)”. Os controladores dentro da subárea mostram ícone de loading conforme recebem a nova configuração. |
-| 07:50-07:51 — Execução | Controladores mudam de loading para check (✓) conforme confirmam. CTRL-087 mostra erro (X). Diego clica no CTRL-087 no mapa, vê no popup: “Falha ao receber configuração — timeout de comunicação”. |
-| 07:51 — Tratamento | Diego clica “Reset” no popup do CTRL-087 (dupla confirmação). Controlador reinicia, recebe config. Check (✓). Estratégia 100% aplicada. |
-| 07:52 — Rota onda verde | Diego ativa camada de rotas. Vê animação de onda verde no Corredor Av. 10 de Agosto: pulso verde percorrendo as interseções coordenadas. |
+| Às 07:50 - Estratégia ativa | Subárea “Zona Norte Centro” ganha borda reforçada com label “EST-PICO-AM-NORTE (programada)”. Os controladores dentro da subárea mostram ícone de loading conforme recebem a nova configuração. |
+| 07:50-07:51 - Execução | Controladores mudam de loading para check (✓) conforme confirmam. CTRL-087 mostra erro (X). Diego clica no CTRL-087 no mapa, vê no popup: “Falha ao receber configuração - timeout de comunicação”. |
+| 07:51 - Tratamento | Diego clica “Reset” no popup do CTRL-087 (dupla confirmação). Controlador reinicia, recebe config. Check (✓). Estratégia 100% aplicada. |
+| 07:52 - Rota onda verde | Diego ativa camada de rotas. Vê animação de onda verde no Corredor Av. 10 de Agosto: pulso verde percorrendo as interseções coordenadas. |
 
 **Passo 3: Sinistro com Ambulância**
 
@@ -1920,7 +1921,7 @@ Recurso de registro, monitoramento e gestão do ciclo de vida completo de situa�
 
 **Funcionalidades**
 
-* **Abertura de evento:** Um evento de emergência pode ser aberto de três formas: Automática por alarme — quando o módulo de Alarmes (4.14) gera um alarme de tipo classificado como emergente (ex: condição de conflito, múltiplos controladores offline numa área), o sistema cria automaticamente um evento de emergência vinculado. Automática por detecção — quando a videoanalítica ou sensores de tráfego detectam condições emergentes (sinistro, veículo detenido bloqueando interseção, colapso de tráfego), o sistema cria o evento automaticamente. Manual por operador — o operador, mediante informação recebida por rádio, telefone ou observação visual nas câmeras, abre manualmente o evento com classificação e localização.  
+* **Abertura de evento:** Um evento de emergência pode ser aberto de três formas: Automática por alarme - quando o módulo de Alarmes (4.14) gera um alarme de tipo classificado como emergente (ex: condição de conflito, múltiplos controladores offline numa área), o sistema cria automaticamente um evento de emergência vinculado. Automática por detecção - quando a videoanalítica ou sensores de tráfego detectam condições emergentes (sinistro, veículo detenido bloqueando interseção, colapso de tráfego), o sistema cria o evento automaticamente. Manual por operador - o operador, mediante informação recebida por rádio, telefone ou observação visual nas câmeras, abre manualmente o evento com classificação e localização.  
 * **Classificação de eventos:** Cada evento é classificado por tipo e severidade, determinando qual protocolo de resposta será ativado. Tipos de evento: Sinistro viário (acidente com veículos, atropelamento), Veículo detenido (bloqueio de via por avaria, carga derramada), Colapso de interseção (congestionamento severo que impede fluxo em todas as direções), Desastre natural (inundação, deslizamento, terremoto), Operativo de segurança (operação policial, evento presidencial, manifestação), Evento especial planejado (show, partida de futebol, marcha). Severidades: Crítica (via completamente bloqueada, risco de vida), Alta (via parcialmente bloqueada, impacto severo no tráfego), Média (redução de capacidade, impacto moderado), Baixa (evento controlado com impacto mínimo).  
 * **Snapshot de estado pré-emergência:** No momento da ativação do evento, o sistema captura automaticamente o estado atual de todos os dispositivos na área de influência: temporizações e plano ativo de cada controlador afetado, mensagens exibidas nos PMVs da região, configurações de câmeras (preset, ângulo, zoom), estado dos detectores, e modo de operação dos nobreaks. Este snapshot é armazenado vinculado ao evento e serve como referência para o rollback automático ao encerramento. O snapshot também inclui o estado do tráfego no momento (níveis de serviço, fluxos nos detectores), permitindo análise posterior do impacto.  
 * **Área de influência:** Definição automática ou manual da área geográfica afetada pela emergência. O sistema sugere automaticamente a área de influência com base no tipo e severidade do evento: para sinistro crítico, inclui as interseções adjacentes num raio configurável; para colapso de corredor, inclui todo o corredor e vias paralelas de desvio. O operador pode expandir ou reduzir a área manualmente. Todos os dispositivos dentro da área de influência ficam sob controle do evento e participam da resposta.  
@@ -1950,13 +1951,13 @@ Recurso de definição, configuração e execução de sequências de resposta c
 
 **Ações sobre controladores:** Modificação de temporizações semafóricas nas interseções da área de influência. Tipos de ação: Corredor verde \-\> criação de faixa verde contínua para veículos de emergência ou evacuação, com ativação progressiva (interseção por interseção conforme o veículo avança) ou simultânea (todo o corredor de uma vez). Reconfigurar fases \-\> alteração de tempos de ciclo, duração de fases e coordenação para despejar rotas críticas, minimizar congestão secundária e facilitar manobras de desvio. Modo intermitente \-\> colocar interseções em modo intermitente quando não é possível operar com segurança (ex: desastre natural que afeta a visibilidade). O protocolo envia comandos ao módulo de Controladores que executa as modificações.
 
-**Ações sobre PMVs:** Envio automático de mensagens informativas aos painéis de mensagem variável na área de influência e em vias de acesso à área. Tipos de mensagem: alerta sobre a emergência ("ACIDENTE — EVITE AV. AMAZONAS"), indicação de rotas alternativas ("DESVIO PELA AV. AMÉRICA"), prevenção de ingresso a zonas bloqueadas ("VIA INTERDITADA ADIANTE"). As mensagens são selecionadas da biblioteca do módulo PMV (4.10) ou criadas especificamente para o protocolo. O envio é ordenado ao módulo PMV, que executa a exibição.
+**Ações sobre PMVs:** Envio automático de mensagens informativas aos painéis de mensagem variável na área de influência e em vias de acesso à área. Tipos de mensagem: alerta sobre a emergência ("ACIDENTE - EVITE AV. AMAZONAS"), indicação de rotas alternativas ("DESVIO PELA AV. AMÉRICA"), prevenção de ingresso a zonas bloqueadas ("VIA INTERDITADA ADIANTE"). As mensagens são selecionadas da biblioteca do módulo PMV (4.10) ou criadas especificamente para o protocolo. O envio é ordenado ao módulo PMV, que executa a exibição.
 
 **Ações sobre câmeras:** Reposicionamento automático de câmeras PTZ para focar a área do evento: preset de emergência (posição pré-configurada que oferece a melhor visão do ponto crítico), zoom automático, e ativação de gravação em alta qualidade. As câmeras adjacentes também podem ser reposicionadas para cobrir áreas de desvio. Os comandos são enviados ao módulo de Câmeras.
 
 **Corredor verde dinâmico:** Funcionalidade especializada para priorização de veículos de emergência. Diferente de um corredor verde estático (todas as interseções abertas simultaneamente), o corredor verde dinâmico avança progressivamente conforme o veículo se desloca: o sistema acompanha a posição do veículo (via GPS/transponder, LPR nas câmeras, ou rastreamento manual do operador), ativa a fase verde na próxima interseção com antecedência configurável (ex: 30 segundos antes da chegada estimada), e restaura a interseção anterior após passagem confirmada. Isso minimiza o impacto no tráfego transversal comparado ao corredor estático.
 
-**Condições de rollback:** Cada ação do protocolo tem uma condição de rollback associada que define como o dispositivo retorna ao estado anterior: Instantâneo — retorna ao estado do snapshot imediatamente ao encerrar o evento. Gradual — transição progressiva (ex: temporizações retornam ao normal em 3 ciclos para evitar choque de tráfego). Condicional — rollback depende de condição de tráfego (só restaurar quando o nível de serviço retornar ao aceitável). Manual — operador decide quando restaurar (ex: manter mensagem no PMV por tempo adicional).
+**Condições de rollback:** Cada ação do protocolo tem uma condição de rollback associada que define como o dispositivo retorna ao estado anterior: Instantâneo - retorna ao estado do snapshot imediatamente ao encerrar o evento. Gradual - transição progressiva (ex: temporizações retornam ao normal em 3 ciclos para evitar choque de tráfego). Condicional - rollback depende de condição de tráfego (só restaurar quando o nível de serviço retornar ao aceitável). Manual - operador decide quando restaurar (ex: manter mensagem no PMV por tempo adicional).
 
 **Execução autônoma vs. assistida:** Protocolos podem ser configurados para execução autônoma (todas as ações executadas automaticamente sem intervenção do operador, ideal para eventos críticos que exigem resposta em segundos) ou assistida (o sistema sugere cada ação e aguarda confirmação do operador antes de executar, ideal para eventos ambíguos ou de menor severidade). O modo pode ser configurado por protocolo e pode ser alterado pelo operador durante a execução.
 
@@ -1995,10 +1996,10 @@ A videoanalítica da câmera CAM-042 detecta veículos parados em posição anor
 | Evento | EMG-2024-00312 |
 | Tipo | Sinistro viário |
 | Severidade | Alta (via parcialmente bloqueada) |
-| Detecção | Automática — Videoanalítica CAM-042 \+ Detector DET-019 |
+| Detecção | Automática - Videoanalítica CAM-042 \+ Detector DET-019 |
 | Localização | Av. Amazonas / Av. Naciones Unidas |
 | Área de influência sugerida | 5 interseções adjacentes \+ corredor Av. Amazonas (3 interseções ao norte e sul) |
-| Protocolo sugerido | PROT-SIN-002 — Sinistro em via arterial com bloqueio parcial |
+| Protocolo sugerido | PROT-SIN-002 - Sinistro em via arterial com bloqueio parcial |
 
 **Passo 2:  Snapshot e Ativação do Protocolo**
 
@@ -2008,7 +2009,7 @@ María Fernanda confirma o evento e o sistema executa o snapshot e ativa o proto
 | :---- | :---- |
 | Snapshot capturado | Estado de 11 controladores, 4 PMVs, 3 câmeras, 2 detectores e 1 nobreak na área de influência. Temporizações, mensagens ativas e configurações armazenados. |
 | Controladores reconfigurados | CTRL-087 (interseção do sinistro): fase NS reduzida, fase EW estendida para desvio. CTRL-085, CTRL-089: temporizações ajustadas para absorver tráfego desviado. |
-| PMVs ativados | PMV-008 e PMV-012 (ao norte): "ACIDENTE AV. AMAZONAS / NACIONES UNIDAS — DESVIO PELA AV. AMÉRICA". PMV-015 (ao sul): "VIA PARCIALMENTE BLOQUEADA ADIANTE — REDUZA VELOCIDADE". |
+| PMVs ativados | PMV-008 e PMV-012 (ao norte): "ACIDENTE AV. AMAZONAS / NACIONES UNIDAS - DESVIO PELA AV. AMÉRICA". PMV-015 (ao sul): "VIA PARCIALMENTE BLOQUEADA ADIANTE - REDUZA VELOCIDADE". |
 | Câmeras reposicionadas | CAM-042: zoom no ponto do sinistro. CAM-040, CAM-044: reposicionadas para cobrir vias de desvio. |
 
 **Passo 3: Corredor Verde para Ambulância**
@@ -2017,11 +2018,11 @@ O ECU-911 notifica que a ambulância AMB-ECU-047 está em rota para o sinistro. 
 
 | Atributo | Valor |
 | :---- | :---- |
-| Veículo | AMB-ECU-047 — Ambulância ECU-911 |
+| Veículo | AMB-ECU-047 - Ambulância ECU-911 |
 | Identificação | Transponder GPS (posição em tempo real) \+ confirmação LPR na CAM-035 |
 | Posição atual | Av. Eloy Alfaro / Av. 6 de Diciembre (2,3 km do sinistro) |
-| Nível de prioridade | Nível 1 (Máximo) — emergência vital |
-| Corredor ativado | Dinâmico — 7 interseções da rota, ativação progressiva 30s antes da chegada estimada |
+| Nível de prioridade | Nível 1 (Máximo) - emergência vital |
+| Corredor ativado | Dinâmico - 7 interseções da rota, ativação progressiva 30s antes da chegada estimada |
 | Tempo estimado | 4 minutos (rota otimizada pelo sistema) |
 
 O corredor verde dinâmico avança conforme a ambulância se desloca: quando a AMB-ECU-047 passa pela interseção CTRL-102, o sistema já tem a interseção CTRL-099 em verde e está preparando CTRL-095. A interseção CTRL-102, após passagem confirmada, retorna automaticamente ao estado do protocolo de sinistro (não ao estado normal, pois o evento ainda está ativo). A ambulância chega ao local às 08:22 (7 minutos após ativação).
@@ -2053,7 +2054,7 @@ No dia seguinte, o supervisor consulta o Dashboard de Emergências:
 | Dispositivos envolvidos | 11 controladores, 4 PMVs, 3 câmeras, 2 detectores, 1 nobreak |
 | Rollback | 100% automático, concluído em 6 minutos (gradual) |
 | Escalonamento | Nenhum (protocolo resolveu sem escalar) |
-| Recorrência neste local | 3º sinistro em 6 meses na mesma interseção — recomendado análise de segurança viária |
+| Recorrência neste local | 3º sinistro em 6 meses na mesma interseção - recomendado análise de segurança viária |
 
 # 
 
@@ -2104,7 +2105,7 @@ Recurso central de detecção, notificação e gestão em tempo real de todos os
 **Funcionalidades**
 
 * **Detecção e geração de alarmes:** Recepção contínua de eventos de todos os módulos funcionais da plataforma: controladores (perda de comunicação, modo intermitente, falha de alimentação, desfase de plano, reinicio inesperado, mudança não autorizada de parâmetros), câmeras (offline, falha de streaming), detectores (leituras anômalas, fora de serviço), PMVs (falha de exibição, perda de comunicação), nobreaks (modo batería, falha de alimentação), e dispositivos IoT (desconexão). Cada evento é transformado num alarme estruturado com: identificador único, timestamp, tipo, categoria, dispositivo de origem, localização, nível de criticidade e descrição.  
-* **Níveis de criticidade:** Classificação hierárquica de alarmes em quatro níveis: Crítico (risco imediato à segurança viária ou perda total de controle — ex: condição de conflito vermelho/verde simultâneo, falha total de controlador), Alto (impacto operacional significativo — ex: modo intermitente não programado, falha de alimentação principal), Médio (degradação de serviço — ex: desfase de plano semafórico, sensor fora de serviço), Baixo (evento informativo que requer atenção não urgente — ex: tempo de espera excessivo em fase, prioridade não reconhecida). A criticidade determina o tipo de notificação, o SLA de resposta e as ações automáticas.  
+* **Níveis de criticidade:** Classificação hierárquica de alarmes em quatro níveis: Crítico (risco imediato à segurança viária ou perda total de controle - ex: condição de conflito vermelho/verde simultâneo, falha total de controlador), Alto (impacto operacional significativo - ex: modo intermitente não programado, falha de alimentação principal), Médio (degradação de serviço - ex: desfase de plano semafórico, sensor fora de serviço), Baixo (evento informativo que requer atenção não urgente - ex: tempo de espera excessivo em fase, prioridade não reconhecida). A criticidade determina o tipo de notificação, o SLA de resposta e as ações automáticas.  
 * **Notificação sonora configurável:** Configuração de alertas acústicos diferenciados por tipo de alarme e localização do equipamento, permitindo ao operador identificar a natureza do problema apenas pelo som. Sons configuráveis por: nível de criticidade, tipo de dispositivo (controlador, câmera, nobreak), e localização (corredor, região). O administrador pode personalizar os sons e regras de reprodução (repetição, volume, duração).  
 * **Janela de confirmação obrigatória:** Alarmes críticos são notificados através de uma janela dedicada que se apresenta em primeiro plano na interface do operador, bloqueando a interação com outras funcionalidades até que o operador confirme o alarme. A confirmação registra: operador, timestamp de confirmação, tempo de resposta (diferença entre geração e confirmação), e observação opcional. Este mecanismo assegura que eventos críticos para a segurança viária nunca passem despercebidos.  
 * **Painel de alarmes em tempo real:** Visão consolidada de todos os alarmes ativos, apresentados por defeito em ordem decrescente de prioridade. O painel permite: visualização em lista e em mapa (geoposicionado), indicadores visuais por cor (vermelho para crítico, laranja para alto, amarelo para médio, azul para baixo), contadores por nível de criticidade, e atualização automática em tempo real sem necessidade de recarregar.  
@@ -2176,9 +2177,9 @@ O sistema detecta e gera três alarmes em sequência:
 
 | Alarme | Categoria | Dispositivo | Criticidade | Notificação |
 | :---- | :---- | :---- | :---- | :---- |
-| ALM-2024-08901 | Funcionamento | CTRL-142 — Av. Patria / 6 de Diciembre | Alto | Som acústico diferenciado (controlador) \+ destaque visual laranja |
-| ALM-2024-08902 | Segurança Viária | CTRL-067 — Av. Eloy Alfaro / Av. Granados | Crítico | Janela de confirmação obrigatória \+ som crítico \+ destaque vermelho |
-| ALM-2024-08903 | Prioridade | CTRL-098 — Corredor Av. América (preemption) | Alto | Som acústico diferenciado (prioridade) \+ destaque visual laranja |
+| ALM-2024-08901 | Funcionamento | CTRL-142 - Av. Patria / 6 de Diciembre | Alto | Som acústico diferenciado (controlador) \+ destaque visual laranja |
+| ALM-2024-08902 | Segurança Viária | CTRL-067 - Av. Eloy Alfaro / Av. Granados | Crítico | Janela de confirmação obrigatória \+ som crítico \+ destaque vermelho |
+| ALM-2024-08903 | Prioridade | CTRL-098 - Corredor Av. América (preemption) | Alto | Som acústico diferenciado (prioridade) \+ destaque visual laranja |
 
 **Passo 2: Confirmação do Alarme Crítico**
 
@@ -2186,7 +2187,7 @@ O alarme ALM-2024-08902 (condição de conflito) apresenta janela de confirmaç�
 
 | Atributo | Valor |
 | :---- | :---- |
-| Alarme | ALM-2024-08902 — Condição de conflito (vermelho/verde simultâneo) |
+| Alarme | ALM-2024-08902 - Condição de conflito (vermelho/verde simultâneo) |
 | Operador | Diego Ramírez |
 | Tempo de resposta | 12 segundos (SLA crítico: \< 30 segundos) |
 | Observação | Confirmo o alarme crítico. Verificando o estado do controlador. |
@@ -2241,7 +2242,7 @@ O módulo de Simulação de Tráfego permite avaliar, validar e otimizar estrat�
 
 A arquitetura fundamental deste módulo segue o princípio de separação de responsabilidades: a plataforma attlas é a fonte de verdade do modelo de tráfego (topologia, temporizações, dados de fluxo) e o motor de simulação SUMO (Simulation of Urban Mobility) é o motor de cálculo externo que processa as simulações. Attlas não simula: Attlas exporta cenários estruturados, orquestra a execução e consome os resultados. Esta separação garante que, caso seja necessário substituir o motor de simulação no futuro, apenas o adaptador de exportação/importação precisa ser modificado, sem impactar a lógica do módulo.
 
-A integração entre Attlas e SUMO é realizada através de arquivos estruturados em formatos XML e JSON. O SUMO opera nativamente com XML para definição de redes (.net.xml), rotas e demanda (.rou.xml), controladores semafóricos (.add.xml) e detectores (.det.xml). Attlas traduz automaticamente seu modelo de tráfego para estes formatos, permitindo que toda a informação já existente na plataforma — interseções com geometria e movimentos, planos semafóricos com fases e temporizações, dados de fluxo dos detectores, defasagens de coordenação — seja utilizada diretamente como entrada para a simulação. Adicionalmente, um formato JSON intermediário é utilizado para metadados, configurações de cenário e resultados que não mapeiam diretamente aos formatos nativos SUMO.
+A integração entre Attlas e SUMO é realizada através de arquivos estruturados em formatos XML e JSON. O SUMO opera nativamente com XML para definição de redes (.net.xml), rotas e demanda (.rou.xml), controladores semafóricos (.add.xml) e detectores (.det.xml). Attlas traduz automaticamente seu modelo de tráfego para estes formatos, permitindo que toda a informação já existente na plataforma - interseções com geometria e movimentos, planos semafóricos com fases e temporizações, dados de fluxo dos detectores, defasagens de coordenação - seja utilizada diretamente como entrada para a simulação. Adicionalmente, um formato JSON intermediário é utilizado para metadados, configurações de cenário e resultados que não mapeiam diretamente aos formatos nativos SUMO.
 
 O módulo atende três necessidades operacionais distintas: preprodução (validar uma nova configuração semafórica antes de implementá-la em campo, reduzindo o risco de impactos negativos no tráfego real), análise de cenários (avaliar o impacto de eventos especiais, obras, desvios, mudanças de infraestrutura ou políticas públicas) e análise preditiva (projetar cenários futuros de demanda utilizando modelos baseados em dados históricos).
 
@@ -2315,7 +2316,7 @@ Painel de análise, visualização e comparação de resultados de simulação, 
 
 **Cenário**
 
-O engenheiro de tráfego Ricardo Espinoza recebeu a solicitação de otimizar a coordenação semafórica (onda verde) do corredor Av. 10 de Agosto no sentido norte-sul durante o pico matutino (07:00–09:00). O corredor possui 12 interseções semaforizadas. A estratégia atual apresenta tempos de percurso elevados e recorrências de filas na interseção CTRL-045 (Av. 10 de Agosto / Av. Colón). Ricardo utilizará o módulo de Simulação para avaliar uma nova proposta de defasagens antes de implementá-la em campo.
+O engenheiro de tráfego Ricardo Espinoza recebeu a solicitação de otimizar a coordenação semafórica (onda verde) do corredor Av. 10 de Agosto no sentido norte-sul durante o pico matutino (07:00-09:00). O corredor possui 12 interseções semaforizadas. A estratégia atual apresenta tempos de percurso elevados e recorrências de filas na interseção CTRL-045 (Av. 10 de Agosto / Av. Colón). Ricardo utilizará o módulo de Simulação para avaliar uma nova proposta de defasagens antes de implementá-la em campo.
 
 **Passo 1: Criação do Cenário Base**
 
@@ -2324,11 +2325,11 @@ Ricardo cria um cenário base para o corredor:
 | Parâmetro | Configuração |
 | :---- | :---- |
 | Tipo | Microsimulação |
-| Escopo | Rota "Corredor Av. 10 de Agosto N-S" — 12 interseções |
-| Fonte de demanda | Dados reais dos detectores — média das últimas 4 terças-feiras (07:00-09:00) |
+| Escopo | Rota "Corredor Av. 10 de Agosto N-S" - 12 interseções |
+| Fonte de demanda | Dados reais dos detectores - média das últimas 4 terças-feiras (07:00-09:00) |
 | Temporização | Planos ativos atuais (capturados automaticamente dos Controladores) |
 | Preprocessamento | Limpeza de dados: 2 leituras atípicas removidas do DET-034. Validação: 100% OK. |
-| Identificação | CEN-2024-00187 "Av. 10 Agosto Pico AM — Baseline" |
+| Identificação | CEN-2024-00187 "Av. 10 Agosto Pico AM - Baseline" |
 
 **Passo 2: Criação do Cenário Modificado**
 
@@ -2339,7 +2340,7 @@ Ricardo duplica o cenário base e aplica modificações:
 | Defasagens | Recalculadas para velocidade de progressão de 40 km/h (atual: 35 km/h). Offsets de 8 interseções alterados. |
 | Distribuição de verde CTRL-045 | Fase N-S: 38s → 45s. Fase E-W: 32s → 25s. Ciclo mantido em 90s. |
 | Coordenação | Bandwidth ampliado na direção N-S priorizando fluxo do pico. |
-| Identificação | CEN-2024-00188 "Av. 10 Agosto Pico AM — Proposta Onda Verde v1" |
+| Identificação | CEN-2024-00188 "Av. 10 Agosto Pico AM - Proposta Onda Verde v1" |
 
 **Passo 3: Exportação e Execução**
 
@@ -2366,7 +2367,7 @@ Ricardo abre a comparação lado a lado no Dashboard:
 | Atraso CTRL-045 direção E-W | 22,1s | 31,8s | \+43,9% (piora) |
 | Paradas totais na rede | 4.820 | 3.290 | \-31,7% (melhoria) |
 
-A análise mostra melhoria significativa no corredor N-S (objetivo principal), com piora aceitável na direção E-W do CTRL-045 (fluxo secundário no horário). Ricardo visualiza no mapa geográfico: todas as interseções verdes (LOS A-C) exceto CTRL-045 E-W (amarelo, LOS D) — resultado aceitável para o trade-off.
+A análise mostra melhoria significativa no corredor N-S (objetivo principal), com piora aceitável na direção E-W do CTRL-045 (fluxo secundário no horário). Ricardo visualiza no mapa geográfico: todas as interseções verdes (LOS A-C) exceto CTRL-045 E-W (amarelo, LOS D) - resultado aceitável para o trade-off.
 
 **Passo 5: Aplicação em Campo via Preprodução**
 
@@ -2397,7 +2398,7 @@ O módulo de Controle é o motor de otimização automática em tempo real da re
 
 A diferença fundamental entre o módulo de Controle e as Estratégias do Modelo de Tráfego é a natureza da decisão. As Estratégias são configurações estáticas definidas pelo engenheiro de tráfego: elas determinam qual plano semafórico se aplica, com que tempos de ciclo, distribuição de verde e defasagens, e são ativadas por tabela horária, por condição ou manualmente. O **Controle,** por outro lado, é uma camada de ajuste fino em tempo real que opera sobre os planos semafóricos já em execução: ele não substitui a estratégia vigente, mas altera dinamicamente a distribuição de verde dentro do plano ativo, ciclo a ciclo, com base nos dados de detecção em tempo real. A estratégia continua definindo o marco operacional (escopo, plano base, ciclo); o Controle decide, dentro desse marco, como distribuir o verde de forma ótima em cada instante.
 
-Para operar de forma eficiente, o algoritmo de controle introduz uma abstração topológica própria: os subsistemas. Um subsistema é um conjunto de interseções que formam um grafo conexo — interseções cujos fluxos de tráfego se afetam mutuamente e que, portanto, devem ser otimizadas de forma coordenada. A partição da rede em subsistemas é gerada automaticamente pelo algoritmo com base em critérios de conectividade e interdependência de fluxos, não por decisão administrativa do operador. Isso significa que um subsistema pode cruzar os limites de áreas e subáreas definidas no Modelo de Tráfego, porque responde à realidade física do tráfego e não à organização administrativa da rede.
+Para operar de forma eficiente, o algoritmo de controle introduz uma abstração topológica própria: os subsistemas. Um subsistema é um conjunto de interseções que formam um grafo conexo - interseções cujos fluxos de tráfego se afetam mutuamente e que, portanto, devem ser otimizadas de forma coordenada. A partição da rede em subsistemas é gerada automaticamente pelo algoritmo com base em critérios de conectividade e interdependência de fluxos, não por decisão administrativa do operador. Isso significa que um subsistema pode cruzar os limites de áreas e subáreas definidas no Modelo de Tráfego, porque responde à realidade física do tráfego e não à organização administrativa da rede.
 
 Cada subsistema opera de forma independente: possui sua própria parametrização, seu próprio estado de ativação, seu próprio log de eventos e suas próprias métricas de desempenho. O engenheiro de tráfego configura e monitora cada subsistema individualmente, podendo ativar a otimização em alguns subsistemas enquanto outros permanecem sob controle estático das estratégias. Quando a otimização está desativada num subsistema, os controladores continuam operando com o plano semafórico da estratégia vigente sem nenhuma alteração.
 
@@ -2431,7 +2432,7 @@ Recurso de visualização, exploração e gestão da partição topológica gera
 | Critério de agrupamento | Administrativo/operacional (região da cidade, corredor) | Conectividade física do grafo viário (interdependência de fluxos) |
 | Limites | Fixos, definidos manualmente | Dinâmicos, recalculados quando a topologia muda |
 | Finalidade | Aplicar estratégias e modos de funcionamento | Otimizar distribuição de verde em tempo real |
-| Pode cruzar limites do outro? | Não aplicável | Sim — um subsistema pode conter interseções de múltiplas subáreas |
+| Pode cruzar limites do outro? | Não aplicável | Sim - um subsistema pode conter interseções de múltiplas subáreas |
 | Relação | 1 subárea pode estar distribuída em N subsistemas | 1 subsistema pode conter interseções de N subáreas |
 
 ## **Otimização**
@@ -2612,9 +2613,9 @@ Recurso central do módulo, responsável pelo cadastro operacional, configuraç�
 | :---- | :---- | :---- |
 | Em estoque | Equipamento cadastrado mas não instalado. Pode estar em almoxarifado ou aguardando designação. | Cinza |
 | Em testes | Instalado em bancada para validação. Não alimenta dispositivos de produção. | Azul claro |
-| Operativo — Modo Rede | Instalado e operando normalmente. Alimentando dispositivos a partir da rede elétrica. Baterias carregadas. | Verde |
-| Operativo — Modo Batería | Rede elétrica ausente. Alimentando dispositivos a partir das baterias. Autonomia sendo consumida. | Laranja (pulsante) |
-| Operativo — Modo Bypass | Rede elétrica alimentando diretamente os dispositivos sem condição de proteção do nobreak (manutenção ou falha interna). | Amarelo |
+| Operativo - Modo Rede | Instalado e operando normalmente. Alimentando dispositivos a partir da rede elétrica. Baterias carregadas. | Verde |
+| Operativo - Modo Batería | Rede elétrica ausente. Alimentando dispositivos a partir das baterias. Autonomia sendo consumida. | Laranja (pulsante) |
+| Operativo - Modo Bypass | Rede elétrica alimentando diretamente os dispositivos sem condição de proteção do nobreak (manutenção ou falha interna). | Amarelo |
 | Alarme | Operando com condição anômala: sobrecarga, temperatura elevada, batería baixa, falha de ventilador. | Vermelho |
 | Offline | Sem comunicação com a central. Estado real desconhecido. | Vermelho (contorno tracejado) |
 | Desativado | Fora de operação permanentemente. Aguardando retirada ou substituição. | Cinza escuro |
@@ -2689,15 +2690,15 @@ Painel de indicadores consolidados da frota de nobreaks, oferecendo visão geral
 
 Às 14:30 de quinta-feira, uma falha na rede elétrica afeta o setor norte do DMQ, deixando 23 interseções sem fornecimento de energia. Os nobreaks instalados assumem a alimentação dos dispositivos. A operadora María Fernanda López monitora a situação pelo módulo de Nobreaks enquanto a concessionária elétrica trabalha no restabelecimento.
 
-**Passo 1 — Detecção e Visão Geral**
+**Passo 1 - Detecção e Visão Geral**
 
 O Dashboard atualiza automaticamente:
 
 | Indicador | Valor |
 | :---- | :---- |
-| Nobreaks em modo batería | 19 (de 320 instalados) — todos no setor norte |
+| Nobreaks em modo batería | 19 (de 320 instalados) - todos no setor norte |
 | Interseções protegidas (com nobreak) | 19 de 23 afetadas pelo corte |
-| Interseções sem proteção (sem nobreak) | 4 interseções — CTRL-102, CTRL-108, CTRL-115, CTRL-119 (sem nobreak associado, controladores offline) |
+| Interseções sem proteção (sem nobreak) | 4 interseções - CTRL-102, CTRL-108, CTRL-115, CTRL-119 (sem nobreak associado, controladores offline) |
 | Autonomia média dos nobreaks em batería | 47 min (faixa: 22 min a 68 min) |
 | Dispositivos protegidos | 19 controladores, 14 câmeras, 11 detectores |
 | Alarmes gerados | 19 alarmes de transferência para bateria \+ 4 alarmes de controlador offline |
@@ -2714,7 +2715,7 @@ María Fernanda consulta a lista de nobreaks em modo bateria, ordenada por menor
 | NBK-038 | Av. América / Mariana de Jesús | 71% | 51 min | CTRL-022, DET-034 |
 | NBK-073 | Av. Eloy Alfaro / Granados | 82% | 68 min | CTRL-056, CAM-051, DET-079 |
 
-NBK-047 tem apenas 22 minutos de autonomia. María Fernanda verifica a análise de impacto: se NBK-047 esgotar, a interseção Av. Amazonas / Av. Patria perde controlador, câmera e detector simultaneamente — interseção crítica com alto fluxo no horário. O subsistema SUB-012 do módulo de Controle seria diretamente afetado.
+NBK-047 tem apenas 22 minutos de autonomia. María Fernanda verifica a análise de impacto: se NBK-047 esgotar, a interseção Av. Amazonas / Av. Patria perde controlador, câmera e detector simultaneamente - interseção crítica com alto fluxo no horário. O subsistema SUB-012 do módulo de Controle seria diretamente afetado.
 
 **Passo 3: Acompanhamento em Tempo Real**
 
@@ -2726,7 +2727,7 @@ NBK-047 tem apenas 22 minutos de autonomia. María Fernanda verifica a análise 
 | 14:52 | Energia restabelecida parcial | Rede elétrica retorna em 12 interseções. 12 nobreaks iniciam recarga. 7 permanecem em batería. |
 | 14:55 | NBK-047 batería 15% | Autonomia 8 min. María Fernanda prepara equipe para modo intermitente no CTRL-031. |
 | 14:58 | Energia restabelecida total | Rede retorna nas 11 interseções restantes. Todos os nobreaks iniciam recarga. |
-| 14:58 | NBK-047 retorna à rede | Batería 12%. Duração total em batería: 28 min. Autonomia real: 28 min (nominal: 60 min — 46,7% da capacidade). |
+| 14:58 | NBK-047 retorna à rede | Batería 12%. Duração total em batería: 28 min. Autonomia real: 28 min (nominal: 60 min - 46,7% da capacidade). |
 
 **Passo 4: Análise Pós-Evento**
 
@@ -2736,7 +2737,7 @@ Após o restabelecimento, María Fernanda analisa o Dashboard:
 | :---- | :---- |
 | NBK-047: autonomia real vs. nominal | 28 min vs. 60 min (46,7%). Batería degradada. Sistema gera alerta: "Batería necessita substituição". |
 | 4 interseções sem nobreak | CTRL-102, CTRL-108, CTRL-115, CTRL-119 ficaram 28 min offline. Recomendação: solicitar instalação de nobreaks. |
-| Estabilidade rede elétrica — setor norte | 3º corte no último mês nesta região. Duração média: 24 min. Recomendação: reportar padrão à concessionária. |
+| Estabilidade rede elétrica - setor norte | 3º corte no último mês nesta região. Duração média: 24 min. Recomendação: reportar padrão à concessionária. |
 | Saúde geral das baterias | 6 nobreaks com autonomia real \< 50% da nominal. Programação de substituição recomendada para 30 dias. |
 
 # 
@@ -2802,7 +2803,7 @@ Biblioteca centralizada de todos os relatórios disponíveis na plataforma, incl
 
 * **Editor visual de templates:** Ferramenta integrada que permite ao administrador criar novos relatórios e modificar relatórios existentes sem necessidade de desenvolvimento adicional. O editor oferece: seleção de fontes de dados (qualquer base de dados da plataforma ou serviço exposto), construção visual do layout (cabeçalho, corpo, rodapé, tabelas, gráficos), definição de campos e colunas (arrastar e soltar campos das fontes de dados), configuração de filtros que o usuário poderá aplicar ao gerar (datas, dispositivos, regiões, tipos), definição de agrupamentos e ordenações, e configuração de formatos de saída suportados (PDF, Excel, HTML). Os templates são versionados: cada alteração registra autor, data e descrição da modificação.  
 * **Filtros configuráveis:** Cada relatório do catálogo possui um conjunto de filtros que o usuário configura antes da geração. Filtros obrigatórios em todos os relatórios: período temporal com seleção manual de data de início e data de fim, e opções predefinidas periódicas (diária, semanal, mensal). Filtros adicionais conforme o domínio do relatório: tipo de dispositivo, localização (área, subárea, interseção), criticidade, estado, operador, técnico, entre outros. Os filtros de cada relatório são definidos no template e podem ser personalizados pelo administrador.  
-* **Catálogo pessoal:** Cada usuário pode marcar relatórios como favoritos, criar atalhos com filtros pré-configurados (ex: "Alarmes críticos da minha região — última semana") e organizar seus relatórios mais utilizados para acesso rápido. Os atalhos armazenam os filtros selecionados, evitando que o usuário reconfigure os mesmos parâmetros repetidamente.  
+* **Catálogo pessoal:** Cada usuário pode marcar relatórios como favoritos, criar atalhos com filtros pré-configurados (ex: "Alarmes críticos da minha região - última semana") e organizar seus relatórios mais utilizados para acesso rápido. Os atalhos armazenam os filtros selecionados, evitando que o usuário reconfigure os mesmos parâmetros repetidamente.  
 * **Permissões por perfil:** O acesso aos relatórios é controlado por perfil de usuário. O administrador define quais categorias e relatórios específicos cada perfil pode acessar. Relatórios de auditoria, por exemplo, podem ser restritos ao perfil de gestor. Relatórios operacionais podem estar disponíveis a todos os operadores. A criação e edição de templates é restrita ao perfil de administrador.
 
 ## **Geração e Distribuição**
@@ -2834,7 +2835,7 @@ Recurso responsável pela execução do motor de geração de relatórios, proce
 
 A engenheira de tráfego Ana Torres precisa preparar o relatório mensal de operação da rede semafórica para a gerência da EPMMOP. O relatório deve incluir dados de tráfego, estado de manutenção, alarmes e efetividade da otimização. Adicionalmente, ela configura a geração automática de um relatório diário de alarmes críticos para a equipe de manutenção.
 
-**Passo 1 — Geração do Relatório Mensal sob Demanda**
+**Passo 1 - Geração do Relatório Mensal sob Demanda**
 
 Ana acessa o Catálogo de Relatórios e gera quatro relatórios para o mês de fevereiro:
 
@@ -2924,7 +2925,7 @@ O módulo de Dashboard Global é a camada de visualização, monitoramento e apo
 
 A diferença fundamental entre o Dashboard Global e os dashboards individuais de cada módulo é o escopo e o público-alvo. Cada módulo funcional possui seu próprio dashboard focado exclusivamente no seu domínio: o dashboard de Alarmes mostra KPIs de alarmes, o de Nobreaks mostra saúde de baterias, o de Controle mostra efetividade da otimização. O Dashboard Global, por outro lado, cruza dados de múltiplos domínios para responder perguntas transversais: "qual é o estado geral da rede semafórica neste momento?", "como está a saúde operacional da infraestrutura completa?", "quais são as tendências de tráfego e manutenção ao longo do tempo?". Também se diferencia do Dashboard Operacional Integrado do Painel de Operações (4.15), que é focado na operação em tempo real do turno: o Dashboard Global inclui visões estratégicas de longo prazo e analíticas que não pertencem ao ciclo operacional imediato.
 
-O módulo disponibiliza três tipos de quadros de comando, cada um direcionado a um perfil de usuário e a um tipo de decisão: o Quadro de Comando Estratégico (KPIs de alto nível, cumprimento de metas, tendências de longo prazo, comparações entre períodos), o Quadro de Comando Operacional (para supervisores e coordenadores — estado atual da rede, situações que requerem atenção, indicadores de disponibilidade e resposta), e o Quadro de Comando Analítico (para engenheiros de tráfego, análise de tendências, padrões históricos, correlações entre variáveis, apoio à predição).
+O módulo disponibiliza três tipos de quadros de comando, cada um direcionado a um perfil de usuário e a um tipo de decisão: o Quadro de Comando Estratégico (KPIs de alto nível, cumprimento de metas, tendências de longo prazo, comparações entre períodos), o Quadro de Comando Operacional (para supervisores e coordenadores - estado atual da rede, situações que requerem atenção, indicadores de disponibilidade e resposta), e o Quadro de Comando Analítico (para engenheiros de tráfego, análise de tendências, padrões históricos, correlações entre variáveis, apoio à predição).
 
 O módulo pode ser desenvolvido nativamente na plataforma ou integrado a ferramentas de análise de dados de terceiros (ex: Grafana, Metabase, Apache Superset), garantindo estabilidade e evitando ralentização da plataforma operacional. Os dados são consumidos através dos serviços e bases de dados da plataforma, sem impactar as operações em tempo real.
 
@@ -2966,7 +2967,7 @@ Direcionado a supervisores e coordenadores operacionais. Apresenta o estado atua
 
 | Categoria de KPI | Indicadores |
 | :---- | :---- |
-| Saúde da infraestrutura | Dispositivos por estado (operativo, com alarme, offline, em manutenção) — segmentado por tipo. Percentual de disponibilidade atual vs. meta. Dispositivos que mudaram de estado nas últimas 4 horas (detecção de degradação rápida). |
+| Saúde da infraestrutura | Dispositivos por estado (operativo, com alarme, offline, em manutenção) - segmentado por tipo. Percentual de disponibilidade atual vs. meta. Dispositivos que mudaram de estado nas últimas 4 horas (detecção de degradação rápida). |
 | Alarmes ativos | Total de alarmes ativos por criticidade (crítico, alto, médio, baixo). Alarmes aguardando confirmação (com tempo decorrido). Tempo médio de confirmação no turno atual. Últimos alarmes críticos com dispositivo e localização. |
 | Tráfego atual | Fluxo veicular total da rede (veículos/hora atual vs. média histórica para este horário). Corredores com pior nível de serviço. Interseções com congestionamento (LOS E/F). Detecção automática de congestionamentos e embotellamentos (interseções com ocupação acima de limiar configurável). |
 | Emergências e eventos | Eventos de emergência ativos (quantidade, tipo, severidade, tempo desde ativação). Protocolos em execução. Veículos prioritários em operação. Eventos em via registrados (acidentess, obras, condições climáticas). |
@@ -3025,7 +3026,7 @@ Lucía faz login e o sistema carrega automaticamente o Quadro Estratégico (padr
 | Aderência à preventiva | 96,1% | 95% | Verde (↑ 1,1 p.p. acima da meta) |
 | Tempo médio confirmação alarme crítico | 18s | 30s | Verde (40% abaixo do SLA) |
 | LOS médio da rede | C | C | Verde (dentro da meta) |
-| Redução de atraso por otimização | \-18,3% | — | Indicador informativo |
+| Redução de atraso por otimização | \-18,3% | - | Indicador informativo |
 | Cortes de energia (setor norte) | 3 | 0 | Vermelho (3 eventos na semana) |
 
 Lucía identifica dois pontos de atenção: disponibilidade ligeiramente abaixo da meta (clica no KPI e vê que 4 controladores estão offline por manutenção corretiva) e 3 cortes de energia no setor norte (clica e navega ao Dashboard de Nobreaks para detalhes). Exporta a visão como PDF para a reunião gerencial via módulo de Relatórios.
@@ -3054,7 +3055,7 @@ Ricardo faz login e acessa o Quadro Analítico. Seleciona filtros: Corredor Av. 
 | :---- | :---- |
 | Tendência de volume | Volume matutino (07:00-09:00) aumentou 8,3% nos últimos 30 dias vs. período anterior. Gráfico mostra crescimento progressivo. |
 | Congestionamento recorrente | CTRL-034 (Amazonas/Colón) aparece em LOS E/F em 78% dos dias úteis no pico AM. Mapa de calor confirma o gargalo. |
-| Correlação | Ricardo ativa o explorador de correlações: fluxo no CTRL-034 vs. fluxo no CTRL-033 adjacente. Coeficiente 0,91 — alta interdependência. |
+| Correlação | Ricardo ativa o explorador de correlações: fluxo no CTRL-034 vs. fluxo no CTRL-033 adjacente. Coeficiente 0,91 - alta interdependência. |
 | Predição | Modelo projeta que, mantida a tendência, o corredor atingirá LOS F consolidado em 45 dias. Recomendação: revisar estratégia de pico ou redistribuir demanda. |
 | Ação | Ricardo exporta a análise para o módulo de Simulação (4.15) como base para um novo cenário de teste com temporizações otimizadas. |
 

@@ -9,7 +9,7 @@ clickup: https://app.clickup.com/t/86ajycdzy
 titulo: "[Back] Renome para VMS: fase 1, API e contratos"
 frente: Renome para VMS
 tamanho: 3 pts
-status: Fechado. PR [#1439](https://github.com/atmanadmin/attlas-2026/pull/1439) mergeada em 11/08. ESCOPO CORTADO no dia 10/08 de 98 para 7 arquivos, ver seção "Corte de escopo": só o caminho público muda no backend; pasta, classes e contratos ficam.
+status: 'Fechado. PR [#1439](https://github.com/atmanadmin/attlas-2026/pull/1439) mergeada em 11/08. ESCOPO CORTADO no dia 10/08 de 98 para 7 arquivos, ver seção "Corte de escopo": só o caminho público muda no backend; pasta, classes e contratos ficam.'
 sprint: "[[Attlas - Sprint 28]]"
 atualizado: 2026-08-22
 ---

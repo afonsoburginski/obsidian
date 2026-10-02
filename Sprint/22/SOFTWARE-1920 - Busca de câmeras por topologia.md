@@ -16,9 +16,10 @@ clickup_status: Closed
 merged: 2026-07-01
 clickup: https://app.clickup.com/t/86aj9aw22
 sprint: "[[Attlas - Sprint 22]]"
+atualizado: 2026-07-03
 ---
 
-# SOFTWARE-1920 — Busca de câmeras por topologia (área / subárea)
+# SOFTWARE-1920 - Busca de câmeras por topologia (área / subárea)
 
 > Tarefa 2. **PR [#574](https://github.com/atmanadmin/attlas-2026/pull/574) MERGEADA (01/07)** · ClickUp **Closed**. Pequena e isolada.
 

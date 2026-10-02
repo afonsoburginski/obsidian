@@ -40,10 +40,10 @@ Não mergear sem validar os fluxos principais com login real.
 
 ## Bloqueio
 
-Depende do catálogo de chaves e da tabela de decisão do 2005 estarem fechados antes de decorar —
+Depende do catálogo de chaves e da tabela de decisão do 2005 estarem fechados antes de decorar - 
 decorar contra um alvo que ainda vai mudar é retrabalho.
 
 ## Fontes de verdade
 
-- [[Attlas - Sprint 26]] — seção "Permissões de câmera entram na semana (31/07)".
+- [[Attlas - Sprint 26]] - seção "Permissões de câmera entram na semana (31/07)".
 - [[SOFTWARE-2005 - Permissões nas rotas de câmeras - mapa das 86 rotas]].

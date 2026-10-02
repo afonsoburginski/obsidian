@@ -19,7 +19,7 @@ sprint: "[[Attlas - Sprint 22]]"
 atualizado: 2026-08-25
 ---
 
-# SOFTWARE-1990 — Streaming público (LL-HLS + watchdog WHEP→HLS)
+# SOFTWARE-1990 - Streaming público (LL-HLS + watchdog WHEP→HLS)
 
 > Tarefa 7. **PR [#630](https://github.com/atmanadmin/attlas-2026/pull/630) ABERTA, em code review** · ClickUp **code review**. Follow-up do diagnóstico WebRTC da T1 ([[SOFTWARE-1889 - WebRTC travamento (dívidas técnicas)]]).
 > No esboço: "pequeno ajuste de configuração para WebRTC e HLS, para garantir uma quantidade segura de pacotes para que o stream não caia".

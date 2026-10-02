@@ -6,7 +6,7 @@ tags:
 cards: SOFTWARE-2220, 2221, 2222, 2223, 2224
 epico: SOFTWARE-2047 (Eventos - Eventos de todas as câmeras)
 sprint: Sprint 25 (20/7/26 - 26/7/26)
-status: Sprint 25 - lista+detalhe base entregues pelo UC-032 (#803, lucas). Em 22/07: 2220 (#899) e 2224 (#903) MERGEADOS; 2221 (#895)/2222 (#896)/2223 (#897) com conflitos resolvidos + fix de CI (resolveNodeTopology), 2221 verde e 2222/2223 reexecutando. integração front aberta (SOFTWARE-2289, PR #951) - depende de 2222/2223
+status: 'Sprint 25 - lista+detalhe base entregues pelo UC-032 (#803, lucas). Em 22/07: 2220 (#899) e 2224 (#903) MERGEADOS; 2221 (#895)/2222 (#896)/2223 (#897) com conflitos resolvidos + fix de CI (resolveNodeTopology), 2221 verde e 2222/2223 reexecutando. integração front aberta (SOFTWARE-2289, PR #951) - depende de 2222/2223'
 atualizado: 2026-07-22
 ---
 

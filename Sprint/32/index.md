@@ -9,7 +9,7 @@ aliases:
   - "Sprint 32 - o que entrega"
 sprint: Sprint 32 (7/9/26 - 13/9/26)
 status: "CRIADA em 25/08 pelo user como a terceira semana da frente do analítico, contra o prazo externo de 18/09 (front + backend). REVISADA em 28/08 em sequência à revisão da Sprint 31: comprometido subiu de 4 para 9 pts em 3 cards, com a entrada do SOFTWARE-2686 (4 laços por câmera), que estava no sem prazo e foi desbloqueado pela entrega da Sprint 30. Continua sendo a sprint mais leve das três, e a decisão que falta é o ATSPM. A lista propria no ClickUp EXISTE (901329020073), levantada na API em 09/09, com 7 tasks e nenhuma minha - os meus tres cards seguem nas listas da Sprint 29 (2398 e 2200) e da Sprint 30 (2686), todos em backlog. ESTADO EM 09/09, com três dos sete dias gastos: nenhum dos três cards saiu do backlog e não há PR aberta minha. O card 1 teve o mecanismo adiantado no sábado 05/09 pela #2528, dentro da Sprint 31, e o que falta dele é a medição do teto. Os dois dias de trabalho da semana foram para o front do Analítico, fora do plano: #2910 (destrave da ci-develop) e #2918 (porte de Instâncias e Incidentes). REPLANEJADA em 09/09 contra o inventário do módulo inteiro (edital seção 4.6 confrontado com o código): a semana virou 9 PRs em cascata e cerca de 19 pts, somando aos três cards existentes o modo edição da aba Detecção (o recurso Visão Geral do edital, hoje construído e desabilitado), a base de docs que faltava (docs/modules/analytics.md e a UF-046 que o código cita sem existir) e a troca da face default de Métricas. A pilha ficou em 12 PRs e 35 pts, somando o refinamento de emergência (SOFTWARE-3057, urgente) pedido em 09/09, com repontuação recomendada de dois cards (2686 de 5 para 8, 2200 de 2 para 5) e 15 dos 30 pts sem card. ACOM, Dashboard do Analítico, decisão automatizada, AOG/PCD/TMC/Approach Delay e o snapshot de configuração semafórica ficam declaradamente fora do prazo de 18/09, com motivo por item. FECHAMENTO em 11/09 à noite: a #3066 e as oito PRs de spec (#3188 a #3195) mergearam na develop entre 23:01 e 23:57. A prova de campo do SOFTWARE-2200 foi executada no EC2 dev com duas câmeras em modo servidor. As correções estão abertas nas #3303, #3304, #3305 e #3306, todas com CI verde. As #3297 e #3300 foram mergeadas. As #3303, #3304, #3305 e #3306 seguem abertas, verdes e aguardando review."
-atualizado: 2026-09-11
+atualizado: 2026-09-23
 ---
 
 # Sprint 32 - o que entrega
@@ -291,7 +291,7 @@ metade das métricas que exige o mapa estágio-grupo de movimento e classe no ev
 
 ### Por que o card 3 entrou aqui em 28/08
 
-Estava em [[00 - Sem prazo (backlog)]] desde 24/08, e a razão registrada era dupla: "as Sprints 30 e 31
+Estava em [[Sem prazo (backlog)]] desde 24/08, e a razão registrada era dupla: "as Sprints 30 e 31
 já estão cheias" e "depende da entidade e da persistência de região". **As duas caducaram.**
 
 - A dependência **acabou**: a Sprint 30 entregou `CameraAnalytic` e `CameraAnalyticRegion`, com `index`,
@@ -340,8 +340,24 @@ máximo de 4 laços por câmera"*). O que faltava era momento, e o momento é es
 5. **O módulo entrega sem atuação** se o ACOM não entrar. Detecta e publica, e nenhum controlador legado
    recebe presença. É a decisão da seção acima, e ela tem prazo.
 
+
+## Outras notas desta pasta
+
+Notas que existiam na pasta e não estavam ligadas a este índice até a revisão de 23/09.
+
+- [[SOFTWARE-2200 - Prova de campo do analítico em container]] - [Back] Prova de campo do analítico em container até a timeline do detector
+- [[SOFTWARE-2398 - Escala do analítico - câmeras por instância]] - [Back] Escala do analítico: câmeras por instância e distribuição
+- [[SOFTWARE-2686 - Suportar até quatro laços virtuais por câmera]] - [Back] Suportar até 4 laços virtuais por câmera
+- [[SOFTWARE-3051 - Reconciliar o doc de módulo do Analítico com o edital]] - [Back] Reconciliar o doc de módulo do Analítico com o edital
+- [[SOFTWARE-3052 - UF-046, UF-047 e MOD-012 - as specs que o código já cita]] - [Back] UF-046, UF-047 e MOD-012: as specs que o código já cita
+- [[SOFTWARE-3053 - Métricas abre na face que tem dado]] - [Front] Métricas abre na face que tem dado
+- [[SOFTWARE-3054 - Detecção - congelar o quadro e escolher o preset]] - [Front] Detecção: congelar o frame e escolher o preset
+- [[SOFTWARE-3055 - Detecção - as cinco ferramentas e a paleta]] - [Front] Detecção: as cinco ferramentas e a paleta
+- [[SOFTWARE-3056 - Detecção - salvar e descartar]] - [Front] Detecção: salvar e descartar, e a aba sai de desabilitada
+- [[SOFTWARE-3057 - Refinamento de emergência das telas do Analítico]] - [Front] Refinamento de emergência das telas do Analítico
+
 ## Ver também
 
 [[Analítico - O que falta para fechar o módulo]] · [[Planning - Sprint 31 e 32]] · [[Attlas - Sprint 30]] ·
-[[Attlas - Sprint 31]] · [[00 - Sem prazo (backlog)]] · [[Analítico]] ·
+[[Attlas - Sprint 31]] · [[Sem prazo (backlog)]] · [[Analítico]] ·
 [[Analítico - Embarcado x Servidor]] · [[Analítico - Frontend do attlas-design]]

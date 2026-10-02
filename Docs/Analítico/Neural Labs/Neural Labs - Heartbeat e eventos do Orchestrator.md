@@ -1,0 +1,81 @@
+---
+tags:
+  - doc
+  - analitico
+  - neural-labs
+aliases:
+  - "Heartbeat e eventos do Orchestrator"
+  - "NEURAL ORCHESTRATOR"
+atualizado: 2026-10-01
+---
+
+# Neural Labs - Heartbeat e eventos do Orchestrator
+
+O **Neural Orchestr[ai]tor** é o produto de analítica de vídeo por IA da Neural Labs (contagem, classificação, alarmes de imagem), separado do NEURAL SERVER de placas. Ele se integra por dois envios. Fonte: "NEURAL ORCHESTRATOR Integration Manual" v3.1, de 30/11/2025. O Attlas não usa este canal hoje. Índice da pasta em [[Neural Labs]].
+
+Histórico do documento: 1.0 (29/09/2021), 2.0 e 2.1 (07/04/2020, com data trocada no próprio documento) horário e classes no XML, 2.2 (13/02/2023) XML estendido e banco, 3.0 (17/01/2025) heartbeat e integração de eventos, 3.1 (30/11/2025) atualização dos eventos.
+
+## Heartbeat (XML para IP e porta)
+
+Ligado na tela de configurações do Orchestrator: `Enabled`, `Heartbeat rate [s]` (exemplo `1`), `IP` (exemplo `127.0.0.1`) e `Port` (exemplo `17001`). O Orchestrator manda periodicamente:
+
+```xml
+<HeartBeat>
+  <DateHour>TimeStamp</DateHour>
+  <FreeSpace>FreeSpace</FreeSpace>
+  <TotalSpace>TotalSpace</TotalSpace>
+  <ComputerId>0</ComputerId>
+  <InferenceEngine>
+    <Models>
+      <Model><Id>CameraID</Id><Name>ModelType</Name><Workers>WorkerID</Workers><InferenceAvgTime>XX</InferenceAvgTime></Model>
+    </Models>
+  </InferenceEngine>
+  <Cameras>
+    <Camera><Id>CameraID</Id><Name>Camera name</Name><Status>X</Status><FPS>X</FPS><Resolution>XxY</Resolution></Camera>
+  </Cameras>
+  <Alarms>
+    <Alarm><Id>AlarmID</Id><Name>Alarm name</Name><DateTime>TimeStamp</DateTime><CameraId>CameraID</CameraId><CameraName>Camera name</CameraName></Alarm>
+  </Alarms>
+</HeartBeat>
+```
+
+- `FreeSpace`, `TotalSpace`: espaço livre e total do equipamento.
+- `ComputerId`: número do equipamento.
+- `Model`: `Id` (câmera), `Name` (modelo), `Workers`, `InferenceAvgTime` (tempo médio de inferência).
+- **`Camera`**: `Id` (número da câmera), `Name`, `Status` (`1` CONNECTED, `2` NOT_CONNECTED, `3` CONNECTING, `4` CONNECTION_LOST, `5` RECONNECTING), `FPS` de entrada e `Resolution` em pixels.
+- `Alarm`: `Id`, `Name` (`IMAGE_TOO_BLURRY`, `IMAGE_TOO_DARK`, `MOTION_ALARM`, `IMAGE_TOO_BRIGHT`, `GLOBAL_SCENE_CHANGE`, `SIGNAL_LOSS`), `DateTime`, `CameraId`, `CameraName`.
+
+É o único canal documentado da Neural Labs que **lista as câmeras de um equipamento** (número, nome, estado, FPS e resolução). Ainda assim não traz IP, URL nem série, e é do Orchestrator, não do NEURAL SERVER de placas.
+
+## Eventos (JSON por HTTP)
+
+Os eventos são resumidos numa tabela do banco e enviados periodicamente, por HTTP, a um endereço definido pelo usuário: o total por classificação e câmera no intervalo, que pode ser 60 (padrão), 30, 15 ou 5 minutos.
+
+```json
+[
+  {
+    "name": "Camera 1",
+    "DateTime": "2024-09-24T10:15:00",
+    "IdComputer": 1,
+    "IdLocalization": 3,
+    "IdCamera": 1,
+    "EventName": "Event Name 1",
+    "IdClassification": 2,
+    "TotalCount": 230,
+    "SpeedCount": 230,
+    "SumSpeed": 0,
+    "AvgSpeed": 26
+  }
+]
+```
+
+Os nomes mudam em relação ao NEURAL SERVER: `IdComputer`, `IdCamera` e `IdLocalization` aqui; `ComputerID`, `CamID` e `LocationID` lá. O documento não diz se os números de câmera dos dois produtos são do mesmo espaço.
+
+## Classes de objeto (`IdClassification`)
+
+1 MOTORCYCLE, 2 CAR, 3 VAN, 4 TRUCK, 5 BUS, 6 PERSON, 7 BICYCLE, 8 ABANDONED_OBJECT, 9 ELECTRIC_SCOOTER, 10 SMOKE, 14 TRICYCLE, 114 a 123 ANIMALS, 201 FACE, 202 FOG, 301 GUN, 302 KNIFE.
+
+## Relacionado
+
+- [[Neural Labs - Vínculo de câmeras]]
+- [[Neural Labs - API Web do NS Backend]] (eventos do Orchestrator aparecem com `dataSourceCamera = O` e imagens `*_NLO`)

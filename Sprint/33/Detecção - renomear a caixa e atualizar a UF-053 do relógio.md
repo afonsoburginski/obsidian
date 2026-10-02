@@ -12,7 +12,7 @@ tamanho: 2 pts
 pr: "#3444"
 status: "PR #3444 aberta: os três arquivos, a interface e a função renomeados para o que a peça desenha hoje, com o que traria o volume de volta registrado no utilitário (pose vinda do analítico, nunca heurística no front). A UF-053 ganha o contrato do relógio que a tela realmente tem - precedência das três leituras, tradução dos carimbos do equipamento e o alcance de 400 ms da predição."
 sprint: "[[Attlas - Sprint 33]]"
-atualizado: 2026-09-13
+atualizado: 2026-09-29
 ---
 
 # Detecção - renomear a caixa e atualizar a UF-053 do relógio
@@ -23,6 +23,14 @@ A extrusão isométrica saiu em 12/09, mas o nome ficou: `utils/cuboid-path.util
 descreve o que a peça já não é.
 
 ## Por que a caixa 3D saiu, e o que a traria de volta
+
+> [!note] Estado em 29/09: o sólido voltou, com a profundidade tirada da faixa
+> O dono pediu a caixa e as regiões iguais ao vídeo de referência do Analítico
+> (`DETECCAO_ATTLAS_COMPLETO.mp4`) e aprovou revogar esta retirada. O eixo agora é fixo por região: a
+> homografia dos quatro cantos da região dá a reta da faixa no ponto de chão do objeto, então cada faixa
+> inclina o próprio sólido e nada gira com a trilha. Objeto fora de região de quatro cantos, ou faixa
+> vista de lado, segue com a caixa plana. Branch `analytics/feat/NO-CARD-overlay-caixa-e-faixas`, specs
+> UF-057 seções 4.1.1 e 4.1.2 e UF-048 seção 4.3.
 
 O analítico não reporta pose, então a direção do volume é a mesma para um ônibus atravessando e para um
 carro de frente, e na tela isso lê como caixa torta pendendo para um lado. O que ficou é a caixa plana,

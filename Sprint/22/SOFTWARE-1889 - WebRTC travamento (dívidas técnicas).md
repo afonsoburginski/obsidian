@@ -16,9 +16,10 @@ clickup_status: Closed
 merged: 2026-06-30
 clickup: https://app.clickup.com/t/86aj8fgun
 sprint: "[[Attlas - Sprint 22]]"
+atualizado: 2026-07-31
 ---
 
-# SOFTWARE-1889 — WebRTC: travamento (dívidas técnicas)
+# SOFTWARE-1889 - WebRTC: travamento (dívidas técnicas)
 
 > Tarefa 1 da sprint, trazida da Sprint 21. **PR [#566](https://github.com/atmanadmin/attlas-2026/pull/566) MERGEADA (30/06)** · ClickUp **Closed**. Fix validado local ponta a ponta (mediamtx remuxando RTP no cap de MTU, WebRTC sem STUN, videowall sem colapso).
 
@@ -38,7 +39,7 @@ Câmeras travavam **só no WebRTC** (no HLS puro não). Diagnóstico feito no am
 
 ## Fix entregue (#566)
 
-- [x] mediamtx `udpMaxPayloadSize: 1200` — RTP cabe no MTU 1280 do Tailscale (log: "RTP packets are too big (1460 > 1188), remuxing them into smaller ones").
+- [x] mediamtx `udpMaxPayloadSize: 1200` - RTP cabe no MTU 1280 do Tailscale (log: "RTP packets are too big (1460 > 1188), remuxing them into smaller ones").
 - [x] Player WHEP sem STUN (`iceServers: []`) + ICE gathering 3s→1s. Acaba o stall por tile que colapsava o videowall.
 - [x] `inboundFramesInError` exposto no endpoint de diagnóstico.
 - [x] Sem transcode (`-c copy`).

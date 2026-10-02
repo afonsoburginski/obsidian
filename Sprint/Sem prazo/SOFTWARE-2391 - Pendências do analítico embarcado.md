@@ -11,12 +11,28 @@ clickup: https://app.clickup.com/t/86aju63bv
 titulo: "[Back] Fechar as pendências do analítico ao vivo embarcado"
 frente: Analítico em container
 tamanho: 2 pts
-status: SEM PRAZO desde 10/08 (frente do analítico despriorizada; a Sprint 27 fechou sem entrega e a 28 foi para VMS e videowall externo). PR em draft segue aberta. Histórico: fila da Sprint 27 (in progress no ClickUp). Validado contra a develop em 03/08, quantificado. PR aberta em draft: [#1355](https://github.com/atmanadmin/attlas-2026/pull/1355).
-sprint: "[[00 - Sem prazo (backlog)]]"
-atualizado: 2026-08-10
+status: 'ABSORVIDO pelo SOFTWARE-2682 no reescopo de 24/08. A PR em draft deste card, #1355, foi fechada sem merge em 24/08. Em 23/09 a limitação do producer desligado ganhou saída automática com dono explícito (PR #4296, INT-026). Histórico: sem prazo desde 10/08, fila da Sprint 27, validado contra a develop em 03/08.'
+sprint: "[[Sem prazo (backlog)]]"
+atualizado: 2026-09-23
 ---
 
 # SOFTWARE-2391 - Pendências do analítico embarcado
+
+> [!warning] Estado em 23/09: absorvido em 24/08, e a limitação do producer mudou
+> O reescopo de 24/08 absorveu este card no
+> [[Analítico - Writer do deviceSourceId e higiene do embarcado|SOFTWARE-2682]], da Sprint 30, e a PR
+> em draft #1355 foi fechada sem merge. A nota [[Sem prazo (backlog)]] registra o card como
+> "deletar".
+>
+> A "limitação a registrar" abaixo deixou de valer como está escrita: desde 22/09 (PR
+> [#4296](https://github.com/atmanadmin/attlas-2026/pull/4296), `INT-026`) o producer volta sozinho,
+> mas só pela instalação que declara o equipamento em `ANALYTICS_OWNED_DEVICE_SOURCE_IDS`, e o reparo
+> nunca escreve `source_id` nem configuração. É o que evita o laço de reinício entre instâncias que
+> fez o reconciliador antigo ser revertido. Ver
+> [[Analítico - o producer do embarcado religado só pela instalação dona]].
+>
+> Os outros itens do corpo, a derivação de tipo no consumer e os critérios de aceite nunca marcados,
+> não foram reconferidos nesta revisão.
 
 Fechar o resíduo do analítico embarcado, entregue e validado ao vivo em 15/07. O card não tem
 construção pendente, tem higiene, e o analítico embarcado é a base de reuso do em container.

@@ -2,136 +2,315 @@
 tags:
   - doc
   - ms-cameras
-  - cameras
   - eventos
-atualizado: 2026-08-25
+atualizado: 2026-10-01
 ---
 
 # Eventos, incidentes e alarmes - Arquitetura e estratégias
 
-> Submódulo do [[ms-cameras]]. Índice: [[Eventos, incidentes e alarmes]]. Visual: [[07 - MOD-007 camera-events.excalidraw|diagrama]].
+Índice: [[Eventos, incidentes e alarmes]]. Catálogo de eventos e mapa de causa:
+[[Eventos, incidentes e alarmes - Catálogo e criticidade]]. Visual:
+[[Diagrama - MOD-007 eventos de câmera.excalidraw|diagrama]].
 
-Como o pipeline é construído: o seam de registro, as duas fontes de evento, a leitura cross-camera (tela de Eventos), observações + report manual, e as estratégias de processamento (correlação, alarme) com suas garantias de concorrência e idempotência.
+```mermaid
+flowchart LR
+  H[worker de saúde] -->|health| S[RecordCameraEventService]
+  I[attlas.cameras.event-ingest] -->|ingest| S
+  A[AnalyticsIncidentRecorder] -->|analytics| S
+  S --> DB[(CameraEventLog)]
+  S --> WS[camera:event:new]
+  S -->|par correlacionável, ingest, analytics| EL[attlas.cameras.event-logged]
+  EL --> C[correlação UC-021]
+  EL --> E[emissor de alarme UC-022]
+  C -->|promoção| IC[attlas.cameras.incident-created]
+  IC --> E
+  E --> AR[attlas.alarms.alarm-raised]
+  AR --> MA[ms-alarms]
+```
 
-> [!warning] Divergência corrigida (24/08) - domínio virou pasta top-level
-> Em 11/07 (`5883879f1d`, SOFTWARE-2006) o código saiu de `apps/ms-cameras/src/cameras/` para um domínio próprio em **`apps/ms-cameras/src/events/`**, com subpastas por responsabilidade: `recording/` (seam + ingest), `publishing/`, `reading/` (queries de leitura), `realtime/` (bridge WS), `consumers/` (correlação + alarme), `incidents/` (leitura de incidentes) e `observations/` (UC-044, novo). Todos os caminhos abaixo foram atualizados; a nota anterior (03/07) ainda apontava para `cameras/handlers/*`.
+## Mapa de código (`apps/ms-cameras/src/events/`)
 
-## 1. Seam central - `RecordCameraEventService`
+| Pasta | Conteúdo |
+| --- | --- |
+| `recording/` | Seam `RecordCameraEventService` (porta `ICameraEventRecorder`), `CameraEventIngestListener`, repositório de `CameraEventLog` |
+| `publishing/camera-events.publisher.ts` | `event-logged`, `incident-created`, `alarm-raised` e os ecos de comando de plano |
+| `_shared/` | Derivações de leitura: categoria, código, origem, status, prioridade, `triggerCount`, topologia (`area`/`subarea`), ações disparadas |
+| `reading/` | Log por câmera (UC-017/018), log da rede (UC-032), KPIs (UC-040), timeline (UC-041), recorrência (UC-042), métricas de incidente (UC-063) |
+| `consumers/correlate-events/` | Correlação e housekeeping (UC-021) |
+| `consumers/emit-alarm/` | Emissor de alarme, ramos A e B (UC-022) |
+| `consumers/execution-plans-ptz-command/`, `execution-plans-videowall-command/` | Comandos de plano de resposta para PTZ (PROJ-015, [[PTZ e presets]]) e videowall (PROJ-020, [[VMS]]), módulos próprios |
+| `incidents/` | Leitura de `CameraIncident` (UC-023/024), mapeamentos e exportação XLS/PDF (UC-080) |
+| `observations/` | Observações e report de ocorrência (UC-044) |
+| `treatment/` | Tratamento do incidente de analítico (UC-062, lote UC-074) |
+| `realtime/` | `camera:event:new`, invalidação do dashboard e a sala `incidents:<systemId>` (UC-226) |
+| `events.constants.ts` | `CorrelationConfig`, `AlarmEmitConfig`, `CameraEventLogConfig`, `CameraEventPeriodConfig`, `CameraEventTimelineConfig`, `CameraEventRecurrenceConfig` |
 
-`events/recording/record-camera-event.service.ts` é o **único ponto de registro** de evento (MOD-010/PROJ-010), implementando a porta `ICameraEventRecorder` (`events/recording/camera-event-recorder.interface.ts`). Centraliza cinco responsabilidades numa transação de leitura-escrita:
+Wiring: `events/events.module.ts`.
 
-- **Validação de escopo**: `camera.findUnique({ id, deletedAt: null })`; ausente → `ResourceNotFoundException('Camera', id)`. Só corre para `source: 'ingest'` (ver seção 2).
-- **Timestamp ISO com offset obrigatório**: `parseOccurredAt` exige ISO-8601 com `Z` ou offset explícito (regex `ISO_8601_WITH_OFFSET`); local-time é rejeitado com `InvalidInputException` (`INVALID_TIMEZONE`) para nunca vazar o TZ do servidor na coluna `Timestamptz`. Ausente → default do banco (`now()`).
-- **Dedup por `correlationId`**: quando o produtor informa `correlationId`, `repository.findByCorrelationId(cameraId, correlationId)` retorna a linha já gravada (redelivery). Fica uma janela de corrida entre duas primeiras entregas concorrentes - fechá-la exige índice parcial único em `(cameraId, correlationId)` (**follow-up, não implementado**). Só corre para `source: 'ingest'`.
-- **Classificação**: `deriveCameraEventCategory(eventType, payload)` deriva a `CameraEventCategory` em read-time; `severity` default `INFO`.
-- **Broadcast + publish**: `eventBus.publish(CameraEventLogCreatedEvent)` (WebSocket, mesmo canal para as duas fontes) e, só para `source: 'ingest'`, `void publisher.publishEventLogged(entry)` - publish em `event-logged` é **best-effort e não bloqueia** o registro.
+## Seam de registro (MOD-010)
 
-## 2. MOD-010 - um único seam para as duas fontes de evento
+`recording/record-camera-event.service.ts` é o único ponto de escrita de evento. Em sequência, sem
+transação: revalida a câmera, exige `occurredAt` ISO-8601 com `Z` ou offset (senão `InvalidInputException`
+`INVALID_TIMEZONE`; sem `occurredAt`, grava a hora do processo), deduplica por `correlationId`, insere
+(`severity` default `INFO`), deriva a categoria em read-time, publica `CameraEventLogCreatedEvent` no
+EventBus e, quando a origem pede, `publishEventLogged` em best-effort.
 
-> [!success] Divergência corrigida (24/08) - health worker não tem mais caminho próprio
-> A nota de 03/07 descrevia dois caminhos de código **separados**: o worker de saúde gravando direto via `CameraHealthEventLogRepository.append`/`safeAppendEvent`, e o ingest passando pelo seam. Isso não existe mais. Desde a promoção a domínio (11/07, mesmo commit da seção 1), o worker de saúde (`src/health/workers/camera-health.worker.ts`) injeta o mesmo `ICameraEventRecorderToken` e chama `recorder.record(message, { source: 'health' })`. **O resultado observável é o mesmo** que a nota antiga descrevia (eventos de saúde não alimentam `event-logged`), mas o mecanismo é outro: uma linha (`RecordCameraEventService.record`) com um `if (isIngest)` gating os efeitos que divergem entre as duas origens, não dois métodos/repos diferentes.
+| Efeito | `ingest` | `health` | `analytics` |
+| --- | --- | --- | --- |
+| Revalida a câmera | Sim | Não (o worker só monitora câmera existente) | Não (vem de binding já filtrado) |
+| Valida o fuso de `occurredAt` | Sim | Sim | Sim |
+| Dedup por `correlationId` | Sim | Não (o worker não envia) | Não (o recorder do analítico já colapsa) |
+| Persiste e emite `camera:event:new` | Sim | Sim | Sim |
+| Publica `event-logged` | Sim | Só se o par `(eventType, causeCode)` está em `CORRELATABLE` | Sim |
 
-`CameraEventSource = 'ingest' | 'health'` (`RecordCameraEventOptions.source`, default `ingest`):
+- **`health`**: o worker de saúde ([[Saúde e monitoramento]]) grava `HEALTH_ONLINE`, `HEALTH_OFFLINE`,
+  `HEALTH_EVENT` e `CONNECTIVITY_CHANGED`, com `causeCode` do catálogo de marca, `PROBE_TIMEOUT` ou
+  `PUSH_DISCONNECT`. O critério de publicação lê o catálogo da correlação em vez de manter outra lista;
+  evento de saúde sem causa, ou com par fora do catálogo, fica fora do tópico (é o ruído de sondagem).
+- **`ingest`**: `CameraEventIngestListener` consome `attlas.cameras.event-ingest`. Descarta com `warn` o
+  que vier sem `cameraId`/`eventType`, com payload acima de 4 KiB ou não serializável, câmera desconhecida e
+  `InvalidInputException`; qualquer outro erro vira `error` e retorno, **sem relançar**, para o consumidor
+  nunca entrar em laço. Não há produtor desse tópico no repo.
+- **`analytics`**: o `AnalyticsIncidentRecorder` (PROJ-022, `analytics-realtime/`) grava `ANALYTICS_INCIDENT`
+  com `severity: 'WARN'`, sem `causeCode` e o tipo em `payload.incidentType`, deduplicado por
+  `(câmera, região, tipo)` numa janela de 30 s (`ANALYTICS_INCIDENT_DEDUP_WINDOW_MS`). O que o frame traz e
+  como o tipo é lido está em [[Analítico - Arquitetura e estratégias]].
 
-| Efeito | `source: 'ingest'` | `source: 'health'` |
-| --- | --- | --- |
-| Revalida a câmera (`findUnique`) | Sim | Não (worker só monitora câmera que já existe - MOD-010 seção 8 veta I/O extra no hot path) |
-| Valida timezone de `occurredAt` | Sim | Não |
-| Dedup por `correlationId` | Sim | Não (health nunca envia `correlationId`) |
-| Persiste + broadcast WebSocket | Sim | Sim |
-| Publica `event-logged` (Kafka) | Sim | **Não** |
+## Leitura da rede (tela de Eventos)
 
-O worker de saúde emite `HEALTH_ONLINE`/`HEALTH_OFFLINE`/`HEALTH_EVENT`/`CONNECTIVITY_CHANGED` com `causeCode` VAPIX (`VapixCauseMap`: NetworkLost, PowerFailed, Tampering, PTZError, HardwareFailure) - ver [[Saúde e monitoramento]] e [[PTZ e presets]]. Consequência que persiste desde a nota anterior: transições internas alimentam os endpoints de leitura e a UI ao vivo, mas **não** o pipeline Kafka de correlação/alarme - dirigido hoje pelos eventos ingeridos externamente (`source: 'ingest'`).
+Handlers em `reading/`, todos escopados por `systemId` e com o mesmo `where` (`camera-events-where.builder.ts`).
+A topologia do tenant (ms-traffic-model, com o bearer repassado) é carregada uma vez por request e resolve
+`area`/`subarea` nos dois sentidos; queda do ms-traffic-model degrada os rótulos para vazio sem derrubar a
+rota.
 
-## 3. Ingest Kafka (UC-019)
+- **Lista (UC-032)**: filtros `search`, `severity` e `category` (CSV), `incidentType` (só com
+  `category=ANALYTICS`), `period` (`24h`, `7d`, `30d`, `90d`, `all`, `range`; default `30d`), `area`/`subarea`,
+  `origin` (`MANUAL` com `operatorId`, `SYSTEM` sem), `state` (conexão da câmera), `status`, `analytic` e
+  `cameraId`. `status` segue `deriveCameraEventStatus`: tratamento do operador, depois o incidente ligado,
+  senão `OPEN`. `sortBy` aceita `detectedAt` e `severity`. `pageSize` até 100. Cada item ganha `eventCode`,
+  `triggerCount`, `area`, `subarea`, `origin`, `status` e, quando há, `analyticId`, `analyticType` e
+  `assignedTo`.
+- **Detalhe (UC-032 e UC-018)**: mesmas derivações mais `triggeredActions`, `linkedIncident {id, status}` e
+  `treatmentAssignedTo`; a rota por câmera também traz `connectionStatus`. Evento de outra câmera ou tenant é
+  404 sem vazar existência.
+- **KPIs (UC-040)**: quatro tiles por severidade sobre o mesmo universo; comparação fixa dos últimos 30 dias
+  contra os 30 anteriores, independente do período. A rota não aceita `24h`.
+- **Timeline (UC-041)**: a cadeia do incidente do evento (todos os `CameraEventLog` ligados aos incidentes
+  dele por `CameraIncidentEvent`, possivelmente de várias câmeras). Sem incidente, fallback de contexto: mesma
+  câmera, 30 min para cada lado, até 50 linhas.
+- **Recorrência (UC-042)**: série com `total` e `categoryCount` só da câmera de origem, numa janela que
+  termina no `occurredAt` do evento; presets `1h` (60 de 1 min), `24h` (24 de 1 h), `7d` e `30d` (dias).
+- **`triggeredActions`**: só `{ type: 'INCIDENT', code }`; `ALARM` não é persistido e `SERVICE_ORDER` não
+  tem módulo.
 
-`events/recording/camera-event-ingest.listener.ts` consome `attlas.cameras.event-ingest` (dispositivos, no-breaks, outros serviços - **sem produtor no repo**). Defesas anti-crash:
+## Fila de incidentes do analítico
 
-- **Validação mínima**: sem `cameraId`/`eventType` → `warn` + drop.
-- **Cap de payload**: `MAX_PAYLOAD_BYTES = 4 KiB` (V9) - evita `payload` JSONB crescer sem limite; acima disso, drop. Payload circular/não-serializável também dropado.
-- **Sem poison-pill**: `ResourceNotFoundException` (câmera desconhecida) e `InvalidInputException` → `warn` + drop; qualquer outro erro → `error` + return (**não relança**), então o consumidor nunca entra em loop. DLQ é follow-up.
+A fila da tela de Incidentes do [[Analítico]] é a lista acima com `category=ANALYTICS`, e todo o lado
+servidor mora aqui.
 
-> Contraste com os listeners de correlação/alarme (seção 5/seção 6): esses **relançam** erros não-swallowable para o Kafka reentregar. O ingest, não - prioriza não travar a ingestão.
+- **Agregados (UC-063)**: com `category` exatamente `ANALYTICS`, a página traz `incidentTypeCounts`,
+  `statusCounts` e `cameraCounts` (com coordenadas e quebra por tipo), sobre o conjunto filtrado inteiro.
+- **Métricas (UC-063)**: `GET /cameras/incidents/metrics` com totais, tempos médios de reconhecimento e
+  fechamento (aproximados por `createdAt`/`updatedAt` do tratamento), séries e cortes por tipo, status,
+  câmera, analítico e interseção.
+- **Tratamento (UC-062)**: `CameraEventTreatment`, 0 ou 1 linha por evento (`eventLogId` como PK); sem
+  linha vale `DETECTED`. Ciclo em `treatment/camera-event-treatment.constants.ts`: `DETECTED`,
+  `ACKNOWLEDGED`, `INVESTIGATING`, `RESOLVED`, e `DROPPED` (falso positivo) de qualquer estado não final. Só
+  para evento `ANALYTICS` (senão 409 `EventNotAnalyticsException`) e nunca toca `CameraIncident`. A
+  primeira transição grava `assignedTo` com o ator, dono até o fim; as seguintes são compare-and-set sobre o
+  status esperado (dois operadores dão um vencedor e um 409 `INVALID_STATE_TRANSITION`). Token sem `subject`
+  é 401. Cada transição publica auditoria (`attlas.audit.cameras`, só `fromStatus`/`toStatus`) e a
+  notificação `cameras.incident.treatmentChanged`.
+- **Lote (UC-074)**: até 100 ids, mesmo ciclo e compare-and-set por item, 200 com resultado por id e sem
+  transação em volta.
+- **Exportação (UC-080)**: `GET /cameras/events/export?format=xls|pdf` com os filtros da lista; reexecuta a
+  lista em lotes, confere o teto de 20 000 linhas antes de abrir o stream (`EXPORT_LIMIT_EXCEEDED`), escreve
+  direto na resposta e mostra a criticidade configurada do tipo (UC-227) em vez da severidade do log.
+- **Canal ao vivo (UC-226)**: `subscribe_incidents { systemId }` no namespace `cameras-status`, com
+  filiação ao sistema, entra na sala `incidents:<systemId>`, que recebe `camera:incidents:changed` a cada
+  incidente gravado, tratamento (unitário ou lote) e observação (`realtime/incident-changes.publisher.ts`).
+- **Criticidade por tipo (UC-227)**: `GET`/`PUT /cameras/analytics/incident-criticality`
+  (`apps/ms-cameras/src/incident-criticality/`), tabela por sistema sobre o padrão
+  `DEFAULT_INCIDENT_CRITICALITY`; o `PUT` substitui a tabela inteira e exige `analytics.instances:manage`.
+- **Imagem e vídeo do incidente**: `IncidentMediaController` (`analytic-incident-media/`), documentado em
+  [[Analítico - Arquitetura e estratégias]].
 
-## 4. Leitura cross-camera - tela de Eventos (UC-032/040/041/042)
+## Correlação (UC-021)
 
-Camada nova (não existia em 03/07): a tela de Eventos (`/cameras/events`) não lê por câmera, lê a **rede inteira** do tenant. Quatro handlers em `events/reading/`, todos tenant-scoped por `systemId` e compartilhando o mesmo `where` via `buildCameraEventsWhere` (`events/reading/camera-events-where.builder.ts`):
+`consumers/correlate-events/`. Consome `event-logged`, valida o payload e chama
+`CorrelateEventsService.correlate`:
 
-- **`list-camera-events/` (UC-032)** - `GET /cameras/events`. Filtros: `search` (summary/translationKey), `severity`/`category` (CSV), `period` (`7d`/`30d`/`90d`/`all`/`range`), `area`/`subarea` (nome resolvido a `trafficElementId` via topologia do ms-traffic-model, num único walk em lote - nunca por linha), `origin` (`MANUAL` = `operatorId` presente, `SYSTEM` = ausente), `state` (status de conexão da câmera) e `status` (`OPEN` = sem incidente vinculado, ou o status do incidente mais recente). `sortBy` aceita só `detectedAt`/`severity`; outro valor cai no default. Cada item ganha `eventCode` (`deriveCameraEventCode`), `triggerCount` (tamanho do grupo de correlação, uma única query agrupada) e `area`/`subarea`/`origin`/`status` derivados.
-- **`get-cross-camera-event-detail/` (UC-032)** - `GET /cameras/events/:eventId`. Resolve só por `eventId` (deep-link/F5), mesmas derivações da lista + `triggeredActions` (ver seção 7) e `linkedIncident {id, status}`.
-- **`get-camera-events-stats/` (UC-040)** - `GET /cameras/events/stats`. 4 tiles (total/crítico/aviso/info) agregados por severidade sobre o mesmo universo da lista (`buildCameraEventsWhere` reaproveitado); comparação **fixa** aos últimos `COMPARISON_WINDOW_DAYS` dias contra o período imediatamente anterior, independente do filtro de período escolhido - por isso o filtro pode não influenciar o `trendPct`.
-- **`get-camera-event-timeline/` (UC-041)** - `GET /cameras/events/:eventId/timeline`. Ver seção 7.
-- **`get-camera-event-recurrence/` (UC-042)** - `GET /cameras/events/:eventId/recurrence`. Ver seção 7.
+- **Elegibilidade**: só os 10 pares de `CORRELATABLE` (`correlation-rules.ts`), listados no
+  [[Eventos, incidentes e alarmes - Catálogo e criticidade#Mapa de causa para incidente e alarme|catálogo]].
+  `HEALTH_ONLINE` nunca abre cluster.
+- **Chave**: `correlationKey = eventType:causeCode` (`__NULL__` sem causa).
+- **Janelas**: ativa de 60 s e extensão de 120 s; `findOpenIncidentByKey` casa incidente `TENTATIVE` ou
+  `DETECTED` não resolvido com `detectedAt` na janela ativa **ou** `updatedAt` na de extensão.
+- **Anexar ou criar**: aberto encontrado, `attachEvent` numa transação (ligação idempotente, recontagem e
+  promoção); nenhum, cria `TENTATIVE` **sem publicar** (anti-ruído).
+- **Promoção para `DETECTED`**: ao chegar a 2 câmeras distintas ou 3 eventos. `updateMany` condicional em
+  `status: 'TENTATIVE'`: só a transação com `count === 1` publica `incident-created` e invalida o dashboard
+  (INCIDENTS).
+- **Housekeeping** (`@Cron` a cada minuto, sob `pg_try_advisory_xact_lock`, uma réplica por tick):
+  `autoCloseExpiredDetected` (`DETECTED` sem evento novo por 30 min vira `RESOLVED`), `dropExpiredTentative`
+  (`TENTATIVE` órfão por 120 s vira `DROPPED`) e `autoResolveByRecovery` (80% das câmeras com `HEALTH_ONLINE`
+  depois de `detectedAt` vira `RESOLVED`, BR-CAM-CORR-005). O descarte de 120 s não é menor que a extensão,
+  para não matar um `TENTATIVE` que ainda aceita anexo.
 
-> [!warning] Divergência corrigida (24/08) - o detalhe por câmera (UC-018) foi retrofitado com a mesma riqueza
-> `GetCameraEventDetailHandler` (`GET /cameras/:id/events/:eventId`, UC-018) não é mais o payload simples que a nota de 03/07 descrevia. Desde 23-24/07 (`c244624428`, `3df2b66cb2`, SOFTWARE-2007) ele reusa os mesmos helpers `_shared` do detalhe cross-camera (`deriveCameraEventCode`, `resolveTopologyName`, `buildTriggeredActions`, `deriveCameraEventStatus`/`Origin`) e devolve `area`/`subarea`, `eventCode`, `connectionStatus`, `origin`, `status`, `durationSeconds` e `triggeredActions` além de `linkedIncident`. As duas rotas de detalhe (por câmera e cross-camera) concordam no formato hoje.
+Estados de `CameraIncident`: `TENTATIVE`, `DETECTED`, `RESOLVED`, `DROPPED`. `INVESTIGATING` existe no enum e
+é visível na leitura, mas nenhum caminho leva um `CameraIncident` a ele; o `INVESTIGATING` que o operador
+alcança é o do tratamento do analítico. Incidente manual nasce `DETECTED`.
 
-> [!warning] Comentário do código está errado - divergência a corrigir no repo, não na nota
-> `list-camera-events.dto.ts` traz o comentário "Accepted for forward-compat with the UF-009 filter panel; not yet enforced (UC-032 §6)" sobre `area`. É **falso hoje**: `list-camera-events.handler.ts` resolve `topologyNodeIds` via `topologyNodeIdsForFilter` sempre que `area`/`subarea` vem preenchido, e `buildCameraEventsWhere` aplica esse filtro no `camera.is.trafficElementId`. O filtro está implementado e testado (`list-camera-events.handler.spec.ts` cobre `topology outage`); só o comentário ficou parado de um commit anterior. Achado de leitura de código - não é uma correção que esta sessão fez no repo (fora de escopo aqui).
+## Emissão de alarme (UC-022)
 
-## 5. Correlação em incidentes (UC-021)
+`consumers/emit-alarm/`, dois `@EventPattern` no mesmo listener, que relançam erro não de domínio para o
+Kafka reentregar.
 
-`events/consumers/correlate-events/`. Consome `event-logged`; para cada evento válido chama `CorrelateEventsService.correlate`.
+- **Ramo A, `incident-created`**: cluster. Descarta incidente sem `affectedCameraIds`. `mapToAlarm` com
+  `fromCluster: true`; se a severidade diverge da do incidente, loga `warn` e o mapping vence.
+  `affectedEntities` com a câmera primária primeiro.
+- **Ramo B, `event-logged`**: evento isolado. `isAlarmableEvent`: `severity === 'ERROR'` sempre;
+  `VAPIX_TAMPERING` em qualquer severidade; `VAPIX_PTZ_ERROR` a partir de `WARN`; o resto não. Evento já
+  ligado a incidente é pulado (o alarme do cluster cobre).
+- **Incidente do analítico**: `ANALYTICS_INCIDENT` cujo tipo tem código no catálogo `ANALYTICS`
+  (`AlarmEmitConfig.ANALYTICS_INCIDENT_CAUSE_CODES`: `CONGESTION`, `WRONG_WAY`, `STOPPED_FLOW`) sai no domínio
+  `analytics`, categoria `ROAD_SAFETY` e a severidade padrão do tipo no catálogo (CROSS-175).
+- **`alarmId` determinístico**: `deriveAlarmId(sourceType, sourceId)` (`@attlas/core-common`), UUID v5 de
+  `EVENT:<eventLogId>` ou `INCIDENT:<incidentId>`; replay gera o mesmo id, e o `ms-alarms` deduplica pelo `alarmId` (`IngestionIdempotencyService`).
+- **Escopo**: `systemId` da câmera primária; não resolvido sai sem escopo.
+- **Chave de partição**: `sourceId` para `INCIDENT`, a câmera para `EVENT`.
+- **Consumidor**: o `AlarmRaisedConsumer` do `ms-alarms` classifica pelo `causeCode` dentro do módulo do
+  domínio (`cameras` para `CAMERA_ALARM_TYPES`, `analytics` para o catálogo do analítico); código sem entrada
+  no catálogo é descartado como não mapeado.
 
-- **Elegibilidade** (`correlation-rules.ts`): só pares `(eventType, causeCode)` na lista `CORRELATABLE` são correlacionáveis - `HEALTH_EVENT:{VAPIX_POWER_FAILED,VAPIX_TAMPERING}`, `HEALTH_OFFLINE:{VAPIX_NETWORK_LOST,PROBE_TIMEOUT,PROBE_REFUSED,PROBE_UNREACHABLE,PUSH_DISCONNECT}`, `CONNECTIVITY_CHANGED:{VAPIX_NETWORK_LOST,VAPIX_TAMPERING,PUSH_DISCONNECT}`. `HEALTH_ONLINE` **nunca** abre cluster - recuperação é tratada pelo housekeeping. (Correção 24/08: a lista cresceu desde 03/07 - a nota antiga só citava 4 pares; hoje são 10, incluindo tampering e push-disconnect em `CONNECTIVITY_CHANGED` e `HEALTH_EVENT`, do commit `a4a0f32696` de 22/07.)
-- **Chave**: `correlationKey = eventType:causeCode` (`__NULL__` sentinel quando sem causa).
-- **Janelas** (`CorrelationConfig` em `events/events.constants.ts`): `WINDOW_SECONDS = 60` (ativa) e `EXTENSION_WINDOW_SECONDS = 120`. `findOpenIncidentByKey` casa incidente não-resolvido `TENTATIVE`/`DETECTED` com `detectedAt ≥ windowStart` **OU** `updatedAt ≥ extensionWindowStart`.
-- **Anexar vs criar**:
-  - Incidente aberto encontrado → `attachEvent` (transação: cria ligação idempotente → recomputa contagens → promove).
-  - Nenhum aberto → cria `TENTATIVE` **sem publicar** (anti-ruído, UC-021 seção 6).
-- **Promoção `TENTATIVE` → `DETECTED`**: ao cruzar `CLUSTER_CAMERAS_THRESHOLD = 2` distintas **ou** `CLUSTER_EVENTS_THRESHOLD = 3` eventos. A promoção usa `updateMany({ where: { id, status: 'TENTATIVE' } })` condicional - só a transação vencedora vê `count === 1`, fechando a corrida entre dois attaches. Só na promoção publica `incident-created` **e** invalida o dashboard (`DashboardInvalidationPublisher.invalidateForCamera(..., INCIDENTS)` - novo desde 25/07, SOFTWARE-2326).
-- **Housekeeping** (`@Cron` a cada minuto): roda sob `pg_try_advisory_xact_lock(hashtext('camera-incident-housekeeping'))` numa transação, então **apenas uma réplica** varre por tick (o lock libera no COMMIT/ROLLBACK). Três operações: `autoCloseExpiredDetected` (`DETECTED` sem novos eventos por 30 min → `RESOLVED`), `dropExpiredTentative` (`TENTATIVE` órfão por 120 s → `DROPPED`), `autoResolveByRecovery` (BR-CAM-CORR-005: ≥ 80% das câmeras afetadas reportando `HEALTH_ONLINE` após `detectedAt` → `RESOLVED`).
-- **`DROP_TENTATIVE_WINDOW_SECONDS = 120 ≥ EXTENSION_WINDOW_SECONDS`**: garante que o housekeeping não descarte um `TENTATIVE` enquanto a janela de extensão ainda aceita novos attaches.
+O report manual não publica `incident-created`, então incidente reportado nunca emite alarme automático.
 
-### Estados do incidente (internos)
+## Observações e report (UC-044)
 
-`TENTATIVE` → `DETECTED` → `RESOLVED`; `DROPPED` para tentativos expirados. `INVESTIGATING` existe no enum e é status **visível** (aparece em `VISIBLE_STATUSES`/`STATUS_VALUES` dos handlers de leitura), mas **nenhum caminho de código transiciona para ele** ainda - segue igual à nota de 03/07. Desde UC-044 (seção 7), incidentes manuais também nascem `DETECTED` (não `TENTATIVE`), então o total de vias para `DETECTED` cresceu: promoção por correlação **ou** report manual. Ver mapeamento ao ciclo do edital em [[Eventos, incidentes e alarmes - Requisitos e SLA]].
+- **Observação**: `CameraEventObservation` (`text` até 280, `authorId`/`authorName` do JWT, nunca do body).
+  Thread de dois níveis: reply de reply é 400 `PARENT_IS_REPLY`, porque a leitura só busca top-level e um
+  nível de replies. A criação publica auditoria sem o texto e avisa a sala de incidentes.
+- **Report** (`POST /cameras/events/:eventId/report`, modal "Reportar ocorrência"): `createReportedIncident`
+  abre `CameraIncident` `DETECTED`, `correlationKey: null`, `reportedBy` do ator, ligado ao evento. `name` e
+  `description` são obrigatórios, com tetos de 200 e 2000 em `CameraEventReportValidation`
+  (`libs/contracts/src/lib/camera/camera-event-report.validation.ts`), a mesma classe do `maxlength` do
+  modal. Prioridade derivada da `severity` do evento (tabela em
+  [[Eventos, incidentes e alarmes - Requisitos e SLA]]). Fica fora da trilha de auditoria de propósito.
 
-## 6. Emissão de alarme (UC-022)
+Escritas de observação, report e tratamento exigem `analytics.incidents:treat`.
 
-`events/consumers/emit-alarm/`. Dois `@EventPattern` no mesmo listener:
-
-- **Branch A - `incident-created` → `emitFromIncident`**: cluster correlacionado. Guarda contra `affectedCameraIds` vazio. `mapToAlarm({ causeCode, fromCluster: true })`. Divergência entre severidade do mapping e a do incidente gera `warn` mas o **mapping vence** (fonte canônica).
-- **Branch B - `event-logged` → `emitFromEvent`**: evento crítico isolado. `isAlarmableEvent(causeCode, severity)`: `severity === 'ERROR'` sempre emite; `VAPIX_TAMPERING` sempre; senão não. **Dedup**: se o evento já está ligado a um incidente (`findIncidentByEventLogId`), pula - o alarme do cluster (Branch A) cobre. `mapToAlarm({ ..., fromCluster: false })`.
-- **Mapa causa → alarme** (`alarm-mapping.ts`): `POWER_FAILED`/`HW_FAILURE` → `SYSTEM_FUNCTIONING`/`CRITICAL`; `TAMPERING` → `ROAD_SAFETY`/`HIGH`; `PTZ_ERROR` → `SYSTEM_FUNCTIONING`/`MEDIUM`; `NETWORK_LOST`/`PROBE_*` → `SYSTEM_FUNCTIONING`, `MEDIUM` isolado ou `HIGH` em cluster; `PUSH_DISCONNECT`/`UNKNOWN` → `null` (não-alarmável).
-- **`alarmId` replay-safe**: `deriveAlarmId(sourceType, sourceId)` (`@attlas/core-common`) - UUID v5 com namespace fixo. `EVENT:<eventLogId>` e `INCIDENT:<incidentId>` produzem sempre o mesmo id; replays Kafka e retries geram o mesmo `alarmId`, e o futuro `ms-alarms` dedupa por PK (`INSERT ... ON CONFLICT DO NOTHING`). Reconciliação cross-branch (mesmo cluster visto como EVENT e INCIDENT) é responsabilidade do consumidor.
-- **Particionamento** (`publishAlarmRaised`): key = `sourceId` para `INCIDENT` (ordena por incidente) ou `affectedEntities[0].entityId` (câmera) para `EVENT`.
-- Report manual (UC-044, seção 7) **não** passa por aqui: `createReportedIncident` não publica `incident-created`, então um incidente reportado manualmente nunca emite alarme automático hoje.
-
-## 7. Observações e report de ocorrência (UC-044) - novo desde 20/07
-
-Não existia na nota de 03/07. Modelo novo `CameraEventObservation` (migration `20260720164304_add_camera_event_observation`) + dois casos de uso em `events/observations/`.
-
-- **Modelo**: `id`, `eventLogId` (FK `CameraEventLog`, cascade), `parentObservationId` (nullable, self-relation `CameraEventObservationReplies`), `authorId`/`authorName` (JWT, capturados na escrita para não depender de lookup cross-service), `text` (`VarChar(280)`), `createdAt`. Índices `(eventLogId, createdAt asc)` e `(parentObservationId)`.
-- **Thread com no máximo 2 níveis**: `CreateCameraEventObservationHandler` rejeita reply-de-reply (`parent.parentObservationId !== null` → `InvalidInputException PARENT_IS_REPLY`) porque a leitura (`ListCameraEventObservationsHandler`) só busca top-level + `replies` de 1 nível; um 3º nível persistiria mas nunca voltaria na leitura. `GET /cameras/events/:eventId/observations` retorna cada observação top-level com `replies[]` em ordem cronológica; `author` é `authorName ?? authorId ?? ''`.
-- **`POST /cameras/events/:eventId/report` ("Reportar ocorrência", UF-019) - condicional na prioridade, não no botão**: abre incidente manual via `createReportedIncident` (`status: 'DETECTED'` desde o início - humano confirmou, não é a `TENTATIVE` da correlação -, `correlationKey: null`, vinculado ao evento gatilho). A prioridade **não** vem do body: é derivada da `severity` do evento (`deriveIncidentPriority`, `_shared/derive-incident-priority.ts`) - `ERROR→HIGH`, `WARN→MEDIUM`, `INFO→LOW`, qualquer outro valor cai em `MEDIUM` com `warn` (é a condicional de BR-CAM-EVT-044-03). `name`/`description` do body (`ReportCameraEventOccurrenceDto`, máx 200/2000 chars) tornam-se `title`/`description` do incidente.
-
-> [!warning] Achado de leitura de código - sem guarda contra report duplicado
-> `createReportedIncident` sempre faz `INSERT`; não há checagem de "este evento já tem incidente vinculado" antes de criar outro. O botão "Reportar ocorrência" no frontend (`camera-event-detail.page.html`) também não é condicionado a `linkedIncident` - fica sempre visível e clicável. Dois cliques (ou um F5 seguido de novo clique) no mesmo evento abrem **dois** `CameraIncident` distintos ligados ao mesmo `eventLogId`. Não é um bug corrigido nesta sessão (fora de escopo - só leitura); registrado para quem tocar UC-044 a seguir.
-
-- **`triggeredActions`** ("Ações disparadas", BR-CAM-EVT-041-04, exposto no detalhe cross-camera e na timeline): só emite `{ type: 'INCIDENT', code }` por link em `CameraIncidentEvent` - `ALARM` não é persistido e `SERVICE_ORDER` não tem módulo ainda (só a coluna `workOrderId`), os dois ficam para depois (`build-triggered-actions.ts`).
-- **Timeline do evento (UC-041, `GET /cameras/events/:eventId/timeline`)**: é a **cadeia do incidente**, não um histórico genérico - busca todo `CameraEventLog` ligado ao(s) incidente(s) do evento-âncora via `CameraIncidentEvent` (o mesmo vínculo que a correlação popula), possivelmente cross-camera (RF-EVT-02: falha de energia → N câmeras caindo). Evento sem incidente cai no **fallback de contexto**: mesma câmera, janela de ±30 min (`CONTEXT_WINDOW_MS`), cap de 50 linhas (`CONTEXT_MAX_EVENTS`) - sem isso, um evento de rotina sempre renderizaria uma timeline de 1 item. `correlationId` (o de dedup do ingest) nunca é chave da cadeia.
-- **Recorrência (UC-042, `GET /cameras/events/:eventId/recurrence`)**: série bucketizada de 2 contagens (`total` e `categoryCount`, mesma categoria do evento-âncora) sobre a **câmera de origem apenas** (não cross-camera), numa janela que termina no `occurredAt` do âncora - não em "agora". Presets fixos: `1h` (60 buckets/minuto), `24h` (24/hora), `7d`/`30d` (dias); default `24h`.
-
-## 8. Idempotência - camadas
+## Idempotência
 
 | Camada | Mecanismo | Garantia |
 | --- | --- | --- |
-| Registro (ingest) | `findByCorrelationId(cameraId, correlationId)` | Best-effort; corrida na 1ª entrega concorrente aberta (índice parcial `(cameraId, correlationId)` é follow-up) |
-| Correlação | fail-fast `eventAlreadyLinked` + `@@unique([incidentId, eventLogId])` | Forte no anexo; corrida de **criação** de 2 incidentes na mesma `correlationKey` aberta (partial UNIQUE `WHERE resolvedAt IS NULL` é follow-up) |
-| Alarme | `deriveAlarmId` determinístico + dedup por PK no `ms-alarms` | Forte ponta-a-ponta |
-| Observação (reply) | `parentObservationId` deve apontar pra top-level (`InvalidInputException` senão) | Forte - impede thread de 3 níveis |
-| Report manual (UC-044) | **nenhum** | Ausente - ver callout na seção 7 |
+| Registro `ingest` | `findByCorrelationId(cameraId, correlationId)` | Best-effort; corrida na primeira entrega concorrente |
+| Registro `analytics` | Mapa em memória por `(câmera, região, tipo)`, 30 s | Por processo; restart pode gerar uma linha a mais |
+| Correlação | `eventAlreadyLinked` e `@@unique([incidentId, eventLogId])` | Forte no anexo; corrida na criação de dois `TENTATIVE` da mesma chave |
+| Alarme | `deriveAlarmId` e idempotência de ingestão do `ms-alarms` por `alarmId` | Forte |
+| Tratamento | PK `eventLogId` e compare-and-set | Forte, um vencedor e um 409 |
+| Observação | Pai precisa ser top-level | Forte |
+| Report manual | Nenhum | Ausente |
 
-## 9. Decisões e trade-offs
+## Endpoints (prefixo `/api`)
 
-- **Categoria derivada, não persistida**: `CameraEventLog` não tem coluna `category`; `deriveCameraEventCategory` mapeia `(eventType, causeCode)` em read-time. Filtrar por categoria vira predicado Prisma (`buildCategoryWhere`). O clause `OPERATIONAL` é NULL-safe: não usa `NOT(OR(positivos))` porque `payload->'causeCode'` ausente é SQL `NULL` e descartaria a linha; trata o caso "sem causeCode" explicitamente.
-- **`ANALYTICS` com produtor fora da `develop` (corrigido 25/08)**: a categoria passou a ter produtor em `6bc94d324d` (PROJ-021, `analytics-realtime/analytics-incident-recorder.service.ts`), que grava `ANALYTICS_INCIDENT` a partir do campo `region_incidents` do frame do analítico embarcado, com dedup de 30 s por `(câmera, região, tipo)`. O commit está na linhagem `SOFTWARE-2676` e **ainda não na `develop`**: na `develop` a afirmação antiga continua verdadeira (nenhum evento produz a categoria, e `positiveCategoryClause(ANALYTICS)` casa `eventType: { in: [ANALYTICS_INCIDENT] }` sem nunca encontrar linha). Catálogo por tipo e criticidade em [[Eventos, incidentes e alarmes - Catálogo e criticidade]].
-- **Fallback pt-BR persistido**: `title`/`description` de incidente e chaves i18n (`buildIncidentTitleFallback`) são texto estável para consumidores sem i18n; o frontend prefere `translationKey`.
-- **`type`/severidade derivados de `correlationKey`**: não há coluna dedicada; o filtro por `type` (UC-023) vira `endsWith(':<causeCode>')` sobre `correlationKey` (`incidents/incident-mapping.ts`). Incidentes manuais (UC-044) têm `correlationKey: null`, então não carregam `type` derivado dessa via - a UI de detalhe recebe `causeCode: null` e cai no fallback `UNKNOWN`.
-- **`area`/`subarea` resolvidos por topologia, não persistidos no evento**: a leitura cross-camera (seção 4) busca a topologia do tenant (ms-traffic-model, via bearer forwarded) uma vez por request e resolve `trafficElementId → {area, subarea}` em memória; uma indisponibilidade do ms-traffic-model degrada os rótulos para string vazia sem falhar a rota.
-- **Publishes best-effort**: falha de broker nunca quebra o caller - registro/correlação já persistiram.
+Todos no `CamerasController` (`apps/ms-cameras/src/cameras/cameras.controller.ts`), com
+`@RequireSystemDuty()` na classe e escopo por `@SystemId()`.
 
-## Relacionados
+| Método | Rota | Retorno | UC |
+| --- | --- | --- | --- |
+| `GET` | `/cameras/:id/events` | Página de eventos da câmera (`eventType`, `severity`, `category`, `operatorId`, `from`/`to` sobre `createdAt`, busca, `sort`; `limit` default 20, máximo 100) | UC-017 |
+| `GET` | `/cameras/:id/events/:eventId` | Detalhe por câmera, com `connectionStatus` | UC-018 |
+| `GET` | `/cameras/events` | Página da rede; com `category=ANALYTICS`, também os agregados da fila | UC-032, UC-063 |
+| `GET` | `/cameras/events/stats` | Quatro tiles e comparação fixa | UC-040 |
+| `GET` | `/cameras/events/export` | XLS ou PDF da fila | UC-080 |
+| `GET` | `/cameras/events/:eventId` | Detalhe da rede (deep-link por id) | UC-032 |
+| `GET` / `POST` | `/cameras/events/:eventId/observations` | Thread e criação de observação | UC-044 |
+| `POST` | `/cameras/events/:eventId/report` | Incidente manual | UC-044 |
+| `PATCH` | `/cameras/events/:eventId/treatment-status` | Transição de tratamento | UC-062 |
+| `PATCH` | `/cameras/events/treatment-status` | Transição em lote, até 100 | UC-074 |
+| `GET` | `/cameras/events/:eventId/recurrence` | Série por buckets | UC-042 |
+| `GET` | `/cameras/events/:eventId/timeline` | Cadeia do incidente ou contexto | UC-041 |
+| `GET` | `/cameras/incidents` | Página de incidentes (default 7 dias; `TENTATIVE`/`DROPPED` ocultos; filtros `severity`, `type`, `status`, `cameraId`) | UC-023 |
+| `GET` | `/cameras/incidents/metrics` | Agregado da fila do analítico | UC-063 |
+| `GET` | `/cameras/incidents/:id` | Detalhe e timeline ascendente (até 200, `timelineTruncated`) | UC-024 |
 
-[[Saúde e monitoramento]] · [[PTZ e presets]] · [[Status em tempo real]] · [[Streaming]]
+Os segmentos literais (`incidents`, `events`, `bulk-template`, `manufacturers`) são declarados antes de
+`@Get(':id')`, e dentro de cada grupo `events/stats`, `events/export` e `events/treatment-status` vêm antes de
+`events/:eventId`, e `incidents/metrics` antes de `incidents/:id`; senão o `ParseUUIDPipe` os captura.
+
+## Kafka
+
+Constantes: `libs/contracts/src/lib/camera/cameras-topics.constant.ts`,
+`libs/contracts/src/lib/alarm/alarms-topics.constant.ts` e
+`libs/contracts/src/lib/execution-plans/execution-plans-topics.constant.ts`.
+
+| Direção | Tópico | Onde | Payload |
+| --- | --- | --- | --- |
+| Consome | `attlas.cameras.event-ingest` | `CameraEventIngestListener`; sem produtor no repo | `ICameraEventIngestMessage` |
+| Consome | `attlas.cameras.event-logged` | Correlação **e** ramo B do alarme | `ICameraEventLogEntry` |
+| Consome | `attlas.cameras.incident-created` | Ramo A do alarme | `ICameraIncidentCreatedEvent` |
+| Consome | `attlas.execution-plans.ptz-command` | Comando de PTZ de plano | `IPtzCommandEvent` |
+| Consome | `attlas.execution-plans.videowall-command` | Comando de videowall de plano | `IVideowallCommandEvent` |
+| Produz | `attlas.cameras.event-logged` | Seam (chave `cameraId`) | `ICameraEventLogEntry` |
+| Produz | `attlas.cameras.incident-created` | Correlação, só na promoção | `ICameraIncidentCreatedEvent` |
+| Produz | `attlas.alarms.alarm-raised` | Emissor de alarme | `IAlarmRaisedEvent` |
+| Produz | `attlas.cameras.ptz-command-executed` / `-rejected` | Eco do comando de PTZ (chave `commandId`) | `IPtzCommandExecutedEvent` / `IPtzCommandRejectedEvent` |
+| Produz | `attlas.cameras.videowall-command-executed` / `-rejected` | Eco do comando de videowall (chave `commandId`) | `IVideowallCommandExecutedEvent` / `IVideowallCommandRejectedEvent` |
+| Produz | `attlas.audit.cameras` | Observação e tratamento (`CamerasAuditPublisher`) | Envelope de `@attlas/audit-events` |
+
+Sem produtor Kafka (`KAFKA_BROKERS` ausente), `event-logged`, `incident-created` e `alarm-raised` são
+suprimidos em silêncio, porque o que importa já persistiu; os ecos de comando de plano fazem o handler falhar
+(prazo de 20 s) para o comando ser reentregue. A transição de conexão sai em `attlas.cameras.status-changed`
+por outro caminho ([[Saúde e monitoramento - Arquitetura e estratégias#Tópico status-changed|status-changed]]).
+
+## Persistência (`apps/ms-cameras/src/database/schema/`)
+
+| Modelo | Arquivo | Papel |
+| --- | --- | --- |
+| `CameraEventLog` | `audit/camera_event_log.prisma` | Evento: `eventType`, `subType`, `severity`, `payload` (JSON), `correlationId`, `operatorId`, `occurredAt` (Timestamptz, sem default no banco). Sem coluna `category` |
+| `CameraEventObservation` | `audit/camera_event_observation.prisma` | Observação ou reply, `text` VarChar(280), `parentObservationId` |
+| `CameraEventTreatment` | `audit/camera_event_treatment.prisma` | Tratamento do incidente `ANALYTICS`: `eventLogId` PK, `status`, `assignedTo`, `updatedBy` |
+| `CameraIncident` | `incident/camera_incident.prisma` | Cluster ou manual: `status`, `priority`, `correlationKey` (VarChar 64, `null` se manual), `detectedAt`/`resolvedAt`, `reportedBy`; `assignedTo`/`workOrderId` sem fluxo |
+| `CameraIncidentEvent` | `incident/camera_incident_event.prisma` | Ligação N:N; `@@unique([incidentId, eventLogId])` |
+| `AnalyticsIncidentCriticality` | `incident/analytics_incident_criticality.prisma` | Criticidade por tipo e sistema (UC-227) |
+
+## Por que assim
+
+- **Um seam para três origens**: um só lugar valida, persiste, classifica, emite e publica; as diferenças
+  entre origens são flags, não caminhos paralelos.
+- **Categoria derivada, não persistida**: `deriveCameraEventCategory` mapeia `(eventType, causeCode)` em
+  read-time e o filtro vira predicado Prisma. A cláusula `OPERATIONAL` é NULL-safe (não usa
+  `NOT(OR(positivos))`, que descartaria linha sem `causeCode`) e exclui `ANALYTICS_INCIDENT`.
+- **Tratamento separado do incidente de hardware**: o operador move o `CameraEventTreatment`; o `status`
+  exibido prefere o tratamento (BR-CAM-TRT-001).
+- **Tipo e severidade do incidente derivados de `correlationKey`**: o filtro por `type` vira
+  `endsWith(':<causeCode>')`; incidente manual cai em `UNKNOWN` no detalhe.
+- **Título em pt-BR persistido como fallback**: texto estável para consumidor sem i18n; o front usa
+  `translationKey`.
+- **Publish best-effort, ecos de comando estritos**: falha de broker não desfaz registro, correlação nem
+  alarme, que já persistiram; o comando de plano precisa do eco para fechar.
+
+## Armadilhas conhecidas
+
+- **A exportação para nas primeiras 100 linhas.** O handler pede lotes de
+  `INCIDENTS_EXPORT_BATCH_SIZE = 500` e para quando um lote volta menor que 500, mas o
+  `ListCameraEventsHandler` limita `pageSize` a `CameraEventLogConfig.MAX_LIMIT = 100`. Com mais de 100
+  incidentes no filtro, o arquivo sai com 100 linhas enquanto o teto de 20 000 é conferido contra o total
+  real.
+- **Report duplicado abre dois incidentes.** `createReportedIncident` sempre insere, o handler não confere
+  `linkedIncident`, e o botão "Reportar ocorrência"
+  (`web-attlas/.../cameras-events/pages/camera-event-detail/camera-event-detail.page.html`) fica sempre
+  clicável.
+- **Comentário falso no DTO**: `reading/dtos/list-camera-events.dto.ts` diz que `area` "not yet enforced",
+  mas o handler resolve a topologia e o `where` aplica o filtro, coberto por teste.
+- **Comentário defasado no worker**: o docblock de `safeAppendEvent` diz que `health` não publica; o seam
+  publica o par correlacionável.
+
+## Pendências
+
+- Índice parcial único em `(cameraId, correlationId)` para fechar a corrida do dedup do ingest.
+- UNIQUE parcial `WHERE resolvedAt IS NULL` por `correlationKey` para fechar a corrida de criação de dois
+  `TENTATIVE`.
+- DLQ para o ingest e para a correlação (hoje descartam com log).
+- Guarda contra report duplicado e corte do lote da exportação (armadilhas acima).
+- `CorrelationConfig` passar de constante para configuração em banco.

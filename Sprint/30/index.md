@@ -9,7 +9,7 @@ aliases:
   - "Sprint 30 - o que entrega"
 sprint: Sprint 30 (24/8/26 - 30/8/26)
 status: "ABERTA em 24/08, frente única - analítico de vídeo. REESTIMADA em 25/08 com o frontend na conta: 51 pontos em 11 cards (eram 28 em 10, porque o plano antigo não tinha card de frontend nenhum). Em 28/08 os 8 cards de backend estão mergeados na develop - 37 dos 51 pontos. Restam os 3 cards [Front] (14 pts): a galeria mergeou dentro da pilha, a fila de incidentes e o frame congelado estão com changes requested. O user decidiu fechar a semana incluindo sábado; o que não couber rola para a Sprint 31, que está mapeada. Prazo do módulo: 18/09."
-atualizado: 2026-08-29
+atualizado: 2026-09-26
 ---
 
 # Sprint 30 - o que entrega
@@ -68,7 +68,7 @@ Para não haver surpresa na revisão:
 - **Métricas ATSPM e do Laço Virtual** - as telas existem prontas no `attlas-design`, mas não há
   backend antes do servidor de VL ([[Attlas - Sprint 31]]).
 - **Analítico servidor** (Virtual Loop em container) - é a Sprint 31 inteira.
-- **ACOM** (atuação no controlador) e **ATSPM** - seguem sem prazo, em [[00 - Sem prazo (backlog)]].
+- **ACOM** (atuação no controlador) e **ATSPM** - seguem sem prazo, em [[Sem prazo (backlog)]].
 - **Quatro laços virtuais por câmera** - requisito decidido, mas é redesenho de contrato.
 - **OTA do app embarcado** - depende do fornecedor do ACAP.
 
@@ -95,6 +95,13 @@ Backend e full-stack (PR aberta): [[Analítico - Renumerar a CROSS-032 duplicada
 Frontend (PR aberta): [[Analítico - Fila de incidentes (front)]] ·
 [[Analítico - Galeria de mídia de evidência (front)]] ·
 [[Analítico - Desenho de região sobre frame congelado (front)]]
+
+
+## Outras notas desta pasta
+
+Notas que existiam na pasta e não estavam ligadas a este índice até a revisão de 23/09.
+
+- [[Analítico - Controles de tratamento do incidente]] - [Full] Controles de tratamento do incidente do analítico (assumir/resolver)
 
 ## Ver também
 
@@ -237,9 +244,9 @@ gate é manual: `gh workflow run ci-pr.yml --ref <branch>`.
 | Cadeia do servidor de VL (spec, ingestão, detecção, ocupação, vínculo, tradução de endereço) | [[Attlas - Sprint 31]], 25 pts | Depende da entidade e da geometria em banco que esta semana cria |
 | Métricas ATSPM e do Laço Virtual (telas prontas no `attlas-design`) | Sprint 31+ | Não existe backend antes do servidor de VL. Ver [[Analítico - Frontend do attlas-design]] |
 | Escala e prova de campo | [[Attlas - Sprint 32]], 4 pts | Dependem da Sprint 31 inteira |
-| Quatro laços por câmera | [[00 - Sem prazo (backlog)]], 5 pts | Requisito decidido, mas é redesenho do contrato de `IVirtualLoopConfig` |
-| ACOM (1:1 com controlador, vínculo com analítico, caller da atuação, tela) | [[00 - Sem prazo (backlog)]], 18 pts | Vive no `ms-controllers`, depende de outro squad, migration com backfill. **Fora do prazo de 18/09 salvo confirmação do user** |
-| ATSPM (unicidade de grupo, snapshot de config, spec do ATSPM) | [[00 - Sem prazo (backlog)]], 10 pts | Sem uma linha de spec. A **decisão do `ms-dai`** saiu daqui em 31/08: ele não nasce, é sub-produto do ATSPM ([[Analítico - Topologia de serviço do analítico de vídeo]]). Mesma ressalva do ACOM |
+| Quatro laços por câmera | [[Sem prazo (backlog)]], 5 pts | Requisito decidido, mas é redesenho do contrato de `IVirtualLoopConfig` |
+| ACOM (1:1 com controlador, vínculo com analítico, caller da atuação, tela) | [[Sem prazo (backlog)]], 18 pts | Vive no `ms-controllers`, depende de outro squad, migration com backfill. **Fora do prazo de 18/09 salvo confirmação do user** |
+| ATSPM (unicidade de grupo, snapshot de config, spec do ATSPM) | [[Sem prazo (backlog)]], 10 pts | Sem uma linha de spec. A **decisão do `ms-dai`** saiu daqui em 31/08: ele não nasce, é sub-produto do ATSPM ([[Analítico - Topologia de serviço do analítico de vídeo]]). Mesma ressalva do ACOM |
 | OTA do app embarcado | sem card | Depende do fornecedor do ACAP expor caminho de atualização |
 
 ## Riscos
@@ -301,6 +308,10 @@ Card `2676`. Recomendação registrada na spec: reusar o `CameraThumbnailService
 320x240 sem persistência) em resolução cheia com armazenamento, contra capturar quadro do relay ou
 pedir a imagem ao fornecedor do ACAP.
 
+**Estado em 26/09**: para o analítico embarcado o próprio equipamento responde. O app ATSPM guarda uma
+imagem de cada incidente e a câmera grava cada um no cartão SD, e desde a #4889 a galeria lê as duas na
+hora, com a captura em resolução cheia como segunda fonte ([[Registro - imagem e vídeo do incidente lidos do equipamento em 26 de setembro]]).
+
 ## Processo
 
 - **11 cards no ClickUp**: os 8 de `[Back]`/`[Full]` existem desde 24/08 (`SOFTWARE-2676` a `2685`,
@@ -321,7 +332,7 @@ pedir a imagem ao fornecedor do ACAP.
 
 ## Ver também
 
-[[Attlas - Sprint 31]] · [[Attlas - Sprint 32]] · [[00 - Sem prazo (backlog)]] · [[Analítico]] ·
+[[Attlas - Sprint 31]] · [[Attlas - Sprint 32]] · [[Sem prazo (backlog)]] · [[Analítico]] ·
 [[Analítico - Embarcado x Servidor]] · [[Analítico - Frontend do attlas-design]] ·
 [[Analítico - Requisitos e SLA]] · [[Analítico - Arquitetura e estratégias]] · [[Analítico - Fluxos]] ·
 [[Attlas - Sprint 29]] · [[Attlas - Sprint 27]] (o planejamento que este reescopo substitui)

@@ -8,7 +8,7 @@ tags:
   - dashboard
 card: SOFTWARE-2318
 clickup: https://app.clickup.com/t/86ajpnu4j
-titulo: "[QA] Dashboard de câmeras — validação E2E de dados (front x banco)"
+titulo: "[QA] Dashboard de câmeras - validação E2E de dados (front x banco)"
 frente: Dashboard
 tamanho: a estimar
 status: validado (API+banco); front já ligado ao real desde 25/07 (SOFTWARE-2326, PR #1058, Closed); achado de largura (2357) com PR #1139 aberta e CI verde
@@ -16,7 +16,7 @@ sprint: "[[Attlas - Sprint 26]]"
 atualizado: 2026-07-29
 ---
 
-# Dashboard de câmeras — validação E2E de dados
+# Dashboard de câmeras - validação E2E de dados
 
 > Validação manual da tela de Dashboard de câmeras: KPIs, gauge, donuts, marcadores do mapa,
 > heatmap de eventos, série de uptime, banda e tabelas de conectividade. Conferir se os valores
@@ -26,7 +26,7 @@ atualizado: 2026-07-29
 ## Objetivo
 
 Validar, card a card do dashboard, se o número/gráfico exibido no front reflete corretamente a
-agregação feita pelo backend sobre o dado real do Postgres — e corrigir ajustes pontuais
+agregação feita pelo backend sobre o dado real do Postgres - e corrigir ajustes pontuais
 encontrados no caminho.
 
 ## Contexto
@@ -43,30 +43,30 @@ analítica/incidentes), série de uptime, heatmap de eventos, marcadores do mapa
 - [x] Série de uptime
 - [x] Heatmap de eventos
 - [x] Marcadores do mapa
-- [x] Banda (consumo, por área*, comparação) — *by-area não testado no caminho feliz (exige `ms-traffic-model`)
+- [x] Banda (consumo, por área*, comparação) - *by-area não testado no caminho feliz (exige `ms-traffic-model`)
 - [x] Tabelas de conectividade (intermitentes, latência, degradação)
 
 ## Resultado
 
 O relatório detalhado da sessão de validação não foi trazido para o vault; o registro é o resumo abaixo.
 
-Todos os 13 endpoints validados via API + cruzamento com Postgres — dados batem exatamente. Nenhum
+Todos os 13 endpoints validados via API + cruzamento com Postgres - dados batem exatamente. Nenhum
 bug de código encontrado. 2 achados: rollup diário do ambiente local parado em 24/07 (limitação de
 dado, não bug) e 6 specs atômicas (UC-033/034/036/037/038/039) documentando a rota errada
-(`/api/cameras/dashboard/*` em vez de `/api/dashboard/*` real) — corrigidas.
+(`/api/cameras/dashboard/*` em vez de `/api/dashboard/*` real) - corrigidas.
 
 ## Pendências
 
-- [ ] `bandwidth-by-area` no caminho feliz — exige `ms-traffic-model` rodando (não estava no ar).
-- [x] ~~Clique-a-clique no `web-attlas` — sessão sem ferramenta de browser.~~ Front já estava ligado
+- [ ] `bandwidth-by-area` no caminho feliz - exige `ms-traffic-model` rodando (não estava no ar).
+- [x] ~~Clique-a-clique no `web-attlas` - sessão sem ferramenta de browser.~~ Front já estava ligado
       ao backend real desde 25/07 ([[SOFTWARE-2326 - Integração do dashboard de câmeras com o backend real|SOFTWARE-2326]],
-      PR #1058, Closed - inclusive com realtime via Socket.IO/Redis) — falta ainda o e2e visual pela
+      PR #1058, Closed - inclusive com realtime via Socket.IO/Redis) - falta ainda o e2e visual pela
       tela, bloqueado pelo Kong do ambiente `dev.v2` estar defasado da develop (só a família
       `bandwidth` respondia no probe de 28/07).
 - [ ] Rodar o job de rollup diário (ou reseed) antes de validar visualmente os gráficos de tendência,
       senão os últimos 2-3 dias aparecem vazios/zerados.
 - Login real via `ms-organization` continua bloqueado pelo Kafka local (ver `local_dev_machine_setup`
-  — memória do Claude); testado via JWT assinado manualmente, mesmo contorno de
+ - memória do Claude); testado via JWT assinado manualmente, mesmo contorno de
   [[SOFTWARE-2317 - Fluxo E2E de cadastro de câmera]].
 
 ## Achados do clique-a-clique (28/07)
@@ -74,11 +74,11 @@ dado, não bug) e 6 specs atômicas (UC-033/034/036/037/038/039) documentando a 
 Card novo aberto no ClickUp ([SOFTWARE-2357](https://app.clickup.com/t/86ajr4e0z), status "code
 review"):
 
-- [x] **Sem largura limite** — o grid esticava full-bleed em monitor ultra-wide (nenhum ponto da
+- [x] **Sem largura limite** - o grid esticava full-bleed em monitor ultra-wide (nenhum ponto da
       cadeia `.dashboard`/`SystemLayout` tinha `max-width`). Corrigido, mesmo padrão já usado na home
       da Organization (`max-width` via token `--container-7xl` + `margin: auto`). PR original #1119
       fechada (branch antiga, substituída); recriada como PR
-      [#1139](https://github.com/atmanadmin/attlas-2026/pull/1139) — essa branch tinha sido cortada
+      [#1139](https://github.com/atmanadmin/attlas-2026/pull/1139) - essa branch tinha sido cortada
       antes da #1058 mergear a mesma conversão de mock→backend real, então precisou mesclar com a
       develop em 29/07 (3 arquivos em conflito, resolvidos a favor da versão já mergeada) + remover
       uma rota Kong duplicada (`/api/dashboard/kpis`) achada nessa mesclagem. CI verde.

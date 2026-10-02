@@ -16,9 +16,10 @@ clickup_status: Closed
 merged: 2026-07-01
 clickup: https://app.clickup.com/t/86aj9aw7a
 sprint: "[[Attlas - Sprint 22]]"
+atualizado: 2026-07-31
 ---
 
-# SOFTWARE-1924 — Endpoint getHealthMetrics + série + SLA
+# SOFTWARE-1924 - Endpoint getHealthMetrics + série + SLA
 
 > Tarefa 6. **PR [#578](https://github.com/atmanadmin/attlas-2026/pull/578) MERGEADA (01/07)** · ClickUp **Closed**.
 > Contexto: [[Saúde da câmera - regras de negócio e contratos]]. Junta tudo no endpoint que o frontend consome.
@@ -34,5 +35,5 @@ sprint: "[[Attlas - Sprint 22]]"
 
 ## Cascata
 
-- bitrate/TTFF ficam `null` até o PROJ-006 (#577) entrar — ver [[SOFTWARE-1923 - Bitrate histórico + TTFF]].
+- bitrate/TTFF ficam `null` até o PROJ-006 (#577) entrar - ver [[SOFTWARE-1923 - Bitrate histórico + TTFF]].
 - Branch do #578 carregava o código do #576 para compilar; rebaseada onto develop quando o #576 mergeou (cópia sumiu).

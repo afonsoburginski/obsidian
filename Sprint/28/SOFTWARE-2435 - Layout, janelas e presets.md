@@ -9,7 +9,7 @@ clickup: https://app.clickup.com/t/86ajycf5k
 titulo: "[Back] Videowall externo: layout, janelas e presets"
 frente: Videowall externo (NovaStar H9)
 tamanho: 3 pts
-status: Fechado em 17/08 no ClickUp. Confirmado no SOFTWARE-2201 como entregue: composição de camadas/presets passou a ser operação do próprio equipamento no modelo de espelhamento, não da plataforma; o que faltava do escopo original deixou de ser desejado.
+status: 'Fechado em 17/08 no ClickUp. Confirmado no SOFTWARE-2201 como entregue: composição de camadas/presets passou a ser operação do próprio equipamento no modelo de espelhamento, não da plataforma; o que faltava do escopo original deixou de ser desejado.'
 sprint: "[[Attlas - Sprint 28]]"
 atualizado: 2026-08-17
 ---

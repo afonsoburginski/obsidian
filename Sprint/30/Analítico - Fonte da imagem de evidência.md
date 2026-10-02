@@ -11,7 +11,7 @@ frente: Analítico
 tamanho: 5 pts
 status: "MERGEADA na develop em 28/08 pela PR #2006. Reestimado em 25/08 de 2 para 5 pts como [Back] - os 2 pts originais eram o custo da decisão, não da implementação (endpoint + object storage + vínculo). Implementado na opção recomendada (reler o device em resolução cheia), isolado num seam de um método: a pendência A-01, de onde vem o pixel, segue aberta. A galeria virou card irmão [[Analítico - Galeria de mídia de evidência (front)]] (3 pts)."
 sprint: "[[Attlas - Sprint 30]]"
-atualizado: 2026-08-28
+atualizado: 2026-09-26
 ---
 
 # Analítico - Fonte da imagem de evidência
@@ -33,6 +33,14 @@ detecção com imagem nenhuma.** Não é um problema de qualidade, é ausência 
 - O único snapshot que existe é a thumbnail efêmera de preview do
   `apps/ms-cameras/src/cameras/services/camera-thumbnail.service.ts`: 320x240, `compression=35`,
   `Cache-Control: max-age=5`, sem persistência e sem nenhum vínculo com detecção.
+
+> [!info] Estado em 26/09: o equipamento guarda a imagem e o vídeo do incidente
+> O payload segue sem pixel (o da 0.10.2 também traz `obj_incidents`, só metadado), mas para o analítico embarcado a premissa de que não existe imagem caiu. O
+> app ATSPM guarda uma imagem de cada incidente (`screenshot_path`, servida em `GET /output/<caminho>`)
+> e a câmera Axis grava cada um no cartão SD (`recording_id`, exportado em MP4 por
+> `record/export/exportrecording.cgi`). Desde a #4889 a galeria lê as duas do equipamento quando o
+> incidente é aberto, sem cópia no Attlas. A imagem que esta PR persiste segue como a segunda fonte da
+> galeria. Ver [[Registro - imagem e vídeo do incidente lidos do equipamento em 26 de setembro]].
 
 Então a decisão não é "corrigir qualidade" nem "partir do zero". É escolher qual das três fontes abaixo
 passa a produzir o pixel, sabendo que cada uma tem custo de banda e de armazenamento diferente.

@@ -4,117 +4,135 @@ tags:
   - ms-cameras
   - cameras
   - streaming
-atualizado: 2026-07-03
+atualizado: 2026-10-01
 ---
 
 # Streaming - Fluxos e SLA
 
-Volta para [[Streaming]] · [[ms-cameras]]. Irmãs: [[Streaming - Arquitetura]], [[Streaming - HLS]], [[Streaming - WebRTC e WHEP]], [[Streaming - Diagnóstico de travamento no WebRTC]], [[Streaming - Codecs e fallbacks]], [[Streaming - Estratégias de entrega]].
+Volta para [[Streaming]]. Os mecanismos citados aqui estão em [[Streaming - Arquitetura e estratégias]].
+Fonte: `apps/ms-cameras/src/streaming/` (`streaming.controller.ts`, `services/live-stream-path.service.ts`,
+`services/live-stream-fleet.service.ts`, `workers/live-stream-path-watcher.service.ts`,
+`services/stream-ttff-recorder.service.ts`, `services/stream-diagnostics.service.ts`).
 
-Os fluxos ponta a ponta de abrir e fechar um stream, os eventos WebSocket que o frontend
-observa, e os indicadores de qualidade/SLA (latência, TTFF, disponibilidade). Fonte:
-`apps/ms-cameras/src/streaming/streaming.controller.ts`, `.../services/ffmpeg-session.service.ts`,
-`.../streaming.gateway.ts`, `.../services/camera-ttff.repository.ts`,
-`.../services/stream-diagnostics.service.ts`. Requisito de latência: RNF-CAM-03.
+## `GET /api/cameras/:id/hls?quality=&codec=`
 
-## Fluxo - `GET /api/cameras/:id/hls?quality=`
+`@Public()`, rota Kong `ms-cameras-allowlist-hls-session` sem plugin `jwt`. Garante o path e devolve as
+URLs; não espera a câmera.
 
-Abre (ou reaproveita) a sessão e devolve as duas URLs de playback.
+1. **Parse**: `ParseUUIDPipe` no id e `ParseStreamTypePipe` (`pipes/parse-stream-type.pipe.ts`) na
+   qualidade, padrão `PRIMARY`; valor inválido vira 400 `INVALID_INPUT` com `field: 'quality'`. O mesmo
+   pipe serve o endpoint de diagnóstico.
+2. **Codec efetivo** (`negotiateEffectiveCodec`): `H264` ou `H265`; analítico embarcado ativo força `H264`.
+3. **Teto antes do resolve** (`refuseWhenFull`): teto cheio e câmera sem path disponível nem admitido
+   responde 429 `RATE_LIMIT_EXCEEDED`, detalhe `STREAM_SESSION_CAP_REACHED`.
+4. **Resolve a fonte**: cadeia de qualidade, VAPIX e URL H264 de reserva. `DomainException` sai intacta
+   (409 `BUSINESS_RULE_VIOLATION`, detalhe `STREAM_PROFILE_NOT_CONFIGURED`, em que o front ramifica);
+   qualquer outra falha, Prisma incluído, vira 502 `EXTERNAL_SERVICE_ERROR` com detalhe
+   `HLS_START_TIMEOUT`, que o player repete.
+5. **H265 no H264 disponível**: responde o path H264 com `codec: 'H264'`, sem tocar em config.
+6. **Admite e garante**: `LiveStreamFleet.admit` e `LiveStreamPathService.ensure` (read-before-write).
+   Falha na escrita, com o MediaMTX fora incluído, vira o mesmo 502.
+7. **Resposta** `{ url, hlsUrl, status, quality, codec }`:
+   - `url`: `<MEDIAMTX_WEBRTC_BASE_URL>/<id>-<quality>[-h265]/whep`.
+   - `hlsUrl`: `<MEDIAMTX_HLS_BASE_URL>/<id>-<quality>[-h265]/index.m3u8`.
+   - `status`: `ACTIVE` se o path já está disponível, `STARTING` se este leitor vai abri-lo.
+   - `quality` e `codec` servidos; `<quality>` vai em minúsculas na URL.
+   - `leaseId` do contrato `IHlsSessionResponse` é `@deprecated` e nunca vem preenchido.
 
-1. **Parse da qualidade** - `ParseStreamTypePipe` (default `PRIMARY`; inválido → `INVALID_INPUT`).
-   Ver [[Streaming - Estratégias de entrega]].
-2. **Reuso** - se já há sessão viva (`ACTIVE`/`STARTING`/`RECONNECTING`), anexa como viewer
-   (`attachToExisting`) e pula para o passo 6. `STARTING` aguarda `ensureRunning`.
-3. **Criação única** - sem sessão viva, o `Map inFlight` garante um único criador por
-   `cameraId:quality`; concorrentes fazem piggyback e só incrementam viewers.
-4. **Resolve a origem** - `CameraStreamSourceResolver.resolve()`: cadeia de qualidade + params
-   VAPIX + `fallbackRtspUrl` de codec (ver [[Streaming - Codecs e fallbacks]]). Devolve o
-   `resolvedQuality` (pode diferir do pedido).
-5. **Spawn + espera pronto** - `registry.create` → `spawnFfmpeg` → `ensureRunning` →
-   `waitForStreamReady`: faz poll no mediamtx (`GET /v3/paths/get/<path>`) a cada 500ms até
-   `ready:true` ou estourar `HLS_START_TIMEOUT_MS` (default 15_000). Timeout → `ERROR`
-   (`HLS_START_TIMEOUT`) e o controller responde `ExternalServiceException`. Ao ficar pronto,
-   grava a amostra de **TTFF** (best-effort) e marca `ACTIVE`.
-6. **Resposta** - `{ url, hlsUrl, status, quality }`:
-   - `url` - WebRTC/WHEP: `<MEDIAMTX_WEBRTC_BASE_URL>/<id>-<quality>/whep` (primário).
-   - `hlsUrl` - LL-HLS: `<MEDIAMTX_HLS_BASE_URL>/<id>-<quality>/index.m3u8` (fallback).
+Quem espera a câmera é o MediaMTX, segurando o POST do WHEP do primeiro leitor até a fonte ficar pronta
+ou até `STREAM_SOURCE_START_TIMEOUT_MS`. Não há o que liberar depois: o path fecha sozinho 30 s depois do
+último leitor, e não existe `DELETE /hls`. É assim que se cumpre o RNF-CAM-21: o segundo operador entra na
+entrega existente, ela só acaba quando o último sai, e a saída de um nunca derruba os outros.
 
-## Fluxo - `DELETE /api/cameras/:id/hls?quality=`
+## Fluxo do player
 
-`204 No Content`. Chama `decrementViewers`; **não derruba na hora**. Ao chegar a 0 viewers,
-arma o `graceTimer` (`HLS_SESSION_GRACE_MS`, default 60_000) e só depois dele o `stopSession`
-mata o ffmpeg (`SIGTERM`→`SIGKILL` em 5s), emite `stream.stopped` e remove do registry. Um novo
-viewer dentro da janela de graça cancela o timer e reaproveita a sessão. Detalhe do ref-count
-em [[Streaming - Estratégias de entrega]].
-
-## Fluxo do player (frontend)
-
-1. Chama `GET .../hls`, recebe `url` (WHEP) e `hlsUrl`.
-2. Tenta **WebRTC/WHEP** - caminho primário, sub-segundo ([[Streaming - WebRTC e WHEP]]).
-3. **Watchdog** de conexão ICE: `failed`/`closed` cai na hora; `disconnected` por 3s também
-   força a queda.
-4. Cai para **HLS** (`hls.js`) **uma única vez** ([[Streaming - HLS]]); nova falha é terminal (retry).
+1. `GET .../hls`, recebe `url` e `hlsUrl`.
+2. WHEP, exceto se o WHEP daquela câmera e codec falhou nos últimos 60 s. Negociação até 15 s; 404
+   repetido por até 60 s.
+3. Vigias: ICE `failed`/`closed`, `disconnected` por 3 s, mídia que não chega em 8 s, faixa `ended` ou
+   stream `inactive`, nenhum quadro decodificado 6 s depois da faixa.
+4. Perda depois de imagem: segura o último quadro, reconecta o WHEP no lugar (60 s) e avisa o host, que
+   faz um único `GET /hls` por episódio. Fazem esse `GET` o videowall do VMS, o detalhe de câmera e a
+   Detecção, nunca por timer.
+5. LL-HLS quando o WebRTC nunca mostrou imagem ou esgotou o orçamento; falha no LL-HLS é terminal, com
+   botão de reconectar.
+6. Volta ao WebRTC em segundo plano, de 30 s a 300 s, make-before-break.
+7. Ao sair, o player só fecha o peer.
 
 ## Eventos WebSocket (`streaming.gateway.ts`)
 
-Namespace Socket.IO `/cameras`. O cliente entra na sala da câmera com `camera.join`
-(`{ cameraId }`) e sai com `camera.leave`. O gateway escuta o evento interno `HLS_STREAM_EVENT`
-(emitido pelo `FfmpegSessionService` via `EventEmitter2`) e o traduz para o cliente:
+Namespace `cameras-stream`, path `/api/cameras/stream/realtime` (rota própria no Kong). O cliente entra na
+sala `camera:<id>` com `camera.join` (`{ cameraId }`) e sai com `camera.leave`, sob `WsAuthGuard`. Única
+emissão: `status.changed` (`cameraId, status`), na mudança de conectividade do device. Nenhum cliente do
+`web-attlas` assina esse namespace; o front usa `/api/cameras/status/realtime` e
+`/api/cameras/analytics/realtime`.
 
-| Emissão (servidor→cliente) | Disparo | Payload |
-| --- | --- | --- |
-| `stream.started` | sessão virou `ACTIVE` | `cameraId, quality, url` |
-| `stream.reconnecting` | ffmpeg caiu, retentando | `cameraId, quality, attempt, delayMs` |
-| `stream.error` | timeout ou máx. de retries | `cameraId, quality, errorCode, message` |
-| `stream.stopped` | sessão encerrada | `cameraId, quality` |
-| `status.changed` | mudança de conectividade do device (evento de health) | `cameraId, status` |
-
-Isso deixa o player reagir sem polling: mostra "reconectando", volta ao vivo em `stream.started`,
-ou exibe erro com o `errorCode` estável (nunca traduzido).
-
-## SLA e qualidade
-
-### Latência (RNF-CAM-03)
+## Latência (RNF-CAM-03)
 
 | Caminho | Latência | Uso |
 | --- | --- | --- |
-| WebRTC/WHEP | sub-segundo | primário; operação ao vivo e PTZ |
-| LL-HLS | ~2 a 6s | fallback quando o WebRTC não conecta |
+| WebRTC/WHEP | meta abaixo de 1,5 s por célula, sem medição na tela; cerca de 500 ms na referência externa | primário, operação ao vivo e PTZ |
+| LL-HLS | segundos, não medido na config atual | reserva |
 
-O WebRTC é primário justamente pela latência exigida pelo RNF-CAM-03 (streaming e PTZ
-responsivos durante incidentes). O trade-off completo está em [[Streaming - Arquitetura]].
+Na entrada de um espectador pesam a abertura da câmera, paga só pelo primeiro leitor de um path fechado
+(até 8 s), e o próximo keyframe (cerca de 300 ms nas Axis). O atraso que o selo do player mostra vai do
+servidor ao vidro, porque os carimbos são do relógio do MediaMTX. Espectadores no LL-HLS ficam segundos
+atrás dos que estão no WebRTC.
 
-### TTFF (time-to-first-frame)
+## TTFF
 
-Tempo do request de abertura até o mediamtx reportar a path `ready`. Medido em
-`waitForStreamReady` e persistido **best-effort** por `CameraTtffRepository.insert()` em
-`cameraTtffSample` (`cameraId`, `sessionStartedAt`, `ttffMs`) - uma linha por abertura, esparso,
-formato de evento (PROJ-006). Timeout **não** grava amostra de sucesso. Falha ao persistir nunca
-derruba a subida do stream.
+O watcher mede uma amostra por abertura de path: `availableTime` novo do path menos o `created` do leitor
+mais antigo dele, entre `/v3/webrtc/sessions/list` e `/v3/hls/sessions/list` (num path sob demanda é o
+pedido desse leitor que liga a fonte). Abertura cujos leitores já saíram não gera amostra, e o primeiro
+tick depois do boot só aprende o que já estava disponível. Abertura que estoura o timeout vira falha do
+leitor, não amostra.
 
-### Disponibilidade do stream (`streamStatus`, UC-027)
+A amostra vai para o histograma `ms_cameras_stream_ttff_seconds{quality,codec}` (buckets até 15 s) e,
+best-effort, para `cameraTtffSample` (`CameraTtffRepository.insert`, uma linha por abertura, retenção de
+7 dias); a gravação avisa a sala da câmera para os cards de saúde reconsultarem.
 
-`GET /api/cameras/:id/stream-diagnostics?quality=` (`stream-diagnostics.service.ts`) consolida a
-visão server-side e deriva um `StreamHealthStatus` **separado da alcançabilidade do device** -
-uma câmera pode responder ao ping VAPIX/ONVIF e ainda ter o stream congelado:
+## Métricas (`streaming/streaming.metrics.ts`)
+
+No `/metrics` do `ms-cameras` (`Authorization: Bearer $METRICS_SCRAPE_TOKEN`):
+
+| Métrica | O que mede |
+| --- | --- |
+| `ms_cameras_stream_ttff_seconds{quality,codec}` | TTFF por abertura de path |
+| `ms_cameras_stream_relays_active{quality,codec}` | paths de câmera disponíveis por variante |
+| `ms_cameras_stream_viewers_active` | leitores somados sobre os paths disponíveis |
+| `ms_cameras_stream_sessions_refused_total` | aberturas recusadas pelo teto |
+| `ms_cameras_stream_path_config_writes_total{outcome}` | `UNCHANGED`, `CREATED`, `UPDATED` ou `DEFERRED` |
+
+Leitores divididos por paths é a taxa de reuso. `UNCHANGED` dominante é o regime estável. O MediaMTX em si
+não expõe métricas.
+
+## Diagnóstico do stream (UC-027)
+
+`GET /api/cameras/:id/stream-diagnostics?quality=&codec=` (`stream-diagnostics.controller.ts`),
+autenticado e escopado pelo `System-Id`, devolve a config do path, a ingestão (`bytesReceived`,
+`framesInError`, leitores) e as sessões WebRTC com IPs mascarados (`redactAddress`), mais um
+`StreamHealthStatus` separado da alcançabilidade do device:
 
 | Status | Significado |
 | --- | --- |
-| `OK` | path publicando, ingest limpo, viewers conectados. |
-| `DEGRADED` | fluindo com perda: frames corrompidos no ingest, sessão reconectando, ou viewers sem estabelecer o peer. |
-| `DOWN` | há sessão esperada mas o mediamtx não tem path viva/pronta. |
-| `INACTIVE` | nada streamando; saúde não avaliável. |
+| `OK` | path disponível, ingestão limpa e, havendo sessões WebRTC, ao menos uma com peer estabelecido |
+| `DEGRADED` | path disponível com quadros em erro na ingestão, ou nenhuma sessão WebRTC com peer estabelecido |
+| `DOWN` | path indisponível com erro na puxada (`lastError` da fonte) |
+| `INACTIVE` | path indisponível sem erro: ninguém assistindo, o normal entre espectadores |
 
-É o que impede um stream travado de aparecer como "Estável". A investigação de perda por trás
-desse sinal (ingest vs egress UDP) está em [[Streaming - Diagnóstico de travamento no WebRTC]].
+É o que impede um stream travado de aparecer como "Estável".
 
-## Env vars dos fluxos
+## Env vars
 
-| Var | Default | Efeito |
+| Var | Padrão | Efeito |
 | --- | --- | --- |
-| `HLS_START_TIMEOUT_MS` | `15000` | Teto do poll de readiness antes de dar timeout. |
-| `HLS_SESSION_GRACE_MS` | `60000` | Janela de graça com 0 viewers antes de matar o ffmpeg. |
-| `MEDIAMTX_DIAG_TIMEOUT_MS` | `2000` | Timeout do cliente mediamtx no diagnóstico. |
-
-Visual do pipeline e do fluxo: [[04 - MOD-004 hls-streaming-pipeline.excalidraw|diagrama]] ·
-[[04 - MOD-004 hls-streaming-pipeline.excalidraw]].
+| `STREAM_SOURCE_START_TIMEOUT_MS` | `8000` | Quanto o MediaMTX segura o WHEP do primeiro leitor enquanto a câmera conecta; abaixo dos 15 s do player. |
+| `STREAM_SOURCE_CLOSE_AFTER_MS` | `30000` | Quanto o path segue puxando depois do último leitor; cobre reconexão e troca de tier sem reabrir a câmera. |
+| `MAX_CONCURRENT_STREAM_SESSIONS` | `40` | Teto de paths de câmera no ar, para o fleet inteiro. |
+| `RTSP_TRANSPORT` | `tcp` | `tcp`, `udp`, `multicast` ou `automatic`; `udp_multicast` é lido como `multicast`; outro valor recusa o boot. |
+| `MEDIAMTX_WEBRTC_BASE_URL` / `MEDIAMTX_HLS_BASE_URL` | `/live` / `/live-hls` | Bases de navegador; absoluta continua aceita. |
+| `MEDIAMTX_API_URL` | `http://localhost:9997` | Control API, endereço de servidor. |
+| `MEDIAMTX_DIAG_TIMEOUT_MS` | `2000` | Timeout de cada chamada à control API. |
+| `CAMERA_KEYFRAME_INTERVAL_MS` | `300` | Orçamento de keyframe VAPIX (Axis). |
+| `CAMERA_KEYFRAME_INTERVAL` | vazio | Quadros fixos que vencem o orçamento. |
+| `MEDIAMTX_API_ALLOWED_IPS` | loopback e RFC1918 | Faixa que alcança a control API (`MTX_AUTHINTERNALUSERS_2_IPS` no compose). |

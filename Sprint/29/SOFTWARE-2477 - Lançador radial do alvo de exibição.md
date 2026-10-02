@@ -10,7 +10,7 @@ clickup: https://app.clickup.com/t/86ajypa18
 titulo: "[Front] VMS: lançador radial do alvo de exibição"
 frente: Videowall externo (NovaStar H9)
 tamanho: 2 pts
-status: Closed em 17/08 pela [#1662](https://github.com/atmanadmin/attlas-2026/pull/1662) (base develop, worktree separado): só o débito de copy que a UF-030 já sinalizava (rótulo "Projetar"→"Espelhar" + texto de motivo, 4 locales) e remoção de 2 chaves i18n órfãs. A lógica de disabled já estava correta, a investigação confirmou que "preset" nem existe mais no arco; sem mudança de componente Angular.
+status: 'Closed em 17/08 pela [#1662](https://github.com/atmanadmin/attlas-2026/pull/1662) (base develop, worktree separado): só o débito de copy que a UF-030 já sinalizava (rótulo "Projetar"→"Espelhar" + texto de motivo, 4 locales) e remoção de 2 chaves i18n órfãs. A lógica de disabled já estava correta, a investigação confirmou que "preset" nem existe mais no arco; sem mudança de componente Angular.'
 sprint: "[[Attlas - Sprint 29]]"
 atualizado: 2026-08-19
 ---

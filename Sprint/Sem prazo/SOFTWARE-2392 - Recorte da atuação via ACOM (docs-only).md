@@ -11,12 +11,31 @@ clickup: https://app.clickup.com/t/86aju63t9
 titulo: "[Back] Recorte da atuação da detecção no controlador via ACOM"
 frente: Analítico em container
 tamanho: 2 pts
-status: SEM PRAZO desde 10/08 (frente do analítico despriorizada; a Sprint 27 fechou sem entrega e a 28 foi para VMS e videowall externo). PR em draft segue aberta. Histórico: fila da Sprint 27 (in progress no ClickUp), docs-only. Aberto em 31/07 quando o levantamento mostrou que a ACOM já está implementada e o que falta é o caller. Validado contra a develop em 03/08, sem mudança de escopo. PR aberta em draft: [#1356](https://github.com/atmanadmin/attlas-2026/pull/1356).
-sprint: "[[00 - Sem prazo (backlog)]]"
-atualizado: 2026-08-10
+status: 'SEM PRAZO desde 10/08, e segue válido: o caller que fecha o contato na transição de ocupação ainda não existe na develop de 23/09. A PR em draft #1356 foi fechada sem merge no reescopo de 24/08, que manteve o card por não ter substituto. Duas das quatro perguntas do escopo foram respondidas pelo código entre 11 e 23/09. Histórico: fila da Sprint 27, docs-only, aberto em 31/07, validado contra a develop em 03/08.'
+sprint: "[[Sem prazo (backlog)]]"
+atualizado: 2026-09-23
 ---
 
 # SOFTWARE-2392 - Recorte da atuação via ACOM (docs-only)
+
+> [!warning] Estado em 23/09: o ACOM mudou de forma, e o caller continua faltando
+> Conferido na develop de 23/09. O que o corpo abaixo descreve do `ms-controllers` é o retrato de
+> 03/08 e parte dele não vale mais:
+>
+> - **`AcomAssociation` não existe.** O módulo Controladores refez o modelo em 11 e 12/09: cada `Acom`
+>   pertence a um `controllerId`, tem `analyticSlots` com default 4, e a fiação é `AcomOutputWiring`,
+>   uma linha por saída com câmera, analítico, índice da região, slot e canal. A tela é a sub-aba ACOMs
+>   do detalhe do controlador.
+> - **A pergunta do índice linear está respondida.** Desde a PR
+>   [#4256](https://github.com/atmanadmin/attlas-2026/pull/4256) (`UC-183`, 23/09), o índice do
+>   detector sai de `DetectorAddressing.indexFrom(protocolo, slot, canal)` sobre a linha de fiação, e
+>   salvar a fiação cria o vínculo região-detector no `ms-cameras`. É a associação ACOM que dá o
+>   índice, não uma faixa sintética.
+> - **A pergunta de ownership está respondida pelo código**: o ACOM real vive em
+>   `apps/ms-controllers/src/acom/`, e o `ms-acom` continua esqueleto.
+> - **O caller continua sem existir**: nenhum handler de `src/acom/` consome tópico Kafka. As outras
+>   duas perguntas, se ACOM é obrigatório para atuar e o alinhamento com o squad de controladores,
+>   seguem em aberto.
 
 A semana fecha na timeline do histórico, por decisão. Este card guarda a outra metade do 2200 original: a
 detecção do laço virtual virando **presença real na entrada do controlador**.

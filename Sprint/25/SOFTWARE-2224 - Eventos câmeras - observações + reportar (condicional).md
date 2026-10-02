@@ -13,7 +13,7 @@ atualizado: 2026-07-17
 ---
 # SOFTWARE-2224 - Eventos câmeras: observações + reportar (condicional)
 
-Backend das observações e do "reportar ocorrência" do evento. **CONDICIONAL**: gated atrás de Incidents/Inventário (adiado, MOD BLOCKER 6 / §1); o botão "Reportar ocorrência" está desabilitado no front hoje. 1 PR.
+Backend das observações e do "reportar ocorrência" do evento. **CONDICIONAL**: gated atrás de Incidents/Inventário (adiado, MOD BLOCKER 6 / seção 1); o botão "Reportar ocorrência" está desabilitado no front hoje. 1 PR.
 
 **Endpoints**: `GET /api/cameras/events/:id/observations`, `POST /api/cameras/events/:id/report`
 

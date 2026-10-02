@@ -10,7 +10,7 @@ titulo: "[Back] UF-046, UF-047 e MOD-012: as specs que o código já cita"
 frente: Analítico
 tamanho: 2 pts
 pr: #3189
-status: MERGEADA em 11/09 às 23:37 (#3189), reduzida ao MOD-012 (a UF-046 e a UF-047 saíram: a UF-053 da #3066 virou a unidade de registro da Detecção). Card fecha. Os links de rodapé para a UF-047 removida em quatro specs são consertados pela #3300, aberta.
+status: 'MERGEADA em 11/09 às 23:37 (#3189), reduzida ao MOD-012 (a UF-046 e a UF-047 saíram: a UF-053 da #3066 virou a unidade de registro da Detecção). Card fecha. Os links de rodapé para a UF-047 removida em quatro specs são consertados pela #3300, aberta.'
 sprint: "[[Attlas - Sprint 32]]"
 atualizado: 2026-09-11
 ---

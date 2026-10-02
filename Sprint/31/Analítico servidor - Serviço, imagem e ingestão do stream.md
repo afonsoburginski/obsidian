@@ -9,7 +9,7 @@ clickup: https://app.clickup.com/t/86ak5njc6
 titulo: "[Back] Serviço, imagem e ingestão do stream"
 frente: Analítico
 tamanho: 5 pts
-status: comprometido na Sprint 31 (planejada em 24/08). Card criado no ClickUp em 25/08. Repontuado de 3 para 5 em 25/08 contra o "Guia Geral de Boas Práticas" (tabela §3.1) - decode pipeline + guarda de região + sessão/reconexão com recuo + health/ready + 2 cenários de teste de integração passa de 4-8h para 1-2 dias.
+status: comprometido na Sprint 31 (planejada em 24/08). Card criado no ClickUp em 25/08. Repontuado de 3 para 5 em 25/08 contra o "Guia Geral de Boas Práticas" (tabela seção 3.1) - decode pipeline + guarda de região + sessão/reconexão com recuo + health/ready + 2 cenários de teste de integração passa de 4-8h para 1-2 dias.
 sprint: "[[Attlas - Sprint 31]]"
 atualizado: 2026-08-25
 ---

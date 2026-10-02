@@ -10,8 +10,8 @@ clickup: https://app.clickup.com/t/86aju62w6
 titulo: "[Back] Especificação do analítico de vídeo em container"
 frente: Analítico em container
 tamanho: 3 pts
-status: SEM PRAZO desde 10/08 (frente do analítico despriorizada; a Sprint 27 fechou sem entrega e a 28 foi para VMS e videowall externo). PR em draft segue aberta. Histórico: comprometido (segunda à tarde), depende do ADR de alimentação. Card reescrito em 31/07 - era "subir o motor do fornecedor" e virou a especificação do analítico que nós vamos construir. As 5 decisões foram fechadas em 03/08, ver seção própria. PR aberta em draft: [#1343](https://github.com/atmanadmin/attlas-2026/pull/1343). ClickUp movido para `in progress`.
-sprint: "[[00 - Sem prazo (backlog)]]"
+status: 'SEM PRAZO desde 10/08 (frente do analítico despriorizada; a Sprint 27 fechou sem entrega e a 28 foi para VMS e videowall externo). PR em draft segue aberta. Histórico: comprometido (segunda à tarde), depende do ADR de alimentação. Card reescrito em 31/07 - era "subir o motor do fornecedor" e virou a especificação do analítico que nós vamos construir. As 5 decisões foram fechadas em 03/08, ver seção própria. PR aberta em draft: [#1343](https://github.com/atmanadmin/attlas-2026/pull/1343). ClickUp movido para `in progress`.'
+sprint: "[[Sem prazo (backlog)]]"
 atualizado: 2026-08-10
 ---
 

@@ -9,7 +9,7 @@ clickup: https://app.clickup.com/t/86aju7cjb
 titulo: "[Back] Escala do analítico: câmeras por instância e distribuição"
 frente: Analítico
 tamanho: 2 pts
-status: comprometido na Sprint 32 (7-13/09/26), movido do sem prazo em 25/08 junto com o prazo externo de 18/09. Histórico: fila da Sprint 27 (in progress no ClickUp), SEM PRAZO desde 10/08. PR em draft segue aberta.
+status: 'comprometido na Sprint 32 (7-13/09/26), movido do sem prazo em 25/08 junto com o prazo externo de 18/09. Histórico: fila da Sprint 27 (in progress no ClickUp), SEM PRAZO desde 10/08. PR em draft segue aberta.'
 sprint: "[[Attlas - Sprint 32]]"
 atualizado: 2026-08-25
 ---

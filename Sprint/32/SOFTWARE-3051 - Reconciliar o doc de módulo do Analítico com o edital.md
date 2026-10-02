@@ -10,7 +10,7 @@ titulo: "[Back] Reconciliar o doc de módulo do Analítico com o edital"
 frente: Analítico
 tamanho: 3 pts
 pr: #3188
-status: MERGEADA em 11/09 às 23:30 (#3188), base develop, ci-pr verde. Card fecha. Histórico: aberta em 11/09 na posição 1 da pilha de 12 PRs; a pilha foi achatada para base develop e drenada em sequência na mesma noite.
+status: 'MERGEADA em 11/09 às 23:30 (#3188), base develop, ci-pr verde. Card fecha. Histórico: aberta em 11/09 na posição 1 da pilha de 12 PRs; a pilha foi achatada para base develop e drenada em sequência na mesma noite.'
 sprint: "[[Attlas - Sprint 32]]"
 atualizado: 2026-09-11
 ---

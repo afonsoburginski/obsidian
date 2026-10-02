@@ -9,14 +9,14 @@ aliases:
   - "Sprint 33 - o que entrega"
 sprint: Sprint 33 (14/9/26 - 20/9/26)
 status: "CRIADA em 09/09 como a semana do prazo externo de 18/09. REPLANEJADA em 12/09 depois do merge da #3328 (console do Analítico consolidado): virou sprint de acabamento, com os gaps levantados na própria PR. AMPLIADA em 14/09 com o estudo de caso do analítico servidor e do vídeo, a pedido do usuário: 22 tasks, uma nota e uma PR cada, 90 pts, em ordem de execução. FECHADA em 14/09 à noite: as 22 tasks têm PR aberta, 7 delas em stack registrada no GitHub, num total de 31 PRs. ATUALIZADA em 15/09: o usuário decidiu mergear as 34 PRs em develop ANTES da validação, via PR intermediária #3573 (merge commits preservados, branches de origem deletadas). A conferência agora roda numa PR guarda-chuva só, #3596, ver [[Validação - as 34 PRs, uma a uma]]."
-atualizado: 2026-09-21
+atualizado: 2026-09-23
 ---
 
 # Sprint 33 - o que entrega
 
 > **Objetivo da PR [#3596](https://github.com/atmanadmin/attlas-2026/pull/3596) (validação, 15/09)**:
 > validar e testar, um por um, **tudo o que esta sprint entregou** (as 34 PRs, já mergeadas em
-> `develop`). Não é escopo novo — é a bateria de testes da sprint inteira, num lugar só. Detalhe em
+> `develop`). Não é escopo novo - é a bateria de testes da sprint inteira, num lugar só. Detalhe em
 > [[Validação - as 34 PRs, uma a uma]].
 
 Porta de entrada da semana de **14 a 20/09**. O prazo externo do módulo Analítico é **18/09**,
@@ -163,9 +163,18 @@ As 22 tasks (34 PRs) fecharam com PR aberta e **em 15/09 foram todas mergeadas e
 usuário, antes da validação (PR intermediária [[#3573|https://github.com/atmanadmin/attlas-2026/pull/3573]],
 branches de origem deletadas). A validação consolidada foi executada na PR guarda-chuva; os ajustes posteriores de Métricas e da fila foram concentrados na PR #3932. A conferência agora roda numa PR
 guarda-chuva só, [#3596](https://github.com/atmanadmin/attlas-2026/pull/3596)
-(`shared/chore/NO-CARD-sprint33-validation`) — achado vira commit ali, não branch nova por PR. A
+(`shared/chore/NO-CARD-sprint33-validation`) - achado vira commit ali, não branch nova por PR. A
 lista de conferência, uma linha por PR com o que tem de funcionar e como provar, está em
 [[Validação - as 34 PRs, uma a uma]].
+
+
+## Outras notas desta pasta
+
+Notas que existiam na pasta e não estavam ligadas a este índice até a revisão de 23/09.
+
+- [[Detecção - os parâmetros do incidente não atravessavam o device]]
+- [[Métricas - por que as telas não mostram nada no dev2]]
+- [[Telas do Analítico - mapa do Laço Virtual e paginação dos Incidentes]] - [Front] Telas do Analítico - mapa do Laço Virtual, Incidentes paginados, laço que acende por ocupação e sessão presa ao endereço antigo
 
 ## Ver também
 

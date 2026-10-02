@@ -10,7 +10,7 @@ titulo: "[Front] Detecção: as cinco ferramentas e a paleta"
 frente: Analítico
 tamanho: 3 pts
 pr: #3192
-status: ENTREGUE pela #3066 (código, 11/09 às 23:01) e spec MERGEADA em 11/09 às 23:48 (#3192, status implemented). Card fecha. Conferido no EC2 dev em 11/09: a paleta abre sobre o quadro congelado da ATMN – DEMO em modo servidor.
+status: ENTREGUE pela #3066 (código, 11/09 às 23:01) e spec MERGEADA em 11/09 às 23:48 (#3192, status implemented). Card fecha. Conferido no EC2 dev em 11/09: a paleta abre sobre o quadro congelado da ATMN - DEMO em modo servidor.
 sprint: "[[Attlas - Sprint 32]]"
 atualizado: 2026-09-11
 ---

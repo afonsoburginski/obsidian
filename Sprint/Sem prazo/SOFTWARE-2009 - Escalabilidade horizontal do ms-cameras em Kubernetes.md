@@ -15,8 +15,8 @@ frente: Escalabilidade / Infra
 tamanho: a estimar (épico)
 status: backlog, sem prazo - mas a fatia 1 saiu por fora, dentro da PR #1175 do SOFTWARE-2356 (31/07) - adapter Redis do Socket.IO em @attlas/core-messaging (CROSS-043), Redis provisionado para o ms-cameras e single-writer por device via lease Redis (PROJ-017). Falta reescopar o que sobrou do épico. Higiene de board em 10/08: home movida da lista da Sprint 23 para a da Sprint 28 (backlog preservado) e localização secundária pendurada na lista da Sprint 27 removida.
 lista_clickup: Sprint 23 (6/7/26 - 12/7/26)
-sprint: "[[00 - Sem prazo (backlog)]]"
-atualizado: 2026-07-31
+sprint: "[[Sem prazo (backlog)]]"
+atualizado: 2026-09-23
 ---
 
 # Escalabilidade horizontal do ms-cameras em Kubernetes
@@ -31,17 +31,17 @@ Estado in-memory por réplica + probes/relays por instância fazem o serviço n�
 
 > [!done] Parte disto já foi entregue em 31/07 pela PR #1175 (card SOFTWARE-2356)
 > A validação final do frontend expôs os mesmos problemas e eles foram corrigidos ali, fora deste
-> épico. Ver [[Attlas - Sprint 26]] §"Validação final do frontend". O que sobrou aqui precisa ser
+> épico. Ver [[Attlas - Sprint 26]] seção "Validação final do frontend". O que sobrou aqui precisa ser
 > reescopado antes de virar atômica.
 
 ### 1. WebSocket (atualização de dados no frontend)
 Socket.IO sem adapter compartilhado: cada réplica tem as salas na própria memória, então um cliente na réplica A não recebe evento emitido pela réplica B. Já reproduzido na quito (réplicas novas com 0 conexões, conexões vivas derrubadas no scale).
 
 - [ ] **Funil para o client side consumir websocket** (ponto único/coordenado de conexão).
-- [x] **Adapter com Redis** (socket.io Redis adapter) para propagar eventos entre réplicas — feito na #1175 como `CROSS-043`, em `@attlas/core-messaging/socketio`, com o gauge `socketio_redis_adapter_up`.
-- [ ] **Lock no Redis para canal websocket** (dono único por canal/sala) — parcial: existe lease por device para o monitor (`PROJ-017`), não por sala de WS.
+- [x] **Adapter com Redis** (socket.io Redis adapter) para propagar eventos entre réplicas - feito na #1175 como `CROSS-043`, em `@attlas/core-messaging/socketio`, com o gauge `socketio_redis_adapter_up`.
+- [ ] **Lock no Redis para canal websocket** (dono único por canal/sala) - parcial: existe lease por device para o monitor (`PROJ-017`), não por sala de WS.
 - [ ] **Shards Redis** (distribuir os canais/carga do pub-sub).
-- [x] `redis-cameras` não existe hoje no ambiente - provisionar — provisionado na #1175 (compose + setup-env).
+- [x] `redis-cameras` não existe hoje no ambiente - provisionar - provisionado na #1175 (compose + setup-env).
 
 ### 2. Healthcheck (probes nas câmeras)
 Cada réplica hoje monitoraria TODAS as câmeras (WS Axis / ONVIF PullPoint + ping). Com N réplicas = N x probes batendo em cada câmera. Precisa de ownership/particionamento: cada câmera monitorada por uma única réplica.
@@ -50,6 +50,17 @@ Cada réplica hoje monitoraria TODAS as câmeras (WS Axis / ONVIF PullPoint + pi
 
 ### 3. Streaming / pipeline
 Relay ffmpeg + mediamtx com estado de sessão e viewer count in-memory por réplica (não compartilhado). Precisa coordenar quem roda a relay de cada câmera e como o viewer count é visto entre réplicas. Liga direto com [[SOFTWARE-2003 - Ciclo de vida de sessões de streaming e telemetria de banda por câmera]] (SOFTWARE-2003).
+
+> [!info] Estado em 23/09: o streaming ficou seguro sob N réplicas, mas não coordenado
+> A Sprint 34 não distribuiu a relay entre réplicas, mas tirou três modos de uma réplica derrubar a
+> outra. A sessão adotada só é expulsa quando a path não tem mais leitor, porque a relay adotada pode
+> estar servindo outra réplica (#4075). A reconciliação no sentido media server para registry roda
+> numa réplica só, sob lease Redis, deixa em paz qualquer path com leitor e ignora path pronta há menos
+> de 15s, que é a janela em que outra réplica acabou de abrir e ainda não tem leitor (#4077). E a
+> varredura de boot mata só relay do próprio uid, publicando no media server do serviço, num path
+> nomeado por câmera do banco (#4074). O que continua por fazer é o de sempre: o registry e as leases
+> seguem em memória por réplica, e o teto de sessões é 40 por réplica, não por cluster. Detalhe em
+> [[Streaming - Arquitetura]].
 
 ## Modelo proposto
 

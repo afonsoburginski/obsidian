@@ -12,12 +12,27 @@ clickup: https://app.clickup.com/t/86aju633j
 titulo: "[Back] Vínculo entre região da câmera e endereço de detector"
 frente: Analítico em container
 tamanho: 3 pts
-status: SEM PRAZO desde 10/08 (frente do analítico despriorizada; a Sprint 27 fechou sem entrega e a 28 foi para VMS e videowall externo). PR em draft segue aberta. Histórico: fila da Sprint 27 (in progress no ClickUp). Validado contra a develop em 03/08, premissa reforçada. PR aberta em draft: [#1352](https://github.com/atmanadmin/attlas-2026/pull/1352).
-sprint: "[[00 - Sem prazo (backlog)]]"
-atualizado: 2026-08-10
+status: 'ENTREGUE por outro card e sem trabalho restante. O escopo foi rescopado em 24/08 para o SOFTWARE-2698, entregue pela PR #2373 (UC-064), mergeada em 02/09. A PR em draft deste card, #1352, foi fechada sem merge em 24/08. Em 23/09 as PRs #4256 e #4292 fecharam a escrita do vínculo pela fiação da ACOM e pela Detecção. Histórico: sem prazo desde 10/08, fila da Sprint 27, validado contra a develop em 03/08.'
+sprint: "[[Sem prazo (backlog)]]"
+atualizado: 2026-09-23
 ---
 
 # SOFTWARE-2389 - Vínculo região da câmera para endereço de detector
+
+> [!success] Estado em 23/09: o vínculo existe, e desde hoje nasce em três telas
+> O que este card pedia está na develop desde 02/09, pelo [[Analítico servidor - Vínculo região para endereço de detector|SOFTWARE-2698]]
+> (PR [#2373](https://github.com/atmanadmin/attlas-2026/pull/2373), `UC-064`): a tabela
+> `VirtualLoopDetectorBinding` no `ms-cameras`, criada pela migration de 31/08, com unicidade viva
+> por endereço escrita à mão no SQL. A PR em draft deste card, #1352, foi fechada sem merge no
+> reescopo de 24/08, que a nota [[Sem prazo (backlog)]] registra como "deletar".
+>
+> Em 23/09 a escrita do vínculo deixou de ser só o diálogo da tela de Métricas: a fiação da ACOM
+> passou a criar e soltar o vínculo (#4256, `UC-183`) e a Detecção ganhou um select de faixa que o
+> grava (#4292, `UF-722`). Ver [[Plano - o vínculo da região do analítico com o detector]].
+>
+> O corpo abaixo é o desenho de 10/08 e fica como registro. O "evento de atualização para invalidar
+> o cache do connector" não foi conferido nesta revisão, porque o connector que o consumiria, o
+> analítico servidor, saiu em 16/09.
 
 Fechar a identidade do laço virtual dentro do escopo do squad: qual câmera e qual região alimentam
 qual endereço de detector, para o connector derivar o mesmo identificador que o histórico espera.

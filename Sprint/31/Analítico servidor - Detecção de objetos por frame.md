@@ -9,7 +9,7 @@ clickup: https://app.clickup.com/t/86ak5njcx
 titulo: "[Back] Detecção de objetos por frame"
 frente: Analítico
 tamanho: 5 pts
-status: comprometido na Sprint 31 (planejada em 24/08). Card criado no ClickUp em 25/08. Repontuado de 3 para 5 em 25/08 contra o "Guia Geral de Boas Práticas" (tabela §3.1) - inferência nativa embutida + carga de modelo de object storage + gate de readiness + medição de custo por resolução passa de 4-8h para 1-2 dias.
+status: comprometido na Sprint 31 (planejada em 24/08). Card criado no ClickUp em 25/08. Repontuado de 3 para 5 em 25/08 contra o "Guia Geral de Boas Práticas" (tabela seção 3.1) - inferência nativa embutida + carga de modelo de object storage + gate de readiness + medição de custo por resolução passa de 4-8h para 1-2 dias.
 sprint: "[[Attlas - Sprint 31]]"
 atualizado: 2026-09-02
 ---
@@ -48,7 +48,7 @@ silêncio: filtrar sem registrar é o tipo de decisão que reaparece como bug se
 >   reconhecido e sem agente é `bicycle`, sob `class_vru_unassigned`. A contagem vive na série **por
 >   caixa** (`virtual_loop_detections_filtered_total`), não na de frame.
 > - `bicycle` continua atribuído a nenhum agente **de propósito**, e é isso que o parágrafo acima acerta
->   em espírito: `docs/modules/detectors.md` §3.2 registra que ciclista conta como usuário vulnerável em
+>   em espírito: `docs/modules/detectors.md` seção 3.2 registra que ciclista conta como usuário vulnerável em
 >   algumas jurisdições e como tráfego em outras, e essa é decisão de produto por implantação. O contador
 >   é o que vai dizer com que frequência a pergunta aparece em campo.
 >

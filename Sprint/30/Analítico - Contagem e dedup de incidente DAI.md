@@ -11,7 +11,7 @@ frente: Analítico
 tamanho: 5 pts
 status: MERGEADA na develop em 27/08 pela PR #2004. Reestimado em 25/08 de 3 para 5 pts como [Back]; a fila de incidentes virou card irmão [[Analítico - Fila de incidentes (front)]] (8 pts, a maior tela da semana), que segue em review.
 sprint: "[[Attlas - Sprint 30]]"
-atualizado: 2026-08-28
+atualizado: 2026-09-26
 ---
 
 # Analítico - Contagem e dedup de incidente DAI
@@ -27,6 +27,13 @@ converte para o booleano `hasIncident` e usa esse booleano **só para escolher o
 Qual incidente era, se foi `WRONG_WAY` ou `CONGESTION`, se perde ali mesmo. O contrato
 `IAnalyticsDetectionEvent`, em `libs/contracts/src/lib/object-detection/`, nem tem campo para carregar
 essa informação, então o dado não teria como atravessar o gateway mesmo que fosse preservado.
+
+> [!info] Estado em 26/09: o incidente também vem do objeto
+> A #2004 parou de descartar o incidente, mas o consumidor seguiu lendo só `region_incidents[i]`, e o
+> app ATSPM 0.10.2 manda esse campo sempre vazio (`[[]]`): o incidente vai em `obj_incidents[i][j]`,
+> alinhado com `ids` e `labels` de cada objeto da região. Por isso o dev.v2 não gravava incidente
+> nenhum. Desde a #4889 o consumidor une os dois campos, sem repetir o tipo, antes da mesma dedup de
+> 30 s. Ver [[Registro - imagem e vídeo do incidente lidos do equipamento em 26 de setembro]].
 
 O tipo já é vocabulário fechado: `EnumAtmanIncidentType`, em
 `libs/contracts/src/lib/object-detection/atman-incident-type.enum.ts`, tem oito valores (`WRONG_WAY`,
