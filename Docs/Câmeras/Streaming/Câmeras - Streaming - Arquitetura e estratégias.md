@@ -28,7 +28,7 @@ aliases:
   - "Plano - Streaming sem vazamento de publicador"
   - "Registro - implementação do plano de vazamento de publicador em 21 de setembro"
   - "Streaming - Arquitetura e estratégias"
-atualizado: 2026-10-01
+atualizado: 2026-10-02
 ---
 
 # Câmeras - Streaming - Arquitetura e estratégias
@@ -317,9 +317,12 @@ WebRTC não passa por proxy: vai por UDP 8189 direto ao candidato anunciado. O K
   o quadro de referência corrompido congela a imagem até o próximo keyframe da câmera. Confirma-se com
   `ingest.bytesReceived` liso no diagnóstico enquanto `packetsLost`, `freezeCount` e `pliCount` sobem no
   `getStats()`. Amplificadores: host de dev sobrecarregado e mídia só pela rota UDP da Tailscale.
-- **UDP 8189 fechada fora da Tailscale no dev.v2** (Security Group): quem está fora não conecta WebRTC e
-  cai no LL-HLS. Mídia pública também quebrou quando a Tailscale removeu o salto `DOCKER` da cadeia
-  `FORWARD` (correção no host, ver [[Câmeras - Streaming - Runbook]]).
+- **Portas do dev.v2 para o WebRTC**: o Security Group libera de entrada a **UDP 8189** (mídia) e o 443,
+  por onde passa a sinalização WHEP (`/live` no nginx). 8888 e 8889 ficam fechadas para fora. O
+  MediaMTX anuncia só o IP público (`MTX_WEBRTCADDITIONALHOSTS=3.15.199.101`), nunca o da Tailscale. As
+  portas do coturn (3478, 5349 e o relay 49160-49200/udp) estão fechadas e não são usadas: o player
+  conecta sem ICE server. Mídia pública também quebrou quando a Tailscale removeu o salto `DOCKER` da
+  cadeia `FORWARD` (correção no host, ver [[Câmeras - Streaming - Runbook]]).
 - **Saturação de egress do host degrada a saúde de todas as câmeras juntas**: vídeo e pings de
   healthcheck dividem a mesma interface, então um pico de visualização concorrente põe toda a rede em
   `DEGRADED` ao mesmo tempo (latência de ping de cerca de 145 ms para 800 a 1300 ms). Na EC2 de dev
