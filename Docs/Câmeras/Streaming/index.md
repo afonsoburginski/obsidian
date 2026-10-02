@@ -8,7 +8,7 @@ aliases:
   - "Câmeras - Streaming"
   - "Streaming"
   - "00 - Streaming"
-atualizado: 2026-10-01
+atualizado: 2026-10-02
 ---
 
 # Câmeras - Streaming
@@ -26,7 +26,8 @@ aqui.
 - [[Câmeras - Streaming - Fluxos]] - `GET /hls` passo a passo, fluxo do player, WebSocket e diagnóstico.
 - [[Câmeras - Streaming - Requisitos e SLA]] - latência, TTFF, métricas e variáveis de ambiente.
 - [[Câmeras - Streaming - Banda e bitrate]] - banda provisionada e bitrate medido, o snapshot de banda do VMS e o consumo do dashboard.
-- [[Câmeras - Streaming - Realce de imagem no cliente]] - regra de realce só na estação e o desenho que vive na PR em draft.
+- [[Câmeras - Streaming - Realce de imagem no cliente]] - realce só na estação: como a estação é classificada, as
+  tecnologias de cada tipo de hardware, as técnicas de imagem e a documentação oficial. O código vive só na PR em draft.
 - [[Câmeras - Streaming - Runbook]] - comandos de diagnóstico no host e no navegador.
 - [[Câmeras - Streaming - Diagrama - Pipeline HLS.excalidraw]] - desenho, apoio visual; vale o código, depois a nota.
 - [[Câmeras - Streaming - Diagrama - Estratégia de codec.excalidraw]] - desenho, apoio visual; vale o código, depois a nota.
