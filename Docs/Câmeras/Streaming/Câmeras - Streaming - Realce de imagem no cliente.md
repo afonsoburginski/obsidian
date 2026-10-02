@@ -23,16 +23,23 @@ Esta nota explica o realce de imagem do player de câmera em ordem fixa: primeir
 estação é classificada, depois cada tipo de hardware com as tecnologias que ele usa, depois cada técnica de
 imagem. No fim estão o que ficou de fora, o estado da PR e a lista de documentação oficial.
 
+![[Câmeras - Streaming - Realce de imagem no cliente - Antes e depois.png]]
+
+*Quadro real da câmera da rua, em 720p. Da esquerda para a direita: original; só redução de artefato e
+nitidez; com tom e cor. No terceiro, contraste da luma 19% maior e saturação média 38% maior, com o
+brilho médio praticamente igual.*
+
 ## 1. Resumo
 
 | Pergunta | Resposta |
 | --- | --- |
-| O que é | Um filtro que melhora a imagem **na tela do operador**: limpa artefato de compressão, amplia para o tamanho do quadro na tela e dá nitidez |
+| O que é | Um filtro que melhora a imagem **na tela do operador**: limpa artefato de compressão, corrige contraste e cor, amplia para o tamanho do quadro na tela e dá nitidez |
 | Onde roda | Sempre no navegador da estação. Nunca no servidor, nunca na câmera |
 | O que muda na rede | Nada. O vídeo que sai da câmera, passa pelo MediaMTX e chega ao navegador é o mesmo, com ou sem realce |
 | Em que hardware | GPU de verdade (motor GPU) ou, sem GPU, CPU com pelo menos 8 threads (motor CPU). Sem nenhum dos dois, o botão não aparece |
 | Onde está o código | Só na PR #4280, em draft. **Nada disto está na develop** |
-| Mexe em cor ou saturação? | **Não.** A PR não implementa saturação, cor, contraste, brilho nem gama (ver seção 6) |
+| Mexe em cor ou saturação? | **Sim.** O passe de tom e cor estica o contraste à faixa que a cena usa e dá saturação com vibrance (seção 5.2), nos dois motores |
+| O que roda na sua estação só CPU | Em 720p, o tom e cor. Redução de artefato e nitidez custam 25 ms cada e não cabem nos 8 ms por quadro (seção 4.2) |
 
 > [!important] Regra: realce de imagem é sempre client-side
 > Todo realce, upscale, nitidez ou limpeza de imagem de câmera roda no navegador da estação do operador. Tem
@@ -103,9 +110,10 @@ Cada tipo segue o mesmo modelo: quando é usado, quais tecnologias usa, o que fa
 | `WEBGL_debug_renderer_info` | Extensão que diz o nome do renderizador | Segundo filtro: recusa renderizador de software pelo nome | [Khronos](https://registry.khronos.org/webgl/extensions/WEBGL_debug_renderer_info/) · [MDN](https://developer.mozilla.org/en-US/docs/Web/API/WEBGL_debug_renderer_info) |
 | `WEBGL_lose_context` e `webglcontextlost` | Liberar um contexto e saber quando o navegador derrubou um | Descarta o contexto de teste; contexto perdido desliga o realce do player | [Khronos](https://registry.khronos.org/webgl/extensions/WEBGL_lose_context/) · [MDN webglcontextlost](https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/webglcontextlost_event) |
 | `texImage2D` e `texSubImage2D` | Enviar uma imagem para a GPU como textura | Cada quadro do `<video>` vira textura | [MDN texImage2D](https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/texImage2D) · [MDN texSubImage2D](https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/texSubImage2D) |
+| Canvas 2D `getImageData` | Ler os pixels de um canvas comum | A cada 4 quadros, uma cópia de 64x36 do quadro é lida para medir a janela de tom | [MDN getImageData](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/getImageData) · [HTML, canvas](https://html.spec.whatwg.org/multipage/canvas.html) |
 
-**O que faz com a imagem**, em ordem: redução de artefato, ampliação e nitidez (detalhe de cada uma na
-seção 5). Em modo leve, pula a redução de artefato.
+**O que faz com a imagem**, em ordem: redução de artefato, tom e cor, ampliação e nitidez (detalhe de
+cada uma na seção 5). Em modo leve, pula a redução de artefato.
 
 **Como funciona por dentro**
 
@@ -138,26 +146,43 @@ threads. A estação Dell de referência cai aqui (12 threads).
 | `OffscreenCanvas` | Canvas que pode ser desenhado fora da thread principal | O canvas do player é entregue ao worker, que desenha nele direto | [HTML, canvas](https://html.spec.whatwg.org/multipage/canvas.html) · [MDN transferControlToOffscreen](https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/transferControlToOffscreen) · [MDN OffscreenCanvasRenderingContext2D](https://developer.mozilla.org/en-US/docs/Web/API/OffscreenCanvasRenderingContext2D) |
 | `navigator.hardwareConcurrency` | Quantas threads lógicas a CPU tem | Corte de 8 threads para ligar o motor CPU | [HTML](https://html.spec.whatwg.org/multipage/workers.html#dom-navigator-hardwareconcurrency) · [MDN](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/hardwareConcurrency) |
 
-**O que faz com a imagem**: redução de artefato e nitidez, **só no canal de luma** (o brilho de cada pixel;
-a cor fica como veio). Em modo leve, só nitidez. **Não amplia**: o compositor do navegador estica o quadro
-como sempre fez.
+**O que faz com a imagem**:
+
+- **Completo**: redução de artefato e nitidez **na luma** (o brilho de cada pixel), mais tom e cor.
+- **Leve**: só tom e cor.
+- **Não amplia**: o compositor do navegador estica o quadro como sempre fez.
+
+O tom é corrigido na luma por uma tabela de 256 entradas, e a cor nos planos de Cb e Cr (ou no plano UV
+intercalado do NV12) por uma tabela de 65.536 pares montada uma vez. Uma consulta de tabela por amostra é o
+que deixa o tom e cor barato.
 
 **Como funciona por dentro**
 
 1. Na thread principal, `new VideoFrame(video)` captura o quadro e o transfere ao worker.
-2. No worker, `frame.copyTo` copia os pixels para um buffer reaproveitado, e os filtros rodam sobre o plano
-   de luma (formatos I420, I420A, I422, I444 e NV12).
+2. No worker, `frame.copyTo` copia os pixels para um buffer reaproveitado. Os filtros rodam sobre o plano
+   de luma e o tom e cor também sobre os planos de cor (formatos I420, I420A, I422, I444 e NV12).
 3. Um `VideoFrame` novo é montado com o buffer filtrado e desenhado no `OffscreenCanvas`.
 
 **Limites**
 
 - 1 player com realce por vez.
+- **Custo medido** em 720p nesta estação (Intel Core 7 150U, 12 threads), com o código já aquecido:
+
+  | Passe | Custo por quadro |
+  | --- | --- |
+  | Redução de artefato | 24 ms |
+  | Nitidez | 25 ms |
+  | Tom e cor | 4,4 ms |
+  | Orçamento do realce na CPU a 25 fps | 8 ms |
+
+  Por isso o nível leve da CPU é só tom e cor: é o único passe que cabe sozinho. Redução e nitidez entram
+  quando o stream é menor ou a CPU tem folga.
 - Stream de até 921.600 pixels, que é 1280x720. Acima disso fica em espera. O motivo: percorrer um quadro
   1080p em JavaScript custa de 10 a 20 ms num desktop, perto dos 40 ms que um quadro dura a 25 fps.
 - Quadro não devolvido pelo worker em 1 s desliga o motor daquele player.
 
 Código: `infrastructure/cpu/worker-enhancement-renderer.adapter.ts`, `video-enhancement.worker.ts` e
-`luma-enhancement-pipeline.ts`.
+`yuv-enhancement-pipeline.ts`.
 
 ### 4.3 Estação com WebGL de software (SwiftShader e parecidos)
 
@@ -198,7 +223,8 @@ Nenhum motor. O botão **Realçar imagem** não aparece, e isso nunca vira erro 
 
 ## 5. As técnicas de imagem
 
-São três, sempre nesta ordem. Cada uma no mesmo modelo.
+São quatro, sempre nesta ordem: limpar, corrigir tom e cor, ampliar, dar nitidez. Cada uma no mesmo
+modelo.
 
 ### 5.1 Redução de artefato
 
@@ -210,7 +236,19 @@ São três, sempre nesta ordem. Cada uma no mesmo modelo.
 | **Quando** | Só no modo completo |
 | **Referência** | [Lee, 1983, filtro sigma (DOI)](https://doi.org/10.1016/0734-189X(83)90047-6) |
 
-### 5.2 Ampliação (upscale)
+### 5.2 Tom e cor
+
+| | |
+| --- | --- |
+| **O que faz** | Devolve o contraste que a câmera perde com névoa, contraluz ou exposição baixa, e devolve a cor apagada, sem estourar as cores que já são fortes |
+| **Janela de tom** | O histograma do brilho mostra a faixa que a cena usa, deixando de fora 0,5% dos pixels mais escuros e 0,5% dos mais claros. A janela nunca estica a faixa mais de 1,5 vez, porque cena escura ou chapada esticada além disso só aumenta o ruído. É medida a cada 4 quadros e muda devagar (cada medida move 20% da diferença), para a imagem não pulsar quando um farol cruza a cena |
+| **Curva de tom** | O brilho é esticado da janela para a faixa inteira e dobrado por uma curva S leve (`smoothstep` com peso 0,2). A curva é monotônica: nenhum nível de brilho troca de lugar com outro |
+| **Cor** | Cada cor se afasta do cinza por um ganho de `1,12 x (1 + 0,35 x (1 - m))`, em que `m` é a saturação da própria cor, de 0 a 1. Cor apagada ganha até 1,51 vez; cor já forte ganha 1,12 vez. Cb e Cr sobem pelo mesmo fator, então o matiz não muda, e a cor que sairia da faixa válida volta na mesma direção, sem corte por canal |
+| **Onde roda** | CPU: tabelas sobre Y, Cb e Cr do quadro YUV. GPU: um shader sobre RGB, com o mesmo cálculo |
+| **Quando** | Nos níveis completo e leve, nos dois motores |
+| **Código** | `domain/utils/measure-tone-window.util.ts`, `build-tone-lut.util.ts`, `build-chroma-lut.util.ts`, `domain/tone-window-tracker.ts` e `TONE_AND_COLOR_FRAGMENT_SHADER` |
+
+### 5.3 Ampliação (upscale)
 
 | | |
 | --- | --- |
@@ -220,7 +258,7 @@ São três, sempre nesta ordem. Cada uma no mesmo modelo.
 | **Quando** | Só se a tela for pelo menos 10% maior que o stream. Fator máximo de 2x, e saída de no máximo 2560x1440 **em pixels totais** (não por eixo). Acima disso o navegador escala sozinho |
 | **Referência** | [manual do mpv, opção `scale-antiring`](https://mpv.io/manual/stable/), que inspirou a trava |
 
-### 5.3 Nitidez
+### 5.4 Nitidez
 
 | | |
 | --- | --- |
@@ -231,14 +269,14 @@ São três, sempre nesta ordem. Cada uma no mesmo modelo.
 | **Por que não o CAS** | O CAS, a outra nitidez da AMD, espera luz linear; em vídeo comum (gamma) ele exagera |
 | **Referência** | [FidelityFX FSR no GitHub](https://github.com/GPUOpen-Effects/FidelityFX-FSR) · [AMD GPUOpen, FSR](https://gpuopen.com/fidelityfx-superresolution/) · [FidelityFX CAS](https://github.com/GPUOpen-Effects/FidelityFX-CAS) |
 
-### 5.4 Quais passes rodam em cada caso
+### 5.5 Quais passes rodam em cada caso
 
-| Motor e nível | Redução de artefato | Ampliação | Nitidez |
-| --- | --- | --- | --- |
-| GPU, completo | sim | sim | sim |
-| GPU, leve | não | sim | sim |
-| CPU, completo | sim | não | sim |
-| CPU, leve | não | não | sim |
+| Motor e nível | Redução de artefato | Tom e cor | Ampliação | Nitidez |
+| --- | --- | --- | --- | --- |
+| GPU, completo | sim | sim | sim | sim |
+| GPU, leve | não | sim | sim | sim |
+| CPU, completo | sim | sim | não | sim |
+| CPU, leve | não | sim | não | não |
 
 **Espera** (nenhum passe, o vídeo aparece como veio): quando o quadro na tela é metade do stream ou menor,
 quando o motor é CPU e o stream passa de 1280x720, ou quando ainda não chegou quadro. Num mosaico 4x4 em
@@ -248,16 +286,15 @@ quando o motor é CPU e o stream passa de 1280x720, ou quando ainda não chegou 
 
 | Ajuste | Está na PR? | Por quê |
 | --- | --- | --- |
-| Saturação, cor, balanço de branco | não | A spec da PR não inclui esse ajuste |
-| Contraste, brilho, gama | não | A spec da PR não inclui esse ajuste |
+| Balanço de branco | não | O passe de tom e cor não corrige a cor da luz da cena; não está na spec |
+| Brilho e gama manuais | não | O contraste vem da medida da cena, não de um controle do operador |
 | Super-resolução por rede neural | não, proibida | Inventa detalhe que parece real (risco forense) |
 | Inverse tone mapping | não, proibido | Inventa faixa de brilho que a câmera não gravou |
 | Redução de ruído temporal | não, proibida | Mistura quadros e arrasta veículo em movimento |
 | Grão sintético | não, proibido | Adiciona ruído que não existe |
 | Deband e dither | não | Pendência sem decisão (seção 10) |
 
-A proibição vem da seção 11 da spec da PR (UF-044). Saturação e cor não estão proibidas; só não foram
-implementadas.
+A proibição vem da seção 11 da spec da PR (UF-044).
 
 ## 7. Tecnologias mapeadas e que a PR não usa
 
@@ -266,7 +303,7 @@ implementadas.
 | WebGPU | Sucessor do WebGL, com compute shader e medição real de tempo de GPU | Não aparece na PR nem nas pendências; os três filtros rodam em WebGL2 | [W3C WebGPU](https://www.w3.org/TR/webgpu/) · [MDN WebGPU](https://developer.mozilla.org/en-US/docs/Web/API/WebGPU_API) |
 | WebAssembly SIMD | Filtros da CPU em código nativo vetorizado | Pendência: poderia liberar 1080p no motor CPU | [WebAssembly, recursos](https://webassembly.org/features/) · [proposta SIMD](https://github.com/WebAssembly/simd) |
 | `MediaStreamTrackProcessor` | Ler os quadros direto da faixa WebRTC, sem passar pelo `<video>` | Pendência; hoje o quadro sai do `<video>` | [W3C mediacapture-transform](https://w3c.github.io/mediacapture-transform/) · [MDN](https://developer.mozilla.org/en-US/docs/Web/API/MediaStreamTrackProcessor) |
-| CSS `filter` | Brilho, contraste e saturação prontos do navegador | Não há passe de cor; o filtro de CSS também não amplia nem dá nitidez | [MDN CSS filter](https://developer.mozilla.org/en-US/docs/Web/CSS/filter) |
+| CSS `filter` | Brilho, contraste e saturação prontos do navegador | O passe de tom e cor mede a cena; o filtro de CSS aplica um valor fixo e também não amplia nem dá nitidez | [MDN CSS filter](https://developer.mozilla.org/en-US/docs/Web/CSS/filter) |
 | ONNX Runtime Web, TensorFlow.js | Rodar rede neural no navegador | Super-resolução neural é proibida (seção 6) | [ONNX Runtime Web](https://onnxruntime.ai/docs/tutorials/web/) · [TensorFlow.js](https://www.tensorflow.org/js) |
 
 ## 8. Como o realce se liga, baixa e desliga sozinho
@@ -332,3 +369,8 @@ Na prática, partindo do completo: 30 s, 90 s, 270 s e depois 300 s (5 min) em d
 | p90 e p50 | O valor abaixo do qual ficam 90% e 50% das medidas da janela |
 | Compositor | A parte do navegador que monta a página na tela e estica o vídeo quando não há realce |
 | Artefato de compressão | Bloco, chuvisco e contorno fantasma que a compressão do vídeo cria |
+| Cb e Cr | Os dois canais de cor do vídeo (diferença para azul e para vermelho); com a luma, formam o YUV |
+| Faixa limitada | Convenção do vídeo em que o brilho vai de 16 a 235 e a cor de 16 a 240, em vez de 0 a 255 |
+| Histograma | Contagem de quantos pixels têm cada nível de brilho |
+| LUT (tabela) | Resposta pronta para cada valor de entrada: aplicar é uma consulta, não uma conta |
+| Vibrance | Saturação que favorece as cores apagadas e mexe pouco nas já fortes |
