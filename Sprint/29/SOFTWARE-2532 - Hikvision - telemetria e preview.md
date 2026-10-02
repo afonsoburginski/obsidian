@@ -65,7 +65,7 @@ em `apps/ms-cameras/docs/atomic/`.
 [[Consultar câmera Hikvision via ISAPI]], runbook de diagnóstico (deviceInfo, channels, status, PTZ
 capabilities, teste ONVIF ligado/desligado, RTSP via ffprobe).
 
-[[Saúde e monitoramento - Arquitetura e estratégias]] · [[Attlas - Sprint 29]]
+[[Câmeras - Saúde e monitoramento - Arquitetura e estratégias|Saúde e monitoramento - Arquitetura e estratégias]] · [[Attlas - Sprint 29]]
 
 > [!info] Estado em 25/08 - alinhado com o GitHub
 > PR #1738 mergeada (última em 19/08/2026). Nenhuma PR desta task está aberta.

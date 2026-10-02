@@ -27,7 +27,7 @@ Fonte de verdade: **este vault**. O ClickUp é publicação para o gestor, não 
 | Sprint | Janela | Frente | Como fechou |
 | --- | --- | --- | --- |
 | [[Attlas - Sprint 33\|33]] | 14-20/09 | **Analítico** - entrega e validação | Fechada com as 34 PRs integradas. Era a semana do prazo externo do módulo Analítico, 18/09, front e backend |
-| [[Attlas - Sprint 32\|32]] | 07-13/09 | **Analítico** - fechamento da cadeia | Replanejada em 09/09 contra o inventário do módulo ([[Analítico - O que falta para fechar o módulo]]): 12 PRs e 35 pts. Entraram o modo edição da aba Detecção, a base de docs que faltava e a face default de Métricas; ACOM, Dashboard e decisão automatizada ficaram fora, declarados |
+| [[Attlas - Sprint 32\|32]] | 07-13/09 | **Analítico** - fechamento da cadeia | Replanejada em 09/09 contra o inventário do módulo ([[Analítico - Pendências|Analítico - O que falta para fechar o módulo]]): 12 PRs e 35 pts. Entraram o modo edição da aba Detecção, a base de docs que faltava e a face default de Métricas; ACOM, Dashboard e decisão automatizada ficaram fora, declarados |
 | [[Attlas - Sprint 31\|31]] | 31/08-06/09 | **Analítico servidor** - Virtual Loop em container | Fechada em 05/09 com 10 de 10 cards e 32 pts: ingestão de stream, detecção por frame, ocupação, vínculo com detector, publicação do raw e a tela de métricas do Laço Virtual |
 | [[Attlas - Sprint 30\|30]] | 24-30/08 | **Analítico** - camada de gestão do embarcado | Fechada em 28/08 com 11 de 11 cards e 51 pts, em 5 telas |
 | [[Attlas - Sprint 29\|29]] | 17-23/08 | Rollover da 28 | 34 cards não fechados vindos da 28, sem planejamento próprio |

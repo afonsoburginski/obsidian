@@ -63,4 +63,4 @@ Teste de integração cobrindo captura do frame por preset e leitura das regiõe
   banco não há o que pendurar no preset.
 - [[Analítico - Fonte da imagem de evidência]], que decide em paralelo quem gera pixel persistido e com
   qual custo de armazenamento. As duas decisões precisam bater.
-- [[PTZ e presets - Requisitos e SLA]], [[Attlas - Sprint 30]] e [[ms-cameras]].
+- [[Câmeras - PTZ e presets - Requisitos e SLA|PTZ e presets - Requisitos e SLA]], [[Attlas - Sprint 30]] e [[ms-cameras]].

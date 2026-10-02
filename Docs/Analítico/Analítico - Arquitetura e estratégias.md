@@ -40,11 +40,11 @@ conhecidas. O que o módulo é está em [[Analítico - Visão do produto]]; a or
 | | `src/virtual-loop-binding/` | Vínculo região para endereço de detector (`VirtualLoopDetectorBinding`) |
 | | `src/analytics-ingestion/` | `GET /internal/virtual-loop/sources`: regiões e vínculos para a tradução de endereço |
 | | `src/incident-criticality/` | Criticidade por tipo de incidente, por Sistema (UC-227) |
-| | `src/server-analytics/`, `src/lpr-capability/` | Associação da câmera à Neural Labs e capacidade LPR. Ver [[Neural Labs - Vínculo de câmeras]] |
+| | `src/server-analytics/`, `src/lpr-capability/` | Associação da câmera à Neural Labs e capacidade LPR. Ver [[Analítico - Neural Labs - Vínculo de câmeras]] |
 | `ms-connector-virtual-loop` | `src/devices/` | Atende na TCP 3091 a discagem do app de laço, publica a ocupação que ele reporta e a presença do equipamento |
 | `ms-video-analytics` | `src/detector-translation/` | Traduz a ocupação em `attlas.detectors.raw` pelo vínculo da região; sem vínculo, descarta |
 | | `src/acom-link/` | Orquestra o vínculo placa ACOM e analítico (CROSS-168) |
-| | `src/neural-lpr/` | Integração Neural Labs. Ver [[Neural Labs - Arquitetura e estratégias]] |
+| | `src/neural-lpr/` | Integração Neural Labs. Ver [[Analítico - Neural Labs - Arquitetura e estratégias]] |
 | `ms-detector-history` | | Guarda a série do detector, igual ao laço físico, e serve as janelas que a face do Laço Virtual lê |
 | `ms-controllers` | `src/acom/` | Placa ACOM, fiação por saída. Ver [[Analítico - Vínculo com a ACOM]] |
 | `web-attlas` | `modules/analytics*` | As quatro abas. Ver [[Analítico - Frontend]] |
@@ -173,7 +173,7 @@ status das câmeras.
   todas.
 - **Seed local**: o `nx serve ms-cameras` roda o seed, que só apaga ids do próprio espaço
   (`00000000-0000-4000-8000-*`) e avisa quando `SEED_ATMAN_EMBEDDED_SOURCE_ID` está vazia.
-- **Atualizar o app reseta o equipamento.** Ver [[Runbook - analítico embarcado]].
+- **Atualizar o app reseta o equipamento.** Ver [[Analítico - Runbook - Embarcado]].
 
 > [!warning] Divergências atuais entre spec e código
 > - O código do `ms-cameras` e o `SPEC.md` do `ms-connector-virtual-loop` citam `CROSS-119` para o

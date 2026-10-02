@@ -26,10 +26,10 @@ recebe, guarda e mostra. Regra de negócio no repositório: `docs/modules/analit
 - [[Analítico - Fluxos]]: cadastro e vínculo do analítico, os caminhos do dado (tela ao vivo,
   incidente, ocupação, métricas) e o vínculo região-detector.
 - [[Analítico - Requisitos e SLA]]: as regras de negócio e o estado de cada uma no código.
-- [[Analítico - O que falta para fechar o módulo]]: pendências por recurso do edital.
+- [[Analítico - Pendências]]: pendências por recurso do edital.
 - [[Analítico - Frontend]]: as quatro abas do módulo no `web-attlas` e a referência visual do
   `attlas-design`.
 - [[Analítico - Vínculo com a ACOM]]: a placa ACOM como transporte do laço virtual até o controlador.
-- [[Runbook - analítico embarcado]]: diagnosticar e reprovisionar o app na câmera, e a bancada.
-- [[Neural Labs]]: a integração com o servidor de placas da Neural Labs e a documentação do
+- [[Analítico - Runbook - Embarcado]]: diagnosticar e reprovisionar o app na câmera, e a bancada.
+- [[Analítico - Neural Labs]]: a integração com o servidor de placas da Neural Labs e a documentação do
   fornecedor.

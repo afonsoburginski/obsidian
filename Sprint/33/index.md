@@ -150,7 +150,7 @@ Continua valendo como escopo condicional, depois das tasks acima:
 
 Os 90 pts do inventário de fechamento (ACOM, Dashboard do Analítico, decisão automatizada, métricas
 ATSPM que exigem o mapa estágio-grupo, snapshot da configuração semafórica, recorrência de incidente,
-exportação e OTA do embarcado), item por item em [[Analítico - O que falta para fechar o módulo]].
+exportação e OTA do embarcado), item por item em [[Analítico - Pendências|Analítico - O que falta para fechar o módulo]].
 
 > [!important] O que a entrega de 18/09 é
 > A cadeia do Laço Virtual ponta a ponta, demonstrável em campo, com a Detecção configurável pela tela,
@@ -183,5 +183,5 @@ Notas que existiam na pasta e não estavam ligadas a este índice até a revisã
 [[Streaming - a queda para HLS e a tela preta que vinha com ela]] ·
 [[Validação - as 34 PRs, uma a uma]] ·
 [[Analítico - Estudo de caso de captura, inferência e sincronização]] ·
-[[Detecção do Analítico - gaps para polir]] · [[Analítico - O que falta para fechar o módulo]] ·
+[[Detecção do Analítico - gaps para polir]] · [[Analítico - Pendências|Analítico - O que falta para fechar o módulo]] ·
 [[Attlas - Sprint 32]] · [[Analítico]] · [[Sprints - índice raiz]]

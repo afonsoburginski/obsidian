@@ -16,7 +16,7 @@ atualizado: 2026-10-01
 
 A ordem dos passos no [[Analítico]]. Onde cada peça mora está em
 [[Analítico - Arquitetura e estratégias]]; a placa ACOM, em [[Analítico - Vínculo com a ACOM]]; a
-leitura de placas, em [[Neural Labs - Arquitetura e estratégias]].
+leitura de placas, em [[Analítico - Neural Labs - Arquitetura e estratégias]].
 
 ## Pôr uma câmera para funcionar com o embarcado
 

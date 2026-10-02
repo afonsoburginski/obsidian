@@ -49,7 +49,7 @@ serviço recusam exatamente o mesmo texto.
 
 A guarda contra report duplicado segue ausente: dois envios no mesmo evento abrem dois incidentes
 ligados a ele. A PR mexeu só na validação dos campos, e a lacuna está registrada em
-[[Eventos, incidentes e alarmes - Arquitetura e estratégias]].
+[[Câmeras - Eventos, incidentes e alarmes - Arquitetura e estratégias|Eventos, incidentes e alarmes - Arquitetura e estratégias]].
 
 ## Relacionado
 

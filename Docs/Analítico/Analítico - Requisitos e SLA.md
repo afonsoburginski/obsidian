@@ -13,7 +13,7 @@ atualizado: 2026-10-01
 As regras de negócio do [[Analítico]] e o estado de cada uma no código da `develop`. A fonte de regra é
 `docs/modules/analitico.md` (IDs `RF-*` e `RNF-ANL-*`), que segue o edital seção 4.6; as regras das
 notas de alinhamento que o documento não cobre estão no fim. O trabalho que falta está em
-[[Analítico - O que falta para fechar o módulo]].
+[[Analítico - Pendências]].
 
 Legenda: **Atende**, **Parcial**, **Falta**.
 
@@ -71,7 +71,7 @@ Legenda: **Atende**, **Parcial**, **Falta**.
 ## Tempo medido por placa
 
 Regras do `docs/modules/analitico.md` seções 3.8 e 3.9, e o estado, em
-[[Neural Labs - Tempo de viagem]] e [[Neural Labs - Vínculo de câmeras]].
+[[Analítico - Neural Labs - Tempo de viagem]] e [[Analítico - Neural Labs - Vínculo de câmeras]].
 
 ## Regras das notas de alinhamento
 

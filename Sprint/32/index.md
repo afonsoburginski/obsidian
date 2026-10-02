@@ -76,7 +76,7 @@ do prazo de 18/09, que cai na Sprint 33. O planejamento detalhado é a segunda m
 
 > [!important] Replanejada em 09/09, contra o inventário do módulo inteiro
 > A semana foi redesenhada depois de confrontar o **edital seção 4.6** com o código da `develop`, item
-> por item: [[Analítico - O que falta para fechar o módulo]]. O que a leitura mudou no plano:
+> por item: [[Analítico - Pendências|Analítico - O que falta para fechar o módulo]]. O que a leitura mudou no plano:
 >
 > - **O card 1 encolheu** (o mecanismo de escala entrou em 05/09) e **o card 2 tem a descrição
 >   defasada** (manda um serviço removido traduzir endereço).
@@ -358,6 +358,6 @@ Notas que existiam na pasta e não estavam ligadas a este índice até a revisã
 
 ## Ver também
 
-[[Analítico - O que falta para fechar o módulo]] · [[Planning - Sprint 31 e 32]] · [[Attlas - Sprint 30]] ·
+[[Analítico - Pendências|Analítico - O que falta para fechar o módulo]] · [[Planning - Sprint 31 e 32]] · [[Attlas - Sprint 30]] ·
 [[Attlas - Sprint 31]] · [[Sem prazo (backlog)]] · [[Analítico]] ·
 [[Analítico - Embarcado x Servidor]] · [[Analítico - Frontend do attlas-design]]
