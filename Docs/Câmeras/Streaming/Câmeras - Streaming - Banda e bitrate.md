@@ -12,7 +12,7 @@ aliases:
   - "Bitrate medido 24-7 - telemetria always-on"
   - "Banda e bitrate"
   - "Streaming - Banda e bitrate"
-atualizado: 2026-10-01
+atualizado: 2026-10-05
 ---
 
 # Câmeras - Streaming - Banda e bitrate
@@ -52,7 +52,8 @@ foi removido.
 - A placa de rede é de 100 Mbps, sem gigabit; o limite de banda do device existe e vem desligado.
 - O encoder limita perfis simultâneos com parâmetros distintos (tipicamente 2 a 4 em resolução cheia),
   não taxa de bits; vários clientes do mesmo perfil custam só banda.
-- VBR sem teto em 1080p pode picar 10 a 20 Mbps em cena complexa.
+- VBR sem teto em 1080p pode picar 10 a 20 Mbps em cena complexa. Banda por codec e bits por pixel de cada tier
+  estão em [[Câmeras - Streaming - Codecs]].
 - Com Zipstream ou ABR, o médio real fica bem abaixo do `MaxBitrate`; o `ABR.TargetBitrate` é a melhor
   estimativa de média para planejamento.
 

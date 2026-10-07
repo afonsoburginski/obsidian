@@ -11,7 +11,7 @@ aliases:
   - "Identificação das câmeras da Neural Labs"
   - "Vínculo Neural Labs por endereço"
   - "Neural Labs - Vínculo de câmeras"
-atualizado: 2026-10-01
+atualizado: 2026-10-06
 ---
 
 # Analítico - Neural Labs - Vínculo de câmeras
@@ -49,7 +49,8 @@ Em todo canal do fabricante a câmera é o par `ComputerID` + `CamID`, com o nom
 | Cadastro da câmera no NEURAL SERVER | ID, nome, localização, tipo | **Sim: a URL do stream, com o IP da câmera** |
 
 - `ComputerID` é escolhido pelo operador na instalação e ligado à licença; a unicidade entre servidores é
-  só recomendada. O Attlas separa servidores pela instância (o IP de origem).
+  só recomendada. O Attlas separa servidores pela instância (o IP de origem); servidores atrás do mesmo
+  NAT chegam com o mesmo IP e aí precisam de `ComputerID` diferente.
 - `CamID` é único dentro do servidor e pequeno (as câmeras são endereçadas por máscara de bits).
 - O manual público limita cada servidor a 16 câmeras: as cerca de 800 da instalação seriam dezenas de
   servidores, cada um uma instância no Attlas.
@@ -119,6 +120,7 @@ Divergências que a tela mostra: **associada sem vínculo** (a leitura chegaria 
 | `PUT /api/cameras/analytics/neural-labs/instances/{id}/camera-mappings` | Vínculo manual de câmera externa |
 | `POST /api/cameras/analytics/neural-labs/instances/{id}/camera-mappings/import` | Vínculo pela lista do equipamento |
 | `DELETE /api/cameras/analytics/neural-labs/instances/{id}/camera-mappings/{cameraId}` | Desfazer o vínculo |
+| `POST /api/cameras/analytics/neural-labs/instances` | Cadastrar a instância (painel "Adicionar analítico") |
 | `PATCH /api/cameras/analytics/neural-labs/instances/{id}` | Ligar ou desligar o automático (`autoLinkEnabled`) |
 | `GET /api/internal/cameras/neural-labs/auto-link-candidates?camName=` | Candidatas do automático (interna) |
 

@@ -10,7 +10,7 @@ aliases:
   - "Neural Labs - Triggers do NEURAL SERVER"
   - "Triggers do NEURAL SERVER"
   - "Neural Labs - Envio XML do NEURAL SERVER"
-atualizado: 2026-10-01
+atualizado: 2026-10-06
 ---
 
 # Analítico - Neural Labs - Envio XML do NEURAL SERVER
@@ -30,7 +30,9 @@ A tela "Sending Connection" do NEURAL SERVER tem dois modos, e só um vale por v
 - **Close connection after send**: fecha a conexão depois de cada envio.
 - **Send Image**: checkbox na aba "Configuration" que inclui a imagem JPEG da leitura no XML.
 
-O Attlas implementa só o Client mode, com o formato XML completo.
+O Attlas implementa só o Client mode, com o formato XML completo. Em JSON o Attlas nunca acha o fim do
+quadro (`</infoplate>`) e derruba a conexão no teto de 2 MiB; "Send Image" ligado também pode passar
+desse teto. "Close connection after send" pode ficar ligado ou desligado: o Attlas não fecha conexão quieta.
 
 ## Formato do quadro
 
@@ -131,7 +133,7 @@ Ligado com `SendLigthWeigthXML = True` no arquivo de configuração do NEURAL SE
 
 `DateHour`, `Engine`, `Plate`, `Container`, `ExtraInfo`, `Country`, `CountryID`, `CamID`, `Path`, `List`, `LocationID`.
 
-**Não traz `ComputerID`, `CamName` nem `IncidenceID`.** Com o XML curto não dá para saber de que equipamento veio a leitura, nem deduplicar. O Attlas recusa esse formato: o equipamento precisa mandar o XML completo.
+**Não traz `ComputerID`, `CamName` nem `IncidenceID`.** Com o XML curto não dá para saber de que equipamento veio a leitura. O Attlas recusa esse formato pela falta do `ComputerID`: o equipamento precisa mandar o XML completo. No XML completo, `IncidenceID` vazio (como no exemplo acima) é aceito, com uma chave derivada de `CamID`, instante e impressão da placa.
 
 ## Triggers
 

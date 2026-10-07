@@ -28,7 +28,7 @@ aliases:
   - "Plano - Streaming sem vazamento de publicador"
   - "Registro - implementação do plano de vazamento de publicador em 21 de setembro"
   - "Streaming - Arquitetura e estratégias"
-atualizado: 2026-10-02
+atualizado: 2026-10-05
 ---
 
 # Câmeras - Streaming - Arquitetura e estratégias
@@ -175,13 +175,14 @@ terminal.
 ## Codecs
 
 Ninguém transcodifica: o WHEP reempacota o codec da câmera em RTP e o LL-HLS o muxa em fMP4. O custo de
-cada câmera é banda, não CPU. Requisitos RNF-CAM-05 e RF-CAM-06; spec `INT-008-codec-negotiation.md`.
+cada câmera é banda, não CPU. Requisitos RNF-CAM-05 e RF-CAM-06; spec `INT-008-codec-negotiation.md`. O que cada
+codec é, banda, bits por pixel e suporte por câmera, navegador e GPU estão em [[Câmeras - Streaming - Codecs]];
+aqui fica só o mecanismo.
 
-| Codec da câmera | O que acontece |
-| --- | --- |
-| H.264 | Repassado; nas Axis em baseline, sem B-frames. Base universal e obrigatório em WebRTC (RFC 7742). |
-| H.265 | Repassado só para quem pediu `codec=h265`. WebRTC só no Chrome 136+ com decode por hardware; HLS no Safari nativo e Chrome/Edge com hardware. Safari com H.265 sem validação no Attlas. |
-| MJPEG | Não é convertido. Numa Axis o codec negociado vence o do perfil e a câmera entrega H264. Câmera de outro fabricante que só entrega MJPEG não tem caminho até o navegador (WHEP e HLS do MediaMTX não transportam o formato). |
+> [!warning] AV1 decidido e ainda não no código
+> AV1 nativo da câmera em passthrough, com a ordem AV1, H.265, H.264, está em implementação numa PR nova
+> ([[Câmeras - Streaming - Codecs#9. Decisões e onde estão escritas]]). Hoje `normalizeStreamCodec` transforma
+> qualquer codec que não é HEVC em H264.
 
 Negociação:
 
@@ -284,8 +285,8 @@ WebRTC não passa por proxy: vai por UDP 8189 direto ao candidato anunciado. O K
   RTSP, MediaMTX e WHEP), que operação ao vivo e PTZ exigem (RNF-CAM-03); o LL-HLS roda sobre TCP e com
   buffer, então aguenta a perda que congela o WebRTC, ao custo de segundos.
 - **H.264 base, H.265 oportunístico, detectar e nunca assumir.** H.265 depende de hardware em todo
-  navegador, inclusive no WebRTC. HEVC em WASM não sustenta mosaico em tempo real, e AV1 não existe em
-  WebRTC.
+  navegador, inclusive no WebRTC, e HEVC em WASM não sustenta mosaico em tempo real. AV1 existe no WebRTC do
+  Chrome e do Firefox e a câmera ARTPEC-9 o codifica: o desenho decidido está em [[Câmeras - Streaming - Codecs]].
 - **ABR por substream nativo da câmera**, nunca transcode no servidor: transcode por stream mata a escala.
 - **Baseline nas Axis**: High usa B-frames, e a reordenação no decode custa latência.
 - **GOP curto por orçamento de tempo** (INT-024): o MediaMTX só alimenta um leitor WHEP novo no próximo
@@ -357,6 +358,7 @@ WebRTC não passa por proxy: vai por UDP 8189 direto ao candidato anunciado. O K
 >   espera 10 s pelo WHEP; o código espera 15 s.
 > - O runbook `stream-ingest-saturation.md`, seção 6, manda ler `localhost:9998/metrics`, que não responde.
 > - Os diagramas [[Câmeras - Streaming - Diagrama - Pipeline HLS.excalidraw]] e
->   [[Câmeras - Streaming - Diagrama - Estratégia de codec.excalidraw]] ainda desenham o relay `ffmpeg`.
+>   [[Câmeras - Streaming - Diagrama - Estratégia de codec.excalidraw]] ainda desenham o relay `ffmpeg`, e o de
+>   codec não tem AV1.
 > - O nome `ms_cameras_stream_relays_active` ficou do modelo com relay; mede paths disponíveis.
 > - `TelemetryPathRegistry` segue no código, sempre vazio e inerte.

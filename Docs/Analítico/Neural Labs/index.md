@@ -7,7 +7,7 @@ aliases:
   - "Analítico - Neural Labs"
   - "Neural Labs"
   - "Neural Labs - Índice"
-atualizado: 2026-10-01
+atualizado: 2026-10-06
 ---
 
 # Analítico - Neural Labs
@@ -30,6 +30,8 @@ Integração no Attlas:
   gestores.
 - [[Analítico - Neural Labs - Documento dos gestores sobre tempo de recorrido]]: o documento dos gestores, em espanhol.
 - [[Analítico - Neural Labs - Explicação - Como cada leitura chega na câmera certa]]: explicação com exemplo, para usuário.
+- [[Analítico - Neural Labs - Explicação - Como cadastrar a Neural Labs]]: onde e quando aparece o cadastro, o que preencher e como
+  saber que funcionou, para usuário.
 
 Referência do fornecedor:
 

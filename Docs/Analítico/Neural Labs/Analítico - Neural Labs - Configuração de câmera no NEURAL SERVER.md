@@ -8,7 +8,7 @@ aliases:
   - "Configuração de câmera no NEURAL SERVER"
   - "Manual do NEURAL SERVER"
   - "Neural Labs - Configuração de câmera no NEURAL SERVER"
-atualizado: 2026-10-01
+atualizado: 2026-10-06
 ---
 
 # Analítico - Neural Labs - Configuração de câmera no NEURAL SERVER
@@ -37,7 +37,7 @@ Para as cerca de 800 câmeras da instalação, isso quer dizer **dezenas de serv
 Consequências para o Attlas:
 
 - O `ComputerID` é **escolhido pelo operador** e ligado à licença; trocar a licença pede o número de novo.
-- A unicidade entre servidores é só uma recomendação. Dois servidores podem ter o mesmo `ComputerID`; o Attlas separa pela instância (o IP de origem da conexão).
+- A unicidade entre servidores é só uma recomendação. Dois servidores podem ter o mesmo `ComputerID` quando chegam ao Attlas por IPs diferentes, porque o Attlas separa pela instância (o IP de origem da conexão). Atrás do mesmo NAT eles chegam com o mesmo IP e precisam de `ComputerID` diferente.
 
 ## Cadastro de uma câmera
 
