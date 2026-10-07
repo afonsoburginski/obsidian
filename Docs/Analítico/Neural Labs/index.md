@@ -26,7 +26,9 @@ fornecedor.
 
 | Nota | Abra quando |
 | --- | --- |
-| [[Analítico - Neural Labs - Arquitetura e estratégias]] | precisa saber onde mora cada peça, as rotas, as tabelas, as variáveis, as métricas, como ligar um NEURAL SERVER real ou o que está pendente |
+| [[Analítico - Neural Labs - Arquitetura e estratégias]] | precisa saber onde mora cada peça, as rotas, as tabelas, as variáveis e as métricas |
+| [[Analítico - Neural Labs - Pendências]] | quer saber o que falta na integração: decisões da empresa, primeira captura real, perguntas ao fornecedor e ajustes de produto |
+| [[Analítico - Neural Labs - Runbook]] | vai ligar um NEURAL SERVER real: ambiente, porta, cadastro e conferência |
 | [[Analítico - Neural Labs - Vínculo de câmeras]] | quer entender associação e vínculo, como a Neural Labs identifica câmeras, a lista do equipamento, o que a página da instância mostra e o que perguntar ao fornecedor |
 | [[Analítico - Neural Labs - Tempo de viagem]] | quer a regra do cálculo, os status de um trecho e onde o Attlas diverge do documento dos gestores |
 | [[Analítico - Neural Labs - Documento dos gestores sobre tempo de recorrido]] | precisa da regra do tempo de viagem que os gestores pediram, no original em espanhol |

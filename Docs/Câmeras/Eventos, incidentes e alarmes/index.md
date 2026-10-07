@@ -29,6 +29,7 @@ tratamento do operador. O código fica em `apps/ms-cameras/src/events/`, e a reg
 | [[Câmeras - Eventos, incidentes e alarmes - Arquitetura e estratégias]] | precisa saber onde está cada peça, quais são as rotas, os tópicos Kafka e as tabelas, e por que o pipeline é assim |
 | [[Câmeras - Eventos, incidentes e alarmes - Fluxos]] | quer o passo a passo de um evento até o alarme, da correlação, do tratamento, da exportação ou da leitura na tela |
 | [[Câmeras - Eventos, incidentes e alarmes - Requisitos e SLA]] | precisa do estado de cada requisito do edital, das janelas, dos limites e das variáveis de ambiente |
+| [[Câmeras - Eventos, incidentes e alarmes - Pendências]] | quer saber o que falta corrigir: exportação, report duplicado, índices, fila-morta e comentários |
 | [[Câmeras - Eventos, incidentes e alarmes - Catálogo e criticidade]] | quer saber que eventos existem, qual deles é crítico e o que vira incidente ou alarme |
 
 ## Explicações para usuário

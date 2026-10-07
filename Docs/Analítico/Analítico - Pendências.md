@@ -20,7 +20,7 @@ O que falta no [[Analítico]], pelos cinco recursos do edital (seção 4.6), mai
 as divergências da documentação do repositório. O maior buraco é o ATSPM, com sete das oito métricas do edital sem
 fonte, seguido do Dashboard, que não existe. A regra de cada item e o que já atende estão em
 [[Analítico - Requisitos e SLA]]. As pendências da Neural Labs estão em
-[[Analítico - Neural Labs - Arquitetura e estratégias]].
+[[Analítico - Neural Labs - Pendências]].
 
 ## Visão Geral (tela de Detecção)
 

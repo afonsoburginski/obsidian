@@ -28,6 +28,7 @@ de imagem das câmeras também moram aqui.
 | [[Câmeras - Streaming - Arquitetura e estratégias]] | precisa saber onde mora cada peça (MediaMTX, `ms-cameras`, player), as portas, as rotas de vídeo, por que é assim e as armadilhas |
 | [[Câmeras - Streaming - Fluxos]] | precisa do passo a passo do `GET /hls`, do player, do fallback de codec, da remoção de paths ou do diagnóstico |
 | [[Câmeras - Streaming - Requisitos e SLA]] | precisa de meta de latência, tempo limite, teto, métrica ou variável de ambiente |
+| [[Câmeras - Streaming - Pendências]] | quer saber o que falta (TURN, medição de latência, fallback de codec) ou onde a documentação do repositório diverge do código |
 | [[Câmeras - Streaming - Runbook]] | vai diagnosticar vídeo ao vivo no host ou no navegador |
 | [[Câmeras - Streaming - Banda e bitrate]] | precisa saber de onde vem cada número de banda, provisionada ou medida, e quem o consome |
 | [[Câmeras - Streaming - Codecs]] | precisa comparar H.264, H.265, AV1, VP9 e MJPEG: banda, bits por pixel, suporte por câmera, navegador e GPU, e as decisões |

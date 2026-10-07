@@ -280,36 +280,11 @@ dúvida, deixar o equipamento discar e ler o IP no log `neural_lpr_connection_re
 
 ## Ligar um NEURAL SERVER real
 
-1. **Decisões da empresa**: aprovar a política de dados de placa (LGPD) e definir a retenção em dias, de 1
-   a 365. Sem as duas, a validação de ambiente recusa o boot com o socket ligado.
-2. **Ambiente** do `ms-video-analytics`: `NEURAL_LPR_ENABLED=true`, `NEURAL_LPR_TCP_LISTENER_ENABLED=true`,
-   `LPR_DATA_POLICY_APPROVED=true` e `LPR_RETENTION_DAYS=30`. A `LPR_FINGERPRINT_KEY` já vem do
-   `setup:env` e não se troca.
-3. **Porta**: o `docker-compose.yml` publica a 17000. Restringir ao IP público do NEURAL SERVER no security
-   group ou na cadeia `DOCKER-USER`.
-4. **Recriar o serviço** e conferir no log `neural_lpr_listening` com a porta 17000.
-5. **Cadastrar a instância** pela tela, com o IP da seção "Qual IP cadastrar".
-6. **Configurar o equipamento**: Client mode discando para o Attlas na 17000, formato XML completo (não o
-   curto nem o JSON), "Send Image" desligado e um `ComputerID` por servidor.
-7. **Conferir**: o `lastFrameAt` da instância anda e as câmeras do equipamento aparecem em "Aguardando
-   vínculo".
-8. **Vincular as câmeras** pela lista do equipamento ou pelo nome, e acompanhar na página da instância.
-
-No dev.v2 o socket está ligado (`NEURAL_LPR_ENABLED=true`, `NEURAL_LPR_TCP_LISTENER_ENABLED=true`,
-`LPR_DATA_POLICY_APPROVED=true`, `LPR_RETENTION_DAYS=30`) e escuta na 17000. Pela tailnet
-(`100.101.165.32:17000`) a porta responde; pelo IP público (`3.15.199.101:17000`) o security group
-bloqueia. Nenhuma instância está cadastrada.
+O passo a passo está em [[Analítico - Neural Labs - Runbook]].
 
 ## Pendências
 
-| O que falta | Por que importa | Onde |
-| --- | --- | --- |
-| Aprovar a política de dados de placa e a retenção para produção | sem as duas o socket não abre | decisão da empresa |
-| Regra do security group e cadastro da instância | o equipamento só conecta pelo IP público liberado | quando o IP do NEURAL SERVER for conhecido |
-| Primeira captura real do equipamento: `IncidenceID`, `Engine`, encoding do `CamName` e reconexão depois de uma queda | o socket foi provado com simulador e com o exemplo do manual, não com o equipamento | dev.v2, com o NEURAL SERVER do cliente |
-| Perguntas ao fornecedor: fuso das datas e sincronismo dos relógios, se o sentido é medido por veículo ou vem da faixa, unidade do `Speed`, amostra real das mensagens | definem a conversão da hora e o uso do sentido e da velocidade | Neural Labs, junto com [[Analítico - Neural Labs - Vínculo de câmeras#O que perguntar à Neural Labs]] |
-| Mostrar na tela as divergências entre associação e vínculo | a regra do módulo pede, e a API já devolve | [[Analítico - Neural Labs - Vínculo de câmeras#Divergências]] |
-| Alinhar o tempo de viagem ao documento dos gestores | o cálculo atual diverge em mediana, mínimo de veículos, limites e sentido | [[Analítico - Neural Labs - Tempo de viagem#Pendências]] |
+O que falta está em [[Analítico - Neural Labs - Pendências]].
 
 ## Glossário
 

@@ -26,6 +26,7 @@ agregação na hora da leitura sobre tabelas de outros subdomínios, sem tabela 
 | --- | --- |
 | [[Câmeras - Dashboard - Arquitetura e estratégias]] | precisa saber as rotas, de que tabela cada widget lê, como período e escopo são resolvidos, como o push funciona, como a banda é calculada, ou uma armadilha conhecida |
 | [[Câmeras - Dashboard - Fluxos]] | precisa do passo a passo da carga da tela, da troca de filtro, da conectividade, da exportação, da banda, do push, da reconexão ou da atualização manual |
+| [[Câmeras - Dashboard - Pendências]] | quer saber o que falta do requisito do edital, na tela ou no backend |
 
 ## Explicações para usuário
 

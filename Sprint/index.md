@@ -4,7 +4,7 @@ tags:
   - index
 aliases:
   - "Sprints - índice raiz"
-atualizado: 2026-09-27
+atualizado: 2026-10-07
 ---
 
 # Sprints - índice raiz
@@ -20,12 +20,14 @@ Fonte de verdade: **este vault**. O ClickUp é publicação para o gestor, não 
 
 | Sprint | Janela | Frente | Situação |
 | --- | --- | --- | --- |
-| [[Attlas - Sprint 34\|34]] | 21-27/09 | **ms-cameras** - streaming, issues abertas e o ANPR do cliente | Aberta em 21/09 pela validação das telas de stream, que reproduziu o vazamento de publicador. **Em 23/09: 28 de 30 tasks feitas (106 de 129 pts)**, com as 34 PRs da tabela mergeadas. Segue aberto só o NEURAL SERVER (#4403, projeto sem atômica): as Instâncias do Analítico (#4414) foram mergeadas em 24/09 à tarde. Das 28 issues do rótulo `cameras`, 27 fechadas. No mesmo dia o CI virou um runner scale set de 20 vagas e a integração foi desligada, fora do plano. **Madrugada de 24/09**: #4403/#4414/#4433 pegaram Build vermelho por um import quebrado que já estava na develop (`ms-traffic-model`, nada delas); fix em aberto na [[Sprint/34/index#Atualização - 24/09, madrugada\|#4449]]. **Em 26/09**: #4688 e #4816 mergeadas à tarde; à noite a #4862 (stream de alarmes preso na borda do dev.v2), a #4887 (Neural Labs sem tela própria, placa ACOM no campo Detector, Sincronizar na linha de Instâncias) e a #4891 (cache da topologia e Sincronizar que traz de volta a instância offline), ver [[Sprint/34/index#Atualização - 26/09, noite\|a atualização da noite]]. **Em 27/09 de madrugada**: a #4909 (navegação lenta do dev.v2, WebSockets do `ms-cameras` e deploy só manual) aberta com CI verde, e o host do EC2 ajustado (BBR, sem slow start após ocioso, sessões esquecidas do Redis encerradas), ver [[Sprint/34/index#Atualização - 27/09, madrugada\|a atualização da madrugada]] |
+| [[Attlas - Sprint 36\|36]] | 05-11/10 | **Câmeras e Analítico** - telas de Eventos, realce e AV1 no player, Neural Labs pela tela | Aberta em 05/10. Em 07/10 de manhã, 21 PRs mergeadas em 16 tasks, 14 delas com todas as PRs mergeadas; abertas a #6146 (fim dos backups `.bak` do `setup:env`) e a #6147 (limpeza do `ms-video-analytics`). Seis issues fechadas; a 5469 foi reaberta pelo QA em 06/10, e a 5808 e a 5977 seguem abertas, atendidas em parte. Nenhum card no ClickUp |
 
 ## Histórico
 
 | Sprint | Janela | Frente | Como fechou |
 | --- | --- | --- | --- |
+| [[Attlas - Sprint 35\|35]] | 28/09-04/10 | **Câmeras e Analítico** - issues abertas, Neural Labs, Métricas e caixa da Detecção | Fechada com 48 PRs mergeadas em 31 tasks e as 19 issues que elas atacavam fechadas em 29/09. O novo desenho da caixa sobre o vídeo foi revertido no dia seguinte, o plano da pipeline de CI e CD (#5666) segue em rascunho com pedido de mudança, e sete PRs abertas na semana foram mergeadas na 36. Nenhum card no ClickUp |
+| [[Attlas - Sprint 34\|34]] | 21-27/09 | **ms-cameras** - streaming, issues abertas e o ANPR do cliente | Fechada com as 32 tasks da tabela entregues e 58 PRs mergeadas: streaming sem vazamento de publicador, 27 das 28 issues do rótulo `cameras` (a 1875 fechou em 05/10) e a integração com o NEURAL SERVER |
 | [[Attlas - Sprint 33\|33]] | 14-20/09 | **Analítico** - entrega e validação | Fechada com as 34 PRs integradas. Era a semana do prazo externo do módulo Analítico, 18/09, front e backend |
 | [[Attlas - Sprint 32\|32]] | 07-13/09 | **Analítico** - fechamento da cadeia | Replanejada em 09/09 contra o inventário do módulo ([[Analítico - Pendências|Analítico - O que falta para fechar o módulo]]): 12 PRs e 35 pts. Entraram o modo edição da aba Detecção, a base de docs que faltava e a face default de Métricas; ACOM, Dashboard e decisão automatizada ficaram fora, declarados |
 | [[Attlas - Sprint 31\|31]] | 31/08-06/09 | **Analítico servidor** - Virtual Loop em container | Fechada em 05/09 com 10 de 10 cards e 32 pts: ingestão de stream, detecção por frame, ocupação, vínculo com detector, publicação do raw e a tela de métricas do Laço Virtual |

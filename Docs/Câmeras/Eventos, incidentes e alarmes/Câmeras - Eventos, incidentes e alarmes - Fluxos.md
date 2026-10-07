@@ -279,8 +279,8 @@ corrida perdida responde 409 `INVALID_STATE_TRANSITION`.
 **Resultado.** Arquivo XLS ou PDF da fila filtrada.
 
 **Erros.** Acima do teto, 409 `EXPORT_LIMIT_EXCEEDED`. Com mais de 100 incidentes no filtro, o arquivo sai
-cortado em 100 linhas (armadilha em
-[[Câmeras - Eventos, incidentes e alarmes - Arquitetura e estratégias#Armadilhas conhecidas|Armadilhas conhecidas]]).
+cortado em 100 linhas (pendência em
+[[Câmeras - Eventos, incidentes e alarmes - Pendências]]).
 
 ## 12. Leitura de incidentes
 

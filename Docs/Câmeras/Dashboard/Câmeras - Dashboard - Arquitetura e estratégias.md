@@ -246,36 +246,21 @@ os seus. O compartilhado é o gateway, não o socket.
 
 ## Armadilhas conhecidas
 
-- **Consumo inflado nos períodos em dias.** Nos períodos lidos dos rollups (`D7`, `D30`, `CUSTOM`), o dia
-  fechado entra com o `avgBitrateMbps` do rollup, que já é a média do dia entre medição real e provisionado. A
-  exclusão por tolerância quase nunca casa com essa média, e o dia em que a câmera foi assistida só por parte do
-  tempo conta o provisionado das horas sem espectador. A correção durável é uma coluna de origem na janela (ver
-  [[Câmeras - Streaming - Banda e bitrate]]).
-- **Exclusão do provisionado é heurística.** Linha cujo valor casa com um bitrate configurado atual da câmera é
-  tratada como aproximação; perfil reconfigurado depois da gravação deixa a linha passar.
+- **Consumo inflado nos períodos em dias e exclusão do provisionado por heurística.** Linha cujo valor casa com um
+  bitrate configurado atual da câmera é tratada como aproximação, e perfil reconfigurado depois da gravação deixa a
+  linha passar. A correção durável está em [[Câmeras - Dashboard - Pendências]].
 - **Campo volátil no gate por valor.** O gate hasheia o payload inteiro; `rangeStart` e `rangeEnd` do mapa, que
   derivam do relógio, ficam fora do hash em `dashboard-value-gate.util.ts`. Widget novo com campo derivado do
   relógio precisa entrar nesse arquivo, senão o gate emite a cada composição.
-- **Rotas fora do push.** `bandwidth-comparison`, `connectivity/degradation`, `incident-severity` e o snapshot
-  `bandwidth` não têm valor no enum nem `case` em `DashboardWidgetComposer.queryFor`. Só a comparação é usada
-  pela tela, sob demanda ao abrir o modal. `getDegradation` e `getIncidentSeverity` existem em
-  `cameras-dashboard.service.ts` sem chamador: as duas rotas vivem no backend sem tela.
-- **Teste de superfície não barra rota sem decorator.** O pertencimento é por rota, então uma rota nova sem
-  `@RequireSystemDuty()` não é pega pelo `authorization-surface.spec.ts`.
+- **Rotas fora do push.** Só a comparação de banda é usada pela tela, sob demanda ao abrir o modal. O que falta está
+  em [[Câmeras - Dashboard - Pendências]].
 - **Truncamento da população.** As tabelas de conectividade leem até 5000 câmeras por sistema; acima disso a
   população é truncada e um aviso vai para o log.
-- **Rota de trânsito ignorada na comparação.** `comparisonMode` conta só entidades resolvíveis, o que diverge do
-  contrato quando o usuário escolhe uma rota e uma área; a decisão está aberta na spec do módulo.
 - **`/api/dashboard` sem prefixo de serviço.** O `ms-cameras` ocupa `/api/dashboard` na raiz do Kong. Não há
   colisão hoje (o dashboard de alarmes mora em `/api/alarms`), mas o isolamento por serviço do resto do Kong não
   vale aqui.
-- **Limiares sem revisão de produto.** As faixas de latência (80, 130 e 180 ms) e de degradação (10% e 50%)
-  aguardam revisão de produto, como dizem os comentários do código.
 
-> [!warning] Spec do push defasada no repositório
-> Na spec atômica do push ao vivo, a DR-11 ainda descreve a validação de pertencimento no WebSocket como dívida,
-> e a DR-10 diz que o bitrate é comparado com 3 casas decimais. O código já valida o pertencimento e compara a
-> 0,1 Mbps.
+O que ainda falta fazer no Dashboard está em [[Câmeras - Dashboard - Pendências]].
 
 ## Cobertura do requisito do edital
 
@@ -286,10 +271,8 @@ Cobertura do RF-DSH-01 de `docs/modules/cameras.md`.
 | Conectividade (online, offline, intermitência, latência, uptime) | Na tela |
 | Operacional (tipo, capacidade analítica, mapa, heatmap de eventos) | Na tela |
 | Rede (banda consumida e disponível, por área, comparação) | Na tela |
-| Degradação de vídeo por câmera | Fora da tela: a rota da tabela de degradação existe sem card, e o KPI `streamDegradation` mede conexão, não vídeo |
-| Incidentes abertos por severidade | Rota `incident-severity` sem card |
-| MTTR e hotspots | Não existem no backend, no frontend nem nos contratos |
-| Exportação XLSX e CSV | Só frontend: `ConnectivityExportService` gera o arquivo da lista de conectividade já carregada (CSV direto, XLSX por `exceljs` sob demanda), sem rota de exportação |
+
+O que não está na tela (degradação de vídeo, incidentes por severidade, MTTR e hotspots, rota de exportação) está em [[Câmeras - Dashboard - Pendências]].
 
 ## Glossário
 

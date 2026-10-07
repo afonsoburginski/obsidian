@@ -112,7 +112,7 @@ Ele é a regra que o Attlas deve seguir. Onde o Attlas diverge, e a posição re
 
 Cada linha da tabela acima é uma pendência: alinhar o cálculo do Attlas ao documento dos gestores. Ligar
 um servidor de verdade tem as próprias pendências em
-[[Analítico - Neural Labs - Arquitetura e estratégias#Pendências]].
+[[Analítico - Neural Labs - Pendências]].
 
 ## Glossário
 

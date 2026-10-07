@@ -263,24 +263,11 @@ eles esperam até 20 s e, se falham, derrubam o handler para o Kafka reentregar.
 
 ## Armadilhas conhecidas
 
-- **A exportação para nas primeiras 100 linhas.** O handler pede lotes de `INCIDENTS_EXPORT_BATCH_SIZE`
-  (500) e encerra quando um lote volta menor que 500, mas o `ListCameraEventsHandler` limita `pageSize` a
-  `CameraEventLogConfig.MAX_LIMIT` (100). Com mais de 100 incidentes no filtro, o arquivo sai com 100 linhas,
-  enquanto o teto de 20 000 é conferido contra o total real.
-- **Report duplicado abre dois incidentes.** `createReportedIncident` sempre insere, o
-  `ReportCameraEventOccurrenceHandler` não confere se o evento já tem incidente, e o botão "Reportar
-  ocorrência" de `camera-event-detail.page.html` fica sempre clicável.
-- **Duas corridas sem índice que as feche.** Falta índice parcial único em `(cameraId, correlationId)` para a
-  deduplicação do ingest e um `UNIQUE` parcial por `correlationKey` com `resolvedAt IS NULL` para impedir dois
-  `TENTATIVE` da mesma chave.
-- **Ingestão e correlação descartam com log.** As duas não publicam na fila-morta `attlas.dlq.cameras`, que
-  outros consumidores do serviço já usam; a mensagem descartada só deixa a linha de log.
 - **Parâmetros de correlação são constantes.** Mudar janela ou limiar de `CorrelationConfig` exige deploy.
-- **Comentários do código que contradizem o comportamento.** `reading/dtos/list-camera-events.dto.ts` diz que
-  `area` "not yet enforced", mas o filtro é aplicado e coberto por teste. O docblock de `safeAppendEvent` em
-  `health/workers/camera-health.worker.ts` diz que `health` não publica, mas o par correlacionável publica. O
-  comentário em `record-camera-event.service.ts` diz que `ANALYTICS_INCIDENT` fica fora do emissor de alarme,
-  mas o emissor já alarma os três tipos mapeados.
+
+O que falta corrigir (exportação cortada em 100 linhas, report duplicado, índices que fecham as corridas, fila-morta
+da ingestão e da correlação, comentários que contradizem o código) está em
+[[Câmeras - Eventos, incidentes e alarmes - Pendências]].
 
 ## Glossário
 
