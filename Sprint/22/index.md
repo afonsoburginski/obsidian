@@ -20,16 +20,16 @@ Escopo dev backend-only: o frontend de "Saúde da Câmera" já está construído
 
 ## Tarefas
 
-| #   | Task                                                         | Frente    | Card          | PR                                                         | Status                  |
+| ID | Task                                                         | Frente    | Card          | PR                                                         | Status                  |
 | --- | ------------------------------------------------------------ | --------- | ------------- | ---------------------------------------------------------- | ----------------------- |
-| 1   | [[SOFTWARE-1889 - WebRTC travamento (dívidas técnicas)]]     | Streaming | SOFTWARE-1889 | [#566](https://github.com/atmanadmin/attlas-2026/pull/566) | ✅ MERGED 30/06 · Closed |
-| 2   | [[SOFTWARE-1920 - Busca de câmeras por topologia]]           | Topologia | SOFTWARE-1920 | [#574](https://github.com/atmanadmin/attlas-2026/pull/574) | ✅ MERGED 01/07 · Closed |
-| 3   | [[SOFTWARE-1921 - Eventos de câmera (auto + duração)]]       | Eventos   | SOFTWARE-1921 | [#575](https://github.com/atmanadmin/attlas-2026/pull/575) | ✅ MERGED 01/07 · Closed |
-| 4   | [[SOFTWARE-1922 - Janelas de 5 min + latência + rollup 90d]] | Saúde     | SOFTWARE-1922 | [#576](https://github.com/atmanadmin/attlas-2026/pull/576) | ✅ MERGED 02/07 · Closed |
-| 5   | [[SOFTWARE-1923 - Bitrate histórico + TTFF]]                 | Saúde     | SOFTWARE-1923 | [#577](https://github.com/atmanadmin/attlas-2026/pull/577) | ✅ MERGED 03/07 · Closed |
-| 6   | [[SOFTWARE-1924 - getHealthMetrics + série + SLA]]           | Saúde     | SOFTWARE-1924 | [#578](https://github.com/atmanadmin/attlas-2026/pull/578) | ✅ MERGED 01/07 · Closed |
-| 7   | [[SOFTWARE-1990 - Streaming público (LL-HLS + watchdog)]]    | Streaming | SOFTWARE-1990 | [#630](https://github.com/atmanadmin/attlas-2026/pull/630) | ✅ MERGED 03/07 · Closed |
-| +   | [[CROSS-032 - Fundação WebRTC público via TURN]]             | Streaming | CROSS-032     | [#597](https://github.com/atmanadmin/attlas-2026/pull/597) | ✅ MERGED 01/07          |
+| S22-01 | [[S22-01 - Câmeras - Streaming - Travamento do WebRTC (dívidas técnicas)]]     | Streaming | SOFTWARE-1889 | [#566](https://github.com/atmanadmin/attlas-2026/pull/566) | ✅ MERGED 30/06 · Closed |
+| S22-02 | [[S22-02 - Câmeras - Cadastro - Busca de câmeras por topologia]]           | Topologia | SOFTWARE-1920 | [#574](https://github.com/atmanadmin/attlas-2026/pull/574) | ✅ MERGED 01/07 · Closed |
+| S22-03 | [[S22-03 - Câmeras - Eventos, incidentes e alarmes - Eventos de câmera (auto e duração)]]       | Eventos   | SOFTWARE-1921 | [#575](https://github.com/atmanadmin/attlas-2026/pull/575) | ✅ MERGED 01/07 · Closed |
+| S22-04 | [[S22-04 - Câmeras - Saúde e monitoramento - Janelas de 5 min, latência e rollup de 90 dias]] | Saúde     | SOFTWARE-1922 | [#576](https://github.com/atmanadmin/attlas-2026/pull/576) | ✅ MERGED 02/07 · Closed |
+| S22-05 | [[S22-05 - Câmeras - Saúde e monitoramento - Bitrate histórico e TTFF]]                 | Saúde     | SOFTWARE-1923 | [#577](https://github.com/atmanadmin/attlas-2026/pull/577) | ✅ MERGED 03/07 · Closed |
+| S22-06 | [[S22-06 - Câmeras - Saúde e monitoramento - Métricas de saúde (getHealthMetrics), série e SLA]]           | Saúde     | SOFTWARE-1924 | [#578](https://github.com/atmanadmin/attlas-2026/pull/578) | ✅ MERGED 01/07 · Closed |
+| S22-07 | [[S22-07 - Câmeras - Streaming - Streaming público (LL-HLS e watchdog)]]    | Streaming | SOFTWARE-1990 | [#630](https://github.com/atmanadmin/attlas-2026/pull/630) | ✅ MERGED 03/07 · Closed |
+| +   | [[S22-08 - Câmeras - Streaming - Fundação do WebRTC público via TURN]]             | Streaming | CROSS-032     | [#597](https://github.com/atmanadmin/attlas-2026/pull/597) | ✅ MERGED 01/07          |
 
 Contexto compartilhado do bloco Saúde: [[Saúde da câmera - regras de negócio e contratos]].
 

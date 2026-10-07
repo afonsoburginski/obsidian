@@ -8,7 +8,7 @@ aliases:
   - "Attlas - Sprint 33"
   - "Sprint 33 - o que entrega"
 sprint: Sprint 33 (14/9/26 - 20/9/26)
-status: "CRIADA em 09/09 como a semana do prazo externo de 18/09. REPLANEJADA em 12/09 depois do merge da #3328 (console do Analítico consolidado): virou sprint de acabamento, com os gaps levantados na própria PR. AMPLIADA em 14/09 com o estudo de caso do analítico servidor e do vídeo, a pedido do usuário: 22 tasks, uma nota e uma PR cada, 90 pts, em ordem de execução. FECHADA em 14/09 à noite: as 22 tasks têm PR aberta, 7 delas em stack registrada no GitHub, num total de 31 PRs. ATUALIZADA em 15/09: o usuário decidiu mergear as 34 PRs em develop ANTES da validação, via PR intermediária #3573 (merge commits preservados, branches de origem deletadas). A conferência agora roda numa PR guarda-chuva só, #3596, ver [[Validação - as 34 PRs, uma a uma]]."
+status: "CRIADA em 09/09 como a semana do prazo externo de 18/09. REPLANEJADA em 12/09 depois do merge da #3328 (console do Analítico consolidado): virou sprint de acabamento, com os gaps levantados na própria PR. AMPLIADA em 14/09 com o estudo de caso do analítico servidor e do vídeo, a pedido do usuário: 22 tasks, uma nota e uma PR cada, 90 pts, em ordem de execução. FECHADA em 14/09 à noite: as 22 tasks têm PR aberta, 7 delas em stack registrada no GitHub, num total de 31 PRs. ATUALIZADA em 15/09: o usuário decidiu mergear as 34 PRs em develop ANTES da validação, via PR intermediária #3573 (merge commits preservados, branches de origem deletadas). A conferência agora roda numa PR guarda-chuva só, #3596, ver [[S33-01 - Processo - Validação - As 34 PRs, uma a uma]]."
 atualizado: 2026-09-23
 ---
 
@@ -17,7 +17,7 @@ atualizado: 2026-09-23
 > **Objetivo da PR [#3596](https://github.com/atmanadmin/attlas-2026/pull/3596) (validação, 15/09)**:
 > validar e testar, um por um, **tudo o que esta sprint entregou** (as 34 PRs, já mergeadas em
 > `develop`). Não é escopo novo - é a bateria de testes da sprint inteira, num lugar só. Detalhe em
-> [[Validação - as 34 PRs, uma a uma]].
+> [[S33-01 - Processo - Validação - As 34 PRs, uma a uma]].
 
 Porta de entrada da semana de **14 a 20/09**. O prazo externo do módulo Analítico é **18/09**,
 quinta-feira desta janela, e a PR #3328 (console do Analítico consolidado) entrou na develop em 12/09
@@ -85,30 +85,30 @@ fontes, em [[Analítico - Estudo de caso de captura, inferência e sincronizaç�
 
 ## As tasks, em ordem de execução
 
-| # | Task (1 task = 1 PR) | Natureza | Pts | Estado |
+| ID | Task (1 task = 1 PR) | Natureza | Pts | Estado |
 | --- | --- | --- | --- | --- |
-| 1 | [[CI - job de teste unitário e suíte dos projetos da 3328\|CI ganha job de teste unitário, e a suíte da #3328 volta ao verde]] | `[Infra]` | 5 | PR #3402 (só a suíte; job de CI revertido) |
-| 2 | [[Infra - a VM do EC2 é t3a.2xlarge, burstable, e não 16 núcleos\|A VM é uma t3a.2xlarge burstable: redimensionar para o analítico rodar 24/7]] | `[Infra]` | 2 | PR #3431 aberta |
-| 3 | [[Analítico servidor - orçamento de inferência na CPU\|Analítico servidor: a inferência passa a caber num orçamento de CPU]] | `[Back]` | 5 | stack #3434: #3432 + #3433 |
-| 4 | [[Analítico servidor - captura direta da câmera com perfil de analítico\|Analítico servidor: o YOLO puxa a câmera direto, e a PTZ ganha os dois analíticos]] | `[Full]` | 8 | stack #3436: #3437 + #3465 + #3482 |
-| 5 | [[Detecção - sincronização exata da caixa com o vídeo\|Detecção: caixa presa ao tempo de captura do quadro, relógio da câmera nas duas pontas]] | `[Full]` | 8 | stack #3473: #3438 + #3472 + #3489 |
-| 6 | [[VMS - tiles pretos e vídeo travando no videowall\|VMS: tiles pretos, vídeo travando e atraso alto no videowall]] | `[Full]` | 8 | stack #3470: #3439 + #3469 + #3487 |
-| 7 | [[Entrega de vídeo - sessão compartilhada, réplicas e a pergunta da CDN\|Entrega de vídeo: sessão por câmera e perfil, réplicas do MediaMTX, decisão sobre CDN]] | `[Full]` | 5 | stack #3481: #3440 + #3480 |
-| 8 | [[Detecção - cor e nome da região não persistem\|Detecção: alterar região, cor e nome não persiste]] | `[Full]` | 3 | PR #3441 |
-| 9 | [[Detecção - ocupação da câmera embarcada sem detector vinculado\|Ocupação da câmera embarcada descartada por falta de detector vinculado]] | `[Full]` | 3 | PR #3443 |
-| 10 | [[Detecção - specs dos componentes, utilitários e serviços novos\|Specs dos 15 componentes, utilitários e serviços novos da Detecção]] | `[Front]` | 8 | stack #3475: #3464 + #3474 + #3492 |
-| 11 | [[Analítico embarcado - broker por ambiente e consumidor sem atraso\|Broker certo por ambiente e consumidor que não acumula atraso]] | `[Infra]` | 5 | stack #3491: #3471 + #3490 |
-| 12 | [[Detecção - renomear a caixa e atualizar a UF-053 do relógio\|Renomear a caixa e atualizar a UF-053 do relógio]] | `[Front]` | 2 | PR #3444 |
-| 13 | [[Detecção - uma lista só de classes de objeto nos quatro idiomas\|Uma lista só de classes de objeto, nos quatro idiomas]] | `[Front]` | 3 | PR #3452 |
-| 14 | [[Permissões - 403 do resolver fora e o timeout que ninguém lê\|403 quando o resolver está fora, e o timeout que ninguém lê]] | `[Back]` | 3 | PR #3453 |
-| 15 | [[Instâncias - ler uma unidade sem compor a frota\|Ler uma unidade de analítico sem compor a frota inteira]] | `[Back]` | 5 | PR #3460 |
-| 16 | [[Laço virtual - consolidar o overlay e apagar a cópia da ACOM\|Consolidar o overlay do laço e apagar a cópia da ACOM]] | `[Front]` | 5 | stack #3479: #3462 + #3478 |
-| 17 | [[Ambiente - infra up volta a subir a infraestrutura inteira\|`infra:up` volta a subir a infraestrutura inteira]] | `[Infra]` | 2 | PR #3447 |
-| 18 | [[Métricas do Laço Virtual - quinze miniaturas por visita\|Métricas do Laço Virtual paga quinze miniaturas por visita]] | `[Front]` | 3 | PR #3459 |
-| 19 | [[Detecção - aferir a predição em frenagem e conversão\|Aferir a predição do overlay em frenagem e conversão]] | `[Front]` | 3 | PR #3476 |
-| 20 | [[Câmeras - miniatura fora do ar para de poluir o console\|Miniatura fora do ar para de poluir o console]] | `[Front]` | 2 | PR #3451 |
-| 21 | [[Incidentes - contadores OPEN e DETECTED na fila\|Contadores `OPEN` e `DETECTED` na fila de incidentes]] | `[Full]` | 1 | PR #3449 |
-| 22 | [[i18n - paridade das quatro locales do Analítico\|Paridade das quatro locales depois das chaves novas]] | `[Front]` | 1 | PR #3461 |
+| S33-02 | [[S33-02 - Infraestrutura - CI - Job de teste unitário e suíte dos projetos da 3328\|CI ganha job de teste unitário, e a suíte da #3328 volta ao verde]] | `[Infra]` | 5 | PR #3402 (só a suíte; job de CI revertido) |
+| S33-03 | [[S33-03 - Infraestrutura - Ambientes - A VM do EC2 é t3a.2xlarge, burstable, e não 16 núcleos\|A VM é uma t3a.2xlarge burstable: redimensionar para o analítico rodar 24/7]] | `[Infra]` | 2 | PR #3431 aberta |
+| S33-04 | [[S33-04 - Analítico - Servidor - Orçamento de inferência na CPU\|Analítico servidor: a inferência passa a caber num orçamento de CPU]] | `[Back]` | 5 | stack #3434: #3432 + #3433 |
+| S33-05 | [[S33-05 - Analítico - Servidor - Captura direta da câmera com perfil de analítico\|Analítico servidor: o YOLO puxa a câmera direto, e a PTZ ganha os dois analíticos]] | `[Full]` | 8 | stack #3436: #3437 + #3465 + #3482 |
+| S33-06 | [[S33-06 - Analítico - Detecção - Sincronização exata da caixa com o vídeo\|Detecção: caixa presa ao tempo de captura do quadro, relógio da câmera nas duas pontas]] | `[Full]` | 8 | stack #3473: #3438 + #3472 + #3489 |
+| S33-07 | [[S33-07 - Câmeras - VMS - Tiles pretos e vídeo travando no videowall\|VMS: tiles pretos, vídeo travando e atraso alto no videowall]] | `[Full]` | 8 | stack #3470: #3439 + #3469 + #3487 |
+| S33-08 | [[S33-08 - Câmeras - Streaming - Sessão compartilhada, réplicas e a pergunta da CDN\|Entrega de vídeo: sessão por câmera e perfil, réplicas do MediaMTX, decisão sobre CDN]] | `[Full]` | 5 | stack #3481: #3440 + #3480 |
+| S33-09 | [[S33-09 - Analítico - Detecção - Cor e nome da região não persistem\|Detecção: alterar região, cor e nome não persiste]] | `[Full]` | 3 | PR #3441 |
+| S33-10 | [[S33-10 - Analítico - Detecção - Ocupação da câmera embarcada sem detector vinculado\|Ocupação da câmera embarcada descartada por falta de detector vinculado]] | `[Full]` | 3 | PR #3443 |
+| S33-11 | [[S33-11 - Analítico - Detecção - Specs dos componentes, utilitários e serviços novos\|Specs dos 15 componentes, utilitários e serviços novos da Detecção]] | `[Front]` | 8 | stack #3475: #3464 + #3474 + #3492 |
+| S33-12 | [[S33-12 - Analítico - Embarcado - Broker por ambiente e consumidor sem atraso\|Broker certo por ambiente e consumidor que não acumula atraso]] | `[Infra]` | 5 | stack #3491: #3471 + #3490 |
+| S33-13 | [[S33-13 - Analítico - Detecção - Renomear a caixa e atualizar a spec do relógio\|Renomear a caixa e atualizar a UF-053 do relógio]] | `[Front]` | 2 | PR #3444 |
+| S33-14 | [[S33-14 - Analítico - Detecção - Uma lista só de classes de objeto nos quatro idiomas\|Uma lista só de classes de objeto, nos quatro idiomas]] | `[Front]` | 3 | PR #3452 |
+| S33-15 | [[S33-15 - Câmeras - Permissões - 403 do resolver fora e o timeout que ninguém lê\|403 quando o resolver está fora, e o timeout que ninguém lê]] | `[Back]` | 3 | PR #3453 |
+| S33-16 | [[S33-16 - Analítico - Instâncias - Ler uma unidade sem compor a frota\|Ler uma unidade de analítico sem compor a frota inteira]] | `[Back]` | 5 | PR #3460 |
+| S33-17 | [[S33-17 - Analítico - Laço virtual - Consolidar o overlay e apagar a cópia da ACOM\|Consolidar o overlay do laço e apagar a cópia da ACOM]] | `[Front]` | 5 | stack #3479: #3462 + #3478 |
+| S33-18 | [[S33-18 - Infraestrutura - Ambientes - Infra up volta a subir a infraestrutura inteira\|`infra:up` volta a subir a infraestrutura inteira]] | `[Infra]` | 2 | PR #3447 |
+| S33-19 | [[S33-19 - Analítico - Métricas - Quinze miniaturas por visita do Laço Virtual\|Métricas do Laço Virtual paga quinze miniaturas por visita]] | `[Front]` | 3 | PR #3459 |
+| S33-20 | [[S33-20 - Analítico - Detecção - Aferir a predição em frenagem e conversão\|Aferir a predição do overlay em frenagem e conversão]] | `[Front]` | 3 | PR #3476 |
+| S33-21 | [[S33-21 - Câmeras - Streaming - Miniatura fora do ar para de poluir o console\|Miniatura fora do ar para de poluir o console]] | `[Front]` | 2 | PR #3451 |
+| S33-22 | [[S33-22 - Analítico - Incidentes - Contadores OPEN e DETECTED na fila\|Contadores `OPEN` e `DETECTED` na fila de incidentes]] | `[Full]` | 1 | PR #3449 |
+| S33-23 | [[S33-23 - Analítico - i18n - Paridade das quatro locales do Analítico\|Paridade das quatro locales depois das chaves novas]] | `[Front]` | 1 | PR #3461 |
 
 **90 pts em 22 tasks.** Cada linha é uma nota própria e uma PR própria. Os itens que se
 complementam entraram juntos: o 403 do resolver com o timeout que ninguém lê, o broker com o atraso do
@@ -165,23 +165,23 @@ branches de origem deletadas). A validação consolidada foi executada na PR gua
 guarda-chuva só, [#3596](https://github.com/atmanadmin/attlas-2026/pull/3596)
 (`shared/chore/NO-CARD-sprint33-validation`) - achado vira commit ali, não branch nova por PR. A
 lista de conferência, uma linha por PR com o que tem de funcionar e como provar, está em
-[[Validação - as 34 PRs, uma a uma]].
+[[S33-01 - Processo - Validação - As 34 PRs, uma a uma]].
 
 
 ## Outras notas desta pasta
 
 Notas que existiam na pasta e não estavam ligadas a este índice até a revisão de 23/09.
 
-- [[Detecção - os parâmetros do incidente não atravessavam o device]]
-- [[Métricas - por que as telas não mostram nada no dev2]]
-- [[Telas do Analítico - mapa do Laço Virtual e paginação dos Incidentes]] - [Front] Telas do Analítico - mapa do Laço Virtual, Incidentes paginados, laço que acende por ocupação e sessão presa ao endereço antigo
+- [[S33-24 - Analítico - Detecção - Os parâmetros do incidente não atravessavam o device]]
+- [[S33-25 - Analítico - Métricas - Por que as telas não mostram nada no dev2]]
+- [[S33-26 - Analítico - Telas - Mapa do Laço Virtual e paginação dos Incidentes]] - [Front] Telas do Analítico - mapa do Laço Virtual, Incidentes paginados, laço que acende por ocupação e sessão presa ao endereço antigo
 
 ## Ver também
 
-[[Detecção - a caixa desliza a sessenta quadros por segundo]] ·
-[[Registro - o EC2 dev alinhado com a bancada local em 17 de setembro]] ·
-[[Streaming - a queda para HLS e a tela preta que vinha com ela]] ·
-[[Validação - as 34 PRs, uma a uma]] ·
+[[S33-27 - Analítico - Detecção - A caixa desliza a sessenta quadros por segundo]] ·
+[[S33-28 - Infraestrutura - Ambientes - O EC2 dev alinhado com a bancada local em 17 de setembro]] ·
+[[S33-29 - Câmeras - Streaming - A queda para HLS e a tela preta que vinha com ela]] ·
+[[S33-01 - Processo - Validação - As 34 PRs, uma a uma]] ·
 [[Analítico - Estudo de caso de captura, inferência e sincronização]] ·
-[[Detecção do Analítico - gaps para polir]] · [[Analítico - Pendências|Analítico - O que falta para fechar o módulo]] ·
+[[S33-30 - Analítico - Detecção - Gaps para polir]] · [[Analítico - Pendências|Analítico - O que falta para fechar o módulo]] ·
 [[Attlas - Sprint 32]] · [[Analítico]] · [[Sprints - índice raiz]]

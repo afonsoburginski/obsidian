@@ -42,11 +42,11 @@ Fonte de verdade: **este vault**. O ClickUp é publicação para o gestor, não 
 ## Fora de sprint
 
 - [[Sem prazo (backlog)]] - cards sem data de entrega e o reescopo datado de cada um, incluindo a
-  task [[CI - runner profissional em Kubernetes com ARC]], que entrou em 23/09.
+  task [[SP-01 - Infraestrutura - CI - Runner profissional em Kubernetes com ARC]], que entrou em 23/09.
 
 ## Roteiro de reunião
 
-- [[Planning - Sprint 31 e 32]] - fechamento da Sprint 31 e proposta de escopo da 32, escrito em 04/09
+- [[S32-11 - Processo - Planejamento - Sprints 31 e 32]] - fechamento da Sprint 31 e proposta de escopo da 32, escrito em 04/09
   para a reunião de planejamento.
 
 ## Convenção desta pasta

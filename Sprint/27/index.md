@@ -24,10 +24,10 @@ do detector.
 
 ## Comprometido (16 pts)
 
-| # | Card | Pts | Entrega | Dia |
+| ID | Card | Pts | Entrega | Dia |
 | --- | --- | --- | --- | --- |
-| 1 | [[SOFTWARE-2385 - Alimentação de vídeo do analítico em container\|2385]] como o vídeo chega no analítico | 3 | ADR com número medido | Seg |
-| 2 | [[SOFTWARE-2386 - Especificação do analítico de vídeo em container\|2386]] especificação do analítico em container | 3 | `SPEC.md` mais MOD | Seg PM |
+| SP-08 | [[SP-08 - Analítico - Servidor - Alimentação de vídeo do analítico em container\|2385]] como o vídeo chega no analítico | 3 | ADR com número medido | Seg |
+| SP-09 | [[SP-09 - Analítico - Servidor - Especificação do analítico de vídeo em container\|2386]] especificação do analítico em container | 3 | `SPEC.md` mais MOD | Seg PM |
 | 3 | 2394 serviço, imagem e ingestão do stream | 3 | container de pé decodificando frame | Ter |
 | 4 | 2395 detecção de objetos por frame | 3 | inferência com caixa e classe | Qua |
 | 5 | 2396 laço virtual e ocupação da região | 2 | caixa vira presença | Qui |
@@ -52,10 +52,10 @@ com a spec escrita e a PR em draft aberta, para `in progress` - ver "PRs abertas
 | 2387 especificação do connector de laço virtual | 3 | contrato de ocupação publicado |
 | 2390 connector: ocupação vira evento de detector | 3 | a spec acima |
 | 2389 vínculo entre região da câmera e endereço de detector | 3 | a spec acima |
-| [[SOFTWARE-2200 - Prova de campo do analítico em container\|2200]] prova de campo até a timeline | 2 | toda a cadeia |
+| [[S32-01 - Analítico - Servidor - Prova de campo do analítico em container\|2200]] prova de campo até a timeline | 2 | toda a cadeia |
 | 2388 analítico embarcado no mesmo contrato de ocupação | 2 | contrato de ocupação definido pelo container |
 | 2391 fechar as pendências do analítico ao vivo embarcado | 2 | nada, é resíduo do 2134 |
-| [[SOFTWARE-2392 - Recorte da atuação via ACOM (docs-only)\|2392]] recorte da atuação via ACOM | 2 | alinhamento com o squad de controladores |
+| [[SP-15 - Analítico - ACOM - Recorte da atuação via ACOM (docs-only)\|2392]] recorte da atuação via ACOM | 2 | alinhamento com o squad de controladores |
 
 **Fora, com motivo**: renome do mosaico para VMS e integração do videowall H9 (escopados para outra
 sprint, desenho preservado em [[VMS]] e [[Videowall externo (NovaStar H9)]]), atuação com placa e contato
@@ -72,16 +72,16 @@ empurram nenhum dos seis comprometidos):
 
 | Card | Espera o quê |
 | --- | --- |
-| [[SOFTWARE-2005 - Permissões nas rotas de câmeras - mapa das 86 rotas\|2005]] mapa das 86 rotas de câmeras | nada, pronto para começar |
-| [[SOFTWARE-2400 - Aplicar enforcement de permissão nas rotas de câmeras\|2400]] aplicar o enforcement | tabela de decisão do 2005 |
+| [[S29-16 - Câmeras - Permissões - Mapa das 86 rotas de câmeras\|2005]] mapa das 86 rotas de câmeras | nada, pronto para começar |
+| [[S29-17 - Câmeras - Permissões - Enforcement de permissão nas rotas de câmeras\|2400]] aplicar o enforcement | tabela de decisão do 2005 |
 
 **Sem prazo mesmo** (status `backlog` - pausados desde 27/07, sem previsão de retomada, ver [[Sem prazo (backlog)]]):
 
 | Card | Espera o quê |
 | --- | --- |
-| [[SOFTWARE-2314 - Performance do streaming de vídeo\|2314]] performance do streaming | instrumentação por câmera (item 2 do 1363) |
-| [[SOFTWARE-2315 - Comparativo Attlas 25x26 - video wall\|2315]] comparativo video wall | baseline do 2314 |
-| [[SOFTWARE-2316 - Comparativo Attlas 25x26 - arquitetura de hardware e streaming\|2316]] comparativo hardware/streaming | baseline do 2314 |
+| [[SP-02 - Câmeras - Streaming - Performance do streaming de vídeo\|2314]] performance do streaming | instrumentação por câmera (item 2 do 1363) |
+| [[SP-03 - Câmeras - Videowall - Comparativo Attlas 25x26 do video wall\|2315]] comparativo video wall | baseline do 2314 |
+| [[SP-04 - Câmeras - Streaming - Comparativo Attlas 25x26 de arquitetura de hardware e streaming\|2316]] comparativo hardware/streaming | baseline do 2314 |
 
 ## A cadeia, elo por elo
 
@@ -101,7 +101,7 @@ lado de cima da cadeia: o analítico.
 ## As decisões que a especificação tem que fechar
 
 **Fechadas em 03/08** (ver seção "Validação de 03/08" e a nota do
-[[SOFTWARE-2386 - Especificação do analítico de vídeo em container|2386]] para o texto completo).
+[[SP-09 - Analítico - Servidor - Especificação do analítico de vídeo em container|2386]] para o texto completo).
 Nenhum card de código começa antes disso, e elas mudam o custo de todos os outros:
 
 1. **Runtime e onde mora.** Reusar o esqueleto `ms-virtual-loop` em NestJS, como o resto do monorepo, ou
@@ -128,7 +128,7 @@ O analítico em container vai ser feito, mas **como o vídeo chega nele de forma
 não estava decidido**. Por isso o ADR é o card 1: cada instância de analítico é um consumidor de vídeo a
 mais por câmera, e o Attlas já se machucou nesse eixo com relay preso mantendo `ffmpeg` vivo por
 `viewerCount` que nunca zerava. Opções, o que medir e o ciclo de vida da sessão sem espectador em
-[[SOFTWARE-2385 - Alimentação de vídeo do analítico em container]].
+[[SP-08 - Analítico - Servidor - Alimentação de vídeo do analítico em container]].
 
 ## Fato que entrou depois do replanejamento: a fase 2 do detector raw mergeou
 
@@ -158,7 +158,7 @@ PROJ-009, com relatório de teste de campo). Consequências:
    `ms-traffic-model` já tem `controllerId`, `slot`, `channel` e `type` com `VIRTUAL_LOOP`, mas não tem
    índice linear, não é endpoint próprio e não existe hoje um cadastro autoritativo de detector em
    lugar nenhum do repositório (o próprio `ms-detector-history` mantém um cadastro provisório enquanto
-   isso). Falta o vínculo com câmera e região, que é o [[SOFTWARE-2389 - Vínculo região da câmera para endereço de detector|2389]],
+   isso). Falta o vínculo com câmera e região, que é o [[SP-12 - Analítico - Laço virtual - Vínculo região da câmera para endereço de detector|2389]],
    e a ausência de cadastro autoritativo em outro lugar reforça o desvio de autoridade para o `ms-cameras`.
 
 ## Escopo de squad
@@ -174,7 +174,7 @@ A nota de daily do dia foi absorvida aqui, e o desenho técnico de cada item viv
 Quatro pontos saíram da reunião:
 
 1. **O analítico de vídeo começa na semana de 03/08.** É o que virou o quadro acima, partindo do que já
-   existia em [[SOFTWARE-2200 - Prova de campo do analítico em container]] e do analítico ao vivo
+   existia em [[S32-01 - Analítico - Servidor - Prova de campo do analítico em container]] e do analítico ao vivo
    embarcado, entregue no card 2134.
 2. **Máquina virtual com acesso ao processador de videowall de Quito, a requisitar.** O gestor vai
    solicitar acesso remoto a uma das máquinas que já alcançam o equipamento. É o que destrava as
@@ -267,20 +267,20 @@ da agregação), então os dois mergeiam sem conflito em qualquer ordem.
 
 | Card | PR | Conteúdo |
 | --- | --- | --- |
-| [[SOFTWARE-2385 - Alimentação de vídeo do analítico em container\|2385]] | [#1342](https://github.com/atmanadmin/attlas-2026/pull/1342) | CROSS-043 (ADR) + renumeração CROSS-032→044 |
-| [[SOFTWARE-2386 - Especificação do analítico de vídeo em container\|2386]] | [#1343](https://github.com/atmanadmin/attlas-2026/pull/1343) | SPEC + MOD-001 do `ms-virtual-loop` + detectors.md/cameras.md |
-| [[SOFTWARE-2387 - Especificação do connector de laço virtual\|2387]] | [#1345](https://github.com/atmanadmin/attlas-2026/pull/1345) | Bootstrap SDD do `ms-connector-virtual-loop` |
-| [[SOFTWARE-2394 - Analítico em container - serviço, imagem e ingestão\|2394]] | [#1346](https://github.com/atmanadmin/attlas-2026/pull/1346) | INT-001 ingestão |
-| [[SOFTWARE-2395 - Analítico em container - detecção por frame\|2395]] | [#1347](https://github.com/atmanadmin/attlas-2026/pull/1347) | INT-002 detecção |
-| [[SOFTWARE-2396 - Analítico em container - laço virtual e ocupação\|2396]] | [#1349](https://github.com/atmanadmin/attlas-2026/pull/1349) | PROJ-001 ocupação |
-| [[SOFTWARE-2397 - Analítico em container - publicar ocupação no Kafka\|2397]] | [#1350](https://github.com/atmanadmin/attlas-2026/pull/1350) | PROJ-002 publicação + detectors.md seção 4.4 |
-| [[SOFTWARE-2398 - Escala do analítico - câmeras por instância\|2398]] | [#1351](https://github.com/atmanadmin/attlas-2026/pull/1351) | MOD-002 escala |
-| [[SOFTWARE-2389 - Vínculo região da câmera para endereço de detector\|2389]] | [#1352](https://github.com/atmanadmin/attlas-2026/pull/1352) | MOD-015 + UC-048 vínculo região-detector |
-| [[SOFTWARE-2390 - Connector de laço virtual - ocupação vira evento de detector\|2390]] | [#1353](https://github.com/atmanadmin/attlas-2026/pull/1353) | PROJ-001 do connector (publica raw) |
-| [[SOFTWARE-2388 - Analítico embarcado no mesmo contrato de ocupação\|2388]] | [#1354](https://github.com/atmanadmin/attlas-2026/pull/1354) | PROJ-018 embarcado no contrato comum |
-| [[SOFTWARE-2391 - Pendências do analítico embarcado\|2391]] | [#1355](https://github.com/atmanadmin/attlas-2026/pull/1355) | Higiene do domínio embarcado |
-| [[SOFTWARE-2392 - Recorte da atuação via ACOM (docs-only)\|2392]] | [#1356](https://github.com/atmanadmin/attlas-2026/pull/1356) | Doc de planejamento ACOM |
-| [[SOFTWARE-2200 - Prova de campo do analítico em container\|2200]] | [#1357](https://github.com/atmanadmin/attlas-2026/pull/1357) | Plano de teste de campo |
+| [[SP-08 - Analítico - Servidor - Alimentação de vídeo do analítico em container\|2385]] | [#1342](https://github.com/atmanadmin/attlas-2026/pull/1342) | CROSS-043 (ADR) + renumeração CROSS-032→044 |
+| [[SP-09 - Analítico - Servidor - Especificação do analítico de vídeo em container\|2386]] | [#1343](https://github.com/atmanadmin/attlas-2026/pull/1343) | SPEC + MOD-001 do `ms-virtual-loop` + detectors.md/cameras.md |
+| [[SP-10 - Analítico - Laço virtual - Especificação do connector de laço virtual\|2387]] | [#1345](https://github.com/atmanadmin/attlas-2026/pull/1345) | Bootstrap SDD do `ms-connector-virtual-loop` |
+| [[SP-16 - Analítico - Servidor - Serviço, imagem e ingestão do analítico em container\|2394]] | [#1346](https://github.com/atmanadmin/attlas-2026/pull/1346) | INT-001 ingestão |
+| [[SP-17 - Analítico - Servidor - Detecção por frame no analítico em container\|2395]] | [#1347](https://github.com/atmanadmin/attlas-2026/pull/1347) | INT-002 detecção |
+| [[SP-18 - Analítico - Laço virtual - Ocupação no analítico em container\|2396]] | [#1349](https://github.com/atmanadmin/attlas-2026/pull/1349) | PROJ-001 ocupação |
+| [[SP-19 - Analítico - Servidor - Publicar ocupação no Kafka no analítico em container\|2397]] | [#1350](https://github.com/atmanadmin/attlas-2026/pull/1350) | PROJ-002 publicação + detectors.md seção 4.4 |
+| [[S32-02 - Analítico - Instâncias - Escala do analítico, câmeras por instância\|2398]] | [#1351](https://github.com/atmanadmin/attlas-2026/pull/1351) | MOD-002 escala |
+| [[SP-12 - Analítico - Laço virtual - Vínculo região da câmera para endereço de detector\|2389]] | [#1352](https://github.com/atmanadmin/attlas-2026/pull/1352) | MOD-015 + UC-048 vínculo região-detector |
+| [[SP-13 - Analítico - Laço virtual - Connector, ocupação vira evento de detector\|2390]] | [#1353](https://github.com/atmanadmin/attlas-2026/pull/1353) | PROJ-001 do connector (publica raw) |
+| [[SP-11 - Analítico - Embarcado - Analítico embarcado no mesmo contrato de ocupação\|2388]] | [#1354](https://github.com/atmanadmin/attlas-2026/pull/1354) | PROJ-018 embarcado no contrato comum |
+| [[SP-14 - Analítico - Embarcado - Pendências do analítico embarcado\|2391]] | [#1355](https://github.com/atmanadmin/attlas-2026/pull/1355) | Higiene do domínio embarcado |
+| [[SP-15 - Analítico - ACOM - Recorte da atuação via ACOM (docs-only)\|2392]] | [#1356](https://github.com/atmanadmin/attlas-2026/pull/1356) | Doc de planejamento ACOM |
+| [[S32-01 - Analítico - Servidor - Prova de campo do analítico em container\|2200]] | [#1357](https://github.com/atmanadmin/attlas-2026/pull/1357) | Plano de teste de campo |
 
 Todos os 14 cards no ClickUp foram movidos para `in progress` (estavam `to do`), com comentário
 linkando a PR de cada um. Próximo passo, quando a folga terminar: tirar as PRs de draft na ordem

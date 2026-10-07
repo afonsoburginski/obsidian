@@ -27,28 +27,28 @@ construída.
 
 | Card | Pts | Status | Onde está |
 | --- | --- | --- | --- |
-| [[SOFTWARE-2434 - Câmeras como fontes IPC\|2434]] `[Back]` a tela espelhada como fonte do painel | 3 | Closed | mergeado em 18/08 pelas PRs 1659 e 1661; o adaptador do H9 escreve de verdade, o no-op saiu |
-| [[SOFTWARE-2477 - Lançador radial do alvo de exibição\|2477]] `[Front]` lançador radial | 2 | Closed | mergeado em 17/08 pela PR 1662 |
-| [[SOFTWARE-2562 - Layout da tela do painel físico\|2562]] `[Front]` layout da tela do painel físico | 2 | Closed | mergeado em 18/08 pela PR 1678, que virou a base da pilha |
-| [[SOFTWARE-2436 - Brilho e estado observável\|2436]] `[Back]` brilho e estado observável | 2 | code review | PR 1718, com correção pedida em 18/08 |
-| [[SOFTWARE-2473 - Capacidades e estado observável no frontend\|2473]] `[Front]` capacidades e estado observável | 2 | code review | PR 1721, uma aprovação e uma correção pedida |
-| [[SOFTWARE-2476 - Brilho do painel no frontend\|2476]] `[Front]` brilho do painel | 1 | code review | PR 1721, junto com a 2473 |
-| [[SOFTWARE-2474 - Câmeras e página web como fontes no frontend\|2474]] `[Front]` captura da tela e sessão de espelho | 3 | Closed | entregue em 14/08 no commit 16a48fa105; o board só não tinha sido atualizado |
-| [[SOFTWARE-2475 - Prévia da geometria projetada\|2475]] `[Front]` prévia da geometria projetada | 2 | to do | PR 5 da pilha, ainda não aberta; espera 2516 e 2517 |
-| [[SOFTWARE-2481 - Renome VMS - fase 3 remove o path legado\|2481]] `[Back]` remove `/api/video-wall` legado | 0 | to do | espera o deploy do renome em todos os ambientes, que é o critério de início |
+| [[S29-01 - Câmeras - Videowall - Câmeras como fontes IPC\|2434]] `[Back]` a tela espelhada como fonte do painel | 3 | Closed | mergeado em 18/08 pelas PRs 1659 e 1661; o adaptador do H9 escreve de verdade, o no-op saiu |
+| [[S29-02 - Câmeras - Videowall - Lançador radial do alvo de exibição\|2477]] `[Front]` lançador radial | 2 | Closed | mergeado em 17/08 pela PR 1662 |
+| [[S29-03 - Câmeras - Videowall - Layout da tela do painel físico\|2562]] `[Front]` layout da tela do painel físico | 2 | Closed | mergeado em 18/08 pela PR 1678, que virou a base da pilha |
+| [[S29-04 - Câmeras - Videowall - Brilho e estado observável\|2436]] `[Back]` brilho e estado observável | 2 | code review | PR 1718, com correção pedida em 18/08 |
+| [[S29-05 - Câmeras - Videowall - Capacidades e estado observável no frontend\|2473]] `[Front]` capacidades e estado observável | 2 | code review | PR 1721, uma aprovação e uma correção pedida |
+| [[S29-06 - Câmeras - Videowall - Brilho do painel no frontend\|2476]] `[Front]` brilho do painel | 1 | code review | PR 1721, junto com a 2473 |
+| [[S29-07 - Câmeras - Videowall - Câmeras e página web como fontes no frontend\|2474]] `[Front]` captura da tela e sessão de espelho | 3 | Closed | entregue em 14/08 no commit 16a48fa105; o board só não tinha sido atualizado |
+| [[S29-08 - Câmeras - Videowall - Prévia da geometria projetada\|2475]] `[Front]` prévia da geometria projetada | 2 | to do | PR 5 da pilha, ainda não aberta; espera 2516 e 2517 |
+| [[S29-09 - Câmeras - VMS - Renome, fase 3 remove o path legado\|2481]] `[Back]` remove `/api/video-wall` legado | 0 | to do | espera o deploy do renome em todos os ambientes, que é o critério de início |
 
 ### Cards a abrir na 28, criados mas ainda não iniciados (13 pts)
 
-Reconciliação da cláusula 16.13 (14/08): a sessão de espelho com dono ([[SOFTWARE-2514 - Tomar e liberar o painel|2514]]) já saiu Closed na 28, junto com o registro no equipamento. O que falta é a metade da projeção nativa (gesto automatizado, sem operador) e a integração com o motor de planos:
+Reconciliação da cláusula 16.13 (14/08): a sessão de espelho com dono ([[S28-15 - Câmeras - Videowall - Tomar e liberar o painel|2514]]) já saiu Closed na 28, junto com o registro no equipamento. O que falta é a metade da projeção nativa (gesto automatizado, sem operador) e a integração com o motor de planos:
 
 | Card | Pts | Status | Espera o quê |
 | --- | --- | --- | --- |
-| [[SOFTWARE-2515 - Expiração de ocupação órfã\|2515]] `[Back]` expiração de ocupação órfã | 2 | code review | PR 1718; critério é presença de publicação, nunca contagem de espectadores |
-| [[SOFTWARE-2516 - Câmeras da cena como fontes servidas pela plataforma\|2516]] `[Back]` câmeras da cena como fontes | 3 | code review | PR 1720; uma fonte por câmera da cena, servida pela plataforma, nunca a câmera direto |
-| [[SOFTWARE-2517 - Projetar e liberar cena pelo alvo VIDEOWALL\|2517]] `[Back]` projetar/liberar cena pelo alvo videowall | 3 | code review | PR 1720; reabre a ativação de cena com o alvo videowall, hoje recusada |
-| [[SOFTWARE-2518 - Despacho de comando de videowall no motor de planos\|2518]] `[Back]` despacho de comando no motor de planos | 3 | code review | PR 1735; plano de resposta preempta o operador, com registro e aviso |
-| [[SOFTWARE-2519 - Consumidor do comando de plano e echo\|2519]] `[Back]` consumidor do comando e echo idempotente | 2 | code review | PR 1735 |
-| [[SOFTWARE-2520 - Fontes de câmera do painel no frontend\|2520]] `[Front]` fontes de câmera do painel | 2 | to do | PR 5 da pilha; leitura de qual câmera está em qual posição na projeção nativa |
+| [[S29-10 - Câmeras - Videowall - Expiração de ocupação órfã\|2515]] `[Back]` expiração de ocupação órfã | 2 | code review | PR 1718; critério é presença de publicação, nunca contagem de espectadores |
+| [[S29-11 - Câmeras - Videowall - Câmeras da cena como fontes servidas pela plataforma\|2516]] `[Back]` câmeras da cena como fontes | 3 | code review | PR 1720; uma fonte por câmera da cena, servida pela plataforma, nunca a câmera direto |
+| [[S29-12 - Câmeras - Videowall - Projetar e liberar cena pelo alvo VIDEOWALL\|2517]] `[Back]` projetar/liberar cena pelo alvo videowall | 3 | code review | PR 1720; reabre a ativação de cena com o alvo videowall, hoje recusada |
+| [[S29-13 - Câmeras - Videowall - Despacho de comando de videowall no motor de planos\|2518]] `[Back]` despacho de comando no motor de planos | 3 | code review | PR 1735; plano de resposta preempta o operador, com registro e aviso |
+| [[S29-14 - Câmeras - Videowall - Consumidor do comando de plano e echo\|2519]] `[Back]` consumidor do comando e echo idempotente | 2 | code review | PR 1735 |
+| [[S29-15 - Câmeras - Videowall - Fontes de câmera do painel no frontend\|2520]] `[Front]` fontes de câmera do painel | 2 | to do | PR 5 da pilha; leitura de qual câmera está em qual posição na projeção nativa |
 
 ## Execução de 18/08: os doze cards de videowall viraram uma pilha de seis PRs
 
@@ -212,9 +212,9 @@ da semana. Notas continuam em `Sprint/Sem prazo/`, não foram movidas para `Spri
 **Analítico em container** (14 cards, `backlog`, indexados em [[Sem prazo (backlog)]]): 2385 a 2398
 mais 2391 e 2392, 14 PRs de spec/código seguem em draft desde a Sprint 27.
 
-**Prontos para começar** (`to do`, só se abrir tempo): [[SOFTWARE-2005 - Permissões nas rotas de câmeras - mapa das 86 rotas|2005]], [[SOFTWARE-2400 - Aplicar enforcement de permissão nas rotas de câmeras|2400]].
+**Prontos para começar** (`to do`, só se abrir tempo): [[S29-16 - Câmeras - Permissões - Mapa das 86 rotas de câmeras|2005]], [[S29-17 - Câmeras - Permissões - Enforcement de permissão nas rotas de câmeras|2400]].
 
-**Sem prazo mesmo** (`backlog`, pausados desde 27/07): [[SOFTWARE-2314 - Performance do streaming de vídeo|2314]], [[SOFTWARE-2315 - Comparativo Attlas 25x26 - video wall|2315]], [[SOFTWARE-2316 - Comparativo Attlas 25x26 - arquitetura de hardware e streaming|2316]], [[SOFTWARE-2009 - Escalabilidade horizontal do ms-cameras em Kubernetes|2009]], [[SOFTWARE-2200 - Prova de campo do analítico em container|2200]].
+**Sem prazo mesmo** (`backlog`, pausados desde 27/07): [[SP-02 - Câmeras - Streaming - Performance do streaming de vídeo|2314]], [[SP-03 - Câmeras - Videowall - Comparativo Attlas 25x26 do video wall|2315]], [[SP-04 - Câmeras - Streaming - Comparativo Attlas 25x26 de arquitetura de hardware e streaming|2316]], [[SP-05 - Infraestrutura - Kubernetes - Escalabilidade horizontal do ms-cameras|2009]], [[S32-01 - Analítico - Servidor - Prova de campo do analítico em container|2200]].
 
 ## Pendências de processo
 
@@ -350,7 +350,7 @@ por desenho, `branches: [develop]` filtra pela base, então toda a cascata depen
 
 Notas que existiam na pasta e não estavam ligadas a este índice até a revisão de 23/09.
 
-- [[SOFTWARE-2532 - Hikvision - telemetria e preview]] - [Back] Hikvision - telemetria/status incorretos e sem preview (ONVIF desabilitado de fábrica)
+- [[S29-18 - Câmeras - Integração com dispositivo - Hikvision, telemetria e preview]] - [Back] Hikvision - telemetria/status incorretos e sem preview (ONVIF desabilitado de fábrica)
 
 ## Relacionados
 

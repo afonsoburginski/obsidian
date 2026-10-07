@@ -46,40 +46,40 @@ nasceu da medição de 21/09 e das issues do rótulo `cameras`, e não de um pla
 tasks 16 a 29 eram PRs que corriam fora da tabela e ganharam nota em 23/09. As datas de merge estão no
 horário de Brasília.
 
-| # | Task (1 task = 1 ou mais PRs) | Natureza | Pts | PRs | Estado |
+| ID | Task (1 task = 1 ou mais PRs) | Natureza | Pts | PRs | Estado |
 | --- | --- | --- | --- | --- | --- |
-| 1 | [[Streaming - o ciclo de vida do processo de relay\|O processo de relay morre quando mandam morrer, e órfão não sobrevive ao boot]] | `[Back]` | 5 | #4071, #4072, #4074 | **feita**, as três mergeadas (22 e 23/09) |
-| 2 | [[Streaming - a sessão, a adoção e a reconciliação com o media server\|Sessão adotada solta a câmera, e o media server é reconciliado contra o registro]] | `[Back]` | 5 | #4075, #4077 | **feita**, as duas mergeadas (23/09) |
-| 3 | [[Streaming - um ingest por câmera, com a qualidade resolvida\|O pedido de H265 entra na relay H264 viva em vez de abrir um segundo ingest]] | `[Back]` | 5 | #4076, #4079 | **feita**, mergeadas em 22 e 23/09 |
-| 4 | [[Streaming - superfície do media server e o HLS em disco morto\|Control API do media server restrita, e o HLS em disco removido]] | `[Back]` | 3 | #4073, #4117 | **feita**, as duas mergeadas (23/09), a #4117 primeiro |
-| 5 | [[Streaming - readiness por sessão e o runbook de saturação de ingest\|Um laço de readiness por sessão, e o runbook de saturação de ingest]] | `[Back]` | 3 | #4121 | **feita**, mergeada (22/09) |
-| 6 | [[VMS - prévia da ACOM em SECONDARY e URL relativa do player\|Prévia da aba ACOM em SECONDARY e sinalização de vídeo na mesma origem do SPA]] | `[Full]` | 2 | #4082, #4084 | **feita**, as duas mergeadas (22/09) |
-| 7 | [[CI - as duas suítes de web-attlas quebradas na develop\|Destravar as duas suítes de web-attlas quebradas na develop]] | `[Front]` | 2 | #4085 | **feita**, mergeada (22/09) |
-| 8 | [[Videowall - coluna No painel e o segundo ícone de limpar\|Coluna No painel à esquerda e um único ícone de limpar na busca]] | `[Front]` | 2 | #4143 | **feita**, mergeada (22/09) |
-| 9 | [[Eventos - o segundo ícone de limpar nas buscas\|Um único ícone de limpar nas buscas de Eventos e do Log de Eventos]] | `[Front]` | 2 | #4146 | **feita**, mergeada (22/09) |
-| 10 | [[Videowall - título e bordas cortados no painel\|Título do painel e bordas dos campos deixam de ser cortados]] | `[Front]` | 2 | #4147 | **feita**, mergeada (22/09) |
-| 11 | [[Videowall - nome de grupo duplicado por capitalização\|Nome de grupo salvo deixa de duplicar por capitalização]] | `[Front]` | 2 | #4148 | **feita**, mergeada (22/09) |
-| 12 | [[Câmeras - navegação do cadastro e o dropdown de Modelo\|Navegação do cadastro alinhada à de controladores e dropdown Modelo corrigido]] | `[Front]` | 3 | #4150 | **feita**, mergeada (22/09) |
-| 13 | [[Videowall - endereço de rede e porta validados\|Endereço de rede e porta do painel seguem o padrão de validação do sistema]] | `[Front]` | 5 | #4152 | **feita**, mergeada (22/09) |
-| 14 | [[ANPR - integração com o NEURAL SERVER\|Consumir o NEURAL SERVER da Neural Labs, o analítico de placas do cliente]] | `[Full]` | sem estimativa | #4403, #4816, #4887 | #4403 mergeada em 24/09 (backend e switch de LPR); #4816 **mergeada** em 26/09 com a associação ao analítico servidor Neural Labs no cadastro, a tela de mapeamento e o simulador do NEURAL SERVER; #4887 **mergeada** em 26/09 à noite tirou do front a tela e o switch, por decisão do dono (o vínculo vai para Instâncias) |
-| 15 | [[Analítico - 409 do tratamento, releitura da fila e ATSPM sem vínculo\|409 do tratamento, releitura da fila, ATSPM sem vínculo e ir até a câmera]] | `[Full]` | 3 | #3932 | **feita**, mergeada (23/09) |
-| 16 | [[Monitoramento - a posição da grade sem transmissão\|A posição da grade sem transmissão diz o que aconteceu, em vez de ficar em branco]] | `[Front]` | 5 | #4165 | **feita**, mergeada (22/09), fecha a 3157 |
-| 17 | [[Câmeras - importação em lote só com CSV e XLSX\|A importação em lote anuncia só CSV e XLSX]] | `[Front]` | 1 | #4166 | **feita**, mergeada (22/09) |
-| 18 | [[Videowall - mensagens de erro com campo e motivo\|As mensagens de erro do painel dizem campo e motivo]] | `[Full]` | 5 | #4169 | **feita**, mergeada (23/09) |
-| 19 | [[Câmeras - estado vazio de Dispositivos e o rótulo de conexão\|Estado vazio de Dispositivos com importação ativa e rótulo próprio para conexão]] | `[Front]` | 5 | #4170 | **feita**, mergeada (23/09) |
-| 20 | [[Videowall - preset, geometria e grade de projeção\|Preset, geometria e grade de projeção do painel acompanham o layout]] | `[Front]` | 5 | #4171 | **feita**, mergeada (23/09) |
-| 21 | [[Câmeras - barra de ações do Monitoramento e barra de abas\|Barra de ações do Monitoramento de Vídeo e barra de abas do módulo]] | `[Front]` | 5 | #4172 | **feita**, mergeada (22/09) |
-| 22 | [[Câmeras - campos e validação do cadastro e da edição\|Campos e validação do cadastro e da edição de câmera]] | `[Front]` | 5 | #4173 | **feita**, mergeada (22/09) |
-| 23 | [[Eventos - validação do reportar ocorrência\|Reportar ocorrência valida obrigatórios e limita tamanho]] | `[Full]` | 3 | #4174 | **feita**, mergeada (22/09) |
-| 24 | [[Câmeras - aba Analítico no detalhe, só leitura\|Aba Analítico no detalhe da câmera, só leitura]] | `[Front]` | 5 | #4349 | **feita**, mergeada (23/09) |
-| 25 | [[Analítico - célula do detector pelo vínculo do laço\|A célula do detector se ramifica pelo vínculo do laço]] | `[Front]` | 2 | #4178 | **feita**, mergeada (22/09) |
-| 26 | [[Controladores - a fiação da ACOM cria o vínculo região-detector\|A fiação da ACOM cria o vínculo região-detector]] | `[Back]` | 8 | #4256 | **feita**, mergeada (23/09) |
-| 27 | [[Analítico - a faixa da via associada na Detecção\|A faixa da via se associa na Detecção, por select]] | `[Full]` | 5 | #4292 | **feita**, mergeada (23/09) |
-| 28 | [[Planos - variáveis de condição de câmera\|Variáveis de condição de câmera no Plano de Execução]] | `[Back]` | 5 | #4298 | **feita**, mergeada (23/09); a issue 4269 segue aberta, atendida em parte |
-| 29 | [[Analítico - o producer do embarcado religado só pela instalação dona\|Só a instalação dona do analítico embarcado religa o producer]] | `[Back]` | 3 | #4296 | **feita**, mergeada (22/09); a variável de ambiente no dev.v2 não foi conferida |
-| 30 | [[Analítico - Instâncias ligadas ao backend, descoberta na rede e vínculo do source_id\|Instâncias ligadas ao backend, descoberta de analíticos na rede e vínculo do source_id]] | `[Full]` | 23 | #4414, #4887, #4891 | **feita**, mergeada (24/09, merge `d304f408c4`), junto com o registro de builds do analítico, a regra do verde e o build de dev do front mais leve; em 26/09 o Sincronizar entrou no menu da linha e traz de volta a instância offline, e a remoção da instância órfã deixou de dar 404 (#4887 e #4891) |
-| 31 | [[Câmeras - aba Analítico com indicadores, gráfico e regiões\|Aba Analítico do detalhe da câmera no layout do Figma, com indicadores, gráfico e regiões]] | `[Front]` | 5 | #4676 | **aberta**; review de 25/09 atendido (31 de 31 threads resolvidas), develop mesclada, Lint e Build verdes; aguarda novo review de otavio e igor |
-| 32 | [[Analítico - imagem e vídeo do incidente lidos do equipamento\|Imagem e vídeo do incidente na sidebar, lidos do equipamento, e o incidente por objeto do ATSPM 0.10.2]] | `[Full]` | 8 | #4889, #4902 | #4889 **feita** e no ar; a continuação #4902 (cópia perto, caixa do objeto, ao vivo e relacionados paginados) mergeada em 27/09 e no ar no dev.v2 (deploy das 00h31 UTC) |
+| S34-01 | [[S34-01 - Câmeras - Streaming - O ciclo de vida do processo de relay\|O processo de relay morre quando mandam morrer, e órfão não sobrevive ao boot]] | `[Back]` | 5 | #4071, #4072, #4074 | **feita**, as três mergeadas (22 e 23/09) |
+| S34-02 | [[S34-02 - Câmeras - Streaming - A sessão, a adoção e a reconciliação com o media server\|Sessão adotada solta a câmera, e o media server é reconciliado contra o registro]] | `[Back]` | 5 | #4075, #4077 | **feita**, as duas mergeadas (23/09) |
+| S34-03 | [[S34-03 - Câmeras - Streaming - Um ingest por câmera, com a qualidade resolvida\|O pedido de H265 entra na relay H264 viva em vez de abrir um segundo ingest]] | `[Back]` | 5 | #4076, #4079 | **feita**, mergeadas em 22 e 23/09 |
+| S34-04 | [[S34-04 - Câmeras - Streaming - Superfície do media server e o HLS em disco morto\|Control API do media server restrita, e o HLS em disco removido]] | `[Back]` | 3 | #4073, #4117 | **feita**, as duas mergeadas (23/09), a #4117 primeiro |
+| S34-05 | [[S34-05 - Câmeras - Streaming - Readiness por sessão e o runbook de saturação de ingest\|Um laço de readiness por sessão, e o runbook de saturação de ingest]] | `[Back]` | 3 | #4121 | **feita**, mergeada (22/09) |
+| S34-06 | [[S34-06 - Câmeras - VMS - Prévia da ACOM em SECONDARY e URL relativa do player\|Prévia da aba ACOM em SECONDARY e sinalização de vídeo na mesma origem do SPA]] | `[Full]` | 2 | #4082, #4084 | **feita**, as duas mergeadas (22/09) |
+| S34-07 | [[S34-07 - Infraestrutura - CI - As duas suítes de web-attlas quebradas na develop\|Destravar as duas suítes de web-attlas quebradas na develop]] | `[Front]` | 2 | #4085 | **feita**, mergeada (22/09) |
+| S34-08 | [[S34-08 - Câmeras - Videowall - Coluna No painel e o segundo ícone de limpar\|Coluna No painel à esquerda e um único ícone de limpar na busca]] | `[Front]` | 2 | #4143 | **feita**, mergeada (22/09) |
+| S34-09 | [[S34-09 - Câmeras - Eventos, incidentes e alarmes - O segundo ícone de limpar nas buscas\|Um único ícone de limpar nas buscas de Eventos e do Log de Eventos]] | `[Front]` | 2 | #4146 | **feita**, mergeada (22/09) |
+| S34-10 | [[S34-10 - Câmeras - Videowall - Título e bordas cortados no painel\|Título do painel e bordas dos campos deixam de ser cortados]] | `[Front]` | 2 | #4147 | **feita**, mergeada (22/09) |
+| S34-11 | [[S34-11 - Câmeras - Videowall - Nome de grupo duplicado por capitalização\|Nome de grupo salvo deixa de duplicar por capitalização]] | `[Front]` | 2 | #4148 | **feita**, mergeada (22/09) |
+| S34-12 | [[S34-12 - Câmeras - Cadastro - Navegação do cadastro e o dropdown de Modelo\|Navegação do cadastro alinhada à de controladores e dropdown Modelo corrigido]] | `[Front]` | 3 | #4150 | **feita**, mergeada (22/09) |
+| S34-13 | [[S34-13 - Câmeras - Videowall - Endereço de rede e porta validados\|Endereço de rede e porta do painel seguem o padrão de validação do sistema]] | `[Front]` | 5 | #4152 | **feita**, mergeada (22/09) |
+| S34-14 | [[S34-14 - Analítico - Neural Labs - Integração com o NEURAL SERVER (ANPR)\|Consumir o NEURAL SERVER da Neural Labs, o analítico de placas do cliente]] | `[Full]` | sem estimativa | #4403, #4816, #4887 | #4403 mergeada em 24/09 (backend e switch de LPR); #4816 **mergeada** em 26/09 com a associação ao analítico servidor Neural Labs no cadastro, a tela de mapeamento e o simulador do NEURAL SERVER; #4887 **mergeada** em 26/09 à noite tirou do front a tela e o switch, por decisão do dono (o vínculo vai para Instâncias) |
+| S34-15 | [[S34-15 - Analítico - Incidentes - 409 do tratamento, releitura da fila e ATSPM sem vínculo\|409 do tratamento, releitura da fila, ATSPM sem vínculo e ir até a câmera]] | `[Full]` | 3 | #3932 | **feita**, mergeada (23/09) |
+| S34-16 | [[S34-16 - Câmeras - Monitoramento - A posição da grade sem transmissão\|A posição da grade sem transmissão diz o que aconteceu, em vez de ficar em branco]] | `[Front]` | 5 | #4165 | **feita**, mergeada (22/09), fecha a 3157 |
+| S34-17 | [[S34-17 - Câmeras - Cadastro - Importação em lote só com CSV e XLSX\|A importação em lote anuncia só CSV e XLSX]] | `[Front]` | 1 | #4166 | **feita**, mergeada (22/09) |
+| S34-18 | [[S34-18 - Câmeras - Videowall - Mensagens de erro com campo e motivo\|As mensagens de erro do painel dizem campo e motivo]] | `[Full]` | 5 | #4169 | **feita**, mergeada (23/09) |
+| S34-19 | [[S34-19 - Câmeras - Cadastro - Estado vazio de Dispositivos e o rótulo de conexão\|Estado vazio de Dispositivos com importação ativa e rótulo próprio para conexão]] | `[Front]` | 5 | #4170 | **feita**, mergeada (23/09) |
+| S34-20 | [[S34-20 - Câmeras - Videowall - Preset, geometria e grade de projeção\|Preset, geometria e grade de projeção do painel acompanham o layout]] | `[Front]` | 5 | #4171 | **feita**, mergeada (23/09) |
+| S34-21 | [[S34-21 - Câmeras - Monitoramento - Barra de ações do Monitoramento e barra de abas\|Barra de ações do Monitoramento de Vídeo e barra de abas do módulo]] | `[Front]` | 5 | #4172 | **feita**, mergeada (22/09) |
+| S34-22 | [[S34-22 - Câmeras - Cadastro - Campos e validação do cadastro e da edição\|Campos e validação do cadastro e da edição de câmera]] | `[Front]` | 5 | #4173 | **feita**, mergeada (22/09) |
+| S34-23 | [[S34-23 - Câmeras - Eventos, incidentes e alarmes - Validação do reportar ocorrência\|Reportar ocorrência valida obrigatórios e limita tamanho]] | `[Full]` | 3 | #4174 | **feita**, mergeada (22/09) |
+| S34-24 | [[S34-24 - Câmeras - Detalhe da câmera - Aba Analítico no detalhe, só leitura\|Aba Analítico no detalhe da câmera, só leitura]] | `[Front]` | 5 | #4349 | **feita**, mergeada (23/09) |
+| S34-25 | [[S34-25 - Analítico - Laço virtual - Célula do detector pelo vínculo do laço\|A célula do detector se ramifica pelo vínculo do laço]] | `[Front]` | 2 | #4178 | **feita**, mergeada (22/09) |
+| S34-26 | [[S34-26 - Analítico - ACOM - A fiação da ACOM cria o vínculo região-detector\|A fiação da ACOM cria o vínculo região-detector]] | `[Back]` | 8 | #4256 | **feita**, mergeada (23/09) |
+| S34-27 | [[S34-27 - Analítico - Detecção - A faixa da via associada na Detecção\|A faixa da via se associa na Detecção, por select]] | `[Full]` | 5 | #4292 | **feita**, mergeada (23/09) |
+| S34-28 | [[S34-28 - Câmeras - Planos de execução - Variáveis de condição de câmera\|Variáveis de condição de câmera no Plano de Execução]] | `[Back]` | 5 | #4298 | **feita**, mergeada (23/09); a issue 4269 segue aberta, atendida em parte |
+| S34-29 | [[S34-29 - Analítico - Embarcado - O producer do embarcado religado só pela instalação dona\|Só a instalação dona do analítico embarcado religa o producer]] | `[Back]` | 3 | #4296 | **feita**, mergeada (22/09); a variável de ambiente no dev.v2 não foi conferida |
+| S34-30 | [[S34-30 - Analítico - Instâncias - Instâncias ligadas ao backend, descoberta na rede e vínculo do source_id\|Instâncias ligadas ao backend, descoberta de analíticos na rede e vínculo do source_id]] | `[Full]` | 23 | #4414, #4887, #4891 | **feita**, mergeada (24/09, merge `d304f408c4`), junto com o registro de builds do analítico, a regra do verde e o build de dev do front mais leve; em 26/09 o Sincronizar entrou no menu da linha e traz de volta a instância offline, e a remoção da instância órfã deixou de dar 404 (#4887 e #4891) |
+| S34-31 | [[S34-31 - Câmeras - Detalhe da câmera - Aba Analítico com indicadores, gráfico e regiões\|Aba Analítico do detalhe da câmera no layout do Figma, com indicadores, gráfico e regiões]] | `[Front]` | 5 | #4676 | **aberta**; review de 25/09 atendido (31 de 31 threads resolvidas), develop mesclada, Lint e Build verdes; aguarda novo review de otavio e igor |
+| S34-32 | [[S34-32 - Analítico - Incidentes - Imagem e vídeo do incidente lidos do equipamento\|Imagem e vídeo do incidente na sidebar, lidos do equipamento, e o incidente por objeto do ATSPM 0.10.2]] | `[Full]` | 8 | #4889, #4902 | #4889 **feita** e no ar; a continuação #4902 (cópia perto, caixa do objeto, ao vivo e relacionados paginados) mergeada em 27/09 e no ar no dev.v2 (deploy das 00h31 UTC) |
 
 **Em 23/09: 28 de 30 tasks feitas, 106 de 129 pts, as 34 PRs da tabela mergeadas.** A task 30 entrou no
 fim do dia 23/09, com a PR #4414 aberta. Fora ela, só a integração do
@@ -169,7 +169,7 @@ Aberta em 22/09 com **28 issues** abertas no rótulo `cameras`, uma delas `criti
 10 na semana. Em 23/09, **27 estavam fechadas**: 26 por uma das 14 PRs da frente, conferidas no evento
 de fechamento de cada issue, e a 1869 à mão, em 21/09, com comentário de validação. Só a 1875 segue
 aberta, porque depende de decisão de produto. O mapa completo, com o que continua aberto, está em
-[[Câmeras - as issues abertas do módulo]].
+[[S34-33 - Câmeras - Issues - As issues abertas do módulo]].
 
 A âncora era a [#3157](https://github.com/atmanadmin/attlas-2026/issues/3157), grade de Monitoramento
 de Vídeo e videowall ficando em branco. As PRs da frente 1 não a fechavam, porque os critérios de aceite
@@ -187,7 +187,7 @@ e observada, e `ms-traffic-model` fornece a definição dos Trajetos. A PR #4403
 contratos e implementa o backend. O manual documenta TCP/XML e SQL Server para LPR; HTTP e o payload
 de incidentes dependem de material do fornecedor. Decisão, cálculo de tempo/velocidade e pendências:
 [[Decisão - Neural Labs, LPR e tempo de Trajetos (23-09-2026)]] e
-[[ANPR - integração com o NEURAL SERVER]].
+[[S34-14 - Analítico - Neural Labs - Integração com o NEURAL SERVER (ANPR)]].
 
 ## Frente 4 - o vínculo da região do analítico com o detector
 
@@ -219,7 +219,7 @@ Duas tasks que não pertencem a nenhuma das quatro frentes. A **task 28** (#4298
 Plano de Execução lerem o estado real da câmera no momento da avaliação, por rota interna do
 `ms-cameras`, e responde 7 das 13 perguntas de câmera. As outras 6 seguem sem resposta porque o sistema
 não tem o dado, e por isso a issue 4269, do time de planos, continua aberta; o que ela pede e o que
-falta está em [[Planos - variáveis de condição de câmera]]. A **task 29** (#4296) faz só a instalação
+falta está em [[S34-28 - Câmeras - Planos de execução - Variáveis de condição de câmera]]. A **task 29** (#4296) faz só a instalação
 dona do equipamento do analítico embarcado religar o producer, fechando o laço de reinício indevido
 depois de restart ou de escrita de configuração.
 
@@ -227,7 +227,7 @@ depois de restart ou de escrita de configuração.
 
 A [#3932](https://github.com/atmanadmin/attlas-2026/pull/3932), a única PR minha que vinha da semana
 passada, foi mergeada em 23/09, com as 23 threads de review resolvidas. Detalhe em
-[[Analítico - 409 do tratamento, releitura da fila e ATSPM sem vínculo]].
+[[S34-15 - Analítico - Incidentes - 409 do tratamento, releitura da fila e ATSPM sem vínculo]].
 
 ## Fora do plano - o CI em 23/09
 
@@ -237,7 +237,7 @@ runner scale set único, o `sumo-ci-runner`, com 20 vagas. A espera do Lint na f
 dentro do job Lint, e a #4383 pôs o ESLint em várias threads. Por isso o check `Integration Test` aparece
 pulado em toda PR desde 23/09, e é de propósito. O que aconteceu está em
 [[Registro - CI em 23 de setembro, VM ampliada e scale set]], e o que falta para virar serviço
-profissional é a task sem prazo [[CI - runner profissional em Kubernetes com ARC]].
+profissional é a task sem prazo [[SP-01 - Infraestrutura - CI - Runner profissional em Kubernetes com ARC]].
 
 Achado à noite, revisando a #4433: o piso de memória (`JOB_MEM_FLOOR_GB=16`) que o governador aplica por
 runner ocupado não limita a soma entre eles. Com `ocupados=20` (medido às 17:42-17:43 de 23/09, o
@@ -253,7 +253,7 @@ detalhe e log-fonte no chat da sessão de 23/09, não copiado para nota própria
 - [[Registro - implementação do plano de vazamento de publicador em 21 de setembro]] - o dia da frente 1.
 - [[Plano - Streaming sem vazamento de publicador]] - o plano de 18/09 que esta semana executa.
 - [[Incidentes - Streaming (ms-cameras)]] - o histórico que sustenta o diagnóstico.
-- [[Câmeras - as issues abertas do módulo]] - o mapa de cobertura da frente 2.
+- [[S34-33 - Câmeras - Issues - As issues abertas do módulo]] - o mapa de cobertura da frente 2.
 - [[Decisão - Neural Labs, LPR e tempo de Trajetos (23-09-2026)]] - a frente 3, com a regra atual e referência ao manual do fabricante.
 - [[Plano - o vínculo da região do analítico com o detector]] - a frente 4, com o diagnóstico ancorado no código e o que as três PRs entregaram.
 - [[Registro - CI em 23 de setembro, VM ampliada e scale set]] e [[Server e CI]] - o CI fora do plano.
@@ -385,7 +385,7 @@ Três PRs do dono entraram na develop na tarde e na noite de 26/09. Horários de
   `ms-cameras` guarda a árvore do `ms-traffic-model` em Redis por 300 s, com o Sistema e o usuário na
   chave. O Sincronizar reinicia o app do analítico que não responde antes de ler e gravar, e a remoção
   da instância órfã deixou de responder 404. Detalhe na task 30,
-  [[Analítico - Instâncias ligadas ao backend, descoberta na rede e vínculo do source_id]].
+  [[S34-30 - Analítico - Instâncias - Instâncias ligadas ao backend, descoberta na rede e vínculo do source_id]].
 
 A #4887 tinha pedido de mudança do Hadson (5 threads) e a aprovação do danielGuerra, e a #4891 pedido de
 mudança do danielGuerra (19 threads). Todas foram respondidas e resolvidas, com uma recusa explicada: o

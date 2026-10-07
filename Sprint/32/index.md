@@ -345,19 +345,19 @@ máximo de 4 laços por câmera"*). O que faltava era momento, e o momento é es
 
 Notas que existiam na pasta e não estavam ligadas a este índice até a revisão de 23/09.
 
-- [[SOFTWARE-2200 - Prova de campo do analítico em container]] - [Back] Prova de campo do analítico em container até a timeline do detector
-- [[SOFTWARE-2398 - Escala do analítico - câmeras por instância]] - [Back] Escala do analítico: câmeras por instância e distribuição
-- [[SOFTWARE-2686 - Suportar até quatro laços virtuais por câmera]] - [Back] Suportar até 4 laços virtuais por câmera
-- [[SOFTWARE-3051 - Reconciliar o doc de módulo do Analítico com o edital]] - [Back] Reconciliar o doc de módulo do Analítico com o edital
-- [[SOFTWARE-3052 - UF-046, UF-047 e MOD-012 - as specs que o código já cita]] - [Back] UF-046, UF-047 e MOD-012: as specs que o código já cita
-- [[SOFTWARE-3053 - Métricas abre na face que tem dado]] - [Front] Métricas abre na face que tem dado
-- [[SOFTWARE-3054 - Detecção - congelar o quadro e escolher o preset]] - [Front] Detecção: congelar o frame e escolher o preset
-- [[SOFTWARE-3055 - Detecção - as cinco ferramentas e a paleta]] - [Front] Detecção: as cinco ferramentas e a paleta
-- [[SOFTWARE-3056 - Detecção - salvar e descartar]] - [Front] Detecção: salvar e descartar, e a aba sai de desabilitada
-- [[SOFTWARE-3057 - Refinamento de emergência das telas do Analítico]] - [Front] Refinamento de emergência das telas do Analítico
+- [[S32-01 - Analítico - Servidor - Prova de campo do analítico em container]] - [Back] Prova de campo do analítico em container até a timeline do detector
+- [[S32-02 - Analítico - Instâncias - Escala do analítico, câmeras por instância]] - [Back] Escala do analítico: câmeras por instância e distribuição
+- [[S32-03 - Analítico - Laço virtual - Suportar até quatro laços virtuais por câmera]] - [Back] Suportar até 4 laços virtuais por câmera
+- [[S32-04 - Processo - Specs - Reconciliar o doc de módulo do Analítico com o edital]] - [Back] Reconciliar o doc de módulo do Analítico com o edital
+- [[S32-05 - Processo - Specs - As specs que o código já cita]] - [Back] UF-046, UF-047 e MOD-012: as specs que o código já cita
+- [[S32-06 - Analítico - Métricas - Métricas abre na face que tem dado]] - [Front] Métricas abre na face que tem dado
+- [[S32-07 - Analítico - Detecção - Congelar o quadro e escolher o preset]] - [Front] Detecção: congelar o frame e escolher o preset
+- [[S32-08 - Analítico - Detecção - As cinco ferramentas e a paleta]] - [Front] Detecção: as cinco ferramentas e a paleta
+- [[S32-09 - Analítico - Detecção - Salvar e descartar]] - [Front] Detecção: salvar e descartar, e a aba sai de desabilitada
+- [[S32-10 - Analítico - Telas - Refinamento de emergência das telas do Analítico]] - [Front] Refinamento de emergência das telas do Analítico
 
 ## Ver também
 
-[[Analítico - Pendências|Analítico - O que falta para fechar o módulo]] · [[Planning - Sprint 31 e 32]] · [[Attlas - Sprint 30]] ·
+[[Analítico - Pendências|Analítico - O que falta para fechar o módulo]] · [[S32-11 - Processo - Planejamento - Sprints 31 e 32]] · [[Attlas - Sprint 30]] ·
 [[Attlas - Sprint 31]] · [[Sem prazo (backlog)]] · [[Analítico]] ·
 [[Analítico - Embarcado x Servidor]] · [[Analítico - Frontend do attlas-design]]

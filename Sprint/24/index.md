@@ -21,12 +21,12 @@ Base: em cima do que o **Daniel** já tem no controlador/detector + referência 
 
 ## Essa semana
 
-- [x] **SOFTWARE-2226 - Testes do analítico e provisionamento no cadastro** (CONCLUÍDA, Closed) - [[SOFTWARE-2226 - Testes do analítico e provisionamento no cadastro]]: PR #830 mergeada na develop em 17/07 (aguarda deploy manual). Boot híbrido resiliente, consumer consolidado + groupId único, fan-out multi-câmera, observabilidade do WS/analítico, env fail-fast + broker por env, provisionamento ONVIF no cadastro. Infra/ops (kafka-init gerador, aquario, systemIds) seguem como follow-up fora do PR.
-- [x] **SOFTWARE-2212 - Fundação do dashboard de câmeras: resolver de período/escopo** (APROVADA, movida pra Sprint 25) - [[SOFTWARE-2212 - Fundação do dashboard de câmeras - resolver de período-escopo]]: PR #822 APPROVED por Hadson, mergeable, 0 threads abertas, falta só o merge. Fundação MOD-013 compartilhada; movida pra Sprint 25 em 20/07 porque os Eventos desta semana reusam o resolver dela.
+- [x] **SOFTWARE-2226 - Testes do analítico e provisionamento no cadastro** (CONCLUÍDA, Closed) - [[S24-01 - Analítico - Embarcado - Testes do analítico e provisionamento no cadastro]]: PR #830 mergeada na develop em 17/07 (aguarda deploy manual). Boot híbrido resiliente, consumer consolidado + groupId único, fan-out multi-câmera, observabilidade do WS/analítico, env fail-fast + broker por env, provisionamento ONVIF no cadastro. Infra/ops (kafka-init gerador, aquario, systemIds) seguem como follow-up fora do PR.
+- [x] **SOFTWARE-2212 - Fundação do dashboard de câmeras: resolver de período/escopo** (APROVADA, movida pra Sprint 25) - [[S25-17 - Câmeras - Dashboard - Fundação com resolver de período e escopo]]: PR #822 APPROVED por Hadson, mergeable, 0 threads abertas, falta só o merge. Fundação MOD-013 compartilhada; movida pra Sprint 25 em 20/07 porque os Eventos desta semana reusam o resolver dela.
 
 ## Já entregue
 
-- [x] **1a fatia do analítico ao vivo** - [[SOFTWARE-2134 - Analítico de vídeo ao vivo (detecção + bounding boxes)]] (PR #790, MERGED 15/7): analítico embarcado → WS → player mostrando regiões acendendo + bounding boxes em tempo real, validado com o device real. Aprovado por rezendelc + danielGuerra e mergeado na develop. Fluxo em [[SOFTWARE-2134 - Decisão técnica e fluxo (analítico ao vivo)]].
+- [x] **1a fatia do analítico ao vivo** - [[S24-02 - Analítico - Detecção - Vídeo ao vivo com detecção e bounding boxes]] (PR #790, MERGED 15/7): analítico embarcado → WS → player mostrando regiões acendendo + bounding boxes em tempo real, validado com o device real. Aprovado por rezendelc + danielGuerra e mergeado na develop. Fluxo em [[S24-03 - Analítico - Detecção - Decisão técnica e fluxo do analítico ao vivo]].
 - [ ] **Review da PR #764** do Daniel (obrigação ativa, bloqueia ele; ajuda a entender a base do controlador).
 
 ## Próxima semana (Sprint 25)
@@ -37,17 +37,17 @@ Pivotou em 20/07: o foco da Sprint 25 passou a ser o backend da tela de **Evento
 
 Movido pra pasta `Sprint/sem prazo` - não é dessa semana nem da próxima:
 
-- **Eventos de câmeras**: a base 2220-2223 entrou na Sprint 25 em 20/07; só o 2224 (condicional) segue sem prazo. [[Eventos de câmeras - backend]].
-- **SOFTWARE-2200 - Prova de campo do analítico em container** - [[SOFTWARE-2200 - Prova de campo do analítico em container]]: a contraparte do 2134 (câmera comum sem edge → detecção atuando no controlador via ACOM). É onde as decisões borda-vs-CV-própria e atuação-hardware-vs-software se resolvem.
-- **SOFTWARE-2201 - Integração videowall externo (NovaStar H9)** - [[SOFTWARE-2201 - Integração videowall externo (NovaStar H9)]]: Attlas comanda o mural de LED por Open API (TCP-IP), exigido pelo contrato de Quito. Adaptador `INT-*` novo, provável em `ms-cameras`.
+- **Eventos de câmeras**: a base 2220-2223 entrou na Sprint 25 em 20/07; só o 2224 (condicional) segue sem prazo. [[S25-09 - Câmeras - Eventos, incidentes e alarmes - Backend da tela de eventos de câmeras]].
+- **SOFTWARE-2200 - Prova de campo do analítico em container** - [[S32-01 - Analítico - Servidor - Prova de campo do analítico em container]]: a contraparte do 2134 (câmera comum sem edge → detecção atuando no controlador via ACOM). É onde as decisões borda-vs-CV-própria e atuação-hardware-vs-software se resolvem.
+- **SOFTWARE-2201 - Integração videowall externo (NovaStar H9)** - [[S28-01 - Câmeras - Videowall - Integração do videowall externo (NovaStar H9)]]: Attlas comanda o mural de LED por Open API (TCP-IP), exigido pelo contrato de Quito. Adaptador `INT-*` novo, provável em `ms-cameras`.
 
 ## Fora do foco (não esquecer)
 
-- **PROJ-009 - worker de partições**: P0 com prazo real - o bootstrap só criou 8 semanas de partições, os inserts param no início de setembro. Contexto na [[SOFTWARE-2004 - Particionamento de tabelas de telemetria de câmeras]] (Sprint 23). Sem card ainda.
+- **PROJ-009 - worker de partições**: P0 com prazo real - o bootstrap só criou 8 semanas de partições, os inserts param no início de setembro. Contexto na [[S23-02 - Câmeras - Saúde e monitoramento - Particionamento de tabelas de telemetria de câmeras]] (Sprint 23). Sem card ainda.
 - **SOFTWARE-2003** - fechar o streaming (F4 + validar em Axis real). Em teste.
 - **SOFTWARE-2016** - filtro de topologia (destrava a PR #643 do front).
-- **SOFTWARE-2009** - fatia 1 da escalabilidade WS (redis-cameras + adapter). [[SOFTWARE-2009 - Escalabilidade horizontal do ms-cameras em Kubernetes|sem prazo]].
-- **SOFTWARE-2005** - permissões (base em `docs/modules/permissions.md`). Rescopado em 31/07 para permissões nas rotas de câmeras, movido para a Sprint 27 em 03/08. [[SOFTWARE-2005 - Permissões nas rotas de câmeras - mapa das 86 rotas|nota atual]].
+- **SOFTWARE-2009** - fatia 1 da escalabilidade WS (redis-cameras + adapter). [[SP-05 - Infraestrutura - Kubernetes - Escalabilidade horizontal do ms-cameras|sem prazo]].
+- **SOFTWARE-2005** - permissões (base em `docs/modules/permissions.md`). Rescopado em 31/07 para permissões nas rotas de câmeras, movido para a Sprint 27 em 03/08. [[S29-16 - Câmeras - Permissões - Mapa das 86 rotas de câmeras|nota atual]].
 - **PR #475** (docs de infra, SOFTWARE-1719) - foi mergeada por engano na develop em 17/7 e revertida no mesmo dia (revert PR #877). O trabalho de infra NÃO está na develop; pra entrar de vez é reabrir PR nova ou reverter o revert.
 
 ## Processo (SDD + gate)

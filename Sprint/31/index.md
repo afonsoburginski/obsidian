@@ -61,7 +61,7 @@ tem duas partes: o que a semana entrega, e o planejamento detalhado logo abaixo.
 
 **Uma tela: métricas do Laço Virtual** (`SOFTWARE-2797`, 5 pts). Fluxo, Volume, Ocupação e Tempo de
 ocupação, mais a tabela de leitura crua, na aba **Métricas** do módulo `analytics`, que hoje cai num
-`SectionPlaceholder` vazio. Detalhe em [[Analítico servidor - Métricas do Laço Virtual (front)]].
+`SectionPlaceholder` vazio. Detalhe em [[S31-01 - Analítico - Métricas - Métricas do Laço Virtual (front)]].
 
 > [!success] Ela entra porque NÃO depende desta sprint
 > [[Analítico - Frontend do attlas-design]] classificava esta superfície como "esperar Sprint 31, não
@@ -83,7 +83,7 @@ backend nenhum, e não é esta sprint que constrói.
 O resto da semana é backend e contrato: o caminho do dado.
 
 > [!success] Escala: três peças entraram em 31/08, além do escopo original dos cards
-> Depois da conversa de arquitetura de 31/08 ([[Analítico - Topologia de serviço do analítico de vídeo]]),
+> Depois da conversa de arquitetura de 31/08 ([[SP-07 - Analítico - Servidor - Topologia de serviço do analítico de vídeo]]),
 > entraram no `SOFTWARE-2695` e no `SOFTWARE-2696`, dentro do escopo de cada um:
 > **inferência sobre o recorte da região** (corta a área inferida em cerca de um décimo),
 > **partição por câmera** (`SHARD_INDEX`/`SHARD_COUNT`, para o pool poder ter réplica sem
@@ -129,7 +129,7 @@ debate. É por isso que os dois cards docs-only somam 5 pontos, não os 15 de re
 >
 > **Atualização de 31/08**: a conta foi de quatro para **um**. O `ms-atspm` e o `ms-dai` também não
 > nascem - são capacidades do mesmo analítico servidor, que passa a se chamar `ms-video-analytics`.
-> Decisão em [[Analítico - Topologia de serviço do analítico de vídeo]]; no repo, `CROSS-077` e
+> Decisão em [[SP-07 - Analítico - Servidor - Topologia de serviço do analítico de vídeo]]; no repo, `CROSS-077` e
 > `ADR-31`. **Não muda nada do escopo desta sprint**: o serviço que os cards 4 a 8 constroem é
 > exatamente esse, e o renome é card próprio, depois de a pilha mergear.
 
@@ -146,18 +146,18 @@ debate. É por isso que os dois cards docs-only somam 5 pontos, não os 15 de re
 que faltava (o 2b, derivação compartilhada) e **a escada deixou de ser uma pilha única de 8**, porque
 metade das dependências que ela declarava não existe no código.
 
-| #   | Card                                                                                                                                                     | Pts | Depende de         | Onde              |
+| ID | Card                                                                                                                                                     | Pts | Depende de         | Onde              |
 | --- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | --- | ------------------ | ----------------- |
-| 1   | [[Analítico servidor - ADR de alimentação e SPEC do ms-virtual-loop\|ADR de alimentação + SPEC do `ms-virtual-loop`]] `[Back]` (`SOFTWARE-2692`)         | 3   | -                  | docs              |
-| 2   | [[Analítico servidor - Contrato de ocupação\|Contrato de ocupação da região]] `[Back]` (`SOFTWARE-2693`)                                                 | 2   | 1                  | `libs/contracts`  |
-| 2b  | [[Analítico servidor - Derivação de ocupação compartilhada\|Derivação de ocupação compartilhada]] `[Back]` (`SOFTWARE-2798`)                             | 2   | 2                  | `@attlas/utils`   |
-| 3   | [[Analítico servidor - Embarcado no contrato de ocupação comum\|Embarcado no contrato de ocupação comum]] `[Back]` (`SOFTWARE-2694`)                     | 2   | 2b                 | `ms-cameras`      |
-| 4   | [[Analítico servidor - Serviço, imagem e ingestão do stream\|Serviço, imagem e ingestão do stream]] `[Back]` (`SOFTWARE-2695`)                           | 5   | 1                  | `ms-virtual-loop` |
-| 5   | [[Analítico servidor - Detecção de objetos por frame\|Detecção de objetos por frame]] `[Back]` (`SOFTWARE-2696`)                                         | 5   | 4                  | `ms-virtual-loop` |
-| 6   | [[Analítico servidor - Laço virtual e ocupação da região\|Laço virtual e ocupação da região]] `[Back]` (`SOFTWARE-2697`)                                 | 2   | 5 e 2b             | `ms-virtual-loop` |
-| 7   | [[Analítico servidor - Vínculo região para endereço de detector\|Vínculo região para endereço de detector]] `[Back]` (`SOFTWARE-2698`)                   | 3   | **só a Sprint 30** | `ms-cameras`      |
-| 8   | [[Analítico servidor - Tradução de endereço e publicação do detector raw\|Tradução de endereço e publicação do detector raw]] `[Back]` (`SOFTWARE-2699`) | 3   | 6 e 7              | `ms-virtual-loop` |
-| 9   | [[Analítico servidor - Métricas do Laço Virtual (front)\|Métricas do Laço Virtual]] `[Front]` (`SOFTWARE-2797`)                                          | 5   | **nada**           | `web-attlas`      |
+| S31-02 | [[S31-02 - Analítico - Servidor - ADR de alimentação e SPEC do ms-virtual-loop\|ADR de alimentação + SPEC do `ms-virtual-loop`]] `[Back]` (`SOFTWARE-2692`)         | 3   | -                  | docs              |
+| S31-03 | [[S31-03 - Analítico - Servidor - Contrato de ocupação\|Contrato de ocupação da região]] `[Back]` (`SOFTWARE-2693`)                                                 | 2   | 1                  | `libs/contracts`  |
+| 2b  | [[S31-04 - Analítico - Servidor - Derivação de ocupação compartilhada\|Derivação de ocupação compartilhada]] `[Back]` (`SOFTWARE-2798`)                             | 2   | 2                  | `@attlas/utils`   |
+| S31-05 | [[S31-05 - Analítico - Servidor - Embarcado no contrato de ocupação comum\|Embarcado no contrato de ocupação comum]] `[Back]` (`SOFTWARE-2694`)                     | 2   | 2b                 | `ms-cameras`      |
+| S31-06 | [[S31-06 - Analítico - Servidor - Serviço, imagem e ingestão do stream\|Serviço, imagem e ingestão do stream]] `[Back]` (`SOFTWARE-2695`)                           | 5   | 1                  | `ms-virtual-loop` |
+| S31-07 | [[S31-07 - Analítico - Servidor - Detecção de objetos por frame\|Detecção de objetos por frame]] `[Back]` (`SOFTWARE-2696`)                                         | 5   | 4                  | `ms-virtual-loop` |
+| S31-08 | [[S31-08 - Analítico - Servidor - Laço virtual e ocupação da região\|Laço virtual e ocupação da região]] `[Back]` (`SOFTWARE-2697`)                                 | 2   | 5 e 2b             | `ms-virtual-loop` |
+| S31-09 | [[S31-09 - Analítico - Servidor - Vínculo região para endereço de detector\|Vínculo região para endereço de detector]] `[Back]` (`SOFTWARE-2698`)                   | 3   | **só a Sprint 30** | `ms-cameras`      |
+| S31-10 | [[S31-10 - Analítico - Servidor - Tradução de endereço e publicação do detector raw\|Tradução de endereço e publicação do detector raw]] `[Back]` (`SOFTWARE-2699`) | 3   | 6 e 7              | `ms-virtual-loop` |
+| S31-01 | [[S31-01 - Analítico - Métricas - Métricas do Laço Virtual (front)\|Métricas do Laço Virtual]] `[Front]` (`SOFTWARE-2797`)                                          | 5   | **nada**           | `web-attlas`      |
 
 ### Estado em 31/08: as 10 frentes abriram juntas
 
@@ -214,7 +214,7 @@ caminho servidor chega no mesmo ponto pela caixa da inferência. Daí para frent
 histerese, transição, publicar só na virada. O plano antigo punha isso dentro do card 3 **e** dentro do
 card 6, em serviços diferentes - o contrato comum acabaria cumprido por duas máquinas de estado
 distintas, que é o que ele existe para impedir. Detalhe em
-[[Analítico servidor - Derivação de ocupação compartilhada]].
+[[S31-04 - Analítico - Servidor - Derivação de ocupação compartilhada]].
 
 **2. O card 3 é mais trabalho do que a nota supunha.** O embarcado **não publica em Kafka nenhum** hoje:
 o consumer lê o broker do device e emite só por WebSocket, para destaque visual no frontend. "Trocar o
@@ -325,16 +325,16 @@ Vai para [[Attlas - Sprint 32]], porque só faz sentido com a cadeia acima de p�
 
 ## Cards da semana
 
-[[Analítico servidor - ADR de alimentação e SPEC do ms-virtual-loop]] ·
-[[Analítico servidor - Contrato de ocupação]] ·
-[[Analítico servidor - Derivação de ocupação compartilhada]] ·
-[[Analítico servidor - Embarcado no contrato de ocupação comum]] ·
-[[Analítico servidor - Serviço, imagem e ingestão do stream]] ·
-[[Analítico servidor - Detecção de objetos por frame]] ·
-[[Analítico servidor - Laço virtual e ocupação da região]] ·
-[[Analítico servidor - Vínculo região para endereço de detector]] ·
-[[Analítico servidor - Tradução de endereço e publicação do detector raw]] ·
-[[Analítico servidor - Métricas do Laço Virtual (front)]]
+[[S31-02 - Analítico - Servidor - ADR de alimentação e SPEC do ms-virtual-loop]] ·
+[[S31-03 - Analítico - Servidor - Contrato de ocupação]] ·
+[[S31-04 - Analítico - Servidor - Derivação de ocupação compartilhada]] ·
+[[S31-05 - Analítico - Servidor - Embarcado no contrato de ocupação comum]] ·
+[[S31-06 - Analítico - Servidor - Serviço, imagem e ingestão do stream]] ·
+[[S31-07 - Analítico - Servidor - Detecção de objetos por frame]] ·
+[[S31-08 - Analítico - Servidor - Laço virtual e ocupação da região]] ·
+[[S31-09 - Analítico - Servidor - Vínculo região para endereço de detector]] ·
+[[S31-10 - Analítico - Servidor - Tradução de endereço e publicação do detector raw]] ·
+[[S31-01 - Analítico - Métricas - Métricas do Laço Virtual (front)]]
 
 ## Ver também
 

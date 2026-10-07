@@ -37,7 +37,7 @@ semana, **in progress** = pegando agora.
 
 ## Entrou em 23/09
 
-- **[[CI - runner profissional em Kubernetes com ARC]].** Levar o CI da VM configurada à mão para um
+- **[[SP-01 - Infraestrutura - CI - Runner profissional em Kubernetes com ARC]].** Levar o CI da VM configurada à mão para um
   serviço autoescalável entre servidores, declarado no repositório e com alerta. A fase 1, versionar o
   que existe e trocar o token por GitHub App, não depende de hardware; o resto depende da compra de
   RAM. Plano em [[Plano - CI profissional em Kubernetes com ARC]].
@@ -119,18 +119,18 @@ semana, **in progress** = pegando agora.
 
 | Card | Título | Status ClickUp | Lista de origem | Nota |
 | --- | --- | --- | --- | --- |
-| [SOFTWARE-2314](https://app.clickup.com/t/86ajpntf3) | Performance do streaming de vídeo (banda, latência, média) | backlog | Sprint 27 (movido de Sprint 26 em 03/08) | [[SOFTWARE-2314 - Performance do streaming de vídeo]] |
-| [SOFTWARE-2315](https://app.clickup.com/t/86ajpntp1) | Comparativo Attlas 25x26: video wall | backlog | Sprint 27 (movido de Sprint 26 em 03/08) | [[SOFTWARE-2315 - Comparativo Attlas 25x26 - video wall]] |
-| [SOFTWARE-2316](https://app.clickup.com/t/86ajpntuq) | Comparativo Attlas 25x26: hardware e streaming | backlog | Sprint 27 (movido de Sprint 26 em 03/08) | [[SOFTWARE-2316 - Comparativo Attlas 25x26 - arquitetura de hardware e streaming]] |
-| ~~[SOFTWARE-2201](https://app.clickup.com/t/86ajj1zdg)~~ | Saiu do sem prazo em 10/08: virou o card da especificação do alvo videowall, submódulo do VMS, comprometido na Sprint 28 (nota movida para a pasta 28) | to do | Sprint 28 | [[SOFTWARE-2201 - Integração videowall externo (NovaStar H9)]] |
-| ~~[SOFTWARE-2200](https://app.clickup.com/t/86ajj1xv4)~~ | Saiu do sem prazo em 25/08: comprometido na [[Attlas - Sprint 32]] (nota movida para a pasta 32), pontos (2) setados no ClickUp | backlog | Sprint 29 (confirmado por leitura direta em 25/08 - nunca chegou a mudar de lista) | [[SOFTWARE-2200 - Prova de campo do analítico em container]] |
-| [SOFTWARE-2134](https://app.clickup.com/t/86ajh9v5j) | Analítico de vídeo ao vivo (detecção + bounding boxes) | Closed em 31/07 (entregue em 15/07; resíduo no SOFTWARE-2391) | Sprint 23 | [[SOFTWARE-2134 - Analítico de vídeo ao vivo (detecção + bounding boxes)]] (fica na pasta 24) |
-| [SOFTWARE-2009](https://app.clickup.com/t/86ajc71x6) | ms-cameras: escalabilidade horizontal em Kubernetes | backlog | Sprint 28 (home movida da Sprint 23 em 10/08; sobra na lista da 27 removida) | [[SOFTWARE-2009 - Escalabilidade horizontal do ms-cameras em Kubernetes]] |
-| ~~[SOFTWARE-2005](https://app.clickup.com/t/86ajc6uzx)~~ | Saiu do sem prazo: rescopado em 31/07 para permissões nas rotas de câmeras (não transferido para o squad 3, ver decisão abaixo), movido para a lista da 27 em 03/08 | to do | Sprint 27 | [[SOFTWARE-2005 - Permissões nas rotas de câmeras - mapa das 86 rotas]] |
+| [SOFTWARE-2314](https://app.clickup.com/t/86ajpntf3) | Performance do streaming de vídeo (banda, latência, média) | backlog | Sprint 27 (movido de Sprint 26 em 03/08) | [[SP-02 - Câmeras - Streaming - Performance do streaming de vídeo]] |
+| [SOFTWARE-2315](https://app.clickup.com/t/86ajpntp1) | Comparativo Attlas 25x26: video wall | backlog | Sprint 27 (movido de Sprint 26 em 03/08) | [[SP-03 - Câmeras - Videowall - Comparativo Attlas 25x26 do video wall]] |
+| [SOFTWARE-2316](https://app.clickup.com/t/86ajpntuq) | Comparativo Attlas 25x26: hardware e streaming | backlog | Sprint 27 (movido de Sprint 26 em 03/08) | [[SP-04 - Câmeras - Streaming - Comparativo Attlas 25x26 de arquitetura de hardware e streaming]] |
+| ~~[SOFTWARE-2201](https://app.clickup.com/t/86ajj1zdg)~~ | Saiu do sem prazo em 10/08: virou o card da especificação do alvo videowall, submódulo do VMS, comprometido na Sprint 28 (nota movida para a pasta 28) | to do | Sprint 28 | [[S28-01 - Câmeras - Videowall - Integração do videowall externo (NovaStar H9)]] |
+| ~~[SOFTWARE-2200](https://app.clickup.com/t/86ajj1xv4)~~ | Saiu do sem prazo em 25/08: comprometido na [[Attlas - Sprint 32]] (nota movida para a pasta 32), pontos (2) setados no ClickUp | backlog | Sprint 29 (confirmado por leitura direta em 25/08 - nunca chegou a mudar de lista) | [[S32-01 - Analítico - Servidor - Prova de campo do analítico em container]] |
+| [SOFTWARE-2134](https://app.clickup.com/t/86ajh9v5j) | Analítico de vídeo ao vivo (detecção + bounding boxes) | Closed em 31/07 (entregue em 15/07; resíduo no SOFTWARE-2391) | Sprint 23 | [[S24-02 - Analítico - Detecção - Vídeo ao vivo com detecção e bounding boxes]] (fica na pasta 24) |
+| [SOFTWARE-2009](https://app.clickup.com/t/86ajc71x6) | ms-cameras: escalabilidade horizontal em Kubernetes | backlog | Sprint 28 (home movida da Sprint 23 em 10/08; sobra na lista da 27 removida) | [[SP-05 - Infraestrutura - Kubernetes - Escalabilidade horizontal do ms-cameras]] |
+| ~~[SOFTWARE-2005](https://app.clickup.com/t/86ajc6uzx)~~ | Saiu do sem prazo: rescopado em 31/07 para permissões nas rotas de câmeras (não transferido para o squad 3, ver decisão abaixo), movido para a lista da 27 em 03/08 | to do | Sprint 27 | [[S29-16 - Câmeras - Permissões - Mapa das 86 rotas de câmeras]] |
 | [SOFTWARE-1263](https://app.clickup.com/t/86ah842t3) | Unificar pastas do Prisma e Database | backlog, prioridade baixa | Quito | sem nota |
 | [SOFTWARE-1363](https://app.clickup.com/t/86aha9whm) | Plano de escalabilidade de streaming em HLS + Cloudflare | em teste (data de 11/05, vencida) | Quito | sem nota |
-| ~~[SOFTWARE-2687](https://app.clickup.com/t/86ak5e33b)~~ | Saturação de banda de saída da EC2 sob carga concorrente de streaming (mediamtx) | **SAIU do sem prazo em 29/08** | Ganhou data: sábado 30/08 em hora extra, decisão do report de 28/08. As correções rápidas já tinham saído na PR #2246; o que restou (cortar o fan-out de pulls na origem, separar o tráfego de controle do de vídeo e levantar a linha de base de carga) virou plano de execução com recorte de PR única. Card segue na lista da Sprint 30 no ClickUp | [[SOFTWARE-2687 - Tráfego na origem, isolamento do controle e linha de base de carga]], achado em [[Streaming - Saturação de banda de saída sob carga concorrente]] |
-| [SOFTWARE-2686](https://app.clickup.com/t/86ak5e32x) | Suportar até 4 laços virtuais por câmera | **SAIU do sem prazo em 28/08** | Entrou na [[Attlas - Sprint 32]] como card 3. A dependência que o segurava (entidade e persistência de região) foi entregue pela Sprint 30, e o card mexe no mesmo domínio de contrato que a Sprint 31 abre. Card segue na lista da Sprint 30 no ClickUp até a lista da 32 existir. Pontos (5) setados em 25/08 | [[SOFTWARE-2686 - Suportar até quatro laços virtuais por câmera|Analítico - Suportar até 4 laços virtuais por câmera]] |
+| ~~[SOFTWARE-2687](https://app.clickup.com/t/86ak5e33b)~~ | Saturação de banda de saída da EC2 sob carga concorrente de streaming (mediamtx) | **SAIU do sem prazo em 29/08** | Ganhou data: sábado 30/08 em hora extra, decisão do report de 28/08. As correções rápidas já tinham saído na PR #2246; o que restou (cortar o fan-out de pulls na origem, separar o tráfego de controle do de vídeo e levantar a linha de base de carga) virou plano de execução com recorte de PR única. Card segue na lista da Sprint 30 no ClickUp | [[S30-01 - Câmeras - Streaming - Tráfego na origem, isolamento do controle e linha de base de carga]], achado em [[SP-06 - Câmeras - Streaming - Saturação de banda de saída sob carga concorrente]] |
+| [SOFTWARE-2686](https://app.clickup.com/t/86ak5e32x) | Suportar até 4 laços virtuais por câmera | **SAIU do sem prazo em 28/08** | Entrou na [[Attlas - Sprint 32]] como card 3. A dependência que o segurava (entidade e persistência de região) foi entregue pela Sprint 30, e o card mexe no mesmo domínio de contrato que a Sprint 31 abre. Card segue na lista da Sprint 30 no ClickUp até a lista da 32 existir. Pontos (5) setados em 25/08 | [[S32-03 - Analítico - Laço virtual - Suportar até quatro laços virtuais por câmera\|Analítico - Suportar até 4 laços virtuais por câmera]] |
 
 ## Frente do analítico em container: reescopada em 24/08, ClickUp reconciliado em 25/08
 
@@ -157,18 +157,18 @@ O que aconteceu com cada card, e o card novo que o substitui:
 
 | Card antigo (Sprint 29, ainda aberto) | Substituto criado em 25/08 | Ação |
 | --- | --- | --- |
-| **2385** (como o vídeo chega no analítico) | [[Analítico servidor - ADR de alimentação e SPEC do ms-virtual-loop]] (`SOFTWARE-2692`) | deletar |
+| **2385** (como o vídeo chega no analítico) | [[S31-02 - Analítico - Servidor - ADR de alimentação e SPEC do ms-virtual-loop]] (`SOFTWARE-2692`) | deletar |
 | **2386** (spec do analítico em container) | `SOFTWARE-2692` (mesma spec, ADR + SPEC juntos) | deletar |
 | **2387** (spec do connector de laço virtual) | resolvido sem substituto - não existe mais serviço connector separado (ver [[Attlas - Sprint 31]]) | deletar |
-| **2388** (embarcado no contrato comum) | [[Analítico servidor - Embarcado no contrato de ocupação comum]] (`SOFTWARE-2694`) | deletar |
-| **2389** (vínculo região-detector) | [[Analítico servidor - Vínculo região para endereço de detector]] (`SOFTWARE-2698`), rescopado sobre a entidade da Sprint 30 | deletar |
-| **2390** (connector: ocupação vira evento) | [[Analítico servidor - Tradução de endereço e publicação do detector raw]] (`SOFTWARE-2699`) | deletar |
-| **2391** (pendências do embarcado) | absorvido pelo [[Analítico - Writer do deviceSourceId e higiene do embarcado]] (`SOFTWARE-2682`, Sprint 30) | deletar |
+| **2388** (embarcado no contrato comum) | [[S31-05 - Analítico - Servidor - Embarcado no contrato de ocupação comum]] (`SOFTWARE-2694`) | deletar |
+| **2389** (vínculo região-detector) | [[S31-09 - Analítico - Servidor - Vínculo região para endereço de detector]] (`SOFTWARE-2698`), rescopado sobre a entidade da Sprint 30 | deletar |
+| **2390** (connector: ocupação vira evento) | [[S31-10 - Analítico - Servidor - Tradução de endereço e publicação do detector raw]] (`SOFTWARE-2699`) | deletar |
+| **2391** (pendências do embarcado) | absorvido pelo [[S30-04 - Analítico - Embarcado - Writer do deviceSourceId e higiene do embarcado]] (`SOFTWARE-2682`, Sprint 30) | deletar |
 | **2392** (recorte da atuação via ACOM) | sem substituto - segue sem prazo, vive no `ms-controllers` | **manter** |
-| **2394** (serviço, imagem, ingestão) | [[Analítico servidor - Serviço, imagem e ingestão do stream]] (`SOFTWARE-2695`) | deletar |
-| **2395** (detecção por frame) | [[Analítico servidor - Detecção de objetos por frame]] (`SOFTWARE-2696`) | deletar |
-| **2396** (laço virtual e ocupação) | [[Analítico servidor - Laço virtual e ocupação da região]] (`SOFTWARE-2697`) | deletar |
-| **2397** (publicar ocupação no Kafka) | [[Analítico servidor - Contrato de ocupação]] (`SOFTWARE-2693`) | deletar |
+| **2394** (serviço, imagem, ingestão) | [[S31-06 - Analítico - Servidor - Serviço, imagem e ingestão do stream]] (`SOFTWARE-2695`) | deletar |
+| **2395** (detecção por frame) | [[S31-07 - Analítico - Servidor - Detecção de objetos por frame]] (`SOFTWARE-2696`) | deletar |
+| **2396** (laço virtual e ocupação) | [[S31-08 - Analítico - Servidor - Laço virtual e ocupação da região]] (`SOFTWARE-2697`) | deletar |
+| **2397** (publicar ocupação no Kafka) | [[S31-03 - Analítico - Servidor - Contrato de ocupação]] (`SOFTWARE-2693`) | deletar |
 | 2398 (escala) | mantido com o mesmo ID, comprometido na [[Attlas - Sprint 32]], pontos (2) setados | manter, sem ação |
 | 2200 (prova de campo) | mantido com o mesmo ID, comprometido na [[Attlas - Sprint 32]], pontos (2) setados | manter, sem ação |
 
@@ -213,7 +213,7 @@ perfis de acesso já `completed` (trabalho restante já tem card dele: SOFTWARE-
 Decisão final do dia, registrada em [[Attlas - Sprint 26]], foi diferente: em vez de transferir, o 2005
 foi **rescopado** para o recorte que é nosso - o mapa das 86 rotas do `ms-cameras` (que não tem nenhum
 decorator de autorização) mais as chaves que faltam no catálogo. O achado colateral (aplicar o
-enforcement) virou card próprio, o [[SOFTWARE-2400 - Aplicar enforcement de permissão nas rotas de câmeras|2400]].
+enforcement) virou card próprio, o [[S29-17 - Câmeras - Permissões - Enforcement de permissão nas rotas de câmeras|2400]].
 Os dois saíram do sem-prazo: moraram na lista da Sprint 27 de 03/08 a 09/08 e, com a 27 encerrada sem
 os cards serem tocados, foram movidos para a lista da Sprint 28 em 10/08, onde seguem (ver
 [[Attlas - Sprint 28]]).
@@ -276,7 +276,7 @@ segue aberto na Sprint 29 e é um dos 11 candidatos a deleção - ver seção ac
 ## Candidatos a card (trabalho sem card hoje)
 
 - **Renomear `ms-virtual-loop` para `ms-video-analytics`**: decidido em 31/08, ver
-  [[Analítico - Topologia de serviço do analítico de vídeo]]. Depois de a pilha da
+  [[SP-07 - Analítico - Servidor - Topologia de serviço do analítico de vídeo]]. Depois de a pilha da
   [[Attlas - Sprint 31]] mergear e **antes** de o ATSPM começar. Toca `apps/`, `project.json`,
   `Dockerfile`, compose, Kong, nome de imagem, `.env*`, Helm e o workflow de deploy - mesma forma do
   renome de VMS. Fazê-lo com feature em voo reescreveria as 10 PRs empilhadas.
@@ -296,15 +296,15 @@ segue aberto na Sprint 29 e é um dos 11 candidatos a deleção - ver seção ac
 
 Notas que existiam na pasta e não estavam ligadas a este índice até a revisão de 23/09.
 
-- [[SOFTWARE-2385 - Alimentação de vídeo do analítico em container]] - [Back] Como o vídeo chega no analítico em container (banda, CPU e teto por instância)
-- [[SOFTWARE-2386 - Especificação do analítico de vídeo em container]] - [Back] Especificação do analítico de vídeo em container
-- [[SOFTWARE-2387 - Especificação do connector de laço virtual]] - [Back] Especificação do connector de laço virtual
-- [[SOFTWARE-2388 - Analítico embarcado no mesmo contrato de ocupação]] - [Back] Analítico embarcado da câmera no mesmo contrato de ocupação
-- [[SOFTWARE-2389 - Vínculo região da câmera para endereço de detector]] - [Back] Vínculo entre região da câmera e endereço de detector. Entregue pelo SOFTWARE-2698 (#2373, 02/09); segue aqui só como registro, marcado para deletar desde 24/08
-- [[SOFTWARE-2390 - Connector de laço virtual - ocupação vira evento de detector]] - [Back] Connector de laço virtual: ocupação vira evento de detector
-- [[SOFTWARE-2391 - Pendências do analítico embarcado]] - [Back] Fechar as pendências do analítico ao vivo embarcado. Absorvido pelo SOFTWARE-2682; marcado para deletar desde 24/08
-- [[SOFTWARE-2392 - Recorte da atuação via ACOM (docs-only)]] - [Back] Recorte da atuação da detecção no controlador via ACOM
-- [[SOFTWARE-2394 - Analítico em container - serviço, imagem e ingestão]] - [Back] Analítico em container: serviço, imagem e ingestão do stream
-- [[SOFTWARE-2395 - Analítico em container - detecção por frame]] - [Back] Analítico em container: detecção de objetos por frame
-- [[SOFTWARE-2396 - Analítico em container - laço virtual e ocupação]] - [Back] Analítico em container: laço virtual e ocupação da região
-- [[SOFTWARE-2397 - Analítico em container - publicar ocupação no Kafka]] - [Back] Analítico em container: publicar a ocupação no Kafka
+- [[SP-08 - Analítico - Servidor - Alimentação de vídeo do analítico em container]] - [Back] Como o vídeo chega no analítico em container (banda, CPU e teto por instância)
+- [[SP-09 - Analítico - Servidor - Especificação do analítico de vídeo em container]] - [Back] Especificação do analítico de vídeo em container
+- [[SP-10 - Analítico - Laço virtual - Especificação do connector de laço virtual]] - [Back] Especificação do connector de laço virtual
+- [[SP-11 - Analítico - Embarcado - Analítico embarcado no mesmo contrato de ocupação]] - [Back] Analítico embarcado da câmera no mesmo contrato de ocupação
+- [[SP-12 - Analítico - Laço virtual - Vínculo região da câmera para endereço de detector]] - [Back] Vínculo entre região da câmera e endereço de detector. Entregue pelo SOFTWARE-2698 (#2373, 02/09); segue aqui só como registro, marcado para deletar desde 24/08
+- [[SP-13 - Analítico - Laço virtual - Connector, ocupação vira evento de detector]] - [Back] Connector de laço virtual: ocupação vira evento de detector
+- [[SP-14 - Analítico - Embarcado - Pendências do analítico embarcado]] - [Back] Fechar as pendências do analítico ao vivo embarcado. Absorvido pelo SOFTWARE-2682; marcado para deletar desde 24/08
+- [[SP-15 - Analítico - ACOM - Recorte da atuação via ACOM (docs-only)]] - [Back] Recorte da atuação da detecção no controlador via ACOM
+- [[SP-16 - Analítico - Servidor - Serviço, imagem e ingestão do analítico em container]] - [Back] Analítico em container: serviço, imagem e ingestão do stream
+- [[SP-17 - Analítico - Servidor - Detecção por frame no analítico em container]] - [Back] Analítico em container: detecção de objetos por frame
+- [[SP-18 - Analítico - Laço virtual - Ocupação no analítico em container]] - [Back] Analítico em container: laço virtual e ocupação da região
+- [[SP-19 - Analítico - Servidor - Publicar ocupação no Kafka no analítico em container]] - [Back] Analítico em container: publicar a ocupação no Kafka

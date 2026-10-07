@@ -34,8 +34,8 @@ backlog (o comparativo pausado). Os outros 4 são do Ricardo, com a tag `attlas2
 | 2357 dashboard sem largura limite em ultra-wide | Closed (29/07) | #1139 |
 | 2356 **validação final do frontend - todas as telas** | Closed (31/07) | #1121 + #1175 |
 | 2384 interseção na edição, cards de eventos e export do dashboard | code review, review dividido em 31/07 | [#1237](https://github.com/atmanadmin/attlas-2026/pull/1237) |
-| ~~2005 permissões nas rotas de câmeras: mapa das 86 rotas e chaves que faltam~~ | movido para a lista da Sprint 27 em 03/08 | [[SOFTWARE-2005 - Permissões nas rotas de câmeras - mapa das 86 rotas]] |
-| ~~2400 aplicar o enforcement de permissão nas rotas de câmeras~~ | movido para a lista da Sprint 27 em 03/08 | [[SOFTWARE-2400 - Aplicar enforcement de permissão nas rotas de câmeras]] |
+| ~~2005 permissões nas rotas de câmeras: mapa das 86 rotas e chaves que faltam~~ | movido para a lista da Sprint 27 em 03/08 | [[S29-16 - Câmeras - Permissões - Mapa das 86 rotas de câmeras]] |
+| ~~2400 aplicar o enforcement de permissão nas rotas de câmeras~~ | movido para a lista da Sprint 27 em 03/08 | [[S29-17 - Câmeras - Permissões - Enforcement de permissão nas rotas de câmeras]] |
 | ~~2314 / 2315 / 2316 comparativo Attlas 25x26~~ | backlog, pausado desde 27/07; movido para a lista da Sprint 27 em 03/08 | [[Sem prazo (backlog)]] |
 
 ### Permissões de câmera entram na semana (31/07)
@@ -63,7 +63,7 @@ regra, então os fluxos principais vão conferidos no `:4200` com login real ant
 ### Continuidade da #1175 - cards novos (31/07)
 
 Três pendências de tela apareceram no uso depois do merge da #1175 e viraram um card só,
-[[SOFTWARE-2384 - Interseção na edição, cards de eventos e export do dashboard|SOFTWARE-2384]]:
+[[S26-01 - Câmeras - Dashboard - Interseção na edição, cards de eventos e export do dashboard|SOFTWARE-2384]]:
 busca de interseção que só funciona no cadastro, barra de variação nos cards de eventos (que a própria
 #1175 introduziu) e os botões de download do dashboard que não baixam nada. Escopo 100% frontend - 
 nenhum dos três precisa de backend. A investigação achou de brinde que o rodapé "Mostrando X de Y" da
@@ -76,15 +76,15 @@ Os 3 cards não têm prazo nem previsão de retomada, e as notas passaram para `
 31/07 - ver [[Sem prazo (backlog)]]. Em 03/08, com a Sprint 26 encerrada, os cards em si
 (status ClickUp) foram movidos para a lista da Sprint 27, mantidos em `backlog`.
 
-- [[SOFTWARE-2314 - Performance do streaming de vídeo]] - medir banda média por stream, latência (TTFF / glass-to-glass) e média geral sob carga; vira baseline pra comparar com o 25.
-- [[SOFTWARE-2315 - Comparativo Attlas 25x26 - video wall]] - funcionalidades, integração, comportamento, regressões.
-- [[SOFTWARE-2316 - Comparativo Attlas 25x26 - arquitetura de hardware e streaming]] - protocolos (WebRTC/HLS), codecs, topologia de relays, pipeline de mídia e recursos de máquina.
+- [[SP-02 - Câmeras - Streaming - Performance do streaming de vídeo]] - medir banda média por stream, latência (TTFF / glass-to-glass) e média geral sob carga; vira baseline pra comparar com o 25.
+- [[SP-03 - Câmeras - Videowall - Comparativo Attlas 25x26 do video wall]] - funcionalidades, integração, comportamento, regressões.
+- [[SP-04 - Câmeras - Streaming - Comparativo Attlas 25x26 de arquitetura de hardware e streaming]] - protocolos (WebRTC/HLS), codecs, topologia de relays, pipeline de mídia e recursos de máquina.
 
 ### QA de funcionalidade (telas) - concluído
 
-- [[SOFTWARE-2317 - Fluxo E2E de cadastro de câmera]] - cadastro, validação de credenciais, assistir (player ao vivo), editar. **Validado 27/07** - achados na própria nota do card (3 bugs corrigidos + 1 doc corrigida no ms-cameras).
-- [[SOFTWARE-2318 - Dashboard de câmeras - validação E2E de dados]] - KPIs, gauge, donuts, marcadores do mapa, heatmap, série de uptime, banda, conectividade. **Validado 27/07** - achados na própria nota do card (0 bugs de código, 1 doc corrigida - 6 specs com rota errada). O front já estava ligado ao backend real desde 25/07 ([[SOFTWARE-2326 - Integração do dashboard de câmeras com o backend real|SOFTWARE-2326]], PR #1058, Closed) - falta só o clique-a-clique visual (Kong do dev defasado da develop).
-- [[SOFTWARE-2319 - Eventos de câmeras - validação E2E de dados]] - lista, filtros, stats, timeline pela cadeia do incidente, recorrência, observações, reportar; side card/drawer + página de detalhes. **Validado 27/07, card fechado no ClickUp em 29/07** - achados na própria nota do card (0 bugs de código).
+- [[S26-02 - Câmeras - Cadastro - Fluxo E2E de cadastro de câmera]] - cadastro, validação de credenciais, assistir (player ao vivo), editar. **Validado 27/07** - achados na própria nota do card (3 bugs corrigidos + 1 doc corrigida no ms-cameras).
+- [[S26-03 - Câmeras - Dashboard - Validação E2E de dados]] - KPIs, gauge, donuts, marcadores do mapa, heatmap, série de uptime, banda, conectividade. **Validado 27/07** - achados na própria nota do card (0 bugs de código, 1 doc corrigida - 6 specs com rota errada). O front já estava ligado ao backend real desde 25/07 ([[S25-28 - Câmeras - Dashboard - Integração do dashboard com o backend real|SOFTWARE-2326]], PR #1058, Closed) - falta só o clique-a-clique visual (Kong do dev defasado da develop).
+- [[S26-04 - Câmeras - Eventos, incidentes e alarmes - Validação E2E de dados de eventos]] - lista, filtros, stats, timeline pela cadeia do incidente, recorrência, observações, reportar; side card/drawer + página de detalhes. **Validado 27/07, card fechado no ClickUp em 29/07** - achados na própria nota do card (0 bugs de código).
 
 ### Clique-a-clique (28/07) - cards novos
 
@@ -92,8 +92,8 @@ O clique-a-clique pelas 3 telas (pendência dos 3 cards acima) rodou em 28/07 no
 que não cabiam no escopo de 2317/2318/2319 viraram 2 cards novos, mesmo prefixo `[QA]`, mesma lista:
 
 - [QA] Painel de operações - câmeras sem geolocalização somem sem aviso ([SOFTWARE-2355](https://app.clickup.com/t/86ajr3feu), PR [#1120](https://github.com/atmanadmin/attlas-2026/pull/1120), CI verde) - spec (`UF-004`) já previa descartar câmera sem coordenada válida, mas o `console.warn` exigido nunca foi implementado; corrigido + bug de `catchError` que apagava a camada inteira numa falha parcial.
-- [QA] Tela de eventos - filtro por dispositivo, período todo e rótulo de comparação ([SOFTWARE-2356](https://app.clickup.com/t/86ajr3ffz), PR [#1121](https://github.com/atmanadmin/attlas-2026/pull/1121), CI verde) - 3 gaps de UI, não bugs de dado (ver [[SOFTWARE-2319 - Eventos de câmeras - validação E2E de dados]]). CI falhou uma vez por flake de infra (testcontainer do `ms-traffic-model` inacessível, nada a ver com o diff) - rerun resolveu. **Este card foi renomeado em 31/07 para "[QA] Validação final do frontend - todas as telas"** e absorveu a segunda rodada de validação; ver a seção da #1175 abaixo. A descrição no ClickUp ainda é a dos 3 gaps de eventos, então título e descrição do card discordam.
-- [QA] Dashboard sem largura limite em telas ultra-wide ([SOFTWARE-2357](https://app.clickup.com/t/86ajr4e0z), PR [#1139](https://github.com/atmanadmin/attlas-2026/pull/1139), CI verde) - ver [[SOFTWARE-2318 - Dashboard de câmeras - validação E2E de dados]]. Branch antiga (cortada antes da #1058 mergear a mesma conversão de mock→real do dashboard); mesclada com a develop em 29/07 mantendo a versão já mergeada + removida uma rota Kong duplicada (`/api/dashboard/kpis` definida duas vezes) achada na mesclagem.
+- [QA] Tela de eventos - filtro por dispositivo, período todo e rótulo de comparação ([SOFTWARE-2356](https://app.clickup.com/t/86ajr3ffz), PR [#1121](https://github.com/atmanadmin/attlas-2026/pull/1121), CI verde) - 3 gaps de UI, não bugs de dado (ver [[S26-04 - Câmeras - Eventos, incidentes e alarmes - Validação E2E de dados de eventos]]). CI falhou uma vez por flake de infra (testcontainer do `ms-traffic-model` inacessível, nada a ver com o diff) - rerun resolveu. **Este card foi renomeado em 31/07 para "[QA] Validação final do frontend - todas as telas"** e absorveu a segunda rodada de validação; ver a seção da #1175 abaixo. A descrição no ClickUp ainda é a dos 3 gaps de eventos, então título e descrição do card discordam.
+- [QA] Dashboard sem largura limite em telas ultra-wide ([SOFTWARE-2357](https://app.clickup.com/t/86ajr4e0z), PR [#1139](https://github.com/atmanadmin/attlas-2026/pull/1139), CI verde) - ver [[S26-03 - Câmeras - Dashboard - Validação E2E de dados]]. Branch antiga (cortada antes da #1058 mergear a mesma conversão de mock→real do dashboard); mesclada com a develop em 29/07 mantendo a versão já mergeada + removida uma rota Kong duplicada (`/api/dashboard/kpis` definida duas vezes) achada na mesclagem.
 
 ### Estado das PRs em 31/07
 
@@ -139,7 +139,7 @@ O que entrou, por spec:
   secundário, pra não arrastar `socket.io` pro `package.json` de quem não tem gateway), Redis
   provisionado pro `ms-cameras` no compose/setup-env, rota Kong do WS de stream e o gauge
   `socketio_redis_adapter_up`. Sem adapter, `server.to(room).emit()` só alcançava os sockets do
-  próprio pod. **É a fatia 1 do [[SOFTWARE-2009 - Escalabilidade horizontal do ms-cameras em Kubernetes]]**,
+  próprio pod. **É a fatia 1 do [[SP-05 - Infraestrutura - Kubernetes - Escalabilidade horizontal do ms-cameras]]**,
   entregue por fora do épico.
 - **PROJ-017** - lease Redis por device (`cameras:monitor:lease:*`): um monitor cluster-wide por
   device, handoff ≤15s no deploy, fallback monitor-tudo com log ERROR quando o Redis cai. Rollup e
@@ -241,8 +241,8 @@ a semana seguinte para **uma frente só, o analítico desacoplado**: renome para
 foram escopados para outra sprint, com o desenho preservado nas notas de domínio. Ver
 [[Attlas - Sprint 27]].
 
-- **Analítico de vídeo começa na semana de 03/08**, puxando de [[SOFTWARE-2200 - Prova de campo do analítico em container]] e [[SOFTWARE-2134 - Analítico de vídeo ao vivo (detecção + bounding boxes)]].
-- **VM com acesso ao dispositivo de videowall a requisitar**: o gestor vai solicitar acesso remoto a uma das máquinas que alcançam o equipamento. Destrava as validações em aberto do [[SOFTWARE-2201 - Integração videowall externo (NovaStar H9)]].
+- **Analítico de vídeo começa na semana de 03/08**, puxando de [[S32-01 - Analítico - Servidor - Prova de campo do analítico em container]] e [[S24-02 - Analítico - Detecção - Vídeo ao vivo com detecção e bounding boxes]].
+- **VM com acesso ao dispositivo de videowall a requisitar**: o gestor vai solicitar acesso remoto a uma das máquinas que alcançam o equipamento. Destrava as validações em aberto do [[S28-01 - Câmeras - Videowall - Integração do videowall externo (NovaStar H9)]].
 - **Renomeação: o "Video Wall" de hoje passa a ser VMS (Video Monitoring System)** e "videowall" fica reservado ao painel físico externo de Quito. Atinge front, MOD-006, contratos e i18n; candidato a card próprio.
 - **Gerenciamento global do videowall externo**, não por sistema/tenant. Requisito novo do 2201, escopo de "global" a definir.
 - Foto do equipamento confirma modelo **H9** (chassi "H9 VIDEO WALL SPLICER", acta da EPMMOP/Quito de 2024-07-09); firmware lido como `V1.9.7.1`, a confirmar na máquina. Foto e ficha em [[Videowall externo (NovaStar H9)]].

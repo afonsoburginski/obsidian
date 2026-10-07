@@ -76,32 +76,32 @@ Para não haver surpresa na revisão:
 
 O sábado de hora extra não é sobra do analítico, que fechou os 11 cards em 28/08. É a frente de
 streaming, com o card que estava sem prazo desde 24/08:
-[[SOFTWARE-2687 - Tráfego na origem, isolamento do controle e linha de base de carga]]. Três
+[[S30-01 - Câmeras - Streaming - Tráfego na origem, isolamento do controle e linha de base de carga]]. Três
 pendências declaradas no report de 28/08: cortar o fan-out de leituras na origem, separar o tráfego de
 controle do de vídeo, e levantar a linha de base de banda, latência e concorrência que hoje não existe.
 Entrega prevista em PR única, porque o teste é manual e iterativo.
 
 ## Cards da semana
 
-Backend e full-stack (PR aberta): [[Analítico - Renumerar a CROSS-032 duplicada]] ·
-[[Analítico - Entidade, persistência de região e unicidade]] ·
-[[Analítico - Writer do deviceSourceId e higiene do embarcado]] ·
-[[Analítico - Compatibilidade por arquitetura de câmera]] ·
-[[Analítico - Healthcheck do analítico]] ·
-[[Analítico - Contagem e dedup de incidente DAI]] ·
-[[Analítico - Preset PTZ com snapshot de região]] ·
-[[Analítico - Fonte da imagem de evidência]]
+Backend e full-stack (PR aberta): [[S30-02 - Processo - Specs - Renumerar a CROSS-032 duplicada]] ·
+[[S30-03 - Analítico - Detecção - Entidade, persistência de região e unicidade]] ·
+[[S30-04 - Analítico - Embarcado - Writer do deviceSourceId e higiene do embarcado]] ·
+[[S30-05 - Analítico - Embarcado - Compatibilidade por arquitetura de câmera]] ·
+[[S30-06 - Analítico - Embarcado - Healthcheck do analítico]] ·
+[[S30-07 - Analítico - Incidentes - Contagem e dedup de incidente DAI]] ·
+[[S30-08 - Analítico - Detecção - Preset PTZ com snapshot de região]] ·
+[[S30-09 - Analítico - Incidentes - Fonte da imagem de evidência]]
 
-Frontend (PR aberta): [[Analítico - Fila de incidentes (front)]] ·
-[[Analítico - Galeria de mídia de evidência (front)]] ·
-[[Analítico - Desenho de região sobre frame congelado (front)]]
+Frontend (PR aberta): [[S30-10 - Analítico - Incidentes - Fila de incidentes (front)]] ·
+[[S30-11 - Analítico - Incidentes - Galeria de mídia de evidência (front)]] ·
+[[S30-12 - Analítico - Detecção - Desenho de região sobre frame congelado (front)]]
 
 
 ## Outras notas desta pasta
 
 Notas que existiam na pasta e não estavam ligadas a este índice até a revisão de 23/09.
 
-- [[Analítico - Controles de tratamento do incidente]] - [Full] Controles de tratamento do incidente do analítico (assumir/resolver)
+- [[S30-13 - Analítico - Incidentes - Controles de tratamento do incidente]] - [Full] Controles de tratamento do incidente do analítico (assumir/resolver)
 
 ## Ver também
 
@@ -129,19 +129,19 @@ Três correções, todas a pedido do user:
 Ordem é caminho crítico. `2677` é a pedra angular - `2682`, `2678`, `2681`, `2683`, `2684` leem a
 entidade que ela cria.
 
-| # | Card | Tipo | Pts | Estado | PR |
+| ID | Card | Tipo | Pts | Estado | PR |
 | --- | --- | --- | --- | --- | --- |
-| 1 | [[Analítico - Renumerar a CROSS-032 duplicada\|Renumerar a `CROSS-032` duplicada]] | `[Back]` | 1 | **mergeada** | [#1999](https://github.com/atmanadmin/attlas-2026/pull/1999) |
-| 2 | [[Analítico - Entidade, persistência de região e unicidade\|Entidade Analítico + região em banco + unicidade]] | `[Back]` | 5 | **mergeada** | [#2000](https://github.com/atmanadmin/attlas-2026/pull/2000) |
-| 3 | [[Analítico - Writer do deviceSourceId e higiene do embarcado\|Writer do `deviceSourceId`]] `bug P0` | `[Back]` | 3 | **mergeada** 27/08 | [#2001](https://github.com/atmanadmin/attlas-2026/pull/2001) |
-| 4 | [[Analítico - Compatibilidade por arquitetura de câmera\|Compatibilidade por arquitetura de câmera]] | `[Full]` | 8 | **mergeada** 27/08 | [#2002](https://github.com/atmanadmin/attlas-2026/pull/2002) |
-| 5 | [[Analítico - Healthcheck do analítico\|Healthcheck do analítico]] | `[Full]` | 5 | **mergeada** | [#2003](https://github.com/atmanadmin/attlas-2026/pull/2003) |
-| 6 | [[Analítico - Contagem e dedup de incidente DAI\|Contagem e dedup de incidente DAI]] | `[Back]` | 5 | **mergeada** 27/08 | [#2004](https://github.com/atmanadmin/attlas-2026/pull/2004) |
-| 7 | [[Analítico - Preset PTZ com snapshot de região\|Preset PTZ com snapshot de região]] | `[Back]` | 5 | **mergeada** 28/08 | [#2005](https://github.com/atmanadmin/attlas-2026/pull/2005) |
-| 8 | [[Analítico - Fonte da imagem de evidência\|Fonte da imagem de evidência]] | `[Back]` | 5 | **mergeada** 28/08 | [#2006](https://github.com/atmanadmin/attlas-2026/pull/2006) |
-| 9 | [[Analítico - Fila de incidentes (front)\|Fila de incidentes]] | `[Front]` | 8 | em review, changes requested | [#2022](https://github.com/atmanadmin/attlas-2026/pull/2022) |
-| 10 | [[Analítico - Galeria de mídia de evidência (front)\|Galeria de mídia de evidência]] | `[Front]` | 3 | mergeada na pilha, sobe com a #2022 | [#2023](https://github.com/atmanadmin/attlas-2026/pull/2023) |
-| 11 | [[Analítico - Desenho de região sobre frame congelado (front)\|Desenho sobre frame congelado]] | `[Front]` | 3 | changes requested + conflito | [#2024](https://github.com/atmanadmin/attlas-2026/pull/2024) |
+| S30-02 | [[S30-02 - Processo - Specs - Renumerar a CROSS-032 duplicada\|Renumerar a `CROSS-032` duplicada]] | `[Back]` | 1 | **mergeada** | [#1999](https://github.com/atmanadmin/attlas-2026/pull/1999) |
+| S30-03 | [[S30-03 - Analítico - Detecção - Entidade, persistência de região e unicidade\|Entidade Analítico + região em banco + unicidade]] | `[Back]` | 5 | **mergeada** | [#2000](https://github.com/atmanadmin/attlas-2026/pull/2000) |
+| S30-04 | [[S30-04 - Analítico - Embarcado - Writer do deviceSourceId e higiene do embarcado\|Writer do `deviceSourceId`]] `bug P0` | `[Back]` | 3 | **mergeada** 27/08 | [#2001](https://github.com/atmanadmin/attlas-2026/pull/2001) |
+| S30-05 | [[S30-05 - Analítico - Embarcado - Compatibilidade por arquitetura de câmera\|Compatibilidade por arquitetura de câmera]] | `[Full]` | 8 | **mergeada** 27/08 | [#2002](https://github.com/atmanadmin/attlas-2026/pull/2002) |
+| S30-06 | [[S30-06 - Analítico - Embarcado - Healthcheck do analítico\|Healthcheck do analítico]] | `[Full]` | 5 | **mergeada** | [#2003](https://github.com/atmanadmin/attlas-2026/pull/2003) |
+| S30-07 | [[S30-07 - Analítico - Incidentes - Contagem e dedup de incidente DAI\|Contagem e dedup de incidente DAI]] | `[Back]` | 5 | **mergeada** 27/08 | [#2004](https://github.com/atmanadmin/attlas-2026/pull/2004) |
+| S30-08 | [[S30-08 - Analítico - Detecção - Preset PTZ com snapshot de região\|Preset PTZ com snapshot de região]] | `[Back]` | 5 | **mergeada** 28/08 | [#2005](https://github.com/atmanadmin/attlas-2026/pull/2005) |
+| S30-09 | [[S30-09 - Analítico - Incidentes - Fonte da imagem de evidência\|Fonte da imagem de evidência]] | `[Back]` | 5 | **mergeada** 28/08 | [#2006](https://github.com/atmanadmin/attlas-2026/pull/2006) |
+| S30-10 | [[S30-10 - Analítico - Incidentes - Fila de incidentes (front)\|Fila de incidentes]] | `[Front]` | 8 | em review, changes requested | [#2022](https://github.com/atmanadmin/attlas-2026/pull/2022) |
+| S30-11 | [[S30-11 - Analítico - Incidentes - Galeria de mídia de evidência (front)\|Galeria de mídia de evidência]] | `[Front]` | 3 | mergeada na pilha, sobe com a #2022 | [#2023](https://github.com/atmanadmin/attlas-2026/pull/2023) |
+| S30-12 | [[S30-12 - Analítico - Detecção - Desenho de região sobre frame congelado (front)\|Desenho sobre frame congelado]] | `[Front]` | 3 | changes requested + conflito | [#2024](https://github.com/atmanadmin/attlas-2026/pull/2024) |
 
 **Mergeado na develop em 28/08: 37 pts** (os 8 cards `[Back]`/`[Full]`, todos). Restante: **14 pts**,
 os 3 cards `[Front]` - nenhum bloqueado por backend, o que falta é fechar review.
@@ -246,7 +246,7 @@ gate é manual: `gh workflow run ci-pr.yml --ref <branch>`.
 | Escala e prova de campo | [[Attlas - Sprint 32]], 4 pts | Dependem da Sprint 31 inteira |
 | Quatro laços por câmera | [[Sem prazo (backlog)]], 5 pts | Requisito decidido, mas é redesenho do contrato de `IVirtualLoopConfig` |
 | ACOM (1:1 com controlador, vínculo com analítico, caller da atuação, tela) | [[Sem prazo (backlog)]], 18 pts | Vive no `ms-controllers`, depende de outro squad, migration com backfill. **Fora do prazo de 18/09 salvo confirmação do user** |
-| ATSPM (unicidade de grupo, snapshot de config, spec do ATSPM) | [[Sem prazo (backlog)]], 10 pts | Sem uma linha de spec. A **decisão do `ms-dai`** saiu daqui em 31/08: ele não nasce, é sub-produto do ATSPM ([[Analítico - Topologia de serviço do analítico de vídeo]]). Mesma ressalva do ACOM |
+| ATSPM (unicidade de grupo, snapshot de config, spec do ATSPM) | [[Sem prazo (backlog)]], 10 pts | Sem uma linha de spec. A **decisão do `ms-dai`** saiu daqui em 31/08: ele não nasce, é sub-produto do ATSPM ([[SP-07 - Analítico - Servidor - Topologia de serviço do analítico de vídeo]]). Mesma ressalva do ACOM |
 | OTA do app embarcado | sem card | Depende do fornecedor do ACAP expor caminho de atualização |
 
 ## Riscos

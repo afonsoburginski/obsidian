@@ -25,7 +25,7 @@ execução de desenho pronto, não descoberta:
    e o termo videowall fica reservado ao painel físico de Quito. Estratégia em 3 fases, arquivo por
    arquivo, em [[VMS]].
 2. **Videowall externo (NovaStar H9).** O Attlas vira cliente da Open API do processador H9 da sala de
-   controle de Quito. Requisitos no card [[SOFTWARE-2201 - Integração videowall externo (NovaStar H9)|SOFTWARE-2201]]
+   controle de Quito. Requisitos no card [[S28-01 - Câmeras - Videowall - Integração do videowall externo (NovaStar H9)|SOFTWARE-2201]]
    e desenho fechado em [[Videowall externo (NovaStar H9)]].
 
 A ordem dentro da semana não é arbitrária: o renome vem primeiro porque o videowall externo cria código
@@ -34,14 +34,14 @@ lista de renome.
 
 ## Comprometido (14 pts)
 
-| # | Card | Pts | Entrega | Dia |
+| ID | Card | Pts | Entrega | Dia |
 | --- | --- | --- | --- | --- |
-| 1 | [[SOFTWARE-2431 - Renome para VMS - fase 0 terminologia\|2431]] `[Back]` renome fase 0, terminologia | 1 | docs-only: gravador externo vira NVR, glossário ganha VMS (a tela) e videowall (o painel físico) | Seg |
-| 2 | [[SOFTWARE-2438 - Renome para VMS - fase 1 API e contratos\|2438]] `[Back]` renome fase 1, API e contratos | 3 | `src/video-wall/` vira `src/vms/`, contratos em `lib/vms/` com alias no barrel, Kong com os dois paths | Seg-Ter |
-| 3 | [[SOFTWARE-2439 - Renome para VMS - fase 2 rota e i18n\|2439]] `[Front]` renome fase 2, rota e i18n | 3 | rota `/cameras/vms` com redirect, `vms.json` nos 4 locales mais bundles, migração do `localStorage` | Ter-Qua |
-| 4 | [[SOFTWARE-2440 - Requisitos do videowall externo em arquivo próprio\|2440]] `[Back]` requisito do alvo videowall | 2 | **absorvido pelo 2201 em 13/08**: os requisitos foram escritos junto com a revisão do MOD e das atômicas | Qua |
-| 5 | [[SOFTWARE-2201 - Integração videowall externo (NovaStar H9)\|2201]] `[Back]` especificação do alvo videowall | 3 | **passou a carregar o replanejamento de 13/08**: o painel espelha a tela em vez de receber cena, e a revisão vai de `cameras.md` até as atômicas | Qui |
-| 6 | [[SOFTWARE-2441 - Codec NovaStar - assinatura e cifra\|2441]] `[Back]` codec NovaStar, assinatura e cifra | 2 | pasta `codec/` com MD5 e DES opcional, golden vectors, fecha sem equipamento | Sex |
+| S28-02 | [[S28-02 - Câmeras - VMS - Renome, fase 0 terminologia\|2431]] `[Back]` renome fase 0, terminologia | 1 | docs-only: gravador externo vira NVR, glossário ganha VMS (a tela) e videowall (o painel físico) | Seg |
+| S28-03 | [[S28-03 - Câmeras - VMS - Renome, fase 1 API e contratos\|2438]] `[Back]` renome fase 1, API e contratos | 3 | `src/video-wall/` vira `src/vms/`, contratos em `lib/vms/` com alias no barrel, Kong com os dois paths | Seg-Ter |
+| S28-04 | [[S28-04 - Câmeras - VMS - Renome, fase 2 rota e i18n\|2439]] `[Front]` renome fase 2, rota e i18n | 3 | rota `/cameras/vms` com redirect, `vms.json` nos 4 locales mais bundles, migração do `localStorage` | Ter-Qua |
+| S28-05 | [[S28-05 - Câmeras - Videowall - Requisitos do videowall externo em arquivo próprio\|2440]] `[Back]` requisito do alvo videowall | 2 | **absorvido pelo 2201 em 13/08**: os requisitos foram escritos junto com a revisão do MOD e das atômicas | Qua |
+| S28-01 | [[S28-01 - Câmeras - Videowall - Integração do videowall externo (NovaStar H9)\|2201]] `[Back]` especificação do alvo videowall | 3 | **passou a carregar o replanejamento de 13/08**: o painel espelha a tela em vez de receber cena, e a revisão vai de `cameras.md` até as atômicas | Qui |
+| S28-06 | [[S28-06 - Câmeras - Videowall - Codec NovaStar, assinatura e cifra\|2441]] `[Back]` codec NovaStar, assinatura e cifra | 2 | pasta `codec/` com MD5 e DES opcional, golden vectors, fecha sem equipamento | Sex |
 
 Os cards 1 e 4 eram de documento e destravavam os demais. Com a absorção do 4 pelo 5, o card de
 especificação passou a ser também o de requisito, e o motivo é que o replanejamento reescreveu os dois ao
@@ -213,9 +213,9 @@ alocado foi o **CROSS-045**.
 
 | Card | PR | Conteúdo |
 | --- | --- | --- |
-| [[SOFTWARE-2431 - Renome para VMS - fase 0 terminologia\|2431]] | [#1438](https://github.com/atmanadmin/attlas-2026/pull/1438) | Spec CROSS-045 mais todo o markdown: prosa dos docs, glossário com os três termos, e o conteúdo de MOD-006, UC-014/015/016, MOD-011 e do `SPEC.md` |
-| [[SOFTWARE-2438 - Renome para VMS - fase 1 API e contratos\|2438]] | [#1439](https://github.com/atmanadmin/attlas-2026/pull/1439) | Só o caminho público: os dois controllers atendem `vms` além de `video-wall`, Kong publica `/api/vms`, testes provam as duas rotas. 7 arquivos |
-| [[SOFTWARE-2439 - Renome para VMS - fase 2 rota e i18n\|2439]] | [#1440](https://github.com/atmanadmin/attlas-2026/pull/1440) | Rota `/cameras/vms` com redirect, namespace i18n, ícones e a chave de armazenamento com migração |
+| [[S28-02 - Câmeras - VMS - Renome, fase 0 terminologia\|2431]] | [#1438](https://github.com/atmanadmin/attlas-2026/pull/1438) | Spec CROSS-045 mais todo o markdown: prosa dos docs, glossário com os três termos, e o conteúdo de MOD-006, UC-014/015/016, MOD-011 e do `SPEC.md` |
+| [[S28-03 - Câmeras - VMS - Renome, fase 1 API e contratos\|2438]] | [#1439](https://github.com/atmanadmin/attlas-2026/pull/1439) | Só o caminho público: os dois controllers atendem `vms` além de `video-wall`, Kong publica `/api/vms`, testes provam as duas rotas. 7 arquivos |
+| [[S28-04 - Câmeras - VMS - Renome, fase 2 rota e i18n\|2439]] | [#1440](https://github.com/atmanadmin/attlas-2026/pull/1440) | Rota `/cameras/vms` com redirect, namespace i18n, ícones e a chave de armazenamento com migração |
 
 Ordem de merge obrigatória, 1438 depois 1439 depois 1440: a PR do frontend só funciona em runtime com
 `/api/vms` já no gateway, e o teste unitário não pega essa dependência.
@@ -224,7 +224,7 @@ Ordem de merge obrigatória, 1438 depois 1439 depois 1440: a PR do frontend só 
 `/api/cameras/vms` caindo no allowlist público por-id do Kong (regex vence prefixo simples) e
 respondendo sem JWT; entrou a rota `ms-cameras-vms-picker` espelhando a `ms-cameras-manufacturers`.
 Os demais: asserção de 201 na paridade do uc-016, paridade do uc-014 comparando o envelope inteiro, e
-os comentários da janela agora ancorados no card de limpeza [[SOFTWARE-2481 - Renome VMS - fase 3 remove o path legado|SOFTWARE-2481]],
+os comentários da janela agora ancorados no card de limpeza [[S29-09 - Câmeras - VMS - Renome, fase 3 remove o path legado|SOFTWARE-2481]],
 criado em 11/08 no `backlog` da lista da 28 (critério para iniciar: deploy do renome em todos os
 ambientes, CROSS-045 seção 6). Threads resolvidas e novo review solicitado.
 
@@ -258,7 +258,7 @@ Outras decisões que saíram da execução:
   repositório e congelados em 21/07 com 40 das 160 chaves do namespace. Eram resíduo do split em
   arquivo por módulo.
 - **O renome das tabelas Prisma continua fora**, junto da migration do cadastro do processador
-  ([[SOFTWARE-2432 - Cadastro do processador H9|2432]]), assim como a pasta do módulo Angular e os
+  ([[S28-07 - Câmeras - Videowall - Cadastro do processador H9|2432]]), assim como a pasta do módulo Angular e os
   selectors, que ficam para o card do dono do módulo.
 
 ### O corte deixou um import órfão, e o CI levou duas execuções para dizer isso
@@ -287,10 +287,10 @@ dev havia 14 horas, e a investigação da reclamação de streaming em cima diss
 problema independente, no player compartilhado. Os dois foram numa PR só porque o segundo só é
 verificável com o serviço no ar.
 
-| # | Card | Pts | Entrega | Dia |
+| ID | Card | Pts | Entrega | Dia |
 | --- | --- | --- | --- | --- |
-| 1 | [[SOFTWARE-2504 - Queda do ms-cameras por env ausente e smoke test cego\|2504]] `[Back]` env obrigatória e smoke test do deploy | 2 | `API_KEY_MASTER_KEY` no `EnvironmentVariables` para abortar na borda, smoke test conferindo cada serviço pelo próprio status | Sex |
-| 2 | [[SOFTWARE-2503 - Qualidade do streaming em todo host do player\|2503]] `[Front]` qualidade manual e adaptativa em todo host | 3 | `StreamQualityController` compartilhado com estado por câmera, eventos ligados nos seis hosts, frames descartados no detector | Sex |
+| S28-08 | [[S28-08 - Infraestrutura - Ambientes - Queda do ms-cameras por env ausente e smoke test cego\|2504]] `[Back]` env obrigatória e smoke test do deploy | 2 | `API_KEY_MASTER_KEY` no `EnvironmentVariables` para abortar na borda, smoke test conferindo cada serviço pelo próprio status | Sex |
+| S28-09 | [[S28-09 - Câmeras - Streaming - Qualidade do streaming em todo host do player\|2503]] `[Front]` qualidade manual e adaptativa em todo host | 3 | `StreamQualityController` compartilhado com estado por câmera, eventos ligados nos seis hosts, frames descartados no detector | Sex |
 
 A lição do 2504 é de processo e não de código: o smoke test do deploy era estruturalmente incapaz de
 detectar a falha mais grave que existe, que é o processo não subir, porque conferia só estados
@@ -311,11 +311,11 @@ reescopou o 2434 e acrescentou dois cards a abrir.
 
 | Card | Pts | Espera o quê |
 | --- | --- | --- |
-| [[SOFTWARE-2432 - Cadastro do processador H9\|2432]] `[Back]` cadastro do processador H9 | 3 | a especificação (2201); migration puramente aditiva sobre tabela que nasce vazia, e o transporte do espelho entra no mesmo cadastro |
-| [[SOFTWARE-2433 - Catálogo de capacidades e cliente da Open API\|2433]] `[Back]` catálogo de capacidades e cliente | 3 | codec e especificação; capacidade presumida responde 501 com código estável |
-| [[SOFTWARE-2434 - Câmeras como fontes IPC\|2434]] `[Back]` **reescopado**: a tela espelhada como fonte do painel | 3 | cadastro e catálogo; cria o caminho de ingestão antes de mandar o equipamento puxar dele |
-| [[SOFTWARE-2435 - Layout, janelas e presets\|2435]] `[Back]` layout, janelas e presets | 3 | **entregue**, e o que faltava dele virou escopo retirado, não dívida |
-| [[SOFTWARE-2436 - Brilho e estado observável\|2436]] `[Back]` brilho e estado observável | 2 | catálogo e cliente; o estado ganha o espelho vigente com dono e início |
+| [[S28-07 - Câmeras - Videowall - Cadastro do processador H9\|2432]] `[Back]` cadastro do processador H9 | 3 | a especificação (2201); migration puramente aditiva sobre tabela que nasce vazia, e o transporte do espelho entra no mesmo cadastro |
+| [[S28-10 - Câmeras - Videowall - Catálogo de capacidades e cliente da Open API\|2433]] `[Back]` catálogo de capacidades e cliente | 3 | codec e especificação; capacidade presumida responde 501 com código estável |
+| [[S29-01 - Câmeras - Videowall - Câmeras como fontes IPC\|2434]] `[Back]` **reescopado**: a tela espelhada como fonte do painel | 3 | cadastro e catálogo; cria o caminho de ingestão antes de mandar o equipamento puxar dele |
+| [[S28-11 - Câmeras - Videowall - Layout, janelas e presets\|2435]] `[Back]` layout, janelas e presets | 3 | **entregue**, e o que faltava dele virou escopo retirado, não dívida |
+| [[S29-04 - Câmeras - Videowall - Brilho e estado observável\|2436]] `[Back]` brilho e estado observável | 2 | catálogo e cliente; o estado ganha o espelho vigente com dono e início |
 | a abrir `[Back]` sessão de espelhamento com dono | a pontuar | a fonte do espelho (2434); tomar, liberar e tomada administrativa, com o dono no lease. Atômica `UC-050`, já escrita |
 | a abrir `[Back]` expiração de espelho órfão | a pontuar | a sessão de espelhamento; critério é presença de publicação, nunca contagem de espectadores. Atômica `PROJ-019`, já escrita |
 
@@ -344,14 +344,14 @@ para a captura da tela.
 
 | Card | Pts | Entrega |
 | --- | --- | --- |
-| [[SOFTWARE-2437 - Tela do processador de videowall\|2437]] `[Front]` contratos, serviço e casca da configuração | 3 | contratos do equipamento, serviço REST, rota com as abas e o mapa dos códigos de erro do painel |
-| [[SOFTWARE-2471 - Primitivo compartilhado de menu radial\|2471]] `[Front]` primitivo de menu radial | 3 | `z-radial-menu` em `libs/ui-shared`, reusando o overlay e o hover do `z-menu` já existente |
-| [[SOFTWARE-2472 - Cadastro do processador no frontend\|2472]] `[Front]` cadastro do processador | 3 | formulário com credencial somente escrita, o transporte do espelho e o vínculo com os sistemas autorizados |
-| [[SOFTWARE-2473 - Capacidades e estado observável no frontend\|2473]] `[Front]` capacidades e estado observável | 2 | alcance, firmware lido, espelho vigente com dono e validade por informação; capacidade presumida atenua o controle |
-| [[SOFTWARE-2474 - Câmeras e página web como fontes no frontend\|2474]] `[Front]` **reescopado**: captura da tela e sessão de espelho | 3 | pedir a captura ao browser, publicar, e tratar recusa do diálogo e encerramento pelo controle do browser |
-| [[SOFTWARE-2475 - Prévia da geometria projetada\|2475]] `[Front]` janelas e presets de composição | 3 | **retirado e fechado**: a plataforma deixou de compor a parede |
-| [[SOFTWARE-2476 - Brilho do painel no frontend\|2476]] `[Front]` brilho do painel | 1 | faixa vinda do equipamento, um envio por gesto, nada de intervalo assumido |
-| [[SOFTWARE-2477 - Lançador radial do alvo de exibição\|2477]] `[Front]` lançador radial do alvo de exibição | 2 | tomar e liberar o painel do mosaico, com os itens indisponíveis atenuados e o motivo |
+| [[S28-12 - Câmeras - Videowall - Tela do processador de videowall\|2437]] `[Front]` contratos, serviço e casca da configuração | 3 | contratos do equipamento, serviço REST, rota com as abas e o mapa dos códigos de erro do painel |
+| [[S28-13 - Câmeras - Videowall - Primitivo compartilhado de menu radial\|2471]] `[Front]` primitivo de menu radial | 3 | `z-radial-menu` em `libs/ui-shared`, reusando o overlay e o hover do `z-menu` já existente |
+| [[S28-14 - Câmeras - Videowall - Cadastro do processador no frontend\|2472]] `[Front]` cadastro do processador | 3 | formulário com credencial somente escrita, o transporte do espelho e o vínculo com os sistemas autorizados |
+| [[S29-05 - Câmeras - Videowall - Capacidades e estado observável no frontend\|2473]] `[Front]` capacidades e estado observável | 2 | alcance, firmware lido, espelho vigente com dono e validade por informação; capacidade presumida atenua o controle |
+| [[S29-07 - Câmeras - Videowall - Câmeras e página web como fontes no frontend\|2474]] `[Front]` **reescopado**: captura da tela e sessão de espelho | 3 | pedir a captura ao browser, publicar, e tratar recusa do diálogo e encerramento pelo controle do browser |
+| [[S29-08 - Câmeras - Videowall - Prévia da geometria projetada\|2475]] `[Front]` janelas e presets de composição | 3 | **retirado e fechado**: a plataforma deixou de compor a parede |
+| [[S29-06 - Câmeras - Videowall - Brilho do painel no frontend\|2476]] `[Front]` brilho do painel | 1 | faixa vinda do equipamento, um envio por gesto, nada de intervalo assumido |
+| [[S29-02 - Câmeras - Videowall - Lançador radial do alvo de exibição\|2477]] `[Front]` lançador radial do alvo de exibição | 2 | tomar e liberar o painel do mosaico, com os itens indisponíveis atenuados e o motivo |
 
 ### O vocabulário das telas espelha o VMS (decisão de 13/08)
 
@@ -403,17 +403,17 @@ terem lista ativa, no mesmo padrão do comparativo. As notas foram movidas para 
 
 | Card | Espera o quê |
 | --- | --- |
-| [[SOFTWARE-2005 - Permissões nas rotas de câmeras - mapa das 86 rotas\|2005]] mapa das 86 rotas de câmeras | nada, pronto para começar |
-| [[SOFTWARE-2400 - Aplicar enforcement de permissão nas rotas de câmeras\|2400]] aplicar o enforcement | tabela de decisão do 2005 |
+| [[S29-16 - Câmeras - Permissões - Mapa das 86 rotas de câmeras\|2005]] mapa das 86 rotas de câmeras | nada, pronto para começar |
+| [[S29-17 - Câmeras - Permissões - Enforcement de permissão nas rotas de câmeras\|2400]] aplicar o enforcement | tabela de decisão do 2005 |
 
 **Sem prazo mesmo** (status `backlog`, pausados desde 27/07, ver [[Sem prazo (backlog)]]):
 
 | Card | Espera o quê |
 | --- | --- |
-| [[SOFTWARE-2314 - Performance do streaming de vídeo\|2314]] performance do streaming | instrumentação por câmera |
-| [[SOFTWARE-2315 - Comparativo Attlas 25x26 - video wall\|2315]] comparativo video wall | baseline do 2314 |
-| [[SOFTWARE-2316 - Comparativo Attlas 25x26 - arquitetura de hardware e streaming\|2316]] comparativo hardware/streaming | baseline do 2314 |
-| [[SOFTWARE-2009 - Escalabilidade horizontal do ms-cameras em Kubernetes\|2009]] escalabilidade horizontal (épico) | reescopo do que sobrou após a fatia 1 (PR #1175); home movida da lista da Sprint 23 em 10/08 |
+| [[SP-02 - Câmeras - Streaming - Performance do streaming de vídeo\|2314]] performance do streaming | instrumentação por câmera |
+| [[SP-03 - Câmeras - Videowall - Comparativo Attlas 25x26 do video wall\|2315]] comparativo video wall | baseline do 2314 |
+| [[SP-04 - Câmeras - Streaming - Comparativo Attlas 25x26 de arquitetura de hardware e streaming\|2316]] comparativo hardware/streaming | baseline do 2314 |
+| [[SP-05 - Infraestrutura - Kubernetes - Escalabilidade horizontal do ms-cameras\|2009]] escalabilidade horizontal (épico) | reescopo do que sobrou após a fatia 1 (PR #1175); home movida da lista da Sprint 23 em 10/08 |
 
 ## As duas frentes, em sequência
 
@@ -516,8 +516,8 @@ sempre estiveram). Detalhe do rollover e o que continua em aberto: [[Attlas - Sp
 
 Notas que existiam na pasta e não estavam ligadas a este índice até a revisão de 23/09.
 
-- [[SOFTWARE-2514 - Tomar e liberar o painel]] - [Back] Videowall externo: tomar e liberar o painel
+- [[S28-15 - Câmeras - Videowall - Tomar e liberar o painel]] - [Back] Videowall externo: tomar e liberar o painel
 
 ## Relacionados
 
-[[Attlas - Sprint 27]] · [[Attlas - Sprint 29]] · [[VMS]] · [[Videowall externo (NovaStar H9)]] · [[Cláusula 16.13 do contrato de Quito]] · [[SOFTWARE-2201 - Integração videowall externo (NovaStar H9)]] · [[Sem prazo (backlog)]]
+[[Attlas - Sprint 27]] · [[Attlas - Sprint 29]] · [[VMS]] · [[Videowall externo (NovaStar H9)]] · [[Cláusula 16.13 do contrato de Quito]] · [[S28-01 - Câmeras - Videowall - Integração do videowall externo (NovaStar H9)]] · [[Sem prazo (backlog)]]

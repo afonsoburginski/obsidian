@@ -1,0 +1,35 @@
+---
+id: S25-20
+tags:
+  - attlas
+  - sprint-25
+  - card
+card: SOFTWARE-2215
+epico: SOFTWARE-1899
+frente: Dashboard de câmeras - backend
+sprint: Sprint 25 (20/7/26 - 26/7/26)
+status: Closed
+pontos: 5
+atualizado: 2026-07-28
+aliases:
+  - "SOFTWARE-2215 - Dashboard de câmeras - série de uptime"
+---
+
+# S25-20 - Câmeras - Dashboard - Série de uptime
+
+Backend da série temporal de disponibilidade (uptime). Contrato pronto. 1 PR.
+
+**Endpoint**: `/uptime`
+
+**Contrato**: `IDashboardUptimeSeries { buckets: string[], series: IDashboardScopeSeries[] }`; série = { scopeLabel ("Network" sem escopo), points: [{bucket, value | null}] }. 1 série normal, N em comparação.
+
+**Fonte**: `CameraAvailabilityDailyRollup` (dias fechados: onlineWindows/degradedWindows/offlineWindows) + `CameraAvailabilityWindow` (dia parcial, 5 min). % uptime = onlineWindows / total.
+
+**Agregação (falta)**: somar windows de N câmeras por bucket, por rede/escopo. `health-metrics.composer.ts` compõe `dailyAvailability[]`/`uptimePercent` mas **por câmera única** - generalizar e alinhar buckets ao período ([[S25-17 - Câmeras - Dashboard - Fundação com resolver de período e escopo|2212]]).
+
+**Reuso**: `health-metrics.composer.ts`, `health-range.ts`, `availability.aggregator.ts`.
+
+Edital 4.6 (tendência de disponibilidade). Frente: [[S25-10 - Câmeras - Dashboard - Backend das agregações do dashboard de câmeras]]. Épico SOFTWARE-1899.
+
+---
+**Spec** `apps/ms-cameras/docs/atomic/UC-035-dashboard-uptime-series.md` · **PR** [#858](https://github.com/atmanadmin/attlas-2026/pull/858) (**MERGEADA** 25/07) · **ClickUp** Closed · review interno 24/07: fixes aplicados (1 commit) + atualizada com a develop

@@ -1,0 +1,68 @@
+---
+id: S30-11
+tags:
+  - attlas
+  - task
+  - sprint-30
+  - analitico
+  - frontend
+card: SOFTWARE-2731
+titulo: "[Front] Galeria de mídia de evidência"
+clickup: https://app.clickup.com/t/86ak5veqn
+frente: Analítico
+tamanho: 3 pts
+status: "CÓDIGO MERGEADO na pilha em 27/08. Card criado na reestimativa de 25/08. Irmão de [[S30-09 - Analítico - Incidentes - Fonte da imagem de evidência]] (o backend, já mergeado na develop). Spec UF-035 escrita em 25/08, [PR #2023](https://github.com/atmanadmin/attlas-2026/pull/2023) mergeada em cameras/feat/SOFTWARE-2734 - chega à develop junto com a [[S30-10 - Analítico - Incidentes - Fila de incidentes (front)|fila de incidentes]] (#2022)."
+sprint: "[[Attlas - Sprint 30]]"
+atualizado: 2026-09-26
+aliases:
+  - "Analítico - Galeria de mídia de evidência (front)"
+---
+
+# S30-11 - Analítico - Incidentes - Galeria de mídia de evidência (front)
+
+Porta a galeria de mídia de evidência do `attlas-design` para o `web-attlas`. É o componente mais
+pronto de todo o protótipo, e por isso o mais barato de trazer.
+
+## O que vem do protótipo
+
+De `modulo-analitico/entrega-frontend/src/app/modules/analytics/components/`, conforme
+[[Analítico - Frontend do attlas-design]]:
+
+- `incident-media/` - galeria em 3 abas (imagem, vídeo, anexos do operador)
+- `incident-media-viewer/` - carrossel com navegação, upload via `URL.createObjectURL`, confirmação
+  de remoção
+
+O protótipo reaproveita uma única amostra (`public/analytics-sample-frame.jpg` e `.mp4`) nos 216
+incidentes mockados. Aqui a fonte é a evidência real que o card irmão persiste.
+
+> [!info] Estado em 26/09: a galeria também lê o equipamento
+> Desde a #4889 a galeria junta duas fontes: a evidência que o card irmão persiste e a imagem e o
+> vídeo que o app ATSPM e a câmera guardam do incidente, lidos na hora (UF-035 seção 8.1). O vídeo toca
+> num `<video>` nativo, com o arquivo baixado pelo `HttpClient` para levar o token. Uma fonte que falha
+> não derruba a outra: a galeria mostra o que chegou, e só cai no estado de erro quando alguma fonte
+> falhou e nada chegou. Ver [[Registro - imagem e vídeo do incidente lidos do equipamento em 26 de setembro]].
+
+## O que precisa ser reescrito
+
+1. **Camada de serviço** - trocar a factory de mock (`incident-media.factory.ts`) pelo endpoint real
+   de evidência, e o upload local (`URL.createObjectURL`) pelo upload de verdade contra o object
+   storage que o backend define.
+2. **i18n** nos 3 locales.
+3. **Testes** de componente.
+
+## Depende de uma decisão que não é desta tela
+
+O card irmão ([[S30-09 - Analítico - Incidentes - Fonte da imagem de evidência]]) carrega uma decisão de produto em aberto:
+de onde vem o pixel. Enquanto ela não fecha, esta tela pode ser portada contra o contrato proposto,
+mas não pode ser considerada pronta - se a decisão mudar a origem da imagem, muda o shape do que a
+galeria lista.
+
+## DoD
+
+Galeria no `web-attlas` exibindo evidência real vinda do backend, com as 3 abas, carrossel, upload e
+remoção funcionando contra a API, i18n nos 3 locales e teste de componente.
+
+## Encosta em
+
+- [[S30-09 - Analítico - Incidentes - Fonte da imagem de evidência]] - o backend e a decisão de origem do pixel.
+- [[Analítico - Frontend do attlas-design]] · [[Attlas - Sprint 30]].
