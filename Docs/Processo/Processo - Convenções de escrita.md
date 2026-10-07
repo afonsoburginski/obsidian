@@ -8,10 +8,23 @@ aliases:
   - "Convenções de escrita"
   - "Como escrever"
   - "Plano - atualização da documentação do vault"
-atualizado: 2026-10-02
+atualizado: 2026-10-07
 ---
 
 # Processo - Convenções de escrita
+
+Volta para [[Processo]].
+
+## Resumo
+
+| Texto | Regra principal | Seção |
+| --- | --- | --- |
+| Nota do vault | esqueleto fixo: Resumo primeiro, seções da faceta na ordem, Glossário no fim; só a verdade atual | [[#Estrutura de toda nota]] |
+| Qualquer texto | sem travessão, en-dash, seta e `§`; prosa de dev sênior, sem gíria e sem sigla de spec | [[#Regras que valem para todo texto]] |
+| Descrição de PR | link da task, um parágrafo de intenção e o test plan | [[#Descrição de PR]] |
+| Título de PR | o nome da task, com o tipo pela natureza do trabalho | [[#Título de PR e assignee]] |
+| Review | frase curta de pessoa numa thread, sem formato de ferramenta | [[#Comentário e corpo de review]] |
+| Documento para chefe ou time | público misto, sem nada do processo de desenvolvimento | [[#Documento de público misto (infra, capacidade, apresentação)]] |
 
 Fonte de verdade de **como escrever** no contexto Attlas: descrição e título de PR,
 comentário de review, documento de público misto e as próprias notas deste vault.
@@ -35,6 +48,44 @@ comentário de review, documento de público misto e as próprias notas deste va
   Não repete a arquitetura: explica com exemplo o que a faceta descreve.
 - **Nome e lugar de cada nota** seguem [[Processo - Convenção de nomes]].
 - Data e hora no horário de Brasília. Merge do GitHub vem em UTC e cai no dia seguinte se não for convertido.
+
+### Estrutura de toda nota
+
+Toda nota de `Docs/` segue o mesmo esqueleto, para que a resposta esteja sempre no mesmo lugar:
+
+1. Frontmatter (ver [[Processo - Convenção de nomes]]).
+2. Título `# ` igual ao nome do arquivo.
+3. Uma linha de navegação: `Volta para [[<caminho do domínio>]].` O `index.md` não tem essa linha.
+4. `## Resumo`: a resposta direta ao assunto da nota, em até seis linhas ou numa tabela. Quem lê só o
+   resumo sai sabendo o essencial.
+5. As seções da faceta, na ordem da tabela abaixo.
+6. `## Glossário` no fim, quando a nota usa termo técnico que não é óbvio: tabela `Termo | O que é`.
+
+| Faceta | Seções, nesta ordem |
+| --- | --- |
+| `index.md` | Resumo (o que o domínio é, em duas ou três frases); Notas (tabela `Nota \| Abra quando`); Subdomínios, se houver; Explicações para usuário; Diagramas |
+| Visão do produto | Resumo; O que faz; Para quem; Com o que se relaciona; Glossário |
+| Arquitetura e estratégias | Resumo; Onde está no código (tabela `Caminho \| Papel`); Contratos (rotas, tópicos Kafka, tabelas do banco, cada um em tabela); Por que é assim; Armadilhas conhecidas |
+| Fluxos | Resumo (tabela `Fluxo \| Gatilho \| Resultado`); uma seção por fluxo, sempre com Gatilho, Passos numerados, Resultado e Erros |
+| Requisitos e SLA | Resumo; Regras (tabela `Regra \| Valor \| Onde no código`); Variáveis de ambiente (tabela `Variável \| Padrão \| Efeito`) |
+| Frontend | Resumo; Telas (tabela `Tela \| Rota \| Componente \| O que mostra`); Comportamentos que não são óbvios |
+| Pendências | Resumo; tabela `O que falta \| Por que importa \| Onde` |
+| Runbook | Resumo (tabela `Pergunta \| Seção`); uma seção por pergunta ("Como sei se...", "Como faço..."), cada uma com o comando em bloco de código e a leitura do resultado logo abaixo |
+| Tema | Resumo; seções próprias do assunto; Glossário |
+| Explicação | Resumo em linguagem de usuário; a explicação passo a passo, com um exemplo concreto; sem caminho de código |
+
+Regras de redação que valem dentro desse esqueleto:
+
+- **Uma ideia por parágrafo**, de duas a quatro frases. Comparação, lista de valores e mapa de código vão em
+  tabela, não em parágrafo.
+- **Sem histórico no texto**: nada de número de PR, hash de commit, "desde 16/09" ou "saiu em". O que mudou
+  e não vale mais simplesmente não aparece.
+- **Sigla de spec do repositório** (`UC-*`, `MOD-*`, `INT-*`) só na coluna de código das tabelas, como
+  ponteiro para achar a spec. No texto corrido, o nome da coisa.
+- **Termo técnico explicado na primeira vez** que aparece na nota, em poucas palavras ou no glossário.
+- **Link em vez de repetição**: o fato mora numa nota só, e as outras apontam para ela.
+- Comando que o leitor vai copiar fica em bloco de código, com o placeholder entre `<>` e a credencial em
+  variável (`$CRED`, `$TOKEN`), nunca o valor.
 
 ### Revisar uma nota contra o código
 

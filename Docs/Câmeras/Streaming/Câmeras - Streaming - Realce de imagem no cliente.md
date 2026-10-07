@@ -1,6 +1,7 @@
 ---
 tags:
   - doc
+  - cameras
   - ms-cameras
   - streaming
   - web-attlas
@@ -12,629 +13,464 @@ aliases:
   - "Pesquisa - realce de imagem no cliente"
   - "Pesquisa - melhoria de imagem e upscale"
   - "Streaming - Realce de imagem no cliente"
-atualizado: 2026-10-05
+atualizado: 2026-10-07
 ---
 
 # Câmeras - Streaming - Realce de imagem no cliente
 
-Volta para [[Câmeras - Streaming]]. O catálogo completo de tecnologias e técnicas, cada uma no mesmo modelo e
-com a situação dela, está em [[Câmeras - Streaming - Realce de imagem no cliente - Catálogo de técnicas]].
+Volta para [[Câmeras - Streaming]]. Esta nota diz o que o Attlas faz com a imagem no navegador e por quê. O
+detalhe de cada técnica, inclusive das que o Attlas não usa, está em
+[[Câmeras - Streaming - Realce de imagem no cliente - Catálogo de técnicas]]. O que só a câmera faz está em
+[[Câmeras - Streaming - Qualidade de imagem na câmera]].
 
-Esta nota explica o realce de imagem do player de câmera em ordem fixa. As seções 1 a 10 descrevem o código da
-PR: o resumo, como a estação é classificada, cada tipo de hardware com as tecnologias que ele usa, cada técnica
-de imagem, o que ficou de fora, o governador, o que o operador vê e o estado da PR. As seções 11 a 15 trazem o
-desenho decidido que ainda está em implementação, o resumo do catálogo, o desempenho e a aceleração por
-hardware, a recomendação priorizada e a documentação oficial.
+## Resumo
+
+| Pergunta | Resposta |
+| --- | --- |
+| O que é | Um tratamento de exibição no player de câmera ao vivo: limpa o artefato de compressão, amplia o stream até o tamanho do quadro na tela, dá nitidez e, se o operador quiser, corrige tom e cor |
+| Onde roda | Só no navegador da estação. A câmera, o MediaMTX, a banda e a latência não mudam, e captura de tela, analítico e exportação saem do `<video>` original |
+| Como liga | A fidelidade (redução de artefato, ampliação EASU e nitidez RCAS do FSR 1) é automática com GPU de hardware, sem botão. O tom e cor é o item "Melhoria visual" do menu de configurações, ligado por padrão e lembrado no navegador |
+| Em que hardware | WebGPU de hardware (até 8 players), WebGL2 de hardware (até 4) ou CPU com 8 threads ou mais (1 player, só tom e cor). Sem nenhum dos três, o item não aparece |
+| Na estação de referência | Intel Core 7 150U com Chrome no Linux: sem flags, motor CPU só com tom e cor; com as flags de Vulkan, motor WebGPU com fidelidade automática ([[#Como ligar a aceleração por hardware numa estação Linux com Intel]]) |
+| Sob carga ou falha | Nunca desliga sozinho: o governador desce até o nível leve, e o motor que falha é recriado ou trocado pelo próximo da cadeia |
+| O que falta | A validação A/B numa estação com GPU e numa só com CPU, e os [[#Próximos passos]] |
 
 ![[Câmeras - Streaming - Realce de imagem no cliente - Antes e depois.png]]
 
 *Quadro real da câmera da rua, em 720p. Da esquerda para a direita: original; só redução de artefato e
-nitidez; com tom e cor. No terceiro, contraste da luma 19% maior e saturação média 38% maior, com o
-brilho médio praticamente igual.*
+nitidez; com tom e cor.*
 
-## 1. Resumo
+> [!warning] O terceiro quadro é mais forte que o código
+> O terceiro quadro usa uma calibração de tom e cor mais forte que a do código: nele, o contraste da luma sobe 19% e
+> a saturação média sobe 38%, com o brilho médio praticamente igual. Com os valores em uso ([[#Tom e cor]]), o
+> ganho de cor máximo é de cerca de 1,18 vez, e o efeito na tela é menor.
 
-| Pergunta | Resposta |
+## Decisões
+
+| Decisão | O que vale | Por quê |
+| --- | --- | --- |
+| Lugar do realce | Só no navegador da estação, com GPU e também só com CPU | No servidor, cada stream seria decodificado, filtrado e recodificado: o custo cresce com a frota, soma latência, gasta banda e quebra o passthrough do MediaMTX. Na câmera, a melhora é configuração de equipamento e mexe no analítico |
+| Tipo de filtro | Só filtro determinístico: média condicional, tabela monotônica de tom, ganho de cor que preserva o matiz, ampliação limitada aos vizinhos e nitidez por contraste | Redistribui a informação que o quadro já tem, sem inventar detalhe que pareça real, como uma placa nítida com a letra errada |
+| Ordem dos passes | Limpar, corrigir tom e cor, ampliar, dar nitidez | A ordem de TVs e players: a nitidez por último não amplifica o artefato, e limpeza e tom rodam na resolução do stream, que é a mais barata |
+| Fidelidade | Automática com motor de hardware, sem botão | É só exibição: o canvas fica por cima do `<video>`, que segue intacto e é a fonte de toda captura, análise e exportação |
+| Tom e cor | Item "Melhoria visual", ligado por padrão; desligado pelo operador, fica desligado até ele ligar de novo | Muda a aparência da cena, então é escolha do operador |
+| Calibração do tom e cor | Sutil: esticamento máximo de 1,15 vez, curva S com peso 0,08, ganho de cor 1,03 com vibrance 0,15 | A imagem parece mais limpa e com cor viva, sem cara de filtro |
+| Transparência | Sem selo no badge ao vivo. A linha de estado do menu diz se o realce automático roda, em qual motor e em qual GPU | O ENFSI pede que toda operação adaptativa seja descrita junto da imagem original ([ENFSI](https://enfsi.eu/wp-content/uploads/2017/06/Best-Practice-Manual-for-Forensic-Image-and-Video-Enhancement.pdf)) |
+| Carga | Nada desliga sozinho: o nível leve é o piso, e sem vaga o player mostra o vídeo nativo até a vaga liberar | Realce que some e volta parece defeito |
+| Motor CPU | Só tom e cor, nos dois níveis | Redução de artefato e nitidez custam cerca de 25 ms cada em 720p contra a fatia de 8 ms por quadro |
+| WebGPU e compositor | WebGPU só quando o WebGL2 da mesma estação é de hardware e não é ANGLE sobre OpenGL | Com o compositor em software ou em OpenGL, o canvas WebGPU cai preto de tempos em tempos. Medido: 7 de 14 capturas pretas com o compositor em software; 1 em cada 4 a 5 com ANGLE sobre OpenGL |
+| Super-resolução por IA | Decidida como camada só de exibição, com selo de imagem gerada por IA, em estação que sustente o tempo real. Sem código; entra em PR própria | Nunca é fonte de captura, análise, ANPR ou exportação ([[Câmeras - Streaming - Realce de imagem no cliente - Catálogo de técnicas#Super-resolução por IA como camada de exibição\|catálogo]]) |
+| O que não entra na imagem | Ver [[#O que não entra na imagem]] | Inventa ou desloca informação |
+
+## Onde está no código
+
+Os caminhos da tabela são relativos a `apps/web-attlas/src/app/core/shared/video-enhancement/`, salvo quando
+começam por `apps/`, `libs/` ou `docs/`.
+
+| Caminho | Papel |
 | --- | --- |
-| O que é | Um filtro que melhora a imagem **na tela do operador**: limpa artefato de compressão, corrige contraste e cor, amplia para o tamanho do quadro na tela e dá nitidez |
-| Onde roda | Sempre no navegador da estação. Nunca no servidor, nunca na câmera |
-| O que muda na rede | Nada. O vídeo que sai da câmera, passa pelo MediaMTX e chega ao navegador é o mesmo, com ou sem realce |
-| Em que hardware | GPU de verdade (motor GPU) ou, sem GPU, CPU com pelo menos 8 threads (motor CPU). Sem nenhum dos dois, o botão não aparece |
-| Onde está o código | Só na PR #4280, em draft. **Nada disto está na develop** |
-| Mexe em cor ou saturação? | **Sim.** O passe de tom e cor estica o contraste à faixa que a cena usa e dá saturação com vibrance (seção 5.2), nos dois motores |
-| O que roda na sua estação só CPU | Em 720p, o tom e cor. Redução de artefato e nitidez custam 25 ms cada e não cabem nos 8 ms por quadro (seção 4.2) |
-| O que já está decidido e ainda não está no código | Motores em cadeia (WebGPU, WebGL2, CPU); fidelidade automática (redução de artefato, FSR 1 EASU e RCAS) sem botão; tom e cor num botão de melhoria salvo no navegador; nada se desliga sozinho (seção 11) |
-| O que fazer a seguir | 12 itens em ordem, com ganho, custo e risco (seção 14) |
+| `video-enhancement.providers.ts` | Registra as estratégias de motor, a fonte de pressão da CPU e a preferência; entra no `app-module` |
+| `application/video-enhancement.service.ts` | Fachada que o player conhece: motores e escolha do operador |
+| `application/enhancement-engine-supervisor.ts` | Escolhe o motor, reserva a vaga, recria o motor que falha e põe a estratégia em quarentena |
+| `application/enhancement-session.ts` | Uma sessão por player: laço de quadros, medidas e tamanho na tela |
+| `application/player-enhancement-binding.ts` | Uma sessão por `<video>` ligado, isolando do componente a troca de vídeo |
+| `domain/frame-budget-governor.ts` | Escolhe entre o nível completo e o leve |
+| `domain/utils/resolve-enhancement-plan.util.ts` | Quais passes rodam, em que resolução |
+| `domain/constants/enhancement-plan.constants.ts` | Perfis de passes por motor, parâmetros de tom e cor e limites da ampliação |
+| `domain/constants/enhancement-tone.constants.ts` | Janela de tom, ombro e pé |
+| `domain/constants/enhancement-governor.constants.ts` | Fatias do orçamento por tipo de GPU e por medida de tempo |
+| `domain/constants/enhancement-session.constants.ts` | Vagas por motor, corte de 8 threads e tolerância de 500 ms do plano vazio |
+| `domain/constants/enhancement-hardware.constants.ts` | Padrão de renderizador de software e tabelas de fabricante e classe de GPU |
+| `infrastructure/webgpu/` | Motor WebGPU, com os shaders WGSL em `constants/webgpu-shaders.constants.ts` |
+| `infrastructure/webgl2/` | Motor WebGL2, com os shaders GLSL em `constants/enhancement-shaders.constants.ts` |
+| `infrastructure/cpu/` | Motor CPU: `video-enhancement.worker.ts` e `yuv-enhancement-pipeline.ts` |
+| `infrastructure/browser-enhancement-preference.adapter.ts` | Escolha do tom e cor no `localStorage`, chave `web-attlas:cameras:player-tone-and-color`, valores `on` e `off`; storage bloqueado responde ligado |
+| `apps/web-attlas/src/app/core/shared/components/camera-stream-player/` | O player: host do canvas e o menu de configurações com a seção "Imagem" |
+| `libs/contracts/src/lib/i18n/locales/<locale>/cameras.json` | Textos, chaves `camera.detail.stream.enhancement.*` |
+| `apps/web-attlas/docs/modules/cameras/atomic/UF-044-camera-player-client-image-enhancement.md` | Spec da tela (UF-044) |
+| `docs/modules/cameras.md` | Regra de negócio do realce (RNF-CAM-22) |
 
-> [!important] Regra: realce de imagem é sempre client-side
-> Todo realce, upscale, nitidez ou limpeza de imagem de câmera roda no navegador da estação do operador. Tem
-> de funcionar com GPU e também só com CPU. A estação de referência é um Intel Core 7 150U com o WebGL de
-> hardware desligado.
+## Cadeia de motores
 
-> [!warning] Nada disto está na develop
-> O código vive na PR #4280 (branch `cameras/feat/NO-CARD-client-video-enhancement`), pronta para revisão,
-> sem conflito com a develop e com Lint e Build verdes. Merge só com ordem do dono. Na develop não existem a pasta
-> `apps/web-attlas/src/app/core/shared/video-enhancement/`, a spec
-> `UF-044-camera-player-client-image-enhancement` nem o RNF-CAM-22.
-
-## 2. Por que no cliente e não no servidor ou na câmera
-
-- **No servidor**, cada stream teria de ser decodificado, filtrado e recodificado. O custo cresce junto com a
-  frota de câmeras, soma latência e gasta banda. Também quebraria o passthrough do MediaMTX, que hoje só
-  repassa o vídeo.
-- **Na câmera** é onde a imagem ganha informação de verdade (WDR, bitrate do perfil principal, substream do
-  tamanho certo). Isso é configuração de equipamento, não realce do player. Os ajustes nativos estão em
-  [[Câmeras - Streaming - Qualidade de imagem na câmera]].
-- **Risco forense.** Super-resolução por rede neural inventa detalhe que parece real, por exemplo uma placa
-  nítida com a letra errada. Filtro clássico, com limite explícito, só redistribui o que já está na imagem.
-  Por isso a PR usa só filtros clássicos.
-- **Ordem dos passes**, a mesma de TVs e players de vídeo: limpar na resolução original, ampliar, e dar
-  nitidez por último.
-
-> [!note] Implementado na PR #4280, fora da develop
-> A fidelidade (redução de artefato, EASU e RCAS) passa a ser automática e sem botão (seção 11). Ela continua
-> feita só de filtros determinísticos, que não acrescentam informação, e a evidência continua saindo do `<video>`
-> original. O que muda para quem olha é que, com motor de hardware, a imagem na tela é sempre tratada.
-> Recomendação para o dono decidir: manter um selo discreto quando a fidelidade está ativa, porque o ENFSI pede
-> que toda operação adaptativa seja descrita junto da imagem original (seção 6).
-
-## 3. Como a estação é classificada
-
-A classificação acontece **uma vez por aba do navegador**, quando o primeiro player começa a tocar
-(`BrowserEnhancementCapabilityProbeAdapter.detect()`). O resultado é um destes três:
+Na primeira vez que um player entra em `playing`, o supervisor pergunta a cada motor, em ordem, se a estação o
+comporta. O resultado vale para o app inteiro até a página recarregar. Cada motor é carregado por `import()`
+dinâmico só quando a primeira sessão dele começa, então os shaders e o worker ficam fora dos bundles até lá.
 
 ```mermaid
 flowchart TD
-    A[Primeiro player começou a tocar] --> B{Existe WebGL2 de hardware?}
-    B -- sim --> GPU[Motor GPU]
-    B -- não --> C{"Worker, VideoFrame e OffscreenCanvas existem<br/>e a CPU tem 8 threads ou mais?"}
-    C -- sim --> CPU[Motor CPU]
-    C -- não --> NONE[Sem realce: o botão não aparece]
-```
-
-| Resultado | Condição exata no código | Quantos players ao mesmo tempo |
-| --- | --- | --- |
-| **GPU** | `WebGL2RenderingContext` existe, `getContext('webgl2', { failIfMajorPerformanceCaveat: true })` devolve contexto, e o nome do renderizador **não** é de software (ver seção 4.3) | 4 |
-| **CPU** | não há GPU de hardware, existem `Worker`, `VideoFrame`, `OffscreenCanvas` e `transferControlToOffscreen`, e `navigator.hardwareConcurrency` é 8 ou mais | 1 |
-| **NONE** | nenhum dos dois | 0 |
-
-Duas consequências que valem lembrar:
-
-- **Não há troca no meio do caminho.** Se o motor GPU falhar durante a sessão, aquele player fica sem
-  realce. Ele não tenta a CPU.
-- **O motor só é carregado quando alguém liga o realce**, por `import()` dinâmico. Quem nunca aperta o botão
-  não paga o download do código.
-
-> [!note] Implementado na PR #4280, fora da develop
-> A cadeia passa a ser WebGPU de hardware, depois WebGL2 de hardware, depois CPU, depois nenhum. Motor que falha
-> desce para o próximo em vez de deixar o player sem realce (seção 11).
-
-## 4. Por tipo de hardware
-
-Cada tipo segue o mesmo modelo: quando é usado, quais tecnologias usa, o que faz com a imagem e os limites.
-
-### 4.1 Estação com GPU de hardware (motor GPU)
-
-**Quando é usado.** O navegador oferece WebGL2 acelerado por placa de vídeo, integrada ou dedicada.
-
-**Tecnologias**
-
-| Tecnologia | O que é | Papel aqui | Documentação oficial |
-| --- | --- | --- | --- |
-| WebGL2 | API do navegador para desenhar com a GPU | Roda os três filtros como shaders | [Especificação WebGL 2.0](https://registry.khronos.org/webgl/specs/latest/2.0/) · [MDN WebGL2RenderingContext](https://developer.mozilla.org/en-US/docs/Web/API/WebGL2RenderingContext) |
-| GLSL ES 3.00 | Linguagem dos programas que rodam na GPU (shaders) | Cada filtro é um fragment shader | [Especificação GLSL ES 3.00 (PDF)](https://registry.khronos.org/OpenGL/specs/es/3.0/GLSL_ES_Specification_3.00.pdf) |
-| `failIfMajorPerformanceCaveat` | Opção do `getContext` que recusa um contexto lento demais | Primeiro filtro contra WebGL sem GPU real | [Especificação WebGL 1.0, atributos de contexto](https://registry.khronos.org/webgl/specs/latest/1.0/) · [MDN getContext](https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/getContext) |
-| `WEBGL_debug_renderer_info` | Extensão que diz o nome do renderizador | Segundo filtro: recusa renderizador de software pelo nome | [Khronos](https://registry.khronos.org/webgl/extensions/WEBGL_debug_renderer_info/) · [MDN](https://developer.mozilla.org/en-US/docs/Web/API/WEBGL_debug_renderer_info) |
-| `WEBGL_lose_context` e `webglcontextlost` | Liberar um contexto e saber quando o navegador derrubou um | Descarta o contexto de teste; contexto perdido desliga o realce do player | [Khronos](https://registry.khronos.org/webgl/extensions/WEBGL_lose_context/) · [MDN webglcontextlost](https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/webglcontextlost_event) |
-| `texImage2D` e `texSubImage2D` | Enviar uma imagem para a GPU como textura | Cada quadro do `<video>` vira textura | [MDN texImage2D](https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/texImage2D) · [MDN texSubImage2D](https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/texSubImage2D) |
-| Canvas 2D `getImageData` | Ler os pixels de um canvas comum | A cada 4 quadros, uma cópia de 64x36 do quadro é lida para medir a janela de tom | [MDN getImageData](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/getImageData) · [HTML, canvas](https://html.spec.whatwg.org/multipage/canvas.html) |
-
-**O que faz com a imagem**, em ordem: redução de artefato, tom e cor, ampliação e nitidez (detalhe de
-cada uma na seção 5). Em modo leve, pula a redução de artefato.
-
-**Como funciona por dentro**
-
-1. Um `<canvas>` por player, por cima do `<video>`, na thread principal.
-2. O quadro vai para a GPU como textura RGBA. No primeiro quadro, e quando o tamanho muda, por `texImage2D`;
-   nos outros, por `texSubImage2D`.
-3. Os passes alternam entre dois framebuffers, e o último desenha direto no canvas.
-
-**Limites**
-
-- 4 players com realce ao mesmo tempo, cada um com seu contexto WebGL. O Chromium derruba o contexto mais
-  antigo acima de 16 na aba.
-- O tempo medido é o tempo de JavaScript em volta do envio e do desenho, não o tempo real de execução na
-  GPU. O código não usa timer query.
-
-Código: `infrastructure/gpu/webgl2-enhancement-renderer.adapter.ts`, com `webgl2-shader-program.ts`,
-`webgl2-render-target.ts` e os shaders em `constants/enhancement-shaders.constants.ts`.
-
-### 4.2 Estação sem GPU, só com CPU (motor CPU)
-
-**Quando é usado.** Não há WebGL2 de hardware, mas o navegador tem as APIs abaixo e a CPU tem pelo menos 8
-threads. A estação Dell de referência cai aqui (12 threads).
-
-**Tecnologias**
-
-| Tecnologia | O que é | Papel aqui | Documentação oficial |
-| --- | --- | --- | --- |
-| Web Worker | Código JavaScript rodando em outra thread | Os filtros rodam fora da thread da tela, sem travar a interface | [HTML, Workers](https://html.spec.whatwg.org/multipage/workers.html) · [MDN, objetos transferíveis](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Transferable_objects) · [Angular, web workers](https://angular.dev/ecosystem/web-workers) |
-| WebCodecs `VideoFrame` | Objeto que representa um quadro de vídeo cru | `new VideoFrame(video)` captura o quadro e é transferido ao worker sem cópia; `copyTo` lê os pixels | [W3C WebCodecs](https://www.w3.org/TR/webcodecs/) · [MDN VideoFrame](https://developer.mozilla.org/en-US/docs/Web/API/VideoFrame) · [MDN copyTo](https://developer.mozilla.org/en-US/docs/Web/API/VideoFrame/copyTo) |
-| `OffscreenCanvas` | Canvas que pode ser desenhado fora da thread principal | O canvas do player é entregue ao worker, que desenha nele direto | [HTML, canvas](https://html.spec.whatwg.org/multipage/canvas.html) · [MDN transferControlToOffscreen](https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/transferControlToOffscreen) · [MDN OffscreenCanvasRenderingContext2D](https://developer.mozilla.org/en-US/docs/Web/API/OffscreenCanvasRenderingContext2D) |
-| `navigator.hardwareConcurrency` | Quantas threads lógicas a CPU tem | Corte de 8 threads para ligar o motor CPU | [HTML](https://html.spec.whatwg.org/multipage/workers.html#dom-navigator-hardwareconcurrency) · [MDN](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/hardwareConcurrency) |
-
-**O que faz com a imagem**:
-
-- **Completo**: redução de artefato e nitidez **na luma** (o brilho de cada pixel), mais tom e cor.
-- **Leve**: só tom e cor.
-- **Não amplia**: o compositor do navegador estica o quadro como sempre fez.
-
-O tom é corrigido na luma por uma tabela de 256 entradas, e a cor nos planos de Cb e Cr (ou no plano UV
-intercalado do NV12) por uma tabela de 65.536 pares montada uma vez. Uma consulta de tabela por amostra é o
-que deixa o tom e cor barato.
-
-**Como funciona por dentro**
-
-1. Na thread principal, `new VideoFrame(video)` captura o quadro e o transfere ao worker.
-2. No worker, `frame.copyTo` copia os pixels para um buffer reaproveitado. Os filtros rodam sobre o plano
-   de luma e o tom e cor também sobre os planos de cor (formatos I420, I420A, I422, I444 e NV12).
-3. Um `VideoFrame` novo é montado com o buffer filtrado e desenhado no `OffscreenCanvas`.
-
-**Limites**
-
-- 1 player com realce por vez.
-- **Custo medido** em 720p nesta estação (Intel Core 7 150U, 12 threads), com o código já aquecido:
-
-  | Passe | Custo por quadro |
-  | --- | --- |
-  | Redução de artefato | 24 ms |
-  | Nitidez | 25 ms |
-  | Tom e cor | 4,4 ms |
-  | Orçamento do realce na CPU a 25 fps | 8 ms |
-
-  Por isso o nível leve da CPU é só tom e cor: é o único passe que cabe sozinho. Redução e nitidez entram
-  quando o stream é menor ou a CPU tem folga.
-- Stream de até 921.600 pixels, que é 1280x720. Acima disso fica em espera. O motivo: percorrer um quadro
-  1080p em JavaScript custa de 10 a 20 ms num desktop, perto dos 40 ms que um quadro dura a 25 fps.
-- Quadro não devolvido pelo worker em 1 s desliga o motor daquele player.
-
-Código: `infrastructure/cpu/worker-enhancement-renderer.adapter.ts`, `video-enhancement.worker.ts` e
-`yuv-enhancement-pipeline.ts`.
-
-### 4.3 Estação com WebGL de software (SwiftShader e parecidos)
-
-**Quando acontece.** O navegador oferece WebGL2, mas desenhado pela CPU fingindo ser GPU. É o caso do
-SwiftShader no Chrome, do llvmpipe e do softpipe no Linux e do WARP no Windows.
-
-**O que a PR faz: recusa de propósito.** WebGL de software roda na CPU emulando uma GPU; a PR prefere o motor
-CPU próprio, feito para esse caso. A recusa tem duas camadas:
-
-1. `failIfMajorPerformanceCaveat: true`, que já faz o navegador recusar boa parte desses contextos.
-2. O nome do renderizador passa pela expressão
-   `/swiftshader|llvmpipe|softpipe|lavapipe|software|basic render|warp/i`, que inclui a palavra genérica
-   `software`.
-
-Recusado o WebGL, a estação vai para o motor CPU, se tiver as APIs e as 8 threads.
-
-| Tecnologia | Documentação oficial |
-| --- | --- |
-| SwiftShader no Chromium | [Chromium, SwiftShader](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/gpu/swiftshader.md) · [repositório SwiftShader](https://swiftshader.googlesource.com/SwiftShader) |
-
-O Chromium marcou como descontinuado o fallback automático do WebGL para SwiftShader. Em qualquer caso, a
-PR não conta com ele.
-
-### 4.4 Estação fraca (sem GPU e com menos de 8 threads)
-
-Nenhum motor. O botão **Realçar imagem** não aparece, e isso nunca vira erro para o operador.
-
-### 4.5 Comum aos dois motores
-
-| Tecnologia | O que é | Papel aqui | Documentação oficial |
-| --- | --- | --- | --- |
-| `requestVideoFrameCallback` | Aviso a cada quadro novo do `<video>` | O laço de realce processa um quadro por aviso, um por vez | [WICG](https://wicg.github.io/video-rvfc/) · [MDN](https://developer.mozilla.org/en-US/docs/Web/API/HTMLVideoElement/requestVideoFrameCallback) |
-| `getVideoPlaybackQuality` | Contador de quadros descartados pelo navegador | Se o navegador começa a descartar quadros, o realce baixa de nível | [W3C](https://w3c.github.io/media-playback-quality/) · [MDN](https://developer.mozilla.org/en-US/docs/Web/API/HTMLVideoElement/getVideoPlaybackQuality) |
-| Compute Pressure (`PressureObserver`) | Aviso do navegador de que a CPU está sob pressão | `serious` limita ao modo leve, `critical` desliga | [W3C](https://www.w3.org/TR/compute-pressure/) · [MDN](https://developer.mozilla.org/en-US/docs/Web/API/Compute_Pressure_API) · [Chrome](https://developer.chrome.com/docs/web-platform/compute-pressure) |
-| `ResizeObserver` e `devicePixelRatio` | Tamanho real do quadro do player na tela, em pixels físicos | Decide se amplia, se fica em espera, e o tamanho do canvas | [W3C ResizeObserver](https://www.w3.org/TR/resize-observer/) · [MDN ResizeObserver](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver) · [MDN devicePixelRatio](https://developer.mozilla.org/en-US/docs/Web/API/Window/devicePixelRatio) |
-| `import()` dinâmico | Carregar código só quando preciso | O motor só baixa quando alguém liga o realce | [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import) |
-| Signals do Angular | Estado reativo do Angular | Estado do botão, do nível e da capacidade detectada | [Angular](https://angular.dev/guide/signals) |
-
-## 5. As técnicas de imagem
-
-São quatro, sempre nesta ordem: limpar, corrigir tom e cor, ampliar, dar nitidez. Cada uma no mesmo
-modelo.
-
-### 5.1 Redução de artefato
-
-| | |
-| --- | --- |
-| **O que faz** | Alisa o "chuvisco" de compressão e o contorno fantasma em área lisa, sem borrar a borda dos objetos |
-| **Algoritmo** | Filtro sigma de Lee 3x3: cada pixel vira a média só dos vizinhos com brilho parecido com o dele (diferença de até 0,035 numa escala de 0 a 1). Vizinho muito diferente é borda, e borda não entra na média |
-| **Onde roda** | GPU: em RGB, decidindo pelo brilho (luma BT.709), na resolução do stream. CPU: só na luma, limite 9 numa escala de 0 a 255, sem tocar a borda de 1 pixel da imagem |
-| **Quando** | Só no modo completo |
-| **Referência** | [Lee, 1983, filtro sigma (DOI)](https://doi.org/10.1016/0734-189X(83)90047-6) |
-
-### 5.2 Tom e cor
-
-| | |
-| --- | --- |
-| **O que faz** | Devolve o contraste que a câmera perde com névoa, contraluz ou exposição baixa, e devolve a cor apagada, sem estourar as cores que já são fortes |
-| **Janela de tom** | O histograma do brilho mostra a faixa que a cena usa, deixando de fora 0,5% dos pixels mais escuros e 0,5% dos mais claros. A janela nunca estica a faixa mais de 1,5 vez, porque cena escura ou chapada esticada além disso só aumenta o ruído. É medida a cada 4 quadros e muda devagar (cada medida move 20% da diferença), para a imagem não pulsar quando um farol cruza a cena |
-| **Curva de tom** | O brilho é esticado da janela para a faixa inteira e dobrado por uma curva S leve (`smoothstep` com peso 0,2). A curva é monotônica: nenhum nível de brilho troca de lugar com outro |
-| **Cor** | Cada cor se afasta do cinza por um ganho de `1,12 x (1 + 0,35 x (1 - m))`, em que `m` é a saturação da própria cor, de 0 a 1. Cor apagada ganha até 1,51 vez; cor já forte ganha 1,12 vez. Cb e Cr sobem pelo mesmo fator, então o matiz não muda, e a cor que sairia da faixa válida volta na mesma direção, sem corte por canal |
-| **Onde roda** | CPU: tabelas sobre Y, Cb e Cr do quadro YUV. GPU: um shader sobre RGB, com o mesmo cálculo |
-| **Quando** | Nos níveis completo e leve, nos dois motores |
-| **Código** | `domain/utils/measure-tone-window.util.ts`, `build-tone-lut.util.ts`, `build-chroma-lut.util.ts`, `domain/tone-window-tracker.ts` e `TONE_AND_COLOR_FRAGMENT_SHADER` |
-
-### 5.3 Ampliação (upscale)
-
-| | |
-| --- | --- |
-| **O que faz** | Leva o stream ao tamanho real do quadro na tela, para o navegador não esticar com o filtro simples dele |
-| **Algoritmo** | Catmull-Rom bicúbico, calculado com 9 leituras bilineares, com trava anti-halo: o resultado nunca sai da faixa entre o pixel mais escuro e o mais claro dos 4 vizinhos, o que impede o contorno claro em volta de bordas |
-| **Onde roda** | Só na GPU. A CPU nunca amplia |
-| **Quando** | Só se a tela for pelo menos 10% maior que o stream. Fator máximo de 2x, e saída de no máximo 2560x1440 **em pixels totais** (não por eixo). Acima disso o navegador escala sozinho |
-| **Referência** | [manual do mpv, opção `scale-antiring`](https://mpv.io/manual/stable/), que inspirou a trava |
-
-> [!note] Implementado na PR #4280, fora da develop
-> A ampliação passa a ser o EASU do FSR 1 da AMD, nos motores WebGPU e WebGL2 (seção 11). O Catmull-Rom acima é o
-> que está no código da PR.
-
-### 5.4 Nitidez
-
-| | |
-| --- | --- |
-| **O que faz** | Aumenta o contraste nas bordas, sem estourar o branco ou o preto e reforçando menos o ruído |
-| **Algoritmo** | RCAS, a nitidez do AMD FidelityFX FSR 1 (licença MIT), em cruz de 5 leituras. A força vem de `sharpness`: 0,5 no modo completo e 0,25 no leve |
-| **Onde roda** | GPU: por canal de cor, na resolução de saída, como último passe. CPU: só na luma |
-| **Quando** | Sempre que o realce está ativo |
-| **Por que não o CAS** | O CAS, a outra nitidez da AMD, espera luz linear; em vídeo comum (gamma) ele exagera |
-| **Referência** | [FidelityFX FSR no GitHub](https://github.com/GPUOpen-Effects/FidelityFX-FSR) · [AMD GPUOpen, FSR](https://gpuopen.com/fidelityfx-superresolution/) · [FidelityFX CAS](https://github.com/GPUOpen-Effects/FidelityFX-CAS) |
-
-### 5.5 Quais passes rodam em cada caso
-
-| Motor e nível | Redução de artefato | Tom e cor | Ampliação | Nitidez |
-| --- | --- | --- | --- | --- |
-| GPU, completo | sim | sim | sim | sim |
-| GPU, leve | não | sim | sim | sim |
-| CPU, completo | sim | sim | não | sim |
-| CPU, leve | não | sim | não | não |
-
-**Espera** (nenhum passe, o vídeo aparece como veio): quando o quadro na tela é metade do stream ou menor,
-quando o motor é CPU e o stream passa de 1280x720, ou quando ainda não chegou quadro. Num mosaico 4x4 em
-1080p cada célula tem cerca de 480x270, e a própria redução de tamanho já filtra bloco e ruído.
-
-## 6. O que não está implementado, e por quê
-
-| Ajuste | Está na PR? | Por quê |
-| --- | --- | --- |
-| Balanço de branco | não | O passe de tom e cor não corrige a cor da luz da cena; não está na spec. Recomendado com teto de ganho, para o dono decidir ([[Câmeras - Streaming - Realce de imagem no cliente - Catálogo de técnicas\|catálogo]], seção 5.7) |
-| Brilho e gama manuais | não | O contraste vem da medida da cena, não de um controle do operador |
-| Deband e dither | não | Recomendado com pontilhado de meio nível e sem grão, para o dono decidir (catálogo, seção 5.4) |
-| Super-resolução por rede neural | não, proibida | A rede prevê detalhe a partir de imagens de treino, e numa placa isso troca B por 8 e S por 5 ([arXiv](https://arxiv.org/html/2408.15103)); a própria Microsoft desaconselha super-resolução de vídeo para prova legal ou forense ([Microsoft Learn](https://learn.microsoft.com/en-us/windows/ai/apis/video-super-resolution)), e um tribunal recusou vídeo realçado por IA ([Greenberg Traurig](https://www.gtlaw.com/en/insights/2024/5/washington-court-rejects-novel-use-of-ai-enhanced-video-in-trial)) |
-| Reconstrução por banco de padrões | não, proibida | Cola no quadro detalhe aprendido de outras imagens, que não veio da câmera ([Freeman, Jones e Pasztor, 2002 (DOI)](https://doi.org/10.1109/38.988747)) |
-| Inverse tone mapping | não, proibido | Inventa brilho em realce e sombra que o sensor não registrou; é o que o RTX Video HDR faz ao converter SDR em HDR ([NVIDIA, RTX Video FAQ](https://nvidia.custhelp.com/app/answers/detail/a_id/5448/~/rtx-video-faq)) |
-| Redução de ruído temporal | não, proibida | Mistura quadros e deixa rastro atrás do veículo em movimento (catálogo, seção 6.5) |
-| Grão sintético | não, proibido | Acrescenta textura aleatória que a câmera não gravou e que cobre detalhe fino; o grão do AV1 é recriado no decodificador para imitar o filme, não para mostrar a cena ([Netflix](https://netflixtechblog.com/av1-scale-film-grain-synthesis-the-awakening-ee09cfdff40b)) |
-| Interpolação de quadros | não | Cria um quadro que mostra o veículo numa posição e num instante que a câmera nunca gravou (catálogo, seção 6.4). A spec não a cita pelo nome; recomendação ao dono: incluir nas proibições |
-
-A proibição vem da seção 11 da spec da PR (UF-044), e o princípio da seção 10 dela é o mesmo para todas: o
-realce redistribui a informação que o quadro já tem e não acrescenta nenhuma. O manual de boas práticas do ENFSI
-pede que toda operação adaptativa seja apresentada junto da imagem original, com a descrição do que foi feito
-([ENFSI](https://enfsi.eu/wp-content/uploads/2017/06/Best-Practice-Manual-for-Forensic-Image-and-Video-Enhancement.pdf)).
-
-## 7. Tecnologias mapeadas e que a PR não usa
-
-| Tecnologia | Para que serviria | Por que não está | Documentação oficial |
-| --- | --- | --- | --- |
-| WebGPU | Sucessor do WebGL, com compute shader e medição real de tempo de GPU | Decidido como primeiro motor (seção 11), ainda sem código; na PR os passes rodam em WebGL2 | [W3C WebGPU](https://www.w3.org/TR/webgpu/) · [MDN WebGPU](https://developer.mozilla.org/en-US/docs/Web/API/WebGPU_API) |
-| WebAssembly SIMD | Filtros da CPU em código nativo vetorizado | Pendência: poderia liberar 1080p no motor CPU | [WebAssembly, recursos](https://webassembly.org/features/) · [proposta SIMD](https://github.com/WebAssembly/simd) |
-| `MediaStreamTrackProcessor` | Ler os quadros direto da faixa WebRTC, sem passar pelo `<video>` | Pendência; hoje o quadro sai do `<video>` | [W3C mediacapture-transform](https://w3c.github.io/mediacapture-transform/) · [MDN](https://developer.mozilla.org/en-US/docs/Web/API/MediaStreamTrackProcessor) |
-| CSS `filter` | Brilho, contraste e saturação prontos do navegador | O passe de tom e cor mede a cena; o filtro de CSS aplica um valor fixo e também não amplia nem dá nitidez | [MDN CSS filter](https://developer.mozilla.org/en-US/docs/Web/CSS/filter) |
-| ONNX Runtime Web, TensorFlow.js, WebNN | Rodar rede neural no navegador, inclusive na NPU | Super-resolução neural é proibida (seção 6). Esta estação não tem NPU, e o Chrome no Linux leva a WebNN só à CPU (catálogo, seção 4.11) | [ONNX Runtime Web](https://onnxruntime.ai/docs/tutorials/web/) · [TensorFlow.js](https://www.tensorflow.org/js) · [W3C WebNN](https://www.w3.org/TR/webnn/) |
-
-## 8. Como o realce se liga, baixa e desliga sozinho
-
-O governador (`FrameBudgetGovernor`) olha janelas de 30 quadros e escolhe entre três níveis: **completo**,
-**leve** e **desligado**.
-
-| Situação | O que acontece |
-| --- | --- |
-| O processamento (p90) passa de 8% do intervalo entre quadros na GPU, ou de 20% na CPU | Desce um nível. A 25 fps isso é 3,2 ms na GPU e 8 ms na CPU |
-| Menos de 95% dos quadros saem realçados | Desce um nível |
-| O navegador descarta mais de 1 quadro na janela | Desce um nível |
-| Folga (processamento até metade do limite e nenhum descarte) por `5 x (falhas + 1)` janelas seguidas | Sobe um nível |
-| Compute Pressure `serious` | No máximo o nível leve |
-| Compute Pressure `critical` | Desliga |
-
-**Depois de desligar**, tenta de novo sozinho, sempre voltando no nível leve. O tempo de espera é
-`min(300 s, 10 s x 3^(falhas - 1))`, e **toda descida conta como falha**, inclusive de completo para leve.
-Na prática, partindo do completo: 30 s, 90 s, 270 s e depois 300 s (5 min) em diante.
-
-> [!note] Implementado na PR #4280, fora da develop
-> Nada se desliga sozinho: o governador só troca o nível, e o nível leve tira primeiro a redução de artefato
-> (seção 11).
-
-## 9. O que o operador vê
-
-- Botão **Realçar imagem** (ícone de varinha) na barra de controles de qualquer player ao vivo. É o primeiro
-  a ir para o menu de mais opções quando a barra estreita.
-- Com realce ativo, o selo ao vivo mostra "· Realce".
-- Quando o realce se desliga sozinho, o tooltip diz "Realce pausado para preservar o desempenho".
-- Sem vaga (4 players na GPU, 1 na CPU) ou sem motor naquele momento, o botão volta a desligado e aparece um
-  aviso.
-- O botão começa desligado sempre que o player abre. Nada é guardado no navegador nem no servidor.
-- **Evidência**: captura de tela, analítico, ANPR e exportação saem sempre do `<video>` original. O canvas
-  realçado é só exibição por cima.
-
-> [!note] Implementado na PR #4280, fora da develop
-> Com motor de hardware, a fidelidade (redução de artefato, ampliação e nitidez) é automática em todo player ao
-> vivo e não tem botão. O operador vê só um botão pequeno de melhoria, que liga o tom e cor, existe na GPU e na
-> CPU e fica salvo no navegador. Nada se desliga sozinho: o governador só troca o nível, e contexto perdido recria
-> ou desce de motor. Player além das vagas mostra o vídeo nativo, sem erro e sem aviso. A evidência continua
-> saindo do `<video>` original (seção 11).
-
-## 10. Estado da PR e pendências
-
-- **PR #4280**, "feat: realce de imagem no player de câmera, só na estação, com GPU ou só com CPU", em draft
-  desde 22/09/2026, aprovada em review, com conflito com a develop e sem CI rodado. A decisão é não mergear.
-- **Falta para considerar validada**: a suíte do `web-attlas` verde e a validação A/B abaixo, numa estação
-  com GPU e numa só com CPU.
-- **Validação A/B**, mesmo mosaico com realce ligado e desligado. Passa se não sobem `framesDropped`,
-  `freezeCount` e o tempo médio de decode (`totalDecodeTime` sobre `framesDecoded`), se o `presentedFrames`
-  não abre lacuna, se não aparece Long Animation Frame acima de 50 ms e se o `inboundBytes` do MediaMTX fica
-  igual. Qualidade offline: VMAF NEG e CAMBI contra gravação de bitrate mais alto, e o erro de OCR em recortes
-  de placa nunca pode subir. Referências: [W3C WebRTC Stats](https://w3c.github.io/webrtc-stats/) ·
-  [MDN RTCInboundRtpStreamStats](https://developer.mozilla.org/en-US/docs/Web/API/RTCInboundRtpStreamStats) ·
-  [W3C Long Animation Frames](https://w3c.github.io/long-animation-frames/) ·
-  [Chrome, Long Animation Frames](https://developer.chrome.com/docs/web-platform/long-animation-frames).
-- **Pendências sem decisão**: filtros da CPU em WebAssembly SIMD; `MediaStreamTrackProcessor` no WebRTC;
-  limiar da redução de artefato proporcional ao QP recebido; deband e dither; um contexto WebGL único para o
-  mosaico; medir na máquina alvo o custo da ampliação, da nitidez e do `VideoFrame` em 1080p, que não está
-  publicado. A ordem sugerida para essas pendências, junto das técnicas novas, está na seção 14.
-- **Ideia registrada, sem código**: usar o realce também na imagem e no vídeo de incidente guardados no
-  servidor. Hoje a sessão exige um `<video>` tocando com `requestVideoFrameCallback`.
-
-## 11. Desenho implementado na PR #4280
-
-> [!note] Implementado na PR #4280, fora da develop
-> Esta seção descreve o que a PR #4280 faz hoje. Onde as seções 3 a 9 descrevem o motor antigo da PR (Catmull-Rom,
-> botão único, governador que desliga), vale esta seção.
-
-**Pontas suaves no tom.** O esticamento da janela de tom não corta seco: acima de 0,9 e abaixo de 0,08 um ombro e
-um pé de Hermite cúbico monotônico devolvem o excesso para dentro da faixa (`softToneStretch`, `TONE_SHOULDER_KNEE`,
-`TONE_TOE_KNEE`). Nenhum nível que a câmera não estourou vira branco no realce, então brilho de sol em vidro e
-cromado guarda a gradação. Os sete shaders WGSL e os cinco GLSL compilam na GPU Intel `gen-12lp`.
-
-**Canvas sincronizado com o compositor.** Os motores CPU e WebGL2 desenham sem o modo `desynchronized`, que piscava
-preto no Chrome com composição por software.
-
-**Na câmera não se resolve reflexo de vidro.** O reflexo do céu em para-brisa só sai com filtro polarizador óptico;
-Defog com sol estoura realce e esmaga sombra, e a recuperação de realces da P1475-LE não mudou nada mensurável.
-Detalhe em [[Câmeras - Streaming - Qualidade de imagem na câmera]].
-
-### 11.1 Cadeia de motores
-
-Tudo continua rodando no cliente, nunca no servidor nem na câmera. A estação passa a ser classificada nesta
-ordem:
-
-```mermaid
-flowchart TD
-    A[Primeiro player começou a tocar] --> B{"WebGPU de hardware?<br/>adaptador que não é o de reserva"}
+    A[Primeiro player em playing] --> B{"WebGPU de hardware<br/>e compositor na GPU?"}
     B -- sim --> W[Motor WebGPU]
     B -- não --> C{WebGL2 de hardware?}
     C -- sim --> G[Motor WebGL2]
     C -- não --> D{"Worker, VideoFrame e OffscreenCanvas<br/>e 8 threads ou mais?"}
-    D -- sim --> P[Motor CPU]
-    D -- não --> N[Sem realce: o botão não aparece]
+    D -- sim --> P[Motor CPU, só tom e cor]
+    D -- não --> N[Sem realce: o item não aparece]
 ```
 
-| Motor | Como reconhece hardware de verdade |
-| --- | --- |
-| WebGPU | `navigator.gpu.requestAdapter()` devolve um adaptador, e `adapter.info` diz quem ele é (`vendor`, `architecture`). O adaptador de reserva por software (`isFallbackAdapter`, que nesta estação aparece como `google` e `swiftshader`) é recusado. Com as flags da seção 13.3, esta estação responde `vendor: 'intel'` e `architecture: 'gen-12lp'` |
-| WebGL2 | O nome do renderizador (`WEBGL_debug_renderer_info`) não é de software, como hoje (seção 4.3) |
-| CPU | As mesmas condições de hoje (seção 3) |
-
-### 11.2 O que muda em relação ao código da PR
-
-O realce se divide em duas partes, com regras diferentes:
-
-| Parte | Passes | Como liga | Onde roda |
+| Motor | Condição exata no código | Vagas | Fidelidade automática |
 | --- | --- | --- | --- |
-| **Fidelidade** | Redução de artefato, ampliação pelo EASU do FSR 1 e nitidez RCAS | Automática em todo player ao vivo, sem botão, sempre que existe motor de hardware (WebGPU ou WebGL2 de hardware) | GPU. No motor CPU, só o que couber no orçamento; na estação de referência (Core 7 150U, 720p), nenhum passe de fidelidade cabe, então nenhum roda |
-| **Melhoria** | Só tom e cor: contraste e saturação | Botão pequeno de melhoria, ligado pelo operador e salvo no navegador | GPU e CPU (4,4 ms em 720p na CPU, dentro dos 8 ms) |
+| WebGPU | `navigator.gpu.requestAdapter({ powerPreference: 'high-performance' })` devolve um adaptador que não é fallback (`adapter.info.isFallbackAdapter` ou `adapter.isFallbackAdapter`) e cujo nome não casa com o padrão de software. Além disso, o WebGL2 da estação é de hardware e o renderizador dele não é ANGLE sobre OpenGL | 8 | sim |
+| WebGL2 | `getContext('webgl2', { failIfMajorPerformanceCaveat: true })` devolve contexto, e o renderizador de `WEBGL_debug_renderer_info` não casa com `SOFTWARE_RENDERER_PATTERN` (swiftshader, llvmpipe, softpipe, lavapipe, software, basic render ou warp, sem diferenciar maiúscula) | 4 | sim |
+| CPU | Existem `Worker`, `VideoFrame`, `OffscreenCanvas` e `transferControlToOffscreen`, e `navigator.hardwareConcurrency` é 8 ou mais, o mesmo corte que o Google Meet usa para efeitos no dispositivo ([Google Meet](https://support.google.com/meet/answer/10058482)) | 1 | não: só atende player com tom e cor ligado |
+| Nenhum | Nada acima | 0 | - |
 
-| Ponto | Na PR | Desenho decidido |
+**WebGL de software é recusado de propósito.** SwiftShader, llvmpipe, softpipe, lavapipe e WARP desenham na CPU
+fingindo ser GPU, e o motor CPU foi feito para esse caso. As duas checagens são necessárias: a partir do Chrome 141 o
+fallback automático para SwiftShader não existe e, sem GPU, `getContext('webgl2')` devolve `null`; mas quem força o
+SwiftShader com `--use-angle=swiftshader` recebe um contexto que não aciona o `failIfMajorPerformanceCaveat`.
+
+**Motivo de cada recusa.** O supervisor guarda por que cada motor ficou de fora (`probeFailures`):
+`API_MISSING`, `NO_ADAPTER`, `FALLBACK_ADAPTER`, `NO_CONTEXT`, `SOFTWARE_RENDERER`, `SOFTWARE_COMPOSITOR`,
+`GL_INTEROP_COMPOSITOR`, `INSUFFICIENT_THREADS`, `PROBE_TIMEOUT` ou `PROBE_ERROR`.
+
+**Perfil de hardware.** A detecção monta o perfil com motor, fabricante, classe da GPU (integrada, dedicada ou
+desconhecida), arquitetura e rótulo do renderizador. No WebGPU a fonte é o `adapter.info` (por exemplo `intel` e
+`gen-12lp`); no WebGL2, o renderizador desmascarado. A classe calibra o governador, e motor e fabricante aparecem no
+menu, como "GPU Intel (WebGPU)".
+
+## Motores
+
+| Item | WebGPU | WebGL2 | CPU |
+| --- | --- | --- | --- |
+| Quando é usado | Adaptador de hardware e compositor na GPU | WebGL2 de hardware, com o WebGPU recusado | Sem GPU de hardware, com o item "Melhoria visual" ligado |
+| Vagas | 8 players | 4 players | 1 player |
+| Fidelidade automática | Sim | Sim | Não |
+| Entrada do quadro | `importExternalTexture` do `<video>`, sem cópia; `copyExternalImageToTexture` quando a importação falta ou é recusada | `texImage2D` aloca a textura quando o tamanho muda, e `texSubImage2D` envia cada quadro direto do `<video>`, sem passar pela CPU | `new VideoFrame(video)`, transferido ao worker sem cópia; no worker, `copyTo` para um buffer reaproveitado. São duas cópias por quadro: a leitura e a montagem do quadro realçado |
+| Passes | WGSL, fragment shader; intermediários em `rgba16float` reaproveitados; pipelines compilados na montagem por `createRenderPipelineAsync`, então shader que não compila falha a criação e não o quadro | GLSL ES 3.00, fragment shader; dois framebuffers `RGBA8` alternados, e o último passe desenha no canvas | JavaScript no worker, sobre os planos I420, I420A, I422, I444 ou NV12 |
+| Saída | Canvas `webgpu` no formato de `getPreferredCanvasFormat()`, opaco | Canvas WebGL2 com `desynchronized: false` | `VideoFrame` novo desenhado num `OffscreenCanvas` transferido do canvas do player. Nunca amplia: o compositor do navegador estica |
+| Medida de tempo | `timestamp-query` no início do primeiro passe e no fim do último, quando o adaptador oferece; senão, relógio do JavaScript | `EXT_disjoint_timer_query_webgl2`: consulta `TIME_ELAPSED_EXT` lida alguns quadros depois e descartada quando a GPU marca o intervalo como disjunto; senão, relógio do JavaScript | Relógio do JavaScript |
+| Janela de tom | Cópia de 64x36 do quadro desenhada pela GPU e lida com `mapAsync` fora do laço de quadros, a cada 4 quadros | Cópia de 64x36 lida por canvas 2D (`getImageData`), a cada 4 quadros | Histograma da luma com uma amostra a cada 2 colunas e 2 linhas, a cada 4 quadros. A faixa nominal vem de `VideoFrame.colorSpace.fullRange` |
+| Teto de stream | Nenhum | Nenhum | 921.600 pixels (1280x720). Acima, espera: percorrer um quadro 1080p em JavaScript custa de 10 a 20 ms num desktop |
+| Falha que derruba o motor | `GPUDevice.lost`, evento `uncapturederror`, quadro ilegível, quadro que não termina em 1 s | Contexto perdido (`webglcontextlost`), quadro ilegível (vídeo de outra origem sem CORS) | Worker que falha, quadro que não volta em 1 s, quadro ilegível, formato de pixel sem plano de luma |
+| Timeouts | Adaptador 3 s, device 3 s, pipelines 5 s, quadro 1 s | - | Quadro 1 s |
+| Recurso por player | Um `GPUDevice` | Um contexto WebGL2. Acima de 16 na página, o Chromium derruba o mais antigo | Um worker |
+| Código | `infrastructure/webgpu/` | `infrastructure/webgl2/` | `infrastructure/cpu/` |
+
+**Custo medido no motor CPU**, em 720p na estação de referência (Intel Core 7 150U, 12 threads), em JavaScript
+já aquecido:
+
+| Passe | Custo por quadro |
+| --- | --- |
+| Redução de artefato | 24 ms |
+| Nitidez | 25 ms |
+| Tom e cor | 4,4 ms |
+| Fatia do realce na CPU a 25 fps | 8 ms |
+
+Só o tom e cor cabe na fatia, e por isso o perfil da CPU roda só ele. A redução de artefato e a nitidez existem no
+worker, na luma, e o perfil não as liga. Numa estação só com CPU o player recebe H.264, porque o Chrome só decodifica
+H.265 com hardware ([[Câmeras - Streaming - Codecs]]).
+
+### APIs do navegador que o realce usa
+
+| API | Papel no realce | Documentação oficial |
 | --- | --- | --- |
-| Motores | WebGL2, CPU e nenhum | WebGPU, WebGL2, CPU e nenhum |
-| Identificação do hardware | Nome do renderizador WebGL | `adapter.info` do WebGPU ou nome do renderizador WebGL |
-| Botão | Um botão **Realçar imagem** liga todos os passes | Sem botão para a fidelidade, que é automática. Um botão pequeno de melhoria liga só o tom e cor |
-| Ampliação | Catmull-Rom com trava anti-halo, no WebGL2 | EASU do FSR 1 (AMD, licença MIT), nos motores WebGPU e WebGL2, em qualquer GPU: Intel, AMD ou NVIDIA |
-| Nitidez | RCAS | RCAS, sem mudança |
-| Governador sob carga | Desce até desligar e tenta de novo com recuo | Só troca o nível. O nível leve tira primeiro a redução de artefato. Nada se desliga sozinho |
-| Contexto perdido | Aquele player fica sem realce | Recria o contexto ou desce para o próximo motor |
-| Player além das vagas | O botão volta a desligado, com aviso | Mostra o vídeo nativo, sem erro |
-| Escolha do operador | Começa desligada sempre que o player abre | A melhoria (tom e cor) persiste no navegador da estação |
-| Evidência | Sai do `<video>` original | Sai do `<video>` original, sem mudança |
+| WebGPU | Motor WebGPU: adaptador, device, pipelines, `importExternalTexture`, `timestamp-query`, `mapAsync` | [W3C WebGPU](https://www.w3.org/TR/webgpu/) · [W3C WebGPU, GPUAdapterInfo](https://www.w3.org/TR/webgpu/#gpuadapterinfo) · [MDN WebGPU](https://developer.mozilla.org/en-US/docs/Web/API/WebGPU_API) |
+| WGSL | Linguagem dos shaders do WebGPU | [W3C WGSL](https://www.w3.org/TR/WGSL/) |
+| WebGL2 | Motor WebGL2 | [Especificação WebGL 2.0](https://registry.khronos.org/webgl/specs/latest/2.0/) · [MDN WebGL2RenderingContext](https://developer.mozilla.org/en-US/docs/Web/API/WebGL2RenderingContext) |
+| GLSL ES 3.00 | Linguagem dos shaders do WebGL2 | [Especificação GLSL ES 3.00 (PDF)](https://registry.khronos.org/OpenGL/specs/es/3.0/GLSL_ES_Specification_3.00.pdf) |
+| `failIfMajorPerformanceCaveat` | Recusa contexto WebGL lento demais | [Especificação WebGL 1.0, atributos de contexto](https://registry.khronos.org/webgl/specs/latest/1.0/) · [MDN getContext](https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/getContext) |
+| `WEBGL_debug_renderer_info` | Nome do renderizador, para recusar software e achar o fabricante | [Khronos](https://registry.khronos.org/webgl/extensions/WEBGL_debug_renderer_info/) · [MDN](https://developer.mozilla.org/en-US/docs/Web/API/WEBGL_debug_renderer_info) |
+| `WEBGL_lose_context` e `webglcontextlost` | Libera o contexto de teste; contexto perdido conta como falha do motor | [Khronos](https://registry.khronos.org/webgl/extensions/WEBGL_lose_context/) · [MDN webglcontextlost](https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/webglcontextlost_event) |
+| `texImage2D` e `texSubImage2D` | Quadro do `<video>` como textura no WebGL2 | [MDN texImage2D](https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/texImage2D) · [MDN texSubImage2D](https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/texSubImage2D) |
+| `EXT_disjoint_timer_query_webgl2` | Tempo de GPU dos passes no WebGL2 | [Khronos](https://registry.khronos.org/webgl/extensions/EXT_disjoint_timer_query_webgl2/) |
+| Canvas 2D `getImageData` | Leitura da cópia de 64x36 para a janela de tom no WebGL2 | [MDN getImageData](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/getImageData) · [HTML, canvas](https://html.spec.whatwg.org/multipage/canvas.html) |
+| Web Worker | Os filtros da CPU rodam fora da thread da tela | [HTML, Workers](https://html.spec.whatwg.org/multipage/workers.html) · [MDN, objetos transferíveis](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Transferable_objects) · [Angular, web workers](https://angular.dev/ecosystem/web-workers) |
+| WebCodecs `VideoFrame` | Captura o quadro e o transfere ao worker sem cópia; `copyTo` lê os pixels | [W3C WebCodecs](https://www.w3.org/TR/webcodecs/) · [MDN VideoFrame](https://developer.mozilla.org/en-US/docs/Web/API/VideoFrame) · [MDN copyTo](https://developer.mozilla.org/en-US/docs/Web/API/VideoFrame/copyTo) |
+| `OffscreenCanvas` | O canvas do player é entregue ao worker, que desenha nele direto | [MDN transferControlToOffscreen](https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/transferControlToOffscreen) · [MDN OffscreenCanvasRenderingContext2D](https://developer.mozilla.org/en-US/docs/Web/API/OffscreenCanvasRenderingContext2D) |
+| `navigator.hardwareConcurrency` | Corte de 8 threads do motor CPU | [HTML](https://html.spec.whatwg.org/multipage/workers.html#dom-navigator-hardwareconcurrency) · [MDN](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/hardwareConcurrency) |
+| `requestVideoFrameCallback` | O laço de realce processa um quadro por aviso, um por vez | [WICG](https://wicg.github.io/video-rvfc/) · [MDN](https://developer.mozilla.org/en-US/docs/Web/API/HTMLVideoElement/requestVideoFrameCallback) |
+| `getVideoPlaybackQuality` | Contador de quadros descartados pelo navegador, que o governador lê | [W3C](https://w3c.github.io/media-playback-quality/) · [MDN](https://developer.mozilla.org/en-US/docs/Web/API/HTMLVideoElement/getVideoPlaybackQuality) |
+| Compute Pressure (`PressureObserver`) | `serious` e `critical` limitam ao nível leve | [W3C](https://www.w3.org/TR/compute-pressure/) · [MDN](https://developer.mozilla.org/en-US/docs/Web/API/Compute_Pressure_API) · [Chrome](https://developer.chrome.com/docs/web-platform/compute-pressure) |
+| `ResizeObserver` e `devicePixelRatio` | Tamanho real do quadro na tela, em pixels físicos: decide ampliação, espera e tamanho do canvas | [W3C ResizeObserver](https://www.w3.org/TR/resize-observer/) · [MDN ResizeObserver](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver) · [MDN devicePixelRatio](https://developer.mozilla.org/en-US/docs/Web/API/Window/devicePixelRatio) |
+| `import()` dinâmico | O motor só baixa quando a primeira sessão dele começa | [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import) |
+| Signals do Angular | Estado do item, do nível, do perfil de hardware e da capacidade detectada | [Angular](https://angular.dev/guide/signals) |
 
-### 11.3 Consequências do desenho
+## Os passes de imagem
 
-- **Níveis da fidelidade.** Completo: redução de artefato, ampliação e nitidez. Leve: ampliação e nitidez, sem a
-  redução de artefato. O tom e cor não entra nesses níveis: depende só do botão de melhoria.
-- **Todo sinal de carga só troca o nível.** A pressão `critical` da Compute Pressure, que hoje desliga (seção 8),
-  passa a limitar ao nível leve. É consequência da regra; conferir no código quando a implementação terminar.
-- **Se nem o nível leve couber, o tratamento passa a custar quadro.** A validação A/B da seção 10 é o que mostra
-  se isso acontece numa estação real.
-- **Na estação só CPU, a fidelidade não roda hoje.** Redução de artefato e nitidez custam 24 e 25 ms em 720p. O
-  item 7 da seção 14 (WebAssembly SIMD com o quadro dividido entre workers) é o que poderia trazer parte dela para
-  dentro dos 8 ms.
-- **O EASU pede entrada limpa.** A AMD quer o quadro sem banding e sem ruído alto antes da ampliação. No nível
-  completo, a redução de artefato cumpre esse papel; no leve, o EASU recebe o quadro como veio
-  ([[Câmeras - Streaming - Realce de imagem no cliente - Catálogo de técnicas|catálogo]], seção 4.1).
+São quatro, sempre nesta ordem. Cada um no mesmo modelo: o que faz, como o Attlas faz, quando roda e onde fica o
+detalhe do algoritmo.
 
-## 12. Tecnologias de fabricante e catálogo de técnicas
+### Redução de artefato
 
-Cada tecnologia e cada técnica, no mesmo modelo e com a situação dela, estão em
-[[Câmeras - Streaming - Realce de imagem no cliente - Catálogo de técnicas]]. As conclusões:
+| | |
+| --- | --- |
+| **O que faz** | Alisa o chuvisco de compressão e o contorno fantasma em área lisa, sem borrar a borda dos objetos |
+| **Como o Attlas faz** | Filtro sigma de Lee 3x3 em RGB, decidido pela luma BT.709: vizinho com luma a até 0,035 (escala de 0 a 1) da luma do centro entra na média; o resto é borda e fica fora |
+| **Resolução** | Do stream |
+| **Quando roda** | Nível completo, nos motores WebGPU e WebGL2 |
+| **Algoritmo e custo** | [[Câmeras - Streaming - Realce de imagem no cliente - Catálogo de técnicas#Redução de artefato por sigma de Lee\|catálogo]] |
 
-- **Fabricante.** Para vídeo de câmera no navegador, só servem as tecnologias espaciais, de um quadro só: o FSR 1
-  (decidido), o NIS e o GSR. FSR 2, 3 e 4, XeSS, MetalFX e Arm ASR precisam de vetor de movimento e profundidade
-  de jogo, ou não existem para o navegador.
-- **Super-resolução do driver.** A da NVIDIA, a da Intel e a do Edge rodam sobre o `<video>`, só no Windows. Pelo
-  desenho do Chromium, o canvas realçado não a recebe e o `<video>` original, quando visível, recebe.
-  Recomendação para o dono: desligada nas estações de operação.
-- **NPU.** O Core 7 150U não tem NPU, o Chrome no Linux leva a WebNN só à CPU, e o upscale do artigo da Intel é
-  rede adversária generativa: proibido na imagem ao vivo.
-- **FSR 1 na CPU.** O RCAS já roda na luma. O EASU não cabe nos 8 ms nem com WebAssembly SIMD e 4 workers.
-- **Técnicas clássicas.** As que cabem e não inventam detalhe estão na seção 14: limiar guiado pelo QP, deband
-  com pontilhado, faixa e matriz de cor, balanço de branco com teto, contraste local e dehaze condicional.
-- **Quadros.** Melhoria de quadros segura é mostrar cada quadro real uma vez, na hora certa. Interpolação e
-  redução de ruído temporal inventam ou misturam quadros.
+### Tom e cor
 
-## 13. Desempenho e aceleração por hardware
+| | |
+| --- | --- |
+| **O que faz** | Devolve o contraste que a câmera perde com névoa, contraluz ou exposição baixa, e a cor apagada, sem estourar a cor que já é forte |
+| **Janela de tom** | O histograma da luma dá a faixa que a cena usa, deixando de fora 0,5% das amostras de cada lado. A janela nunca estica a faixa mais que 1,15 vez (`TONE_MAX_STRETCH`), porque cena escura ou chapada esticada além disso só aumenta o ruído. É medida a cada 4 quadros e suavizada: cada medida move a janela 10% da diferença (`TONE_WINDOW_SMOOTHING`), para a imagem não pulsar quando um farol cruza a cena |
+| **Curva** | A luma é esticada da janela para a faixa nominal (16 a 235 em faixa limitada) e dobrada por uma curva S de `smoothstep` com peso 0,08 (`ENHANCEMENT_CONTRAST`). A curva é monotônica: nenhum nível troca de lugar com outro |
+| **Pontas suaves** | Acima de 0,9 (`TONE_SHOULDER_KNEE`) e abaixo de 0,08 (`TONE_TOE_KNEE`), o que a janela empurraria para fora da faixa volta para dentro por um ombro e um pé de Hermite cúbico monotônico, com inclinação de saída de no máximo 3 (`TONE_KNEE_MAX_SLOPE`). Um nível que a câmera não deixou no branco nunca vira branco, e o reflexo de sol em vidro e cromado guarda a gradação. Com a janela cheia, a curva é a identidade |
+| **Cor** | Cada cor se afasta do cinza por um ganho de `1,03 x (1 + 0,15 x (1 - m))` (`ENHANCEMENT_SATURATION` e `ENHANCEMENT_VIBRANCE`), em que `m` é a saturação da própria cor, de 0 a 1. Cor apagada ganha até cerca de 1,18 vez; cor forte ganha 1,03 vez. Cb e Cr sobem pelo mesmo fator, então o matiz não muda, e a cor que sairia da faixa válida volta na mesma direção, sem corte por canal |
+| **Resolução** | Do stream |
+| **Quando roda** | Com o item "Melhoria visual" ligado, nos dois níveis e nos três motores. Na CPU, por tabelas sobre Y, Cb e Cr; na GPU, num shader sobre RGB, em que multiplicar RGB menos a luma multiplica Cb e Cr pelo mesmo fator |
+| **Algoritmo e custo** | [[Câmeras - Streaming - Realce de imagem no cliente - Catálogo de técnicas#Tom e cor pela janela da cena\|catálogo]] |
 
-Os tempos de GPU abaixo são estimativa na Iris Xe da estação, com o método do catálogo, seção 3.
+### Ampliação
 
-### 13.1 Onde o tempo vai e como cortar
+| | |
+| --- | --- |
+| **O que faz** | Leva o stream ao tamanho real do quadro na tela, para o navegador não esticar com o filtro simples dele |
+| **Como o Attlas faz** | EASU do FSR 1 da AMD (licença MIT), portado do `ffx_fsr1.h` no caminho de 32 bits, com as aproximações de recíproco e de raiz inversa do `ffx_a.h`. Lê os 12 texels um a um em vez de `textureGather`, com o mesmo resultado |
+| **Quando roda** | Só quando a tela é pelo menos 10% maior que o stream (`UPSCALE_MIN_RATIO`), com fator máximo de 2 por eixo e saída de no máximo 2560x1440 em pixels totais, não por eixo. Acima disso, o compositor do navegador escala |
+| **Motores** | WebGPU e WebGL2. A CPU nunca amplia |
+| **Algoritmo e custo** | [[Câmeras - Streaming - Realce de imagem no cliente - Catálogo de técnicas#AMD FidelityFX FSR 1, EASU e RCAS\|catálogo]] |
 
-1. **Entrada do quadro na GPU.** No WebGL2, `texImage2D` e `texSubImage2D` copiam o quadro do `<video>` para uma
-   textura. No WebGPU, `importExternalTexture` usa o quadro sem cópia. A textura de um `<video>` expira assim que
-   é usada num bind group, ou ao fim da tarefa de JavaScript; a de um `VideoFrame` dura até o quadro ser fechado.
-   O `copyExternalImageToTexture` faz cópia e só vale quando a textura precisa durar mais que isso.
-2. **Leitura de volta para a CPU.** Na PR, a janela de tom lê 64x36 pixels por um canvas 2D a cada 4 quadros. Ler
-   da GPU para a CPU obriga a GPU a terminar o que estava fazendo e a mandar o dado de volta; a MDN chama isso de
-   "finish mais ida e volta". No WebGPU, o histograma e a janela de tom cabem num compute shader, sem sair da GPU,
-   ou se leem com `mapAsync`, que não trava. No WebGL2, a saída é ler por buffer de pixels com `fenceSync`, de
-   forma assíncrona.
-3. **Número de passes.** Cada passe lê e escreve uma imagem inteira. Só de memória, o piso é de 0,12 a 0,18 ms em
-   720p e de 0,28 a 0,42 ms em 1080p. Dá para fundir a redução de artefato com o tom e cor num passe na resolução
-   do stream, e o EASU com o RCAS num compute shader que guarda o bloco e a borda de 1 pixel na memória do grupo.
-4. **Resolução.** Já é o desenho e continua: limpar e corrigir na resolução do stream, ampliar uma vez e dar
-   nitidez por último.
-5. **Precisão.** O `shader-f16` do WebGPU (Chrome 120) permite meia precisão. O FSR 1 e o NIS têm caminho oficial
-   em meia precisão.
-6. **Medida de tempo.** O governador mede o tempo de JavaScript em volta do desenho, não o da GPU (seção 4.1). O
-   `timestamp-query` do WebGPU mede cada passe na GPU. No Chrome o valor vem arredondado a 100 µs, a menos que a
-   flag de recursos de desenvolvedor esteja ligada; 100 µs bastam para um orçamento de 3,2 ms.
-7. **Contextos.** No WebGL, cada player tem um contexto, e acima de 16 na página o Chromium derruba o mais antigo
-   ("Too many active WebGL contexts"). No WebGPU, um único `GPUDevice` configura quantos canvas forem precisos.
-   Um device para todos os players tira o motivo técnico do teto de 4; o orçamento continua valendo. Device
-   perdido derruba todos de uma vez, então a recuperação recria o device e reata os canvas.
-8. **Compute ou fragment.** Fragment shader serve para filtro por pixel que lê vizinhos pelo cache de textura:
-   sigma de Lee, tom e cor, Catmull-Rom. Compute shader serve para histograma com atômicos, para filtro que
-   reaproveita leitura entre pixels vizinhos (EASU, NIS) e para passes fundidos. O NIS só existe em compute. Não
-   achei guia oficial do W3C nem do Chrome sobre essa escolha; é o padrão dos SDKs da AMD e da NVIDIA.
-9. **CPU com WebAssembly SIMD.** SIMD de 128 bits, ligado por padrão desde o Chrome 91. Para os filtros da luma,
-   estimativa de 2 a 4 vezes mais rápido que o JavaScript atual.
-10. **CPU com várias threads.** WebAssembly com threads exige isolamento de origem no app inteiro
-    (`Cross-Origin-Opener-Policy: same-origin` e `Cross-Origin-Embedder-Policy: require-corp`), o que obriga todo
-    recurso de terceiro, como os tiles do mapa, a responder com CORP ou CORS. A saída sem esse custo é dividir o
-    quadro entre 2 a 4 workers comuns, com buffers transferidos.
-11. **`MediaStreamTrackProcessor`.** Entrega os quadros do WebRTC como `VideoFrame`, direto da faixa, sem passar
-    pelo `<video>`. A spec expõe só em worker dedicado; o Chrome expõe também na janela, fora da spec; o Safari 18
-    tem; o Firefox não. Prioridade baixa: o `<video>` continua necessário para a evidência, e duas fontes de quadro
-    podem sair de passo.
-12. **Compute Pressure.** Chrome 125, só a fonte `cpu`. O sinal só chega ao documento com foco do sistema, em
-    picture-in-picture ou capturando mídia. Num videowall sem foco, quem decide é o governador.
-13. **Long Animation Frames.** Chrome 123: quadro de animação acima de 50 ms. É a régua da validação A/B
-    (seção 10).
+### Nitidez
 
-### 13.2 Estado do WebGPU no Chrome Linux
+| | |
+| --- | --- |
+| **O que faz** | Aumenta o contraste nas bordas sem estourar o branco ou o preto e reforçando menos o ruído |
+| **Como o Attlas faz** | RCAS do FSR 1 em cruz de 5 amostras, amortecido onde o centro parece ruído. Força de 1 stop (0,5) no nível completo e 2 stops (0,25) no leve |
+| **Resolução** | Da tela, como último passe |
+| **Quando roda** | Sempre que há sessão nos motores WebGPU e WebGL2 |
+| **Por que não o CAS** | O quadro decodificado chega em gamma. O RCAS foi feito para entrada perceptual, e o CAS, que espera luz linear, exagera a nitidez nessa entrada |
+| **Algoritmo e custo** | [[Câmeras - Streaming - Realce de imagem no cliente - Catálogo de técnicas#AMD FidelityFX FSR 1, EASU e RCAS\|catálogo]] |
+
+### Quais passes rodam em cada caso
+
+| Motor e nível | Redução de artefato | Tom e cor | Ampliação | Nitidez |
+| --- | --- | --- | --- | --- |
+| WebGPU ou WebGL2, completo | sim | com o item ligado | quando cabe | 1 stop |
+| WebGPU ou WebGL2, leve | não | com o item ligado | quando cabe | 2 stops |
+| CPU, completo | não | com o item ligado | não | não |
+| CPU, leve | não | com o item ligado | não | não |
+
+**Espera** (nenhum passe; o vídeo aparece como veio):
+
+- o quadro na tela ocupa até metade do stream em cada eixo (`DOWNSCALE_STANDBY_RATIO`). Num mosaico 4x4 em 1080p
+  cada célula tem cerca de 480x270, e a própria redução de tamanho já filtra bloco e ruído;
+- o motor é CPU e o stream passa de 1280x720;
+- ainda não chegou quadro.
+
+**Sem piscar.** O canvas entra e sai com esmaecimento de 160 ms (`ENHANCEMENT_FADE_MS`). Um plano que fica vazio por
+um instante (resize, um quadro estranho) mantém o anterior por 500 ms (`ENHANCEMENT_STANDBY_GRACE_MS`) antes de dar
+lugar ao vídeo original. O canvas herda o `object-fit` do host, que o CSS do player mantém igual ao do `<video>`:
+`cover` na célula, `contain` em tela cheia.
+
+## Governador e níveis
+
+O `FrameBudgetGovernor` olha janelas de 30 quadros e escolhe entre dois níveis, **completo** e **leve**. O leve é o
+piso: o governador nunca desliga o realce.
+
+| Situação na janela | O que acontece |
+| --- | --- |
+| O processamento no percentil 90 passa da fatia do intervalo entre quadros (a fatia multiplica a mediana do intervalo da janela) | A janela conta acima do orçamento |
+| Menos de 95% dos quadros apresentados saíram realçados | A janela conta acima do orçamento |
+| O navegador descartou mais de 1 quadro na janela | A janela conta acima do orçamento |
+| 2 janelas seguidas acima do orçamento | Desce do completo para o leve e conta uma falha. No leve, nada muda |
+| `5 x (falhas + 1)` janelas seguidas com folga (processamento até metade da fatia e nenhum descarte) | Sobe do leve para o completo. Folga sustentada no completo zera as falhas |
+| Compute Pressure `serious` ou `critical` | Teto no nível leve, sem esperar a janela fechar |
+
+Nível inicial: completo nos motores de GPU; leve na CPU, onde os dois níveis são iguais.
+
+**Fatia do orçamento** (`GPU_BUDGET_RATIO`, aplicada por `gpuGovernorConfigFor`), em porcentagem do intervalo entre
+quadros e em milissegundos a 25 fps:
+
+| Medida de tempo | GPU integrada (Intel, Apple, Adreno, Mali, APU AMD) | GPU dedicada (NVIDIA, Radeon RX, Intel Arc) | Desconhecida |
+| --- | --- | --- | --- |
+| Timer da GPU (`timestamp-query`, `EXT_disjoint_timer_query_webgl2`) | 15% (6 ms) | 10% (4 ms) | 12% (4,8 ms) |
+| Relógio do JavaScript | 35% (14 ms) | 25% (10 ms) | 30% (12 ms) |
+| Motor CPU | 20% (8 ms) | - | - |
+
+O relógio do JavaScript leva a fatia mais folgada porque mede também o envio do quadro, que o ANGLE sobre Vulkan numa
+GPU integrada Intel segura por vários milissegundos. Na CPU a fatia é menor porque, sem GPU, o decode e o compositor
+do navegador também rodam na CPU.
+
+**Compute Pressure sem foco.** O Chrome só entrega leitura de pressão quando a janela tem o foco do sistema, está em
+picture-in-picture ou captura mídia. Numa tela de videowall sem foco o sinal some, e quem decide é o governador por
+quadro.
+
+## Falhas e recuperação
+
+Nenhuma falha de motor chega ao player como exceção, e nenhuma desliga o realce. O tom e cor continua ligado durante a
+recuperação.
+
+| Falha | Motivo tipado | Resultado |
+| --- | --- | --- |
+| Estação sem motor | Motivo de cada motor em `probeFailures` | Sem item, vídeo original |
+| Detecção de um motor que não responde em 5 s (`ENGINE_PROBE_TIMEOUT_MS`) | `PROBE_TIMEOUT` | Motor fora da cadeia |
+| Adaptador WebGPU fallback ou de software | `FALLBACK_ADAPTER`, `SOFTWARE_RENDERER` | Motor fora da cadeia |
+| Contexto negado ou shader que não compila | `CONTEXT_UNAVAILABLE` | Quarentena e próximo motor |
+| Motor que não fica pronto em 15 s (`ENGINE_CREATE_TIMEOUT_MS`) | `TIMED_OUT` | Quarentena e próximo motor; o motor que chega depois é descartado |
+| Contexto WebGL ou `GPUDevice` perdido durante o uso | `CONTEXT_LOST` | Recria uma vez; se falhar de novo, quarentena e próximo motor |
+| Erro de validação do WebGPU (`uncapturederror`) | `CONTEXT_UNAVAILABLE` | Recria uma vez; de novo, quarentena |
+| Quadro da GPU que não termina em 1 s | `TIMED_OUT` | Recria uma vez; de novo, quarentena |
+| Quadro que não pode ser lido (vídeo de outra origem sem CORS) | `FRAME_UNREADABLE` | Recria uma vez; de novo, quarentena |
+| Formato de pixel sem plano de luma | `UNSUPPORTED_PIXEL_FORMAT` | Recria uma vez; de novo, quarentena |
+| Worker que falha | `WORKER_FAILED` | Recria uma vez; de novo, quarentena |
+| Quadro que não volta do worker em 1 s | `TIMED_OUT` | Recria o worker uma vez; de novo, quarentena |
+
+**Quarentena.** O motor fica fora por `min(300 s, 30 s x 2^(falhas - 1))`: 30 s, 60 s, 120 s, 240 s e 300 s em
+diante (`ENGINE_QUARANTINE_BASE_MS`, `ENGINE_QUARANTINE_BACKOFF_FACTOR`, `ENGINE_QUARANTINE_MAX_MS`). Ao fim dela, o
+player volta para o motor melhor.
+
+**Fim da sessão.** Fechar o player, ou o player sair de `playing`, encerra o worker, libera o contexto, remove o
+canvas e devolve a vaga.
+
+## O que o operador vê
+
+- O menu de configurações (engrenagem, ao lado da tela cheia) tem a seção "Imagem". A engrenagem aparece também em
+  câmera sem escolha de resolução, só com essa seção.
+- Na seção, uma linha de estado (`role="status"`) diz se o realce automático roda e em qual motor e GPU, com ponto
+  verde só quando ativo. Estados: ativo, em espera sem ganho no tamanho, aguardando vaga, nova tentativa, iniciando,
+  entra quando o vídeo tocar, e sem realce automático na estação (só CPU, só tom e cor).
+- Abaixo, o item "Melhoria visual" (`role="menuitemcheckbox"`) liga e desliga o tom e cor. O estado ligado vem do
+  `aria-checked`; a frase de estado fica no `aria-description` e no `title`.
+- O badge ao vivo não anuncia o realce.
+- Sem vaga, o player mostra o vídeo nativo, sem aviso, e entra sozinho quando a vaga libera, na ordem de chegada.
+- O realce nunca mostra aviso de erro.
+- **Evidência**: captura de tela, analítico, ANPR e exportação saem sempre do `<video>` original. O canvas realçado é
+  só exibição.
+
+## O que não entra na imagem
+
+O princípio é um só: o realce redistribui a informação que o quadro já tem e não acrescenta nenhuma. O detalhe de cada
+item está no catálogo.
+
+| Técnica | Situação | Por quê |
+| --- | --- | --- |
+| Super-resolução por rede neural | Proibida na imagem tratada; decidida só como camada de exibição com selo, sem código | A rede prevê detalhe a partir de imagens de treino, e numa placa isso troca B por 8 e S por 5 ([[Câmeras - Streaming - Realce de imagem no cliente - Catálogo de técnicas#Super-resolução por IA como camada de exibição\|catálogo]]) |
+| Reconstrução por banco de padrões | Proibida | Cola detalhe aprendido de outras imagens ([[Câmeras - Streaming - Realce de imagem no cliente - Catálogo de técnicas#Reconstrução por banco de padrões\|catálogo]]) |
+| Inverse tone mapping | Proibido | Inventa brilho em realce e sombra que o sensor não registrou ([[Câmeras - Streaming - Realce de imagem no cliente - Catálogo de técnicas#Inverse tone mapping\|catálogo]]) |
+| Redução de ruído temporal | Proibida | Mistura quadros e deixa rastro atrás do veículo ([[Câmeras - Streaming - Realce de imagem no cliente - Catálogo de técnicas#Redução de ruído temporal\|catálogo]]) |
+| Grão sintético | Proibido | Textura aleatória que a câmera não gravou ([[Câmeras - Streaming - Realce de imagem no cliente - Catálogo de técnicas#Grão sintético\|catálogo]]) |
+| Interpolação de quadros | Fora do código; a spec não a cita, e a recomendação ao dono é incluí-la nas proibições | Mostra o veículo numa posição e num instante que a câmera nunca gravou ([[Câmeras - Streaming - Realce de imagem no cliente - Catálogo de técnicas#Interpolação de quadros\|catálogo]]) |
+| Balanço de branco, brilho e gama manuais | Fora do código | O contraste vem da medida da cena, não de um controle do operador. O balanço de branco automático com teto está nos [[#Próximos passos]] |
+| CSS `filter` | Não usado | Aplica brilho, contraste e saturação fixos, sem medir a cena, e não amplia nem dá nitidez ([MDN CSS filter](https://developer.mozilla.org/en-US/docs/Web/CSS/filter)) |
+
+> [!warning] A regra de negócio ainda fecha a porta da IA
+> A spec da tela registra a decisão de liberar a super-resolução por IA como camada de exibição com selo. A regra de
+> negócio em `docs/modules/cameras.md` ainda diz que super-resolução generativa não entra na imagem ao vivo. A regra
+> precisa ser atualizada antes da implementação.
+
+## Desempenho e aceleração por hardware
+
+Os tempos de GPU desta seção são estimativa na Iris Xe da estação, pelo método do
+[[Câmeras - Streaming - Realce de imagem no cliente - Catálogo de técnicas#Como os custos foram estimados|catálogo]].
+
+### Onde o tempo vai
+
+| Ponto | Como está no código | O que ainda dá para ganhar |
+| --- | --- | --- |
+| Entrada do quadro na GPU | WebGL2 copia o quadro do `<video>` para a textura com `texSubImage2D`. WebGPU usa `importExternalTexture`, sem cópia | Nada no WebGPU. A textura importada de um `<video>` expira quando é usada num bind group ou ao fim da tarefa de JavaScript; a de um `VideoFrame` dura até o quadro ser fechado. `copyExternalImageToTexture` faz cópia e só vale quando a textura precisa durar mais |
+| Leitura de volta para a CPU | WebGL2 lê 64x36 pixels por `getImageData` a cada 4 quadros, o que obriga a GPU a terminar o que estava fazendo e mandar o dado de volta (a MDN chama isso de "finish mais ida e volta"). WebGPU lê com `mapAsync`, que não trava | Histograma e janela de tom num compute shader no WebGPU, sem sair da GPU; no WebGL2, leitura por buffer de pixels com `fenceSync`, assíncrona ([[#Próximos passos\|item 2]]) |
+| Número de passes | Quatro passes, cada um lendo e escrevendo uma imagem inteira. Só de memória, o piso é de 0,12 a 0,18 ms em 720p e de 0,28 a 0,42 ms em 1080p por passe | Fundir a redução de artefato com o tom e cor num passe na resolução do stream, e o EASU com o RCAS num compute shader que guarda o bloco e a borda de 1 pixel na memória do grupo (item 4) |
+| Resolução | Limpeza e tom na resolução do stream, ampliação uma vez, nitidez por último | Nada |
+| Precisão | WebGPU guarda os intermediários em `rgba16float`. O recurso `shader-f16` é detectado e não é pedido ao device | Meia precisão pelo `shader-f16` (Chrome 120). O FSR 1 e o NIS têm caminho oficial em meia precisão (item 4) |
+| Medida de tempo | `timestamp-query` no WebGPU e `EXT_disjoint_timer_query_webgl2` no WebGL2; sem eles, relógio do JavaScript com fatia mais folgada | No Chrome o `timestamp-query` vem arredondado a 100 µs, a menos que a flag de recursos de desenvolvedor esteja ligada; 100 µs bastam para fatias de 4 a 6 ms |
+| Contextos | Um contexto WebGL2 e um `GPUDevice` por player. Acima de 16 contextos WebGL na página, o Chromium derruba o mais antigo ("Too many active WebGL contexts") | Um `GPUDevice` para todos os players configura quantos canvas forem precisos e tira o motivo técnico do teto de vagas; o orçamento continua valendo. Device perdido derruba todos de uma vez, então a recuperação recria o device e reata os canvas (item 3) |
+| Compute ou fragment | Todos os passes são fragment shader, que serve para filtro por pixel que lê vizinhos pelo cache de textura | Compute shader para histograma com atômicos, para filtro que reaproveita leitura entre pixels vizinhos (EASU, NIS) e para passes fundidos. O NIS só existe em compute. Não há guia oficial do W3C nem do Chrome sobre essa escolha; é o padrão dos SDKs da AMD e da NVIDIA |
+| CPU com WebAssembly SIMD | Filtros em JavaScript | SIMD de 128 bits, ligado por padrão a partir do Chrome 91. Para os filtros da luma, estimativa de 2 a 4 vezes mais rápido (item 7) |
+| CPU com várias threads | Um worker por player | WebAssembly com threads exige isolamento de origem no app inteiro (`Cross-Origin-Opener-Policy: same-origin` e `Cross-Origin-Embedder-Policy: require-corp`), o que obriga todo recurso de terceiro, como os tiles do mapa, a responder com CORP ou CORS. A saída sem esse custo é dividir o quadro entre 2 a 4 workers comuns, com buffers transferidos (item 7) |
+| `MediaStreamTrackProcessor` | O quadro sai do `<video>` | Entrega os quadros do WebRTC como `VideoFrame`, direto da faixa. A spec expõe só em worker dedicado; o Chrome expõe também na janela, fora da spec; o Safari 18 tem; o Firefox não. Prioridade baixa: o `<video>` continua necessário para a evidência, e duas fontes de quadro podem sair de passo |
+| Compute Pressure | `serious` e `critical` limitam ao nível leve | Chrome 125, só a fonte `cpu`, e só com foco do sistema ([[#Governador e níveis]]) |
+| Long Animation Frames | Não é lido pelo código | Chrome 123: quadro de animação acima de 50 ms. É a régua da [[#Validação]] |
+
+### WebGPU no Chrome do Linux
 
 - O Chrome 144 começou a ligar o WebGPU no Linux por padrão, primeiro em GPU Intel Gen12 ou mais nova, com AMD e
-  NVIDIA no plano. Nessa arquitetura, o WebGPU usa Vulkan e o resto do Chromium fica no OpenGL. A tabela do grupo
-  do WebGPU registra Intel Gen12 ou mais nova a partir do 144 e NVIDIA (driver 535.183.01 ou mais novo) no Wayland
-  a partir do 147. As outras GPUs dependem de flag.
+  NVIDIA no plano. Nessa arquitetura, o WebGPU usa Vulkan e o resto do Chromium fica no OpenGL. A tabela do grupo do
+  WebGPU registra Intel Gen12 ou mais nova a partir do 144 e NVIDIA (driver 535.183.01 ou mais novo) no Wayland a
+  partir do 147. As outras GPUs dependem de flag.
 - A página de dicas do Chrome ainda chama o Linux de experimental e manda ligar `#enable-unsafe-webgpu` e
   `#enable-vulkan`. Ela é mais antiga que o anúncio do 144.
-- **Nesta estação o padrão não vale**, mesmo sendo Gen12 (Iris Xe, `gen-12lp`, Mesa ANV, Chrome 150): sem flag,
-  não há adaptador WebGPU e o WebGL2 é de software. A causa não está confirmada. Como as versões recentes do
-  Chrome não caem mais sozinhas no SwiftShader para WebGL (seção 4.3), vale conferir em `chrome://gpu` a linha de
+- **Na estação de referência o padrão não vale**, mesmo sendo Gen12 (Iris Xe, `gen-12lp`, Mesa ANV, Chrome 150): sem
+  flag, não há adaptador WebGPU e o WebGL2 é de software, então o realce fica no motor CPU. A causa não está
+  confirmada; como o Chrome não cai mais sozinho no SwiftShader para WebGL, vale conferir em `chrome://gpu` a linha de
   comando com que o Chrome está sendo aberto.
-- Com `--enable-unsafe-webgpu` sozinho, aparece só o adaptador de reserva por software (`google`, `swiftshader`).
-  Com as quatro flags da seção 13.3, aparecem WebGL2 de hardware (ANGLE sobre Vulkan) e WebGPU de hardware
-  (`intel`, `gen-12lp`).
-- O `adapter.info` é síncrono desde o Chrome 127. O `isFallbackAdapter` foi para dentro do `GPUAdapterInfo` no
-  Chrome 136, e o atributo antigo, no `GPUAdapter`, foi descontinuado no 138. É por ele que o motor WebGPU recusa
-  o adaptador de software.
+- Com `--enable-unsafe-webgpu` sozinho, aparece só o adaptador de reserva por software (`google`, `swiftshader`), que o
+  motor WebGPU recusa. Com as flags da seção seguinte, aparecem WebGL2 de hardware (ANGLE sobre Vulkan) e WebGPU de
+  hardware (`intel`, `gen-12lp`), e o realce roda no WebGPU.
+- Com ANGLE sobre OpenGL, o Chrome compõe a página em GL e leva o WebGPU, que roda em Vulkan, por interop GL. O motor
+  WebGPU recusa esse caso (`GL_INTEROP_COMPOSITOR`), e o WebGL2 assume com os mesmos passes.
+- O `adapter.info` é síncrono a partir do Chrome 127. O `isFallbackAdapter` foi para dentro do `GPUAdapterInfo` no
+  Chrome 136, e o atributo antigo, no `GPUAdapter`, foi descontinuado no 138. O motor lê os dois.
 
-### 13.3 Como ligar a aceleração por hardware numa estação Linux com Intel
+### Como ligar a aceleração por hardware numa estação Linux com Intel
 
-1. **Conferir o básico.** Em `chrome://settings/system`, "Usar aceleração de gráficos quando disponível" ligado.
-   Em estação gerenciada, a política `HardwareAccelerationModeEnabled` não pode estar em falso. Essa política só
-   desliga a aceleração; não liga nada.
-2. **Ligar as flags.** As quatro abaixo são as que funcionaram nesta estação. No GNOME com Wayland, somar
-   `--ozone-platform=x11`: no Wayland o Vulkan da composição falha a cada quadro de vídeo (`SharedImageManager::ProduceSkia ... CompoundImageBacking`).
+1. **Conferir o básico.** Em `chrome://settings/system`, "Usar aceleração de gráficos quando disponível" ligado. Em
+   estação gerenciada, a política `HardwareAccelerationModeEnabled` não pode estar em falso. Essa política só desliga
+   a aceleração; não liga nada.
+2. **Ligar as flags.** As quatro abaixo são as que funcionaram na estação de referência. No GNOME com Wayland, somar
+   `--ozone-platform=x11`: no Wayland o Vulkan da composição falha a cada quadro de vídeo
+   (`SharedImageManager::ProduceSkia ... CompoundImageBacking`).
 
    | Flag de linha de comando | Entrada em `chrome://flags` | O que faz |
    | --- | --- | --- |
-   | `--use-angle=vulkan` | não confirmada | Faz o ANGLE, a camada que leva o WebGL até a GPU, usar Vulkan em vez de OpenGL. Nesta estação, o caminho por OpenGL não inicializa |
+   | `--use-angle=vulkan` | não confirmada | Faz o ANGLE, a camada que leva o WebGL até a GPU, usar Vulkan em vez de OpenGL. Na estação de referência, o caminho por OpenGL não inicializa |
    | `--enable-features=Vulkan` | `#enable-vulkan` | Liga o Vulkan na pilha de GPU do Chrome |
-   | `--enable-unsafe-webgpu` | `#enable-unsafe-webgpu` | Desliga a lista de bloqueio de adaptadores do WebGPU, e o Chrome passa a expor o WebGPU em configuração que ele ainda não validou. Sozinha, nesta estação, só entrega o adaptador de software |
+   | `--enable-unsafe-webgpu` | `#enable-unsafe-webgpu` | Desliga a lista de bloqueio de adaptadores do WebGPU, e o Chrome passa a expor o WebGPU em configuração que ainda não validou. Sozinha, só entrega o adaptador de software |
    | `--ignore-gpu-blocklist` | `#ignore-gpu-blocklist` | Ignora a lista de GPUs que o Chrome manda para software |
 
-   Se o processo de GPU travar com o Vulkan ligado, a correção relatada no grupo do WebGPU é somar
-   `VulkanFromANGLE` e `DefaultANGLEVulkan` ao `--enable-features`. A receita do grupo para GPU fora do padrão
-   também força `--ozone-platform=x11`. Nesta estação nenhum dos dois foi preciso.
-3. **Decode de vídeo por hardware (VA-API).** Sem ele, o H.264 é decodificado na CPU e disputa com o motor CPU, e
-   o player fica em H.264, porque o Chrome só decodifica H.265 com hardware. A documentação do Chromium liga o
-   decode com a feature `AcceleratedVideoDecodeLinuxZeroCopyGL` e, no caminho Vulkan, soma `VaapiIgnoreDriverChecks`
-   às três features do Vulkan. O nome muda entre versões: segundo o ArchWiki, era `VaapiVideoDecodeLinuxGL` até o
-   Chromium 130 e passou a `AcceleratedVideoDecodeLinuxGL` no 131. A própria documentação diz que VA-API no Linux
-   não tem suporte oficial. **Não testado nesta estação.**
-4. **Juntar tudo numa linha.** O Chrome só lê o último `--enable-features` da linha de comando, então as features
-   vão todas separadas por vírgula num só. Exemplo, a conferir na versão em uso:
+   Se o processo de GPU travar com o Vulkan ligado, a correção relatada no grupo do WebGPU é somar `VulkanFromANGLE`
+   e `DefaultANGLEVulkan` ao `--enable-features`. A receita do grupo para GPU fora do padrão também força
+   `--ozone-platform=x11`.
+3. **Decode de vídeo por hardware (VA-API).** Sem ele, o H.264 é decodificado na CPU e disputa com o realce, e o
+   player fica em H.264, porque o Chrome só decodifica H.265 com hardware. A documentação do Chromium liga o decode
+   com a feature `AcceleratedVideoDecodeLinuxZeroCopyGL` e, no caminho Vulkan, soma `VaapiIgnoreDriverChecks` às
+   features do Vulkan. O nome muda entre versões: segundo o ArchWiki, era `VaapiVideoDecodeLinuxGL` até o Chromium
+   130 e passou a `AcceleratedVideoDecodeLinuxGL` no 131. A própria documentação diz que VA-API no Linux não tem
+   suporte oficial. **Não testado na estação de referência.**
+4. **Juntar tudo numa linha.** O Chrome só lê o último `--enable-features` da linha de comando, então as features vão
+   todas separadas por vírgula num só. Exemplo, a conferir na versão em uso:
 
    ```bash
    google-chrome \
+     --ozone-platform=x11 \
      --use-angle=vulkan \
      --enable-features=Vulkan,VulkanFromANGLE,DefaultANGLEVulkan,AcceleratedVideoDecodeLinuxZeroCopyGL,VaapiIgnoreDriverChecks \
      --enable-unsafe-webgpu \
      --ignore-gpu-blocklist
    ```
 
-5. **Deixar fixo.** Três jeitos: pelo `chrome://flags`, que grava no perfil e vale para as flags que têm entrada
-   lá; pela linha `Exec=` de um atalho `.desktop` (em `~/.local/share/applications/` para um usuário, ou uma cópia
-   do `google-chrome.desktop` do sistema); ou por um script que abre o Chrome. O `chrome-flags.conf` é convenção do
+5. **Deixar fixo.** Três jeitos: pelo `chrome://flags`, que grava no perfil e vale para as flags que têm entrada lá;
+   pela linha `Exec=` de um atalho `.desktop` (em `~/.local/share/applications/` para um usuário, ou uma cópia do
+   `google-chrome.desktop` do sistema); ou por um script que abre o Chrome. O `chrome-flags.conf` é convenção do
    pacote do Arch, não do Chrome oficial. A política gerenciada do Chrome no Linux fica em
    `/etc/opt/chrome/policies/managed/`.
-6. **Conferir.** Em `chrome://gpu`: "WebGL: Hardware accelerated", "WebGPU: Hardware accelerated" e
-   "Video Decode: Hardware accelerated", e, para codecs, "Video Acceleration Information". No sistema, `vainfo`
-   lista os perfis de decode da GPU. No app: `adapter.info` com `vendor: 'intel'` e `isFallbackAdapter` falso, e o
-   renderizador WebGL com "ANGLE" e "Vulkan" no nome. O `chrome://media-internals` mostra qual decodificador o
-   player usou.
+6. **Conferir.** Em `chrome://gpu`: "WebGL: Hardware accelerated", "WebGPU: Hardware accelerated" e "Video Decode:
+   Hardware accelerated", e, para codecs, "Video Acceleration Information". No sistema, `vainfo` lista os perfis de
+   decode da GPU. No player, a linha de estado do menu deve dizer "Realce automático ativo, GPU Intel (WebGPU)". O
+   `chrome://media-internals` mostra qual decodificador o player usou.
 
 > [!caution] Flags que tiram trava
 > `--enable-unsafe-webgpu` e `--ignore-gpu-blocklist` desligam proteções que o Chrome mantém para driver não
 > validado. O risco é travar o processo de GPU ou desenhar errado. Valem para estação controlada, com o modelo de
 > máquina e o driver conferidos, e não para qualquer máquina.
 
-## 14. Recomendação priorizada
+## Próximos passos
 
-Ordem sugerida para a próxima rodada, para o dono decidir. Ganho, custo e risco em três níveis: baixo, médio e
-alto. O detalhe de cada item está no
-[[Câmeras - Streaming - Realce de imagem no cliente - Catálogo de técnicas|catálogo]].
+Ordem sugerida para o dono decidir. Ganho, custo e risco em três níveis: baixo, médio e alto. O detalhe de cada técnica
+está no [[Câmeras - Streaming - Realce de imagem no cliente - Catálogo de técnicas|catálogo]].
 
-| # | O que | Ganho | Custo | Risco | Detalhe |
+| # | O que | Ganho | Custo | Risco | Como está hoje |
 | --- | --- | --- | --- | --- | --- |
-| 1 | Configurar as estações: aceleração por hardware ligada (WebGPU, WebGL2 e decode VA-API) e super-resolução do driver desligada nas estações Windows | Alto: tira a estação do motor CPU e libera WebGPU, EASU e H.265 | Baixo: configuração, sem código | Médio: flags que tiram trava do Chrome | seção 13.3; catálogo 4.4 a 4.6 |
-| 2 | Histograma e janela de tom na GPU, sem leitura de volta | Médio: acaba a sincronização entre GPU e CPU a cada 4 quadros | Baixo | Baixo | seção 13.1, item 2 |
-| 3 | Um `GPUDevice` para todos os players, e o governador medindo a GPU com `timestamp-query` | Alto em mosaico e videowall; o governador passa a medir o tempo certo | Médio | Médio: device perdido derruba todos os players | seção 13.1, itens 6 e 7 |
-| 4 | Menos passes e meia precisão: limpeza com tom e cor num passe, EASU com RCAS num compute, `shader-f16` | Médio: menos banda de memória, que limita a GPU integrada | Médio | Baixo | seção 13.1, itens 3, 5 e 8 |
-| 5 | Faixa e matriz de cor corretas por câmera, com valor manual que vence a detecção | Alto onde acontece: é cor errada, não falta de realce | Baixo | Baixo a médio: detecção errada piora câmera certa | catálogo 5.5 |
-| 6 | Limiar da limpeza guiado pelo QP do WebRTC | Médio | Baixo | Baixo | catálogo 5.3 |
-| 7 | Motor CPU em WebAssembly SIMD, com o quadro dividido entre workers, para o sigma de Lee e o RCAS. O EASU fica fora da CPU | Alto na estação só CPU: parte da fidelidade automática, que hoje não cabe, pode passar a caber perto dos 8 ms | Médio a alto | Baixo | catálogo 4.12 |
-| 8 | Deband com pontilhado de meio nível, sem grão, e tom calculado em ponto flutuante | Médio em céu, asfalto e cena noturna | Baixo | Médio: limiar alto apaga detalhe, e o pontilhado fica ao lado da proibição de grão | catálogo 5.4 |
-| 9 | Balanço de branco automático com teto de ganho e mudança lenta | Médio | Baixo | Médio: mexe na cor de semáforo e de veículo | catálogo 5.7 |
-| 10 | Movimento regular: monitor da estação em frequência múltipla do fps da frota, e alvo do buffer de jitter só na câmera que engasga | Médio | Baixo | Baixo na imagem; atraso maior no PTZ | catálogo 6.2 e 6.3 |
-| 11 | Contraste local (CLAHE leve na luma), só no WebGPU | Médio a alto em contraluz e sombra | Médio | Médio: ruído e cintilação | catálogo 5.9 |
-| 12 | Dehaze condicional por dark channel prior, só com névoa medida e de dia | Alto em neblina, nulo no resto | Alto | Alto: carro branco, céu e noite | catálogo 5.10 |
+| 1 | Configurar as estações: aceleração por hardware ligada (WebGPU, WebGL2 e decode VA-API) e super-resolução do driver desligada nas estações Windows | Alto: tira a estação do motor CPU e liga a fidelidade automática e o H.265 | Baixo: configuração, sem código | Médio: flags que tiram trava do Chrome | Configuração por estação ([[#Como ligar a aceleração por hardware numa estação Linux com Intel]]) |
+| 2 | Histograma e janela de tom na GPU, sem leitura de volta | Médio: acaba a sincronização entre GPU e CPU a cada 4 quadros | Baixo | Baixo | O WebGPU já lê com `mapAsync`, sem travar; o WebGL2 lê com `getImageData` |
+| 3 | Um `GPUDevice` para todos os players | Alto em mosaico e videowall | Médio | Médio: device perdido derruba todos os players | O timer de GPU já existe nos dois motores; o device é um por player |
+| 4 | Menos passes e meia precisão: limpeza com tom e cor num passe, EASU com RCAS num compute, `shader-f16` | Médio: menos banda de memória, que limita a GPU integrada | Médio | Baixo | Quatro passes separados; `shader-f16` detectado e não usado |
+| 5 | Faixa e matriz de cor corretas por câmera, com valor manual que vence a detecção | Alto onde acontece: é cor errada, não falta de realce | Baixo | Baixo a médio: detecção errada piora câmera certa | Só a CPU lê `fullRange`, para a janela de tom |
+| 6 | Limiar da limpeza guiado pelo QP do WebRTC | Médio | Baixo | Baixo | Limiar fixo em 0,035 |
+| 7 | Motor CPU em WebAssembly SIMD, com o quadro dividido entre workers, para o sigma de Lee e o RCAS. O EASU fica fora da CPU | Alto na estação só CPU: a fidelidade, que hoje não roda nela, pode passar a caber perto dos 8 ms | Médio a alto | Baixo | Sigma de Lee e RCAS em JavaScript na luma, desligados |
+| 8 | Deband com pontilhado de meio nível, sem grão, e tom calculado em ponto flutuante | Médio em céu, asfalto e cena noturna | Baixo | Médio: limiar alto apaga detalhe, e o pontilhado fica ao lado da proibição de grão | Sem código |
+| 9 | Balanço de branco automático com teto de ganho e mudança lenta | Médio | Baixo | Médio: mexe na cor de semáforo e de veículo | Sem código |
+| 10 | Movimento regular: monitor da estação em frequência múltipla do fps da frota, e alvo do buffer de jitter só na câmera que engasga | Médio | Baixo | Baixo na imagem; atraso maior no PTZ | Sem código |
+| 11 | Contraste local (CLAHE leve na luma), só no WebGPU | Médio a alto em contraluz e sombra | Médio | Médio: ruído e cintilação | Sem código |
+| 12 | Dehaze condicional por dark channel prior, só com névoa medida e de dia | Alto em neblina, nulo no resto | Alto | Alto: carro branco, céu e noite | Sem código |
 
 **Por que nesta ordem.**
 
-- O item 1 vem antes de tudo: sem aceleração ligada, a estação Linux de referência fica no motor CPU e o resto
-  não chega a valer.
-- Os itens 2 a 4 são a base de desempenho do motor WebGPU que está sendo implementado. São baratos e não mudam a
-  imagem.
+- O item 1 vem antes de tudo: sem aceleração ligada, a estação Linux de referência fica no motor CPU e o resto não
+  chega a valer.
+- Os itens 2 a 4 são a base de desempenho do motor WebGPU. São baratos e não mudam a imagem.
 - Os itens 5 e 6 corrigem e calibram sem acrescentar nada à imagem.
 - O item 7 é o único que melhora a estação sem GPU.
 - Os itens 8 e 9 mexem em textura e cor, e por isso pedem decisão do dono.
@@ -643,31 +479,44 @@ alto. O detalhe de cada item está no
 
 **Fora da lista, de propósito.**
 
-- Upscale na NPU pela WebNN: a estação não tem NPU, o Chrome no Linux não chega a NPU nenhuma, e é rede neural
-  (catálogo 4.11).
-- EASU na CPU: de 17 a 55 ms por quadro mesmo com WebAssembly SIMD e 4 workers (catálogo 4.12).
-- NIS, GSR, Lanczos e EWA: fazem o papel do EASU, que já foi decidido.
-- RAVU, NNEDI3, FSRCNNX, interpolação de quadros e redução de ruído temporal: proibidos.
+- Upscale na NPU pela WebNN: a estação não tem NPU, e o Chrome no Linux não chega a NPU nenhuma.
+- EASU na CPU: de 17 a 55 ms por quadro mesmo com WebAssembly SIMD e 4 workers.
+- NIS, GSR, Lanczos e EWA: fazem o papel do EASU, que já está no código.
+- RAVU, interpolação de quadros e redução de ruído temporal: proibidos.
 - `MediaStreamTrackProcessor` e croma guiado pela luma: ganho pequeno para o custo de hoje.
 
-## 15. Documentação oficial
+**Decidido, fora da ordem.** Super-resolução por IA como camada só de exibição, com selo, em PR própria, com modelo
+de licença aberta carregado sob demanda ([[#O que não entra na imagem]]).
 
-Os links das tecnologias que a PR usa estão nas tabelas da seção 4, e os de cada técnica estão no item dela no
-catálogo. Esta lista junta os das seções 11 a 14.
+**Ideia registrada, sem código.** Usar o realce também na imagem e no vídeo de incidente guardados no servidor, só na
+exibição, com o arquivo guardado intacto. A sessão hoje exige um `<video>` tocando com `requestVideoFrameCallback`, e
+precisaria aceitar imagem estática e `<video>` comum.
 
-**Fabricantes**
+## Validação
 
-- [AMD FidelityFX FSR 1 no GitHub](https://github.com/GPUOpen-Effects/FidelityFX-FSR) · [AMD GPUOpen, FSR 1](https://gpuopen.com/fidelityfx-superresolution/)
-- [NVIDIA Image Scaling no GitHub](https://github.com/NVIDIAGameWorks/NVIDIAImageScaling)
-- [NVIDIA, RTX Video Super Resolution](https://blogs.nvidia.com/blog/rtx-video-super-resolution) · [NVIDIA, RTX Video FAQ](https://nvidia.custhelp.com/app/answers/detail/a_id/5448/~/rtx-video-faq)
-- [Microsoft Edge, Video Super Resolution](https://blogs.windows.com/msedgedev/2023/03/08/video-super-resolution-in-microsoft-edge/) · [Microsoft Learn, Video Super Resolution](https://learn.microsoft.com/en-us/windows/ai/apis/video-super-resolution)
-- [Intel XeSS no GitHub](https://github.com/intel/xess)
-- [Intel, AI upscaling na NPU](https://www.intel.com/content/www/us/en/developer/articles/technical/enhance-ai-upscaling-with-intel-ai-boost-npu.html) · [Intel ARK, Core 7 150U](https://www.intel.com/content/www/us/en/products/sku/236795/intel-core-7-processor-150u-12m-cache-up-to-5-40-ghz/specifications.html)
-- [Chromium, swap_chain_presenter.cc](https://chromium.googlesource.com/chromium/src/+/main/ui/gl/swap_chain_presenter.cc)
+> [!warning] Validação pendente
+> Os testes obrigatórios da spec ainda não estão marcados como escritos e verdes, e a validação numa estação com GPU
+> e numa só com CPU não foi feita.
+
+**Validação A/B**: o mesmo mosaico, com as mesmas câmeras, com o realce ligado e desligado. Passa se não sobem
+`framesDropped`, `freezeCount` e o tempo médio de decode (`totalDecodeTime` sobre `framesDecoded`), se o
+`presentedFrames` do `requestVideoFrameCallback` não abre lacuna, se não aparece Long Animation Frame acima de 50 ms e
+se o `inboundBytes` do MediaMTX para a câmera fica igual.
+
+**Qualidade offline**: VMAF NEG e CAMBI contra gravação de bitrate mais alto. O erro de OCR em recortes de placa nunca
+pode subir com o realce.
+
+**Medidas que faltam**: o custo da ampliação, da nitidez e do `VideoFrame` em 1080p na máquina alvo, que não está
+publicado, e o tempo real de GPU dos passes na Iris Xe, que o timer dos motores já permite ler.
+
+## Documentação oficial
+
+Os links das APIs do navegador estão em [[#APIs do navegador que o realce usa]]. Os de cada técnica, fabricante,
+WebNN e melhoria de quadros estão no item dela no
+[[Câmeras - Streaming - Realce de imagem no cliente - Catálogo de técnicas|catálogo]].
 
 **WebGPU e GPU no navegador**
 
-- [W3C WebGPU, GPUAdapterInfo](https://www.w3.org/TR/webgpu/#gpuadapterinfo)
 - [MDN importExternalTexture](https://developer.mozilla.org/en-US/docs/Web/API/GPUDevice/importExternalTexture) · [MDN copyExternalImageToTexture](https://developer.mozilla.org/en-US/docs/Web/API/GPUQueue/copyExternalImageToTexture) · [WebGPU Fundamentals, vídeo como textura externa](https://webgpufundamentals.org/webgpu/lessons/webgpu-textures-external-video.html) · [WebGPU Fundamentals, vários canvas](https://webgpufundamentals.org/webgpu/lessons/webgpu-multiple-canvases.html)
 - Chrome, novidades do WebGPU: [113](https://developer.chrome.com/blog/new-in-webgpu-113) · [120](https://developer.chrome.com/blog/new-in-webgpu-120) · [127](https://developer.chrome.com/blog/new-in-webgpu-127) · [138](https://developer.chrome.com/blog/new-in-webgpu-138) · [144](https://developer.chrome.com/blog/new-in-webgpu-144)
 - [Chrome, recursos de desenvolvedor do WebGPU](https://developer.chrome.com/docs/web-platform/webgpu/developer-features) · [Chrome, dicas de WebGPU](https://developer.chrome.com/docs/web-platform/webgpu/troubleshooting-tips)
@@ -677,58 +526,46 @@ catálogo. Esta lista junta os das seções 11 a 14.
 **Linux e aceleração por hardware**
 
 - [Chromium, VA-API](https://chromium.googlesource.com/chromium/src/+/main/docs/gpu/vaapi.md)
-- [blink-dev, fim do fallback automático para SwiftShader](https://groups.google.com/a/chromium.org/g/blink-dev/c/yhFguWS_3pM)
+- [Chromium, SwiftShader](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/gpu/swiftshader.md) · [repositório SwiftShader](https://swiftshader.googlesource.com/SwiftShader) · [blink-dev, fim do fallback automático para SwiftShader](https://groups.google.com/a/chromium.org/g/blink-dev/c/yhFguWS_3pM)
 - [Chromium, políticas no Linux](https://www.chromium.org/administrators/linux-quick-start/) · [Chrome Enterprise, HardwareAccelerationModeEnabled](https://chromeenterprise.google/policies/#HardwareAccelerationModeEnabled)
 
 **CPU**
 
-- [V8, WebAssembly SIMD](https://v8.dev/features/simd) · [web.dev, COOP e COEP](https://web.dev/articles/coop-coep) · [TensorFlow.js, WebAssembly com SIMD e threads](https://blog.tensorflow.org/2020/09/supercharging-tensorflowjs-webassembly.html)
-- [webrtcHacks, processamento de quadro na web](https://webrtchacks.com/video-frame-processing-on-the-web-webassembly-webgpu-webgl-webcodecs-webnn-and-webtransport/)
-- [Chrome, insertable streams](https://developer.chrome.com/docs/capabilities/web-apis/mediastreamtrack-insertable-media-processing)
+- [V8, WebAssembly SIMD](https://v8.dev/features/simd) · [web.dev, COOP e COEP](https://web.dev/articles/coop-coep)
+- [Chrome, insertable streams](https://developer.chrome.com/docs/capabilities/web-apis/mediastreamtrack-insertable-media-processing) · [W3C mediacapture-transform](https://w3c.github.io/mediacapture-transform/) · [MDN MediaStreamTrackProcessor](https://developer.mozilla.org/en-US/docs/Web/API/MediaStreamTrackProcessor)
+- [WebAssembly, recursos](https://webassembly.org/features/) · [proposta SIMD](https://github.com/WebAssembly/simd)
 
-**Quadros**
+**Validação e prova**
 
-- [web.dev, requestVideoFrameCallback](https://web.dev/articles/requestvideoframecallback-rvfc)
-- [W3C webrtc-extensions, jitterBufferTarget](https://w3c.github.io/webrtc-extensions/#dom-rtcrtpreceiver-jitterbuffertarget) · [MDN jitterBufferTarget](https://developer.mozilla.org/en-US/docs/Web/API/RTCRtpReceiver/jitterBufferTarget) · [Chrome Platform Status, jitterBufferTarget](https://chromestatus.com/feature/5930772496384000)
-- [mpv, sincronização com a tela](https://github.com/mpv-player/mpv/wiki/Display-synchronization)
+- [W3C WebRTC Stats](https://w3c.github.io/webrtc-stats/) · [MDN RTCInboundRtpStreamStats](https://developer.mozilla.org/en-US/docs/Web/API/RTCInboundRtpStreamStats)
+- [W3C Long Animation Frames](https://w3c.github.io/long-animation-frames/) · [Chrome, Long Animation Frames](https://developer.chrome.com/docs/web-platform/long-animation-frames)
+- [Netflix VMAF NEG](https://github.com/Netflix/vmaf/blob/master/resource/doc/models_v0.md) · [Netflix CAMBI](https://github.com/Netflix/vmaf/blob/master/resource/doc/cambi.md)
+- [ENFSI, realce forense de imagem e vídeo](https://enfsi.eu/wp-content/uploads/2017/06/Best-Practice-Manual-for-Forensic-Image-and-Video-Enhancement.pdf)
 
-**WebNN**
+## Glossário
 
-- [W3C WebNN](https://www.w3.org/TR/webnn/) · [WebNN, back-ends por sistema](https://webnn.io/en/api-reference/browser-compatibility/api) · [Microsoft Learn, WebNN](https://learn.microsoft.com/en-us/windows/ai/directml/webnn-overview) · [blink-dev, origin trial da WebNN](https://groups.google.com/a/chromium.org/g/blink-dev/c/5CWKSChYo98/m/xMw0U5NkAAAJ)
-
-**Prova e risco forense**
-
-- [ENFSI, realce forense de imagem e vídeo](https://enfsi.eu/wp-content/uploads/2017/06/Best-Practice-Manual-for-Forensic-Image-and-Video-Enhancement.pdf) · [SWGDE, análise forense de vídeo](https://www.swgde.org/documents/published-complete-listing/18-v-001-best-practices-for-digital-forensic-video-analysis/)
-- [Greenberg Traurig, vídeo realçado por IA recusado em juízo](https://www.gtlaw.com/en/insights/2024/5/washington-court-rejects-novel-use-of-ai-enhanced-video-in-trial) · [super-resolução de placa e troca de caracteres](https://arxiv.org/html/2408.15103)
-- [Freeman, Jones e Pasztor, super-resolução por exemplos (DOI)](https://doi.org/10.1109/38.988747) · [detecção de interpolação de quadros](https://arxiv.org/abs/2103.13674)
-
-## 16. Glossário
-
-| Termo | Significado |
+| Termo | O que é |
 | --- | --- |
+| Fidelidade e melhoria | Fidelidade é redução de artefato, ampliação e nitidez, automáticas com GPU. Melhoria é o tom e cor, ligado pelo item do menu |
+| Motor | O jeito de calcular o realce na estação: WebGPU, WebGL2 ou CPU |
+| Vaga | Lugar de um player num motor. Sem vaga, o player mostra o vídeo nativo |
+| Quarentena | Tempo em que um motor que falhou fica fora da cadeia antes de ser tentado de novo |
+| Fatia do orçamento | Parte do intervalo entre quadros que o realce pode gastar por quadro |
 | Luma | O brilho de cada pixel, sem a cor. É onde o olho percebe detalhe e nitidez |
 | BT.709 | Padrão de vídeo HD que define como calcular a luma a partir de RGB (0,2126 R + 0,7152 G + 0,0722 B) |
-| Shader | Pequeno programa que roda na GPU, uma vez por pixel |
-| Framebuffer | Imagem intermediária na GPU, onde um passe escreve e o próximo lê |
-| Thread principal | A thread que desenha a interface; trabalho pesado nela trava a tela |
-| p90 e p50 | O valor abaixo do qual ficam 90% e 50% das medidas da janela |
-| Compositor | A parte do navegador que monta a página na tela e estica o vídeo quando não há realce |
-| Artefato de compressão | Bloco, chuvisco e contorno fantasma que a compressão do vídeo cria |
 | Cb e Cr | Os dois canais de cor do vídeo (diferença para azul e para vermelho); com a luma, formam o YUV |
-| Faixa limitada | Convenção do vídeo em que o brilho vai de 16 a 235 e a cor de 16 a 240, em vez de 0 a 255 |
+| Faixa limitada e faixa cheia | Brilho de 16 a 235 e cor de 16 a 240, ou brilho e cor de 0 a 255; muita câmera IP manda faixa cheia |
 | Histograma | Contagem de quantos pixels têm cada nível de brilho |
 | LUT (tabela) | Resposta pronta para cada valor de entrada: aplicar é uma consulta, não uma conta |
 | Vibrance | Saturação que favorece as cores apagadas e mexe pouco nas já fortes |
-| Faixa cheia | Convenção em que brilho e cor vão de 0 a 255; muita câmera IP manda assim |
-| WebGPU | API do navegador que sucede o WebGL, com compute shader e medida de tempo na GPU |
-| Adaptador | A GPU que o WebGPU encontrou. O de reserva (fallback) é de software |
+| Shader | Pequeno programa que roda na GPU, uma vez por pixel |
 | Compute shader | Programa da GPU que calcula sobre dados em vez de desenhar pixel, com memória dividida entre threads vizinhas |
-| EASU | A ampliação do FSR 1 da AMD, que segue a direção da borda |
-| Fidelidade e melhoria | No desenho decidido: fidelidade é limpeza, ampliação e nitidez, automáticas; melhoria é o tom e cor, no botão |
+| Framebuffer | Imagem intermediária na GPU, onde um passe escreve e o próximo lê |
+| Adaptador | A GPU que o WebGPU encontrou. O de reserva (fallback) é de software |
+| Compositor | A parte do navegador que monta a página na tela e estica o vídeo quando não há realce |
+| Thread principal | A thread que desenha a interface; trabalho pesado nela trava a tela |
+| p90 | O valor abaixo do qual ficam 90% das medidas da janela |
+| Artefato de compressão | Bloco, chuvisco e contorno fantasma que a compressão do vídeo cria |
 | QP | Parâmetro de quantização do codec: quanto maior, mais o quadro foi comprimido |
-| Banding | Faixas visíveis num degradê, por falta de níveis de brilho |
-| Pontilhado (dither) | Ruído mínimo, abaixo de um nível de brilho, que esconde a falta de níveis |
-| NPU | Processador dedicado a rede neural |
-| WebNN | API do navegador para rodar rede neural na CPU, na GPU ou na NPU |
 | VA-API | Interface do Linux para decodificar vídeo na GPU |
 | Flag | Opção do Chrome que liga ou desliga um recurso fora do padrão |

@@ -2,20 +2,32 @@
 tags:
   - doc
   - processo
+  - indice
 aliases:
   - "Processo"
-atualizado: 2026-10-02
+atualizado: 2026-10-07
 ---
 
 # Processo
 
-Como o trabalho é feito e contra o quê: os nomes e a escrita das notas e dos textos do time, e o edital que
-define o que o cliente contratou.
+## Resumo
 
-## Notas deste domínio
+Como o trabalho é feito e contra o quê: o nome e a escrita das notas deste vault e dos textos do time (PR,
+review e documento de público misto), e o edital que define o que o cliente contratou. O edital é a fonte de
+verdade de requisito; o código da `develop` é a fonte de verdade de como o sistema funciona.
 
-- [[Processo - Convenção de nomes]] - onde cada nota mora e como ela se chama, com a lista fechada de
-  domínios e facetas.
-- [[Processo - Convenções de escrita]] - como escrever PR, comentário de review, documento de público misto
-  e as notas deste vault, inclusive como revisar uma nota contra o código.
-- [[Processo - Edital do cliente]] - o edital do cliente, fonte de verdade de requisito. Não se edita.
+## Notas
+
+| Nota | Abra quando |
+| --- | --- |
+| [[Processo - Convenção de nomes]] | vai criar, renomear ou mover uma nota e precisa do nome, da pasta ou do frontmatter |
+| [[Processo - Convenções de escrita]] | vai escrever uma nota, uma descrição de PR, um comentário de review ou um documento para gestão, ou revisar uma nota contra o código |
+| [[Processo - Edital do cliente]] | precisa confirmar o que o cliente contratou; a nota não se edita |
+
+## Explicações para usuário
+
+O domínio não tem explicação para usuário final na raiz do vault.
+
+## Diagramas
+
+O domínio não tem diagrama.

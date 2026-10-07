@@ -54,9 +54,10 @@ Fonte de verdade: **este vault**. O ClickUp é publicação para o gestor, não 
 | Papel | Nome do arquivo |
 | --- | --- |
 | **A sprint** - o que entrega, e o planejamento inteiro | `Sprint/NN/index.md`, com alias `Attlas - Sprint NN` |
-| Card | `Sprint/NN/<Frente> - <assunto>.md`, com `(front)` no nome quando for tela |
-| Card que deixou de existir | `Sprint/NN/Absorvido - <assunto>.md` - registro do escopo, não é task |
-| Card sem data de entrega | `Sprint/Sem prazo/<Frente> - <assunto>.md`, listado em [[Sem prazo (backlog)]] |
+| Task | `Sprint/NN/S<NN>-<seq> - <Domínio> - <Frente> - <Assunto>.md`, ex.: `S34-07 - Câmeras - Streaming - Um ingest por câmera` |
+| Task sem data de entrega | `Sprint/Sem prazo/SP-<seq> - <Domínio> - <Frente> - <Assunto>.md`, listada em [[Sem prazo (backlog)]] |
+
+A regra completa, com o que é ID, domínio e frente, está em [[Processo - Convenção de nomes#Tasks de sprint]].
 
 As sprints 22 a 29 tinham o arquivo principal como `Attlas - Sprint NN.md` e passaram a `index.md` em
 23/09, com o nome antigo como alias, para toda sprint seguir o mesmo formato. Dentro da nota de uma

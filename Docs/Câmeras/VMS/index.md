@@ -1,7 +1,6 @@
 ---
 tags:
   - doc
-  - ms-cameras
   - cameras
   - vms
 aliases:
@@ -10,21 +9,33 @@ aliases:
   - "00 - VMS"
   - "00 - Video Wall"
   - "Video Wall (ms-cameras)"
-atualizado: 2026-10-01
+atualizado: 2026-10-07
 ---
 
 # Câmeras - VMS
 
-O VMS (Video Monitoring System, "Monitoramento de Vídeo" na interface) é o mosaico de feeds ao vivo que o
-Attlas desenha no navegador do operador, submódulo do [[Câmeras]]. O backend (MOD-006, em
-`apps/ms-cameras/src/video-wall/`) guarda layouts e cenas, serve o picker de câmeras e o snapshot de banda;
-o front (`apps/web-attlas/src/app/modules/videowall/`) monta o mosaico, roda a rotação, o PTZ inline e a tela
-cheia, e abre cada tile pelo [[Câmeras - Streaming]]. O painel físico de Quito é um alvo de exibição do VMS, com notas
-próprias em [[Câmeras - Videowall]].
+## Resumo
 
-## Notas deste domínio
+O VMS (Video Monitoring System, "Monitoramento de Vídeo" na interface) é o mosaico de vídeos ao vivo que o
+Attlas desenha no navegador do operador, dentro do [[Câmeras]]. O `ms-cameras` guarda layouts e cenas, serve o
+seletor de câmeras e o snapshot de banda; o `web-attlas` monta o mosaico, roda a rotação, o PTZ por tile e a
+tela cheia, e abre cada vídeo pelo [[Câmeras - Streaming]]. O painel físico de Quito é um alvo de exibição do
+VMS e tem pasta própria, [[Câmeras - Videowall]].
 
-- [[Câmeras - VMS - Arquitetura e estratégias]] - nomenclatura e o que continua dizendo video-wall, modelo layout, cena e célula, escopo e permissões, rotas, ativação por alvo, frontend em camadas, requisitos e estado.
-- [[Câmeras - VMS - Fluxos]] - listar layouts, picker, criar e ativar cena, montar o mosaico e erros.
-- [[Câmeras - Streaming - Banda e bitrate]] - o snapshot de banda da sessão (MOD-008) e os níveis de alerta.
-- [[Câmeras - VMS - Diagrama.excalidraw]] - desenho, apoio visual; vale o código, depois a nota.
+## Notas
+
+| Nota | Abra quando |
+| --- | --- |
+| [[Câmeras - VMS - Arquitetura e estratégias]] | precisa saber onde está cada peça, as rotas, o modelo de layout, cena e célula, as permissões, a ativação por alvo, as camadas do frontend, os requisitos atendidos e as armadilhas |
+| [[Câmeras - VMS - Fluxos]] | precisa do passo a passo: listar layouts, seletor de câmeras, criar ou editar cena, ativar ou desativar, montar o mosaico e enviar ao painel |
+
+O snapshot de banda da sessão e os níveis de alerta estão em [[Câmeras - Streaming - Banda e bitrate]].
+
+## Explicações para usuário
+
+Nenhuma explicação para usuário trata deste subdomínio. A do painel físico está em [[Câmeras - Videowall]].
+
+## Diagramas
+
+- [[Câmeras - VMS - Diagrama.excalidraw]]: desenho do VMS. Quando o desenho discorda do código, vale o código
+  e depois a nota.

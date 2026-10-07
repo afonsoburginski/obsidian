@@ -1,85 +1,142 @@
 ---
 tags:
   - doc
-  - ms-cameras
   - cameras
   - vms
 aliases:
+  - "Câmeras - VMS - Fluxos"
   - "Video Wall - Fluxos"
   - "VMS - Fluxos"
-atualizado: 2026-10-01
+atualizado: 2026-10-07
 ---
 
 # Câmeras - VMS - Fluxos
 
-Volta para [[Câmeras - VMS]]. Regras e modelo em [[Câmeras - VMS - Arquitetura e estratégias]]. Fluxos do painel físico em
+Volta para [[Câmeras - VMS]].
+
+## Resumo
+
+| Fluxo | Gatilho | Resultado |
+| --- | --- | --- |
+| [[#Listar layouts]] | `GET /api/vms/layouts` | Layouts da organização mais os globais |
+| [[#Seletor de câmeras]] | `GET /api/cameras/vms` | Página de câmeras elegíveis |
+| [[#Criar ou editar cena]] | `POST` ou `PATCH /api/vms/scenes` | Cena persistida e auditada |
+| [[#Ativar ou desativar cena]] | `POST /api/vms/scenes/:id/activate` ou `/deactivate` | `isActive` alterado, ou cena projetada no painel |
+| [[#Montar o mosaico]] | Operador na tela `/cameras/vms` | Mosaico com vídeo ao vivo, PTZ e rotação |
+
+Modelo, regras e permissões: [[Câmeras - VMS - Arquitetura e estratégias]]. Fluxos do painel físico:
 [[Câmeras - Videowall - Fluxos]].
 
-## Listar layouts (UC-015, `GET /api/vms/layouts`)
+## Listar layouts
 
-1. O controller lê `organizationId` do JWT (`@CurrentUser`); sem ele, só os globais.
+**Gatilho.** `GET /api/vms/layouts`.
+
+**Passos.**
+
+1. O controller lê `organizationId` do JWT (`@CurrentUser`); sem ele, devolve só os globais.
 2. `ListVideoWallLayoutsHandler` consulta `organizationId IN (org, GLOBAL)`, ordenado por
    `isDefault desc, columns asc, rows asc`.
-3. Responde `{ data: IVideoWallLayout[] }` (`id, name, columns, rows, isDefault`).
 
-## Picker de câmeras (UC-014, `GET /api/cameras/vms`)
+**Resultado.** `{ data: IVideoWallLayout[] }`, com `id`, `name`, `columns`, `rows` e `isDefault`.
 
-1. `@RequireSystemDuty()` confere que o requisitante é membro do sistema; o controller injeta o `systemId`
-   do header `System-Id`.
-2. `ListVideoWallCamerasHandler` aplica `q`, `cameraType[]`, `lifecycleState[]` e `page`/`pageSize`.
-3. `repository.findForVideoWall` devolve linhas e total; sem filtro de estado, só `OPERATIONAL`.
+**Erros.** Sem JWT válido, 401 no Kong; a rota não tem outra recusa.
+
+## Seletor de câmeras
+
+**Gatilho.** `GET /api/cameras/vms` com `q`, `cameraType[]`, `lifecycleState[]`, `page` e `pageSize`.
+
+**Passos.**
+
+1. `@RequireSystemDuty()` confere que o requisitante é membro do sistema; o controller injeta o `systemId` do
+   header `System-Id`.
+2. `ListVideoWallCamerasHandler` aplica os filtros e a paginação.
+3. `findForVideoWall` devolve linhas e total; sem filtro de estado, só `OPERATIONAL`, e nunca `STOCK`.
 4. Mapeia para `ICameraVideoWallItem` mais o bloco `pagination`.
 
-## Criar ou editar cena (UC-016, `POST` e `PATCH /api/vms/scenes`)
+**Resultado.** Página de câmeras elegíveis para o mosaico.
+
+**Erros.** Header `System-Id` ausente ou malformado: 400. Requisitante fora do sistema: 403.
+
+## Criar ou editar cena
+
+**Gatilho.** `POST /api/vms/scenes` ou `PATCH /api/vms/scenes/:id`.
+
+**Passos.**
 
 1. `@RequirePermission(cameras.videoWall:configure)`; o controller grava o `organizationId` do JWT no comando.
-2. `resolveSceneGrid` exige exatamente um de `layoutId` ou `customGrid` (senão 400); layout inexistente na
-   organização ou nos globais dá 404.
-3. `validateSceneCellsFitGrid`: cada célula cabe e nenhuma sobrepõe (409).
-4. `assertCamerasEligible`: toda câmera é elegível (409 `CAMERA_NOT_ELIGIBLE`).
-5. `createScene` em transação: materializa o layout custom (dedup por organização), `sortOrder =
-   count(org)`, `isActive = false`, cria as células.
-6. Responde `VideoWallSceneResult`; o `@Audited` emite a trilha em `attlas.audit.cameras`.
+2. `resolveSceneGrid` exige exatamente um de `layoutId` ou `customGrid`.
+3. `validateSceneCellsFitGrid` confere que cada célula cabe na grade e que nenhuma sobrepõe outra.
+4. `assertCamerasEligible` confere que toda câmera existe, não está apagada e não é `STOCK`.
+5. Em transação: materializa o layout custom (reusado por dimensões dentro da organização), define
+   `sortOrder = count(org)` e `isActive = false` na criação e grava as células.
+6. O `@Audited` publica a trilha em `attlas.audit.cameras`.
 
-No `PATCH`, `cells` substitui o conjunto inteiro, trocar o layout revalida as células e limpa o custom
-órfão, e o front não manda `If-Match`.
+No `PATCH`, `cells` substitui o conjunto inteiro, trocar o layout revalida as células e remove o custom que
+ficou órfão, e o front não manda `If-Match`.
 
-## Ativar ou desativar cena (UC-016 e UC-051)
+**Resultado.** `VideoWallSceneResult`, com `allocatedCameraCount` e `onlineCameraCount`.
 
-1. `@RequirePermission(cameras.videoWall:operate)`; o controller lê `{ target?, takeover? }` e, só se vier,
-   o `System-Id` (malformado dá 400 `SYSTEM_ID_HEADER_INVALID`).
-2. `SetVideoWallSceneActiveHandler` resolve o alvo; sem `target`, `BROWSER_SESSION`.
-3. `BROWSER_SESSION`: `setSceneActive` confirma a cena na organização e grava `isActive`. `VIDEOWALL`: o
-   `NovastarH9DisplayTarget` projeta a cena salva no painel, ou limpa a parede no `deactivate`, sem tocar
-   em `isActive`.
-4. Cena ausente ou de outra organização dá 404 nos dois alvos; ativação por operador emite auditoria.
-5. Responde a cena (200).
-
-No alvo padrão, ativar não desativa outras cenas: não há "cena ativa única" no backend.
-
-## Montar o mosaico (user flow)
-
-| # | Ação do operador | Backend |
-| --- | --- | --- |
-| 1 | Escolhe um layout (1x1 a 6x6 ou custom) | `GET /api/vms/layouts`; preset sem layout seedado vira `customGrid` no save |
-| 2 | Abre o picker e arrasta câmeras para as células | `GET /api/cameras/vms` |
-| 3 | Manda a seleção em lote para a grade | nada: o front dimensiona o preset e descarta o excedente acima de 6x6 |
-| 4 | Salva como visualização | `POST /api/vms/scenes` |
-| 5 | Ativa com um clique | `POST /api/vms/scenes/:id/activate` |
-| 6 | Vê os feeds ao vivo | o front abre uma sessão por câmera via [[Câmeras - Streaming]]; a cena não devolve URL |
-| 7 | Comanda PTZ numa célula | o controle compartilhado dirige o tile escolhido, via [[Câmeras - PTZ e presets]] |
-| 8 | Deixa as visualizações em rotação | timer no front, `IRotationConfig` na URL |
-| 9 | Expande uma célula em tela cheia | `GET /api/vms/scenes/:id` e detalhe da câmera; o popup é do front |
-| 10 | Sai com edição pendente | nada: `videowallDirtyGuard` pede confirmação |
-| 11 | Envia a grade ao painel externo | `activate` com `target: VIDEOWALL`, salvando antes se há edição pendente |
-
-## Erros
+**Erros.**
 
 | Situação | Exceção e HTTP |
 | --- | --- |
-| Cena ou layout de outra organização, ou inexistente | `ResourceNotFoundException`, 404 |
-| `layoutId` e `customGrid` juntos, ou nenhum | `InvalidInputException`, 400 |
-| Célula fora da grade, sobreposta ou com câmera inelegível | `BusinessRuleViolationException`, 409 |
-| Sem a permissão da rota | `ForbiddenActionException`, 403 `FORBIDDEN_ACTION` |
-| `ms-organization` fora do ar na avaliação | `PermissionResolverUnavailableException`, 503 (fail-closed) |
-| `System-Id` malformado na ativação | `InvalidInputException`, 400 `SYSTEM_ID_HEADER_INVALID` |
+| Sem `cameras.videoWall:configure` | `ForbiddenActionException`, 403 `FORBIDDEN_ACTION` |
+| `ms-organization` fora do ar na avaliação de permissão | `PermissionResolverUnavailableException`, 503 (fail-closed) |
+| Cena de outra organização ou inexistente, no `PATCH` | `ResourceNotFoundException`, 404 |
+| `layoutId` e `customGrid` juntos, ou nenhum | `InvalidInputException`, 400 `LAYOUT_SOURCE_AMBIGUOUS` |
+| Layout inexistente na organização e nos globais | 404 |
+| Célula fora da grade | `BusinessRuleViolationException`, 409 `CELL_OUT_OF_BOUNDS` ou `INVALID_CELL_POSITION` |
+| Células sobrepostas | 409 `CELL_OVERLAP` |
+| Câmera inexistente, apagada ou em `STOCK` | 409 `CAMERA_NOT_ELIGIBLE` |
+
+## Ativar ou desativar cena
+
+**Gatilho.** `POST /api/vms/scenes/:id/activate` ou `/deactivate`, com corpo `{ target?, takeover? }`.
+
+**Passos.**
+
+1. `@RequirePermission(cameras.videoWall:operate)`; o controller lê o corpo e, só se vier, o header
+   `System-Id`.
+2. `SetVideoWallSceneActiveHandler` resolve o alvo; sem `target`, `BROWSER_SESSION`.
+3. O handler confirma que a cena existe na organização, para os dois alvos.
+4. `BROWSER_SESSION`: `setSceneActive` grava `isActive`. `VIDEOWALL`: o `NovastarH9DisplayTarget` projeta a
+   cena salva no painel, ou limpa a parede no `deactivate`, sem tocar em `isActive`
+   ([[Câmeras - Videowall - Fluxos]]).
+5. Ativação por operador publica auditoria com o antes e o depois de `isActive`.
+
+**Resultado.** A cena (200). No alvo padrão, ativar não desativa as outras cenas.
+
+**Erros.**
+
+| Situação | Exceção e HTTP |
+| --- | --- |
+| Sem `cameras.videoWall:operate` | `ForbiddenActionException`, 403 `FORBIDDEN_ACTION` |
+| `ms-organization` fora do ar na avaliação de permissão | `PermissionResolverUnavailableException`, 503 (fail-closed) |
+| Cena de outra organização ou inexistente | `ResourceNotFoundException`, 404 |
+| `System-Id` malformado | `InvalidInputException`, 400 `SYSTEM_ID_HEADER_INVALID` |
+| Erros do painel físico com `target: VIDEOWALL` | [[Câmeras - Videowall - Fluxos]] |
+
+## Montar o mosaico
+
+**Gatilho.** O operador abre `/cameras/vms` ou `/cameras/vms/:viewId`.
+
+**Passos.**
+
+| # | Ação do operador | O que acontece |
+| --- | --- | --- |
+| 1 | Escolhe um layout (1x1 a 6x6 ou custom) | `GET /api/vms/layouts`; preset sem layout no seed vira `customGrid` no save |
+| 2 | Abre o seletor e arrasta câmeras para as células | `GET /api/cameras/vms` |
+| 3 | Manda a seleção em lote para a grade | Nenhuma chamada: o front dimensiona o preset e descarta o excedente acima de 6x6, avisando |
+| 4 | Salva como visualização | `POST /api/vms/scenes` |
+| 5 | Ativa com um clique | `POST /api/vms/scenes/:id/activate` |
+| 6 | Vê os vídeos ao vivo | O front abre uma sessão por câmera pelo [[Câmeras - Streaming]]; a cena não devolve URL |
+| 7 | Comanda PTZ numa célula | O controle compartilhado dirige o tile escolhido, via [[Câmeras - PTZ e presets]] |
+| 8 | Deixa as visualizações em rotação | Timer no front; `IRotationConfig` na URL |
+| 9 | Expande uma célula em tela cheia | `GET /api/vms/scenes/:id` e detalhe da câmera; o popup é do front |
+| 10 | Sai com edição pendente | Nenhuma chamada: `videowallDirtyGuard` pede confirmação |
+| 11 | Envia a grade ao painel externo | `activate` com `target: VIDEOWALL`, salvando antes se há edição pendente |
+
+**Resultado.** Mosaico com vídeo ao vivo, PTZ por tile, rotação e tela cheia.
+
+**Erros.** Tile cuja sessão não abre mostra "Sem sinal" sobre a miniatura; o teto de sessões (429) mostra o
+estado `cap-reached`. Controle sem permissão aparece desabilitado com cadeado.

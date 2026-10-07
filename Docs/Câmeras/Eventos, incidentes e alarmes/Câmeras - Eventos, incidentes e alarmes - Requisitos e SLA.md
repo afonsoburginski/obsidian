@@ -1,79 +1,66 @@
 ---
 tags:
   - doc
-  - ms-cameras
+  - cameras
   - eventos
-atualizado: 2026-10-01
+  - ms-cameras
 aliases:
   - "Eventos, incidentes e alarmes - Requisitos e SLA"
+atualizado: 2026-10-07
 ---
 
 # Câmeras - Eventos, incidentes e alarmes - Requisitos e SLA
 
-Índice: [[Câmeras - Eventos, incidentes e alarmes]]. Requisitos de origem: `docs/modules/cameras.md` (seções 3.3, 3.4,
-8.3 e 8.4). "Não atendido" é requisito do edital sem implementação.
+Volta para [[Câmeras - Eventos, incidentes e alarmes]].
 
-## Requisitos funcionais
+## Resumo
 
-| ID | Requisito | Estado no código |
+Requisitos de origem em `docs/modules/cameras.md`, seções 3.3, 3.4, 8.3 e 8.4. "Não atendido" é requisito do
+edital sem implementação.
+
+| Requisito | Estado | O que o código faz e o que falta |
 | --- | --- | --- |
-| RF-EVT-01 Captura automática | Estado, comunicação, energia e PTZ | **Atendido** - worker de saúde grava `HEALTH_*` e `CONNECTIVITY_CHANGED` com causa de marca, de ping ou de queda de conexão; ingest externo por `event-ingest` (sem produtor hoje) |
-| RF-EVT-02 Classificação e timeline | Tipo, severidade, origem e timeline correlacionada | **Atendido** - categoria derivada, severidade `INFO`/`WARN`/`ERROR`, origem por câmera e `area`/`subarea` pela topologia; timeline do incidente (UC-024) e do evento (UC-041) |
-| RF-EVT-03 Integração externa | Críticos para Alarmes, analítica para Analítico, todos para Relatórios | **Parcial** - Alarmes por `alarm-raised` (consumido pelo `ms-alarms`) e por `status-changed`; analítico com produtor (`ANALYTICS_INCIDENT`) e fila própria; Relatórios **sem** encaminhamento dedicado |
-| RF-INC-01 Criação automática e manual | De eventos críticos ou pelo operador | **Atendido** - correlação (`TENTATIVE` para `DETECTED`) e report manual (`DETECTED` direto, `reportedBy` do JWT) |
-| RF-INC-02 Ciclo de vida com SLA | Aberto, em análise, em manutenção, resolvido, fechado, tempo por etapa | **Parcial** - `DETECTED` e `RESOLVED`; `INVESTIGATING` visível mas sem transição; "em manutenção" e "fechado" não modelados; SLA por etapa não atendido |
-| RF-INC-03 Vinculação com OS | Incidente físico gera OS no Inventário | **Não atendido** - só a coluna `workOrderId` |
-| RF-INC-04 MTTR e MTBF | Por câmera e região, hotspots | **Não atendido** - `detectedAt`/`resolvedAt` existem, sem cálculo |
+| RF-EVT-01 Captura automática de estado, comunicação, energia e PTZ | **Atendido** | O worker de saúde grava `HEALTH_*` e `CONNECTIVITY_CHANGED` com causa de marca, de sondagem ou de queda da conexão de eventos; a ingestão externa por `event-ingest` existe, sem produtor |
+| RF-EVT-02 Classificação e timeline | **Atendido** | Categoria derivada, severidade `INFO`, `WARN` ou `ERROR`, origem, área e subárea pela topologia; timeline do incidente e do evento |
+| RF-EVT-03 Integração externa | **Parcial** | Alarmes por `alarm-raised` e por `status-changed`; o analítico tem produtor e fila própria; Relatórios não recebe encaminhamento dedicado |
+| RF-INC-01 Criação automática e manual | **Atendido** | Correlação (`TENTATIVE` para `DETECTED`) e report manual (`DETECTED` direto, `reportedBy` do JWT) |
+| RF-INC-02 Ciclo de vida com SLA por etapa | **Parcial** | Só `DETECTED` e `RESOLVED` têm transição; `INVESTIGATING` aparece sem transição; "em manutenção" e "fechado" não existem; não há SLA por etapa. O ciclo do tratamento do analítico é outra entidade e não cobre este requisito |
+| RF-INC-03 Vinculação com ordem de serviço no Inventário | **Não atendido** | Só a coluna `workOrderId` |
+| RF-INC-04 MTTR e MTBF por câmera e região | **Não atendido** | `detectedAt` e `resolvedAt` existem, sem cálculo |
+| RNF-CAM-06 Rastreabilidade | **Parcial** | Eventos com `occurredAt` e `createdAt` (`Timestamptz`, offset obrigatório) e `operatorId`; evento automático e incidente de correlação sem operador, por serem do sistema; incidente manual com `reportedBy`; observação com `authorId` e `authorName`; observação e tratamento em `attlas.audit.cameras`; o report fica fora da trilha de auditoria |
 
-O ciclo de tratamento do incidente de analítico (`DETECTED`, `ACKNOWLEDGED`, `INVESTIGATING`, `RESOLVED`,
-`DROPPED`) é outra entidade e não cobre o RF-INC-02 do incidente de câmera.
+## Regras
 
-## Requisito não funcional
-
-| ID | Estado |
-| --- | --- |
-| RNF-CAM-06 Rastreabilidade | **Parcial** - eventos com `occurredAt`/`createdAt` (Timestamptz, offset obrigatório) e `operatorId`; evento automático e incidente de correlação sem operador por serem do sistema; incidente manual com `reportedBy`; observação com `authorId`/`authorName`; observação e tratamento na trilha `attlas.audit.cameras`; report fora da trilha de auditoria |
-
-## Prioridade do incidente manual
-
-Derivada da `severity` do evento gatilho (`_shared/derive-incident-priority.ts`, BR-CAM-EVT-044-03), não
-do body:
-
-| `severity` | Prioridade |
-| --- | --- |
-| `ERROR` | `HIGH` |
-| `WARN` | `MEDIUM` |
-| `INFO` | `LOW` |
-| Outro valor | `MEDIUM`, com `warn` no log |
-
-## Parâmetros de correlação (`CorrelationConfig`, `events/events.constants.ts`)
-
-Constantes no código; levar para configuração em banco é pendência.
-
-| Parâmetro | Valor | Papel |
+| Regra | Valor | Onde no código |
 | --- | --- | --- |
-| `WINDOW_SECONDS` | 60 s | Janela ativa para abrir ou estender cluster |
-| `EXTENSION_WINDOW_SECONDS` | 120 s | Extensão pelo último evento ligado |
-| `CLUSTER_CAMERAS_THRESHOLD` | 2 | Câmeras distintas para promover |
-| `CLUSTER_EVENTS_THRESHOLD` | 3 | Eventos para promover |
-| `AUTO_CLOSE_WINDOW_SECONDS` | 1800 s | `DETECTED` sem evento novo vira `RESOLVED` |
-| `DROP_TENTATIVE_WINDOW_SECONDS` | 120 s | `TENTATIVE` órfão vira `DROPPED` |
-| `RECOVERY_RESOLVE_THRESHOLD` | 0,8 | Fração de câmeras em `HEALTH_ONLINE` para resolver |
-| `HOUSEKEEPING_CRON_INTERVAL_MS` | 60 000 ms | Cron do housekeeping |
-| `DEFAULT_LIST_WINDOW_DAYS` | 7 | Janela default da lista de incidentes |
-| `MAX_TIMELINE_ITEMS` | 200 | Teto da timeline do detalhe de incidente |
+| Janela ativa para abrir ou estender incidente | 60 s | `CorrelationConfig.WINDOW_SECONDS`, `events/events.constants.ts` |
+| Extensão pelo último evento ligado | 120 s | `CorrelationConfig.EXTENSION_WINDOW_SECONDS` |
+| Câmeras distintas para promover a `DETECTED` | 2 | `CorrelationConfig.CLUSTER_CAMERAS_THRESHOLD` |
+| Eventos para promover a `DETECTED` | 3 | `CorrelationConfig.CLUSTER_EVENTS_THRESHOLD` |
+| `DETECTED` sem evento novo vira `RESOLVED` | 1800 s (30 min) | `CorrelationConfig.AUTO_CLOSE_WINDOW_SECONDS` |
+| `TENTATIVE` sem atividade vira `DROPPED` | 120 s | `CorrelationConfig.DROP_TENTATIVE_WINDOW_SECONDS` |
+| Fração de câmeras em `HEALTH_ONLINE` que resolve o incidente | 0,8 | `CorrelationConfig.RECOVERY_RESOLVE_THRESHOLD` |
+| Intervalo da limpeza periódica | 60 000 ms | `CorrelationConfig.HOUSEKEEPING_CRON_INTERVAL_MS` |
+| Janela padrão da lista de incidentes | 7 dias | `CorrelationConfig.DEFAULT_LIST_WINDOW_DAYS` |
+| Teto da timeline do detalhe de incidente | 200 eventos | `CorrelationConfig.MAX_TIMELINE_ITEMS` |
+| Presets de período da lista da rede | `24h`, `7d`, `30d`, `90d`; `all` sem filtro; `range` com `from` e `to` | `CameraEventPeriodConfig.PRESET_DAYS` |
+| Período padrão da lista da rede | `30d` | `CameraEventPeriodConfig.DEFAULT_PRESET` |
+| Comparação fixa dos KPIs | 30 dias contra os 30 anteriores | `COMPARISON_WINDOW_DAYS`, `reading/get-camera-events-stats/camera-events-stats.constants.ts` |
+| Paginação dos logs | padrão 20, máximo 100, página máxima 10 000 | `CameraEventLogConfig` |
+| Termo de busca | até 120 caracteres | `CameraEventValidation.search`, `libs/contracts/src/lib/camera/camera-event.validation.ts` |
+| Contexto da timeline sem incidente | 30 min para cada lado, até 50 linhas | `CameraEventTimelineConfig` |
+| Intervalos da recorrência | `1h` em 60 de 1 min, `24h` em 24 de 1 h, `7d` em 7 de 1 dia, `30d` em 30 de 1 dia; padrão `24h` | `CameraEventRecurrenceConfig.PRESETS` |
+| Texto da observação | até 280 caracteres, igual ao `VarChar(280)` | `CameraEventObservationConfig.TEXT_MAX_LENGTH` |
+| Report manual | `name` de 1 a 200, `description` de 1 a 2000 caracteres, lidos pelo DTO e pelo modal | `CameraEventReportValidation`, `libs/contracts/src/lib/camera/camera-event-report.validation.ts` |
+| Prioridade do incidente manual | `ERROR` vira `HIGH`, `WARN` vira `MEDIUM`, `INFO` vira `LOW`; outro valor vira `MEDIUM` com `warn` no log | `events/_shared/derive-incident-priority.ts` |
+| Lote de tratamento | até 100 eventos | `PATCH /cameras/events/treatment-status` |
+| Teto e lote da exportação | 20 000 linhas, lotes de 500 | `INCIDENTS_EXPORT_MAX_ROWS`, `INCIDENTS_EXPORT_BATCH_SIZE`, `incidents/export/handlers/incidents-export.constants.ts` |
+| Payload da ingestão externa | até 4 KiB | `CameraEventIngestListener.MAX_PAYLOAD_BYTES` |
+| Prazo do eco de comando de plano | 20 s | `PUBLISH_DEADLINE_MS`, `events/publishing/camera-events.publisher.ts` |
 
-## Parâmetros da tela de Eventos
+## Variáveis de ambiente
 
-| Parâmetro | Valor | Papel |
+| Variável | Padrão | Efeito |
 | --- | --- | --- |
-| `CameraEventPeriodConfig.PRESET_DAYS` | `24h`, `7d`, `30d`, `90d` | Presets da lista; `all` remove o filtro, `range` usa `from`/`to` |
-| `CameraEventPeriodConfig.DEFAULT_PRESET` | `30d` | Período default |
-| `COMPARISON_WINDOW_DAYS` (`camera-events-stats.constants.ts`) | 30 | Comparação fixa dos KPIs |
-| `CameraEventLogConfig` | limite default 20, máximo 100 | Paginação |
-| `CameraEventTimelineConfig` | 30 min para cada lado, até 50 | Fallback de contexto da timeline |
-| `CameraEventRecurrenceConfig.PRESETS` | `1h` 60 x 1 min, `24h` 24 x 1 h, `7d` 7 x 1 dia, `30d` 30 x 1 dia; default `24h` | Buckets da recorrência |
-| `CameraEventObservationConfig.TEXT_MAX_LENGTH` | 280 | Observação, igual ao `VarChar(280)` |
-| `CameraEventReportValidation` (`@attlas/contracts`) | `name` 1 a 200, `description` 1 a 2000 | Report manual, lido pelo DTO e pelo modal |
-| `INCIDENTS_EXPORT_MAX_ROWS` / `INCIDENTS_EXPORT_BATCH_SIZE` | 20 000 / 500 | Teto e lote da exportação |
-| `ANALYTICS_INCIDENT_DEDUP_WINDOW_MS` | 30 s | Dedup do incidente do analítico por câmera, região e tipo |
+| `ANALYTICS_INCIDENT_DEDUP_WINDOW_MS` | 30000 | Janela em que o incidente do analítico da mesma câmera, região e tipo é colapsado numa linha |
+| `KAFKA_BROKERS` | `localhost:9092` no `.env.example` | Sem ela, `event-logged`, `incident-created` e `alarm-raised` são suprimidos em silêncio e os ecos de comando de plano falham |

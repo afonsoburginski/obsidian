@@ -1,38 +1,42 @@
 ---
 tags:
   - doc
-  - ms-cameras
+  - cameras
   - dispositivo
+  - ms-cameras
 aliases:
   - "Câmeras - Integração com dispositivo"
   - "Integração com dispositivo"
   - "00 - Integração com dispositivo"
-atualizado: 2026-10-01
+atualizado: 2026-10-07
 ---
 
 # Câmeras - Integração com dispositivo
 
-A camada do [[Câmeras]] que fala com o hardware da câmera: ONVIF Profile S como padrão, RTSP para o
-stream, VAPIX (Axis) e ISAPI (Hikvision) para o que o ONVIF não alcança. O próprio `ms-cameras` é o ponto de
-integração, sem connector dedicado nem SDK de fabricante no meio. Entrega ao resto do serviço o descritor de
-stream (URL RTSP), os comandos PTZ, os canais de heartbeat e eventos e o bitrate configurado no equipamento;
-não grava vídeo, que é do gravador externo (RF-INT-01). Código em `apps/ms-cameras/src/hardware/`, mais os
-clientes em `health/clients/` e `health/utils/` e os utilitários VAPIX em `cameras/utils/`. Regra de negócio
-em `docs/modules/cameras.md` seção 2 (RNF-CAM-02, RF-INT-05). Diagrama:
-[[Câmeras - Integração com dispositivo - Diagrama.excalidraw|diagrama]].
+## Resumo
 
-## Notas deste domínio
+É a camada do `ms-cameras` que fala direto com o hardware da câmera, sem connector nem SDK de fabricante: ONVIF
+Profile S como padrão, RTSP para o vídeo, VAPIX (Axis) e ISAPI (Hikvision) para o que o ONVIF não alcança. Ela
+entrega a URL RTSP de cada perfil, os comandos PTZ, os canais de heartbeat e eventos, o bitrate configurado e os
+codecs declarados a [[Câmeras - Streaming]], [[Câmeras - PTZ e presets]], [[Câmeras - Saúde e monitoramento]] e
+[[Câmeras - Cadastro]], e não grava vídeo. O código fica em `apps/ms-cameras/src/hardware/`, `health/clients/`,
+`health/utils/` e `cameras/utils/`, e a regra de negócio em `docs/modules/cameras.md`, seção 2.
 
-- [[Câmeras - Integração com dispositivo - Arquitetura e estratégias]] - driver e estratégia, protocolos, descritor de
-  stream, bitrate configurado, digest, credenciais, erros e timeouts, armadilhas.
-- [[Câmeras - Integração com dispositivo - Fluxos]] - PTZ por ONVIF e por VAPIX, descritor de stream, sondagem,
-  canais de saúde, ativação do ONVIF na Hikvision.
-- [[Câmeras - Integração com dispositivo - Requisitos e SLA]] - RF-INT-05, RNF-CAM-02, RF-CAM-03, fallbacks e
-  timeouts.
-- [[Câmeras - Integração com dispositivo - Runbook]] - câmeras de bancada, como alcançá-las e os comandos de
-  ffmpeg, VAPIX, ISAPI e ONVIF.
-- [[Câmeras - Integração com dispositivo - Diagrama.excalidraw]] - desenho, apoio visual; vale o código, depois a nota.
+## Notas
 
-## Relacionados
+| Nota | Abra quando |
+| --- | --- |
+| [[Câmeras - Integração com dispositivo - Arquitetura e estratégias]] | precisa saber qual protocolo cobre o quê, onde está o driver, a estratégia de stream, o digest e os erros, e por que é assim |
+| [[Câmeras - Integração com dispositivo - Fluxos]] | quer o passo a passo de um comando PTZ, da montagem da URL de stream, da sondagem no cadastro, da ativação do ONVIF na Hikvision ou dos canais de saúde |
+| [[Câmeras - Integração com dispositivo - Requisitos e SLA]] | precisa do estado de cada requisito do edital, dos timeouts e das variáveis de ambiente |
+| [[Câmeras - Integração com dispositivo - Runbook]] | vai testar uma câmera de bancada pelo terminal com ffprobe, VAPIX, ISAPI ou ONVIF |
 
-[[Câmeras]] · [[Câmeras - Cadastro]] · [[Câmeras - Saúde e monitoramento]] · [[Câmeras - Streaming]] · [[Câmeras - PTZ e presets]]
+## Explicações para usuário
+
+Não há explicação para usuário deste subdomínio na raiz do vault.
+
+## Diagramas
+
+| Diagrama | O que mostra |
+| --- | --- |
+| [[Câmeras - Integração com dispositivo - Diagrama.excalidraw]] | as portas do driver e da estratégia e os protocolos por fabricante; é apoio visual, e quando discorda vale o código e depois a nota |

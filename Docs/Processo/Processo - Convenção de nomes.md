@@ -6,10 +6,22 @@ tags:
 aliases:
   - "Processo - Convenção de nomes"
   - "Convenção de nomes"
-atualizado: 2026-10-02
+atualizado: 2026-10-07
 ---
 
 # Processo - Convenção de nomes
+
+Volta para [[Processo]].
+
+## Resumo
+
+| O quê | Formato | Exemplo |
+| --- | --- | --- |
+| Nota de documentação | `Docs/<Domínio>/<Subdomínio>/<Domínio> - <Subdomínio> - <Faceta>.md` | `Câmeras - Streaming - Fluxos` |
+| Porta de entrada da pasta | `index.md`, com título e primeiro alias iguais ao caminho | `Câmeras - Streaming` |
+| Explicação para usuário | raiz do vault, `<Domínio> - <Subdomínio> - Explicação - <pergunta>.md` | `Câmeras - Cadastro - Explicação - Estados de cadastro` |
+| Task de sprint | `Sprint/<NN>/<ID> - <Domínio> - <Frente> - <Assunto>.md` | `S34-03 - Câmeras - Streaming - Um ingest por câmera, com a qualidade resolvida` |
+| Report diário | `Reports/AAAA-MM-DD.md` | `Reports/2026-10-01.md` |
 
 Como cada arquivo do vault se chama e em que pasta ele mora. A regra é uma só: **o nome do arquivo repete o
 caminho de domínio da pasta e termina no tipo de conteúdo da nota**. Lendo só o nome, sem abrir a pasta, dá
@@ -81,9 +93,29 @@ do domínio, entra um segmento a mais depois da faceta: `Câmeras - Streaming - 
   Como todo nome começa pelo domínio, a raiz fica agrupada por domínio na ordem alfabética.
 - **Anexo** (PDF, imagem). Mesmo padrão, com a extensão do arquivo. PDF exportado de uma nota leva o nome
   da nota: `Câmeras - Saúde e monitoramento - Guia de degradação.pdf`.
-- **`Sprint/` e `Reports/`.** Registro do período, organizado por tempo e não por domínio: `Sprint/NN/index.md`,
-  `Reports/AAAA-MM-DD.md`. Nota de task nova usa o vocabulário de domínio desta página no começo do nome
-  (`Câmeras - Streaming - <assunto>`); as antigas ficam como foram escritas.
+- **`Sprint/` e `Reports/`.** Registro do período, organizado por tempo: `Sprint/NN/index.md` e
+  `Reports/AAAA-MM-DD.md`. As tasks seguem a regra da seção "Tasks de sprint", logo abaixo.
+
+## Tasks de sprint
+
+```text
+Sprint/<NN>/<ID> - <Domínio> - <Frente> - <Assunto>.md
+```
+
+| Parte | Regra | Exemplo |
+| --- | --- | --- |
+| ID | `S<NN>-<seq>` para a sprint NN, com `<seq>` de dois dígitos na ordem da tabela de tasks do `index.md` da sprint; `SP-<seq>` para `Sprint/Sem prazo/` | `S34-07`, `SP-03` |
+| Domínio | a mesma lista fechada de `Docs/`: Câmeras, Analítico, Infraestrutura, Processo | `Câmeras` |
+| Frente | o subdomínio de `Docs/` quando existe (`Streaming`, `Videowall`, `Cadastro`...); senão uma frente curta (`Detecção`, `Permissões`, `CI`, `Planejamento`) | `Streaming` |
+| Assunto | o que a task entrega, como frase, primeira letra maiúscula | `Um ingest por câmera, com a qualidade resolvida` |
+
+- O ID é o índice da task: é por ele que a task se cita em conversa, report e na tabela da sprint. Ele nunca
+  muda depois de atribuído, nem se a task mudar de sprint (a nota vai para a pasta nova com o mesmo ID).
+- O card do ClickUp (`SOFTWARE-NNNN`) não entra no nome: fica no frontmatter, em `card:`, e na tabela da
+  sprint.
+- Frontmatter da task: `id: <ID>`, `card:`, `sprint: "[[Attlas - Sprint NN]]"`, `tags` e `aliases` com os
+  nomes antigos.
+- Task nova recebe o próximo `<seq>` livre da sprint.
 
 ## Escrita do nome
 
@@ -91,7 +123,8 @@ do domínio, entra um segmento a mais depois da faceta: `Câmeras - Streaming - 
 - Entre segmentos, espaço, hífen e espaço. Hífen dentro de um segmento só quando faz parte do nome
   (`dev.v2`, `Wi-Fi`).
 - Sem prefixo numérico, sem kebab-case, sem id de spec do repositório (`MOD-004`), sem data. A data da
-  última revisão de conteúdo vai no frontmatter, em `atualizado`.
+  última revisão de conteúdo vai no frontmatter, em `atualizado`. A única exceção é o ID de task de sprint
+  (seção "Tasks de sprint").
 - O título (`# `) da nota é igual ao nome do arquivo.
 
 ## Frontmatter

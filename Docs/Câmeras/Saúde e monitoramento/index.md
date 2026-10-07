@@ -1,7 +1,7 @@
 ---
 tags:
   - doc
-  - ms-cameras
+  - cameras
   - saude
 aliases:
   - "Câmeras - Saúde e monitoramento"
@@ -10,36 +10,38 @@ aliases:
   - "Status em tempo real"
   - "00 - Status em tempo real"
   - "Status em tempo real (push)"
-atualizado: 2026-10-01
+atualizado: 2026-10-07
 ---
 
 # Câmeras - Saúde e monitoramento
 
-Como o [[Câmeras]] sabe, 24 horas por dia, se cada câmera cadastrada está viva e com que qualidade de
-conexão, como guarda a disponibilidade ao longo do tempo (janelas de 5 minutos consolidadas num rollup
-diário de 90 dias) que alimenta a "Saúde da Câmera", e como entrega o estado ao vivo para a tela pelo
-gateway Socket.IO `cameras-status` (RF-CAM-03 e RF-CAM-04). O monitoramento é um só domínio: o worker de
-saúde produz o estado e a camada ao vivo só o empurra para quem está olhando. Código em
-`apps/ms-cameras/src/health/` (monitoramento e histórico) e `apps/ms-cameras/src/cameras/realtime/`
-(entrega ao vivo); regra de negócio em `docs/modules/cameras.md`. Visual:
-[[Câmeras - Saúde e monitoramento - Diagrama.excalidraw|diagrama]].
+## Resumo
 
-## Notas deste domínio
+Como o [[Câmeras]] sabe, o tempo todo, se cada câmera cadastrada está conectada e com que qualidade de
+conexão, como guarda a disponibilidade ao longo do tempo e como entrega o estado ao vivo para a tela. O
+`ms-cameras` mantém uma conexão de controle por equipamento, avalia o estado a cada batida, fecha janelas de
+5 minutos que viram um resumo diário de 90 dias e empurra cada mudança pelo canal Socket.IO `cameras-status`
+e pelo tópico Kafka `attlas.cameras.status-changed`. O resumo diário alimenta a "Saúde da Câmera" na tela e
+o relatório de estado das câmeras do `ms-reports`.
 
-- [[Câmeras - Saúde e monitoramento - Arquitetura e estratégias]] - coordenador de leases, worker por device,
-  canais por fabricante, evaluator, snapshot vencido, janelas e rollup, UC-026, gateway `cameras-status`,
-  cache Redis, tópico `attlas.cameras.status-changed`, endpoints, persistência, armadilhas e pendências.
-- [[Câmeras - Saúde e monitoramento - Fluxos]] - ciclo do heartbeat, fechamento de janela, rollup, consulta de
-  métricas, assinatura do canal ao vivo e onde a saúde aparece na tela.
-- [[Câmeras - Saúde e monitoramento - Requisitos e SLA]] - regras de negócio da Saúde da Câmera (SLA, uptime e
-  reachability, mapa de 4 para 3 estados), RF-CAM-03, RF-CAM-04, RNF-CAM-01, retenção e variáveis de
-  ambiente.
-- [[Câmeras - Saúde e monitoramento - Guia de degradação]] - PDF para público misto sobre quando a câmera é Online,
-  Degradada ou Offline.
-- Bitrate medido e provisionado da câmera: [[Câmeras - Streaming - Banda e bitrate]].
-- [[Câmeras - Saúde e monitoramento - Diagrama.excalidraw]] - desenho, apoio visual; vale o código, depois a nota.
+Assuntos vizinhos: bitrate medido e provisionado em [[Câmeras - Streaming - Banda e bitrate]], eventos e
+incidentes gravados pela saúde em [[Câmeras - Eventos, incidentes e alarmes]], cartões de conectividade em
+[[Câmeras - Dashboard]].
 
-## Relacionados
+## Notas
 
-[[Câmeras - Eventos, incidentes e alarmes]] · [[Câmeras - Integração com dispositivo]] · [[Câmeras - Streaming]] · [[Câmeras - PTZ e presets]] ·
-[[Câmeras - Dashboard]]
+| Nota | Abra quando |
+| --- | --- |
+| [[Câmeras - Saúde e monitoramento - Arquitetura e estratégias]] | precisa saber onde está cada peça no código, as rotas, o canal ao vivo, o tópico Kafka, as tabelas, o porquê do desenho e as armadilhas |
+| [[Câmeras - Saúde e monitoramento - Fluxos]] | precisa do passo a passo: lease, batida, queda, mudança de estado até a tela, janela de 5 minutos, resumo diário, consulta de métricas, canal ao vivo, contagem e exportação |
+| [[Câmeras - Saúde e monitoramento - Requisitos e SLA]] | precisa de uma regra de negócio, um limite, uma retenção, a meta de SLA, a cobertura dos requisitos do módulo ou uma variável de ambiente |
+| [[Câmeras - Saúde e monitoramento - Guia de degradação]] | precisa explicar a alguém de fora quando a câmera é Online, Degradada ou Offline; a nota embute o PDF |
+
+## Explicações para usuário
+
+Nenhuma explicação para usuário trata deste subdomínio.
+
+## Diagramas
+
+- [[Câmeras - Saúde e monitoramento - Diagrama.excalidraw]]: desenho do monitoramento, do histórico e da
+  entrega ao vivo. Quando o desenho discorda do código, vale o código e depois a nota.

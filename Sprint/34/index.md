@@ -36,7 +36,7 @@ dono do produto.
 > sincronia da própria #4433 e o avanço geral da develop). Resolvido e pushado nas três nesse mesmo
 > horário; CI rodando de novo em todas. A linha da task 30 abaixo, escrita mais cedo no dia, ainda dizia
 > "CI verde" para a #4414, não estava mais valendo no momento em que este aviso foi escrito. Registrado
-> aqui em vez de silenciado, por [[CLAUDE.md]], seção "regra documentada vence o código existente" (o código/
+> aqui em vez de silenciado, pelo `CLAUDE.md` do repositório, seção "regra documentada vence o código existente" (o código/
 > estado real do GitHub vence a nota).
 
 ## As tasks da semana
@@ -267,7 +267,7 @@ develop nos commits de CROSS-146, importava `./detector-measurement-identity` co
 o arquivo real vive em `domain/shared/services` e é assim que os outros 6 pontos de import do serviço
 já o alcançam. Quebra `nx run ms-traffic-model:build` para qualquer PR que sincronize com a develop.
 
-Aberta a [[PR 4449 - corrige o import de detector-measurement-identity|#4449]], só o import, Build
+Aberta a [#4449](https://github.com/atmanadmin/attlas-2026/pull/4449), só o import, Build
 verde. Enquanto ela não mergeia, as três PRs da sprint continuam com o check vermelho; depois do merge
 e de outra resincronia, volta a passar.
 
