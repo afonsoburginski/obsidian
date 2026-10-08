@@ -11,7 +11,7 @@ banner: "https://images.unsplash.com/photo-1556075798-4825dfaaf498?w=1200"
 
 # GitHub Sync Report
 
-Última sincronização: **2026-10-08 17:01**
+Última sincronização: **2026-10-08 19:02**
 Sprint: **36** (2026-10-05 → 2026-10-11)
 
 ## Resumo
@@ -22,16 +22,16 @@ Sprint: **36** (2026-10-05 → 2026-10-11)
 | Merged | 38 |
 | Open | 1 |
 | Closed | 1 |
-| Linhas adicionadas | +76102 |
-| Linhas removidas | -22302 |
-| Arquivos tocados | 2897 |
+| Linhas adicionadas | +77365 |
+| Linhas removidas | -22197 |
+| Arquivos tocados | 2923 |
 
 ## PRs da Sprint 36
 
 | # | Título | Estado | Data | +/- |
 | --- | --- | --- | --- | --- |
 | #6336 | docs: migração do object storage, MinIO na Chainguard e proposta SeaweedFS | MERGED | 2026-10-08 | +312/-27 |
-| #6306 | refactor: analítico sai do ms-cameras e roda só no ms-video-analytics (CROSS-200 passos 10 a 13) | OPEN | 2026-10-08 | +18279/-9876 |
+| #6306 | refactor: analítico sai do ms-cameras e roda só no ms-video-analytics (CROSS-200 passos 10 a 13) | OPEN | 2026-10-08 | +19542/-9771 |
 | #6225 | feat: Neural Labs de ponta a ponta - socket aceita JSON e o LPR chega no trajeto do painel de operação | MERGED | 2026-10-08 | +4575/-465 |
 | #6213 | fix(ms-cameras): ajustes do review da #6171 no outbox de sincronização de câmera | MERGED | 2026-10-07 | +308/-300 |
 | #6212 | fix(ms-cameras): ajustes do review da #6171 no outbox de sincronização de câmera | CLOSED | 2026-10-07 | +233/-216 |
