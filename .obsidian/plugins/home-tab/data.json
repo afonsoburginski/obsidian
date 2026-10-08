@@ -24,24 +24,24 @@
   "unresolvedLinks": false,
   "recentFilesStore": [
     {
+      "filepath": "Docs/Processo/Processo - Edital do cliente.md",
+      "timestamp": 1791482395909
+    },
+    {
+      "filepath": "Docs/Processo/Processo - Convenções de escrita.md",
+      "timestamp": 1791482394223
+    },
+    {
+      "filepath": "Docs/Processo/Processo - Convenção de nomes.md",
+      "timestamp": 1791482391429
+    },
+    {
       "filepath": "Docs/Analítico/Neural Labs/Analítico - Neural Labs - Payloads e endpoints.md",
       "timestamp": 1791482172616
     },
     {
       "filepath": "Docs/Analítico/Neural Labs/Analítico - Neural Labs - Heartbeat e eventos do Orchestrator.md",
       "timestamp": 1791482169020
-    },
-    {
-      "filepath": "Docs/index.md",
-      "timestamp": 1791482062190
-    },
-    {
-      "filepath": "Excalidraw/Drawing 2026-10-08 14.54.13.excalidraw.md",
-      "timestamp": 1791482053961
-    },
-    {
-      "filepath": "Sprint/Sprint Dashboard.md",
-      "timestamp": 1791482032835
     }
   ],
   "bookmarkedFileStore": [],
