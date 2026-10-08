@@ -69,8 +69,10 @@ Pontos de atrito:
 
 ## Visualização interativa
 
-O Gemini gerou um HTML interativo com toggle entre os dois modelos de deploy.
-Arquivo: `assets/interactive_visual_im_9786bca712b8db48.html` (pasta assets desta área).
-Abrir no browser para ver o esquema completo.
+Toggle entre os dois modelos de deploy; clicar num componente abre a descrição dele.
 
-> [!warning] O Obsidian não renderiza HTML. Abra o arquivo diretamente no browser.
+```widget
+src: Docs/Infraestrutura/assets/widgets/orquestracao-swarm-vs-k8s.html
+```
+
+Formato e criação de widgets: [[_widgets/README|Widgets HTML]].

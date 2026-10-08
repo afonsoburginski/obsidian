@@ -1,0 +1,23 @@
+.attlas-widget {
+  margin: 0.75em 0;
+  border-radius: 14px;
+  overflow: hidden;
+  background: transparent;
+}
+
+.attlas-widget__frame {
+  display: block;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color-scheme: normal;
+  transition: height 0.18s ease;
+}
+
+.attlas-widget__error {
+  padding: 10px 14px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 10px;
+  color: var(--text-error);
+  font-size: var(--font-ui-small);
+}

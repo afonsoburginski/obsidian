@@ -1,0 +1,9 @@
+{
+  "id": "attlas-widgets",
+  "name": "Attlas Widgets",
+  "version": "1.0.0",
+  "minAppVersion": "1.8.0",
+  "description": "Renderiza widgets HTML interativos do vault dentro das notas, com tema e altura sincronizados.",
+  "author": "Afonso",
+  "isDesktopOnly": true
+}
