@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fluxos do analítico</title>
+  <link rel="stylesheet" href="../lumi-runtime.css">
+  <link rel="stylesheet" href="../flow.css">
+  <script src="../widget-runtime.js"></script>
+</head>
+<body>
+  <div class="widget-container"></div>
+  <script type="application/json" id="flow-spec">
+{
+  "title": "Fluxos do analítico",
+  "subtitle": "Da detecção na borda até o histórico de detectores",
+  "direction": "LR",
+  "nodes": [
+    {
+      "id": "app",
+      "label": "App embarcado",
+      "sub": "Kafka do equipamento",
+      "kind": "accent"
+    },
+    {
+      "id": "c",
+      "label": "ms-cameras",
+      "sub": "DeviceStreamConsumer"
+    },
+    {
+      "id": "ws",
+      "label": "Socket cameras-analytics",
+      "sub": "desenho ao vivo"
+    },
+    {
+      "id": "log",
+      "label": "CameraEventLog ANALYTICS",
+      "sub": "com dedup"
+    },
+    {
+      "id": "fila",
+      "label": "Fila de incidentes",
+      "sub": "Alarmes, Notificações"
+    },
+    {
+      "id": "min",
+      "label": "CameraRegionMinuteMetric",
+      "kind": "store"
+    },
+    {
+      "id": "occ",
+      "label": "attlas.virtual-loop\n.region-occupancy",
+      "kind": "store"
+    },
+    {
+      "id": "tcp",
+      "label": "App de laço",
+      "sub": "TCP 3091",
+      "kind": "accent"
+    },
+    {
+      "id": "con",
+      "label": "ms-connector-virtual-loop"
+    },
+    {
+      "id": "va",
+      "label": "ms-video-analytics",
+      "sub": "tradução pelo vínculo"
+    },
+    {
+      "id": "raw",
+      "label": "attlas.detectors.raw",
+      "kind": "store"
+    },
+    {
+      "id": "dh",
+      "label": "ms-detector-history"
+    },
+    {
+      "id": "sp",
+      "label": "ms-selective-priority"
+    }
+  ],
+  "edges": [
+    {
+      "from": "app",
+      "to": "c"
+    },
+    {
+      "from": "c",
+      "to": "ws",
+      "label": "caixas e presença"
+    },
+    {
+      "from": "c",
+      "to": "log",
+      "label": "incidente"
+    },
+    {
+      "from": "log",
+      "to": "fila"
+    },
+    {
+      "from": "c",
+      "to": "min",
+      "label": "objetos por região"
+    },
+    {
+      "from": "c",
+      "to": "occ",
+      "label": "ocupação na transição"
+    },
+    {
+      "from": "tcp",
+      "to": "con"
+    },
+    {
+      "from": "con",
+      "to": "occ"
+    },
+    {
+      "from": "occ",
+      "to": "va"
+    },
+    {
+      "from": "va",
+      "to": "raw"
+    },
+    {
+      "from": "raw",
+      "to": "dh"
+    },
+    {
+      "from": "occ",
+      "to": "sp"
+    }
+  ]
+}
+  </script>
+  <script src="../flow.js"></script>
+</body>
+</html>

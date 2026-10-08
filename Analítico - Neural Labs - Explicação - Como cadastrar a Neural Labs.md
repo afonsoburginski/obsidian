@@ -58,12 +58,8 @@ No NEURAL SERVER, configurar o envio para o Attlas:
 
 ## Como saber que funcionou
 
-```mermaid
-flowchart LR
-    A["Cadastrar na tela<br/><i>nome, IP, fuso</i>"] --> B["NEURAL SERVER conecta<br/>na porta 17000"]
-    B --> C{"O IP bate com<br/>o cadastrado?"}
-    C -- "sim" --> D["Última leitura anda<br/>e as câmeras aparecem<br/>em Aguardando vínculo"]
-    C -- "não" --> E["Conexão recusada<br/><i>o log mostra o IP que chegou</i>"]
+```widget
+src: _widgets/diagrams/neural-labs-cadastro.html
 ```
 
 - A instância passa de "Não monitorado" para "Online", e "Última leitura" mostra a hora da última

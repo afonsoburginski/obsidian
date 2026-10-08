@@ -33,13 +33,28 @@
   const LINE_H = 17;
   const SUB_LINE_H = 15;
   const MIN_W = 118;
-  const MAX_W = 260;
+  const MAX_W = 300;
   const GAP_MAIN = 74;
   const GAP_CROSS = 22;
   const GROUP_PAD = 16;
   const GROUP_LABEL_H = 26;
   const GROUP_GAP = 26;
   const MARGIN = 16;
+
+  /* Rotulo longo sem \n quebra sozinho para nao atravessar o no vizinho. */
+  function wrapLabel(text, maxChars) {
+    if (text.includes('\n') || text.length <= maxChars) return lines(text);
+    const words = text.split(' ');
+    const out = [];
+    let current = '';
+    words.forEach((w) => {
+      if (!current.length) current = w;
+      else if ((current + ' ' + w).length <= maxChars) current += ' ' + w;
+      else { out.push(current); current = w; }
+    });
+    if (current) out.push(current);
+    return out;
+  }
 
   function lines(text) {
     if (!text) return [];
@@ -51,8 +66,10 @@
   }
 
   function measure(node) {
-    const labelLines = lines(node.label);
-    const subLines = lines(node.sub);
+    /* Linha longa quebra sozinha: sem isso o texto vaza da caixa, que tem teto
+       de largura. */
+    const labelLines = lines(node.label).reduce((acc, l) => acc.concat(wrapLabel(l, 30)), []);
+    const subLines = lines(node.sub).reduce((acc, l) => acc.concat(wrapLabel(l, 34)), []);
     const width = node.width || Math.min(
       MAX_W,
       Math.max(MIN_W, Math.ceil(Math.max(textWidth(labelLines, CHAR_W_LABEL), textWidth(subLines, CHAR_W_SUB))) + PAD_X)
@@ -115,13 +132,27 @@
     for (let r = 0; r <= maxRank; r++) {
       rankExtent[r] = nodes.filter((n) => n.rank === r).reduce((m, n) => Math.max(m, mainSize(n)), 0);
     }
+    /* O vao entre duas camadas precisa caber o rotulo mais largo que as cruza,
+       senao o pill do rotulo some atras do no de destino. */
+    const gapAfter = [];
+    for (let r = 0; r <= maxRank; r++) gapAfter[r] = GAP_MAIN;
+    (spec.edges || []).forEach((e) => {
+      const a = byId.get(e.from);
+      const b = byId.get(e.to);
+      if (!a || !b || !e.label || b.rank <= a.rank) return;
+      const labelLines = wrapLabel(String(e.label), 24);
+      const widest = labelLines.reduce((m, l) => Math.max(m, l.length), 0);
+      const need = horiz ? widest * CHAR_W_SUB + 34 : labelLines.length * 15 + 44;
+      for (let r = a.rank; r < b.rank; r++) gapAfter[r] = Math.max(gapAfter[r], need / (b.rank - a.rank));
+    });
+
     const rankStart = [];
     let cursor = MARGIN;
     for (let r = 0; r <= maxRank; r++) {
       rankStart[r] = cursor;
-      cursor += rankExtent[r] + GAP_MAIN;
+      cursor += rankExtent[r] + gapAfter[r];
     }
-    const mainTotal = cursor - GAP_MAIN + MARGIN;
+    const mainTotal = cursor - gapAfter[maxRank] + MARGIN;
 
     const groupOrder = [];
     const groupLabel = new Map((spec.groups || []).map((g) => [g.id, g.label]));
@@ -132,9 +163,12 @@
 
     const bands = [];
     let crossCursor = MARGIN;
-    groupOrder.forEach((key) => {
-      const members = nodes.filter((n) => (n.group || '__none') === key);
-      const named = key !== '__none';
+    /* Faixa de grupo so organiza o eixo transversal no sentido LR. Em TB os
+       grupos sao caixas em volta dos membros, sem deslocar o layout. */
+    const bandLayout = horiz;
+    (bandLayout ? groupOrder : ['__all']).forEach((key) => {
+      const members = bandLayout ? nodes.filter((n) => (n.group || '__none') === key) : nodes;
+      const named = bandLayout && key !== '__none';
       const labelPad = named ? GROUP_LABEL_H : 0;
       const stacks = new Map();
       members.forEach((n) => {
@@ -174,8 +208,20 @@
       n.cy = n.y + n.height / 2;
     });
 
-    bands.forEach((b) => {
+    const boxes = bandLayout ? bands.filter((b) => b.named) : groupOrder
+      .filter((key) => key !== '__none')
+      .map((key) => ({ key, named: true, label: groupLabel.get(key) || key }));
+
+    boxes.forEach((b) => {
       const members = nodes.filter((n) => (n.group || '__none') === b.key);
+      if (!bandLayout) {
+        const minX = members.reduce((m, n) => Math.min(m, n.x), Infinity) - GROUP_PAD;
+        const minY = members.reduce((m, n) => Math.min(m, n.y), Infinity) - GROUP_PAD - GROUP_LABEL_H;
+        const maxX = members.reduce((m, n) => Math.max(m, n.x + n.width), 0) + GROUP_PAD;
+        const maxY = members.reduce((m, n) => Math.max(m, n.y + n.height), 0) + GROUP_PAD;
+        b.rect = { x: minX, y: minY, width: maxX - minX, height: maxY - minY };
+        return;
+      }
       const minMain = members.reduce((m, n) => Math.min(m, horiz ? n.x : n.y), Infinity);
       const maxMain = members.reduce((m, n) => Math.max(m, horiz ? n.x + n.width : n.y + n.height), 0);
       if (horiz) {
@@ -189,7 +235,7 @@
       horiz,
       nodes,
       byId,
-      bands: bands.filter((b) => b.named),
+      bands: boxes,
       width: horiz ? mainTotal : crossTotal,
       height: horiz ? crossTotal : mainTotal,
     };
@@ -308,10 +354,25 @@
     ].join(' ');
   }
 
-  function midpoint(a, b, horiz) {
-    if (horiz) return { x: (a.x + a.width + b.x) / 2, y: (a.cy + b.cy) / 2 };
-    return { x: (a.cx + b.cx) / 2, y: (a.y + a.height + b.y) / 2 };
+  /* O rotulo fica na reta final da aresta, nao no centro geometrico: um no que
+     se abre em varios destinos empilharia todos os rotulos no mesmo ponto. */
+  function midpoint(a, b, horiz, anchor) {
+    if (horiz) {
+      const sx = a.x + a.width;
+      const tx = b.x;
+      const mid = sx + (tx - sx) / 2;
+      if (Math.abs(a.cy - b.cy) < 2) return { x: mid, y: a.cy };
+      if (anchor === 'source') return { x: sx + (mid - sx) / 2, y: a.cy };
+      return { x: mid + (tx - mid) / 2, y: b.cy };
+    }
+    const sy = a.y + a.height;
+    const ty = b.y;
+    const mid = sy + (ty - sy) / 2;
+    if (Math.abs(a.cx - b.cx) < 2) return { x: a.cx, y: mid };
+    if (anchor === 'source') return { x: a.cx, y: sy + (mid - sy) / 2 };
+    return { x: b.cx, y: mid + (ty - mid) / 2 };
   }
+
 
   function render(spec, mountEl) {
     const model = layout(spec);
@@ -354,6 +415,15 @@
     });
 
     const laneBase = model.horiz ? model.height - 8 : model.width - 8;
+    /* Leque saindo de um no: rotulo perto do destino. Leque entrando num no:
+       rotulo perto da origem. Senao os rotulos se empilham no mesmo ponto. */
+    const outDeg = new Map();
+    const inDeg = new Map();
+    (spec.edges || []).forEach((e) => {
+      if (!e.label) return;
+      outDeg.set(e.from, (outDeg.get(e.from) || 0) + 1);
+      inDeg.set(e.to, (inDeg.get(e.to) || 0) + 1);
+    });
     (spec.edges || []).forEach((e, i) => {
       const a = model.byId.get(e.from);
       const b = model.byId.get(e.to);
@@ -369,10 +439,21 @@
         'marker-end': e.dashed ? 'url(#flow-caret-muted)' : 'url(#flow-caret)',
       }));
       if (e.label) {
-        const p = midpoint(a, b, model.horiz);
-        const labelLines = lines(e.label);
+        const anchor = (inDeg.get(e.to) || 0) > 1 && (outDeg.get(e.from) || 0) <= 1 ? 'source' : 'target';
+        const p = midpoint(a, b, model.horiz, anchor);
+        const labelLines = wrapLabel(String(e.label), 24);
         const w = Math.ceil(textWidth(labelLines, CHAR_W_SUB)) + 14;
         const h = labelLines.length * 15 + 6;
+        /* O pill nunca invade os dois nos que ele liga. */
+        if (model.horiz) {
+          const lo = a.x + a.width + w / 2 + 8;
+          const hi = b.x - w / 2 - 8;
+          p.x = hi >= lo ? Math.min(Math.max(p.x, lo), hi) : (lo + hi) / 2;
+        } else {
+          const lo = a.y + a.height + h / 2 + 6;
+          const hi = b.y - h / 2 - 6;
+          p.y = hi >= lo ? Math.min(Math.max(p.y, lo), hi) : (lo + hi) / 2;
+        }
         g.appendChild(svgEl('rect', {
           x: p.x - w / 2, y: p.y - h / 2, width: w, height: h, rx: 9,
           fill: 'var(--surface)',

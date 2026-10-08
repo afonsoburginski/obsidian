@@ -46,19 +46,8 @@ Arquitetura e rotas: [[Câmeras - Videowall - Arquitetura e estratégias]]. Flux
 O painel tem dois modos de exibição, descritos em [[Câmeras - Videowall - Fluxos]]. O caminho do vídeo
 em cada um:
 
-```mermaid
-flowchart LR
-    subgraph Espelho
-        Op[Operador] -->|WebRTC| MTX1[MediaMTX<br>videowall-mirror-*]
-        MTX1 -->|RTSP| H91[H9]
-        H91 -->|DVI| P1[Painel]
-    end
-
-    subgraph Projeção nativa
-        Cam[Câmeras] -->|RTSP| MTX2[MediaMTX<br>videowall-projection-*]
-        MTX2 -->|RTSP| H92[H9]
-        H92 -->|DVI| P2[Painel]
-    end
+```widget
+src: _widgets/diagrams/videowall-caminho-do-video.html
 ```
 
 **Espelho.** Operador → captura da aba por WebRTC → MediaMTX (`videowall-mirror-*`) → H9 puxa por

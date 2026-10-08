@@ -85,13 +85,8 @@ empurram nenhum dos seis comprometidos):
 
 ## A cadeia, elo por elo
 
-```mermaid
-flowchart LR
-    CAM["Câmera comum"] -->|"stream do ADR (2385)"| ANL["Analítico em container<br/>(2394 ingestão, 2395 detecção,<br/>2396 ocupação)"]
-    ANL -->|"ocupação por região (2397)"| CONN["connector de laço virtual<br/>(2387 spec, 2390 código)"]
-    CONN -->|"attlas.detectors.raw"| HIST["ms-detector-history<br/>(pronto)"]
-    BIND["vínculo região para detector<br/>no ms-cameras (2389)"] -.-> CONN
-    EMB["Analítico embarcado<br/>(entregue em 15/07)"] -.->|"entra no mesmo contrato depois (2388)"| CONN
+```widget
+src: _widgets/diagrams/sprint-27-analitico-container.html
 ```
 
 O sumidouro está pronto e testável sozinho, os contratos de detector servem inteiros (`IDetectorRawEvent`,

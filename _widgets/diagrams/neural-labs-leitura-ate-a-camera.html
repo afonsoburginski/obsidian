@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Como cada leitura chega na câmera certa</title>
+  <link rel="stylesheet" href="../lumi-runtime.css">
+  <link rel="stylesheet" href="../flow.css">
+  <script src="../widget-runtime.js"></script>
+</head>
+<body>
+  <div class="widget-container"></div>
+  <script type="application/json" id="flow-spec">
+{
+  "title": "Como cada leitura chega na câmera certa",
+  "direction": "LR",
+  "nodes": [
+    {
+      "id": "a",
+      "label": "Leitura da Neural Labs",
+      "sub": "ComputerID 2, CamID 7",
+      "kind": "accent"
+    },
+    {
+      "id": "b",
+      "label": "Tabela de vínculo\ntem essa linha?",
+      "kind": "decision"
+    },
+    {
+      "id": "c",
+      "label": "Grava na câmera",
+      "sub": "Portaria Norte",
+      "kind": "accent"
+    },
+    {
+      "id": "d",
+      "label": "Descarta",
+      "sub": "e anota como pendente",
+      "kind": "muted"
+    }
+  ],
+  "edges": [
+    {
+      "from": "a",
+      "to": "b"
+    },
+    {
+      "from": "b",
+      "to": "c",
+      "label": "sim"
+    },
+    {
+      "from": "b",
+      "to": "d",
+      "label": "não"
+    }
+  ]
+}
+  </script>
+  <script src="../flow.js"></script>
+</body>
+</html>

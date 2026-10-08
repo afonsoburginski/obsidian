@@ -131,15 +131,8 @@ aparados, como o socket compara.
 
 ## O vínculo automático pelo nome
 
-```mermaid
-flowchart TD
-    A["Leitura chega<br/>ComputerID + CamID + CamName"] --> B{"Já tem vínculo<br/>nesta instância?"}
-    B -- sim --> C["Leitura gravada na câmera"]
-    B -- não --> D["Leitura descartada<br/>e contada como pendente"]
-    D --> E{"CamName igual ao nome de UMA câmera<br/>que o operador não desassociou?"}
-    E -- sim --> F["Vínculo automático<br/>a câmera fica associada"]
-    E -- não --> G["Fica pendente<br/>nova tentativa a cada 60 s"]
-    F --> C
+```widget
+src: _widgets/diagrams/neural-labs-vinculo.html
 ```
 
 - Compara sem maiúscula e sem espaço nas pontas; acento e espaço interno contam.

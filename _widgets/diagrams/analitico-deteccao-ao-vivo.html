@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analítico ao vivo</title>
+  <link rel="stylesheet" href="../lumi-runtime.css">
+  <link rel="stylesheet" href="../flow.css">
+  <script src="../widget-runtime.js"></script>
+</head>
+<body>
+  <div class="widget-container"></div>
+  <script type="application/json" id="flow-spec">
+{
+  "title": "Analítico ao vivo",
+  "subtitle": "Do device embarcado ao overlay do operador",
+  "direction": "TB",
+  "nodes": [
+    {
+      "id": "dev",
+      "label": "Device ATMAN Traffic Edge",
+      "sub": "analítico embarcado na câmera",
+      "kind": "accent"
+    },
+    {
+      "id": "broker",
+      "label": "Broker Kafka (dev)",
+      "kind": "store"
+    },
+    {
+      "id": "cons",
+      "label": "ms-cameras · DeviceStreamConsumer"
+    },
+    {
+      "id": "bind",
+      "label": "refreshBindings (30s)",
+      "sub": "analytic_id → câmera + credencial",
+      "kind": "muted"
+    },
+    {
+      "id": "reg",
+      "label": "ensureRegionIndex (60s)",
+      "sub": "GET /regions (digest)",
+      "kind": "muted"
+    },
+    {
+      "id": "gw",
+      "label": "ms-cameras · CameraAnalyticsGateway",
+      "sub": "WebSocket"
+    },
+    {
+      "id": "kong",
+      "label": "Kong",
+      "sub": "/api/cameras/analytics/realtime"
+    },
+    {
+      "id": "live",
+      "label": "web-attlas · CameraAnalyticsLiveService",
+      "sub": "1 socket por cameraId"
+    },
+    {
+      "id": "store",
+      "label": "CameraAnalyticsStore",
+      "sub": "boxes + detectingIds"
+    },
+    {
+      "id": "ovl",
+      "label": "Overlay (rAF 60fps)",
+      "sub": "interpola caixas + auto-sync"
+    },
+    {
+      "id": "player",
+      "label": "Player WebRTC",
+      "sub": "playout delay",
+      "kind": "muted"
+    },
+    {
+      "id": "ui",
+      "label": "Operador",
+      "kind": "accent"
+    }
+  ],
+  "edges": [
+    {
+      "from": "dev",
+      "to": "broker",
+      "label": "detecção por frame"
+    },
+    {
+      "from": "broker",
+      "to": "cons",
+      "label": "filtra por key"
+    },
+    {
+      "from": "bind",
+      "to": "cons",
+      "dashed": true
+    },
+    {
+      "from": "reg",
+      "to": "cons",
+      "dashed": true
+    },
+    {
+      "from": "cons",
+      "to": "gw",
+      "label": "emitDetection"
+    },
+    {
+      "from": "gw",
+      "to": "kong",
+      "label": "camera:analytics:*"
+    },
+    {
+      "from": "kong",
+      "to": "live"
+    },
+    {
+      "from": "live",
+      "to": "store"
+    },
+    {
+      "from": "store",
+      "to": "ovl"
+    },
+    {
+      "from": "ovl",
+      "to": "player",
+      "label": "reportVideoSyncDelay",
+      "dashed": true
+    },
+    {
+      "from": "ovl",
+      "to": "ui",
+      "label": "regiões + boxes"
+    }
+  ]
+}
+  </script>
+  <script src="../flow.js"></script>
+</body>
+</html>

@@ -4,18 +4,19 @@ tags:
   - vault
 aliases:
   - "Widgets HTML"
+  - "Diagramas"
 atualizado: 2026-10-08
 ---
 
 # Widgets HTML
 
-Diagramas e visualizações interativas do vault são arquivos HTML embutidos na nota, não Mermaid nem Excalidraw. O visual é o runtime de widgets do Gemini preservado (cores, fontes, raios e componentes).
+Diagrama no vault é **HTML embutido na nota**, não Mermaid nem Excalidraw. O visual é o runtime de widgets do Gemini preservado (cores, fontes, raios e componentes).
 
 ## Como embutir numa nota
 
 ````markdown
 ```widget
-src: Docs/Infraestrutura/assets/widgets/orquestracao-swarm-vs-k8s.html
+src: _widgets/diagrams/videowall-caminho-do-video.html
 ```
 ````
 
@@ -35,16 +36,46 @@ Renderização: plugin `attlas-widgets` (`.obsidian/plugins/attlas-widgets/`), d
 | --- | --- |
 | `lumi-runtime.css` | Tokens e componentes `.lumi-*`. Fonte única — widget nunca redeclara token |
 | `widget-runtime.js` | Tema, altura publicada ao host, modo embed, normalização de slider |
-| `template.html` | Ponto de partida para widget novo |
+| `flow.js` + `flow.css` | Renderizador declarativo de diagrama de fluxo — foi o que substituiu o Mermaid |
+| `template.html` | Base para widget sob medida, fora do formato de fluxo |
+| `diagrams/` | Um arquivo por diagrama. Todo widget mora aqui: a profundidade fixa é o que faz `../lumi-runtime.css` valer para todos |
 
-## Criar um widget
+## Diagrama novo
 
-1. Copiar `_widgets/template.html` para `Docs/<Módulo>/assets/widgets/<slug>.html`.
-2. Manter o `<link>` e o `<script>` do runtime como estão — o caminho `../../../../_widgets/` só vale nessa profundidade de pasta.
-3. Manter o elemento `.widget-container`: é ele que o runtime mede para dimensionar o iframe.
-4. Usar apenas token do runtime para cor, fonte, raio e espaçamento. Hex literal no widget quebra o tema claro.
-5. Expor a função global `updateViz()` se o widget pinta algo que lê token via `getComputedStyle` — o runtime a chama a cada troca de tema.
-6. Embutir na nota com o bloco ```widget.
+Copiar um arquivo de `diagrams/`, trocar o conteúdo de `#flow-spec` e embutir na nota. O arquivo inteiro é:
+
+```html
+<link rel="stylesheet" href="../lumi-runtime.css">
+<link rel="stylesheet" href="../flow.css">
+<script src="../widget-runtime.js"></script>
+<div class="widget-container"></div>
+<script type="application/json" id="flow-spec"> { ... } </script>
+<script src="../flow.js"></script>
+```
+
+### Spec
+
+| Campo | Valor |
+| --- | --- |
+| `direction` | `LR` (default) ou `TB` |
+| `title` / `subtitle` | Cabeçalho opcional |
+| `nodes[]` | `{ id, label, sub, kind, group, detail, tag, width }` |
+| `edges[]` | `{ from, to, label, dashed }` |
+| `groups[]` | `{ id, label }` — caixa em volta dos nós daquele grupo |
+
+`kind`: `default`, `accent` (azul, caminho principal), `store` (tópico/banco), `decision` (hexágono), `muted` (fora do caminho principal).
+
+`label` e `sub` aceitam `\n` e linha longa quebra sozinha. Nó com `detail` vira clicável e o texto aparece no painel abaixo do diagrama.
+
+### Regras aprendidas
+
+- **Grupo só organiza o layout em `LR`.** Em `TB` ele é apenas uma caixa em volta dos membros e pode englobar um nó vizinho: em `TB`, carregue o dono no próprio label (`ms-cameras · DeviceStreamConsumer`).
+- O rótulo de aresta define o vão entre camadas. Rótulo longo estica o diagrama inteiro — 2 a 4 palavras.
+- Nada de hex literal no widget: cor vem de token, senão o tema claro quebra.
+
+## Widget sob medida
+
+Para algo que não é fluxo (toggle, comparação, HUD), partir de `template.html`, manter `.widget-container` (é o elemento medido para a altura) e expor `updateViz()` se o widget pinta algo que lê token via `getComputedStyle` — o runtime chama essa função a cada troca de tema.
 
 O arquivo abre direto no browser (`file://`) com o mesmo visual; dentro da nota o fundo fica transparente.
 

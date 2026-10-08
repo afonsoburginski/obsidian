@@ -22,11 +22,8 @@ computador da Neural Labs) e o `CamID` (qual câmera daquele computador). O Attl
 vínculo** que diz "este `ComputerID` + `CamID` é esta câmera do Attlas". A leitura só entra se achar uma
 linha nessa tabela; se não achar, é descartada. O Attlas nunca escolhe uma câmera por palpite.
 
-```mermaid
-flowchart LR
-    A["Leitura da Neural Labs<br/><i>ComputerID 2, CamID 7</i>"] --> B{"Tabela de vínculo<br/>tem essa linha?"}
-    B -- "sim" --> C["Grava na câmera<br/><b>Portaria Norte</b>"]
-    B -- "não" --> D["Descarta<br/><i>e anota como pendente</i>"]
+```widget
+src: _widgets/diagrams/neural-labs-leitura-ate-a-camera.html
 ```
 
 ## Exemplo completo

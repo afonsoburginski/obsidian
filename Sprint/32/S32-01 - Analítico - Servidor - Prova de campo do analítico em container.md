@@ -82,23 +82,8 @@ Duas premissas de 15/07 mudaram. As outras se confirmaram.
 
 ## Rotas em jogo (corrigido em 25/08)
 
-```mermaid
-flowchart TD
-    CAM["Câmera comum<br/>(sem edge embarcado)"]
-    ANL["ms-virtual-loop<br/>ingestão + detecção<br/>(cards 4-5 da Sprint 31)"]
-    CAM -->|"stream do relay do ms-cameras<br/>(card 1 da Sprint 31)"| ANL
-
-    ANL -->|"ocupação normalizada por região<br/>(card 6 da Sprint 31)"| TRAD["ms-virtual-loop<br/>tradução de endereço<br/>(card 8 da Sprint 31)"]
-    TRAD -->|"IDetectorRawEvent VIRTUAL_LOOP<br/>attlas.detectors.raw"| HIST["ms-detector-history<br/>(pronto: timeline + falha)"]
-
-    BIND["ms-cameras<br/>vínculo região para detector<br/>(card 7 da Sprint 31)"] -.->|"endereço que a tradução usa"| TRAD
-
-    ENT["ms-cameras<br/>entidade Analítico + geometria<br/>(card 3 da Sprint 30)"] -.->|"fundação"| ANL
-
-    EMB["Analítico embarcado<br/>(entregue em 15/07)"] -.->|"mesmo contrato de ocupação<br/>(card 3 da Sprint 31)"| TRAD
-
-    TRAD -.->|"fora do escopo do prazo de 18/09<br/>(sem confirmação do user)"| ACOMSW["caller da saída ACOM<br/>(sem prazo)"]
-    ACOMSW -.->|"entrada MDE"| CTRL["Controlador<br/>(lê como detector físico)"]
+```widget
+src: _widgets/diagrams/analitico-container-prova-de-campo.html
 ```
 
 Linha cheia é a rota analítica, escopo das três sprints do analítico (30/31/32): observação e histórico,

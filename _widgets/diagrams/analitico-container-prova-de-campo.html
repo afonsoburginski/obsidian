@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analítico em container</title>
+  <link rel="stylesheet" href="../lumi-runtime.css">
+  <link rel="stylesheet" href="../flow.css">
+  <script src="../widget-runtime.js"></script>
+</head>
+<body>
+  <div class="widget-container"></div>
+  <script type="application/json" id="flow-spec">
+{
+  "title": "Analítico em container",
+  "subtitle": "Prova de campo: da câmera comum ao histórico de detectores",
+  "direction": "TB",
+  "nodes": [
+    {
+      "id": "cam",
+      "label": "Câmera comum",
+      "sub": "sem edge embarcado",
+      "kind": "accent"
+    },
+    {
+      "id": "anl",
+      "label": "ms-virtual-loop",
+      "sub": "ingestão + detecção\ncards 4-5 da Sprint 31"
+    },
+    {
+      "id": "trad",
+      "label": "ms-virtual-loop",
+      "sub": "tradução de endereço\ncard 8 da Sprint 31"
+    },
+    {
+      "id": "hist",
+      "label": "ms-detector-history",
+      "sub": "pronto: timeline + falha",
+      "kind": "accent"
+    },
+    {
+      "id": "bind",
+      "label": "ms-cameras",
+      "sub": "vínculo região para detector",
+      "kind": "muted"
+    },
+    {
+      "id": "ent",
+      "label": "ms-cameras",
+      "sub": "entidade Analítico + geometria",
+      "kind": "muted"
+    },
+    {
+      "id": "emb",
+      "label": "Analítico embarcado",
+      "sub": "entregue em 15/07",
+      "kind": "muted"
+    },
+    {
+      "id": "acom",
+      "label": "caller da saída ACOM",
+      "sub": "sem prazo",
+      "kind": "muted"
+    },
+    {
+      "id": "ctrl",
+      "label": "Controlador",
+      "sub": "lê como detector físico",
+      "kind": "muted"
+    }
+  ],
+  "edges": [
+    {
+      "from": "cam",
+      "to": "anl",
+      "label": "stream do relay do ms-cameras"
+    },
+    {
+      "from": "anl",
+      "to": "trad",
+      "label": "ocupação normalizada por região"
+    },
+    {
+      "from": "trad",
+      "to": "hist",
+      "label": "IDetectorRawEvent VIRTUAL_LOOP"
+    },
+    {
+      "from": "bind",
+      "to": "trad",
+      "label": "endereço da tradução",
+      "dashed": true
+    },
+    {
+      "from": "ent",
+      "to": "anl",
+      "label": "fundação",
+      "dashed": true
+    },
+    {
+      "from": "emb",
+      "to": "trad",
+      "label": "mesmo contrato de ocupação",
+      "dashed": true
+    },
+    {
+      "from": "trad",
+      "to": "acom",
+      "label": "fora do escopo de 18/09",
+      "dashed": true
+    },
+    {
+      "from": "acom",
+      "to": "ctrl",
+      "label": "entrada MDE",
+      "dashed": true
+    }
+  ]
+}
+  </script>
+  <script src="../flow.js"></script>
+</body>
+</html>

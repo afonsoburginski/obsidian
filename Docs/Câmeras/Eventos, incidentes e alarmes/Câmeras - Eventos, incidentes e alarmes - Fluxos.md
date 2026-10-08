@@ -40,20 +40,8 @@ Regras, contratos e o porquê de cada etapa estão em
 **Gatilho.** O worker de saúde ([[Câmeras - Saúde e monitoramento - Fluxos]]) detecta uma transição de
 conexão ou recebe um evento do equipamento.
 
-```mermaid
-flowchart LR
-  H[worker de saúde] -->|health| S[RecordCameraEventService]
-  I[attlas.cameras.event-ingest] -->|ingest| S
-  A[AnalyticsIncidentRecorder] -->|analytics| S
-  S --> DB[(CameraEventLog)]
-  S --> WS[camera:event:new]
-  S -->|par correlacionável, ingest, analytics| EL[attlas.cameras.event-logged]
-  EL --> C[correlação]
-  EL --> E[emissor de alarme]
-  C -->|promoção| IC[attlas.cameras.incident-created]
-  IC --> E
-  E --> AR[attlas.alarms.alarm-raised]
-  AR --> MA[ms-alarms]
+```widget
+src: _widgets/diagrams/cameras-eventos-fluxos.html
 ```
 
 **Passos.**

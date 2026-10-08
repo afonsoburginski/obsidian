@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payloads e endpoints</title>
+  <link rel="stylesheet" href="../lumi-runtime.css">
+  <link rel="stylesheet" href="../flow.css">
+  <script src="../widget-runtime.js"></script>
+</head>
+<body>
+  <div class="widget-container"></div>
+  <script type="application/json" id="flow-spec">
+{
+  "title": "Payloads e endpoints",
+  "direction": "LR",
+  "nodes": [
+    {
+      "id": "ns",
+      "label": "NEURAL SERVER",
+      "kind": "accent"
+    },
+    {
+      "id": "va",
+      "label": "ms-video-analytics"
+    },
+    {
+      "id": "db",
+      "label": "db-video-analytics",
+      "kind": "store"
+    },
+    {
+      "id": "tm",
+      "label": "ms-traffic-model"
+    },
+    {
+      "id": "web",
+      "label": "web-attlas",
+      "sub": "trajeto no painel",
+      "kind": "accent"
+    }
+  ],
+  "edges": [
+    {
+      "from": "ns",
+      "to": "va",
+      "label": "TCP 17000\nXML ou JSON"
+    },
+    {
+      "from": "va",
+      "to": "db",
+      "label": "pares e janelas\nde 5 min"
+    },
+    {
+      "from": "tm",
+      "to": "va",
+      "label": "HTTP interno"
+    },
+    {
+      "from": "web",
+      "to": "tm",
+      "label": "Kong\n/api/traffic-model"
+    }
+  ]
+}
+  </script>
+  <script src="../flow.js"></script>
+</body>
+</html>

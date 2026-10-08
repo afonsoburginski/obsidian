@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Evento, incidente e alarme</title>
+  <link rel="stylesheet" href="../lumi-runtime.css">
+  <link rel="stylesheet" href="../flow.css">
+  <script src="../widget-runtime.js"></script>
+</head>
+<body>
+  <div class="widget-container"></div>
+  <script type="application/json" id="flow-spec">
+{
+  "title": "Evento, incidente e alarme",
+  "subtitle": "Da origem do evento ao ms-alarms",
+  "direction": "LR",
+  "nodes": [
+    {
+      "id": "h",
+      "label": "worker de saúde",
+      "kind": "accent"
+    },
+    {
+      "id": "i",
+      "label": "attlas.cameras\n.event-ingest",
+      "kind": "store"
+    },
+    {
+      "id": "a",
+      "label": "AnalyticsIncidentRecorder",
+      "kind": "accent"
+    },
+    {
+      "id": "s",
+      "label": "RecordCameraEventService"
+    },
+    {
+      "id": "db",
+      "label": "CameraEventLog",
+      "kind": "store"
+    },
+    {
+      "id": "ws",
+      "label": "camera:event:new"
+    },
+    {
+      "id": "el",
+      "label": "attlas.cameras\n.event-logged",
+      "kind": "store"
+    },
+    {
+      "id": "c",
+      "label": "correlação"
+    },
+    {
+      "id": "e",
+      "label": "emissor de alarme"
+    },
+    {
+      "id": "ic",
+      "label": "attlas.cameras\n.incident-created",
+      "kind": "store"
+    },
+    {
+      "id": "ar",
+      "label": "attlas.alarms\n.alarm-raised",
+      "kind": "store"
+    },
+    {
+      "id": "ma",
+      "label": "ms-alarms",
+      "kind": "accent"
+    }
+  ],
+  "edges": [
+    {
+      "from": "h",
+      "to": "s",
+      "label": "health"
+    },
+    {
+      "from": "i",
+      "to": "s",
+      "label": "ingest"
+    },
+    {
+      "from": "a",
+      "to": "s",
+      "label": "analytics"
+    },
+    {
+      "from": "s",
+      "to": "db"
+    },
+    {
+      "from": "s",
+      "to": "ws"
+    },
+    {
+      "from": "s",
+      "to": "el",
+      "label": "par correlacionável"
+    },
+    {
+      "from": "el",
+      "to": "c"
+    },
+    {
+      "from": "el",
+      "to": "e"
+    },
+    {
+      "from": "c",
+      "to": "ic",
+      "label": "promoção"
+    },
+    {
+      "from": "ic",
+      "to": "e"
+    },
+    {
+      "from": "e",
+      "to": "ar"
+    },
+    {
+      "from": "ar",
+      "to": "ma"
+    }
+  ]
+}
+  </script>
+  <script src="../flow.js"></script>
+</body>
+</html>

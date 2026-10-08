@@ -72,7 +72,7 @@ Pontos de atrito:
 Toggle entre os dois modelos de deploy; clicar num componente abre a descrição dele.
 
 ```widget
-src: Docs/Infraestrutura/assets/widgets/orquestracao-swarm-vs-k8s.html
+src: _widgets/diagrams/orquestracao-swarm-vs-k8s.html
 ```
 
 Formato e criação de widgets: [[_widgets/README|Widgets HTML]].

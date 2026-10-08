@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cadastro da Neural Labs</title>
+  <link rel="stylesheet" href="../lumi-runtime.css">
+  <link rel="stylesheet" href="../flow.css">
+  <script src="../widget-runtime.js"></script>
+</head>
+<body>
+  <div class="widget-container"></div>
+  <script type="application/json" id="flow-spec">
+{
+  "title": "Cadastro da Neural Labs",
+  "direction": "LR",
+  "nodes": [
+    {
+      "id": "a",
+      "label": "Cadastrar na tela",
+      "sub": "nome, IP, fuso",
+      "kind": "accent"
+    },
+    {
+      "id": "b",
+      "label": "NEURAL SERVER conecta\nna porta 17000"
+    },
+    {
+      "id": "c",
+      "label": "O IP bate com\no cadastrado?",
+      "kind": "decision"
+    },
+    {
+      "id": "d",
+      "label": "Última leitura anda\ne as câmeras aparecem\nem Aguardando vínculo",
+      "kind": "accent"
+    },
+    {
+      "id": "e",
+      "label": "Conexão recusada",
+      "sub": "o log mostra o IP que chegou",
+      "kind": "muted"
+    }
+  ],
+  "edges": [
+    {
+      "from": "a",
+      "to": "b"
+    },
+    {
+      "from": "b",
+      "to": "c"
+    },
+    {
+      "from": "c",
+      "to": "d",
+      "label": "sim"
+    },
+    {
+      "from": "c",
+      "to": "e",
+      "label": "não"
+    }
+  ]
+}
+  </script>
+  <script src="../flow.js"></script>
+</body>
+</html>

@@ -417,16 +417,8 @@ terem lista ativa, no mesmo padrão do comparativo. As notas foram movidas para 
 
 ## As duas frentes, em sequência
 
-```mermaid
-flowchart LR
-    F0["fase 0<br/>terminologia (docs)"] --> F1["fase 1<br/>API e contratos"]
-    F1 --> F2["fase 2<br/>rota e i18n (front)"]
-    F0 --> CTX["CTX-videowall<br/>(docs/modules)"]
-    CTX --> SPEC["2201 especificação<br/>do alvo videowall"]
-    SPEC --> CODEC["codec NovaStar<br/>(golden vectors)"]
-    CODEC -.-> FILA["fila back: cadastro, catálogo,<br/>fontes IPC, layout/preset,<br/>brilho"]
-    FILA -.-> FRONT["frontend em backlog:<br/>casca, cadastro, capacidades,<br/>fontes, janelas, brilho,<br/>lançador radial"]
-    F2 --> FRONT
+```widget
+src: _widgets/diagrams/sprint-28-fases.html
 ```
 
 O elo de `fase 2` para o frontend não é decorativo: as chaves de i18n e a rota do videowall externo

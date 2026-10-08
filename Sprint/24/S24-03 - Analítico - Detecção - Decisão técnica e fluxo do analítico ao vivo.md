@@ -21,35 +21,8 @@ O analítico embarcado (ATMAN Traffic Edge) detecta os objetos por frame e publi
 
 ## Fluxo ponta a ponta
 
-```mermaid
-flowchart TD
-    DEV["Device ATMAN Traffic Edge<br/>(analítico embarcado na câmera)"]
-    DEV -->|"detecção por frame<br/>Kafka: traffic-motion-detection.detections<br/>key = analytic_id do device"| BROKER[("Broker Kafka (dev)")]
-
-    subgraph MS["ms-cameras"]
-        CONS["DeviceStreamConsumer"]
-        BIND["refreshBindings (30s)<br/>analytic_id → câmera + credencial"]
-        REG["ensureRegionIndex (60s)<br/>GET /regions (digest)<br/>region_id → índice estável"]
-        GW["CameraAnalyticsGateway (WS)"]
-        CONS -.usa.- BIND
-        CONS -.usa.- REG
-        CONS -->|"emitDetection / emitFrame<br/>para sala camera:{id}"| GW
-    end
-
-    BROKER -->|"filtra por key ANTES do parse"| CONS
-    GW -->|"camera:analytics:detection<br/>camera:analytics:frame"| KONG["Kong<br/>(rota /api/cameras/analytics/realtime)"]
-
-    subgraph FE["web-attlas (aba Analíticos)"]
-        LIVE["CameraAnalyticsLiveService<br/>1 socket por cameraId"]
-        STORE["CameraAnalyticsStore<br/>boxes + boxesCapturedAt + detectingIds"]
-        OVL["Overlay (rAF 60fps)<br/>interpola caixas + auto-sync"]
-        PLAYER["Player WebRTC<br/>playout delay"]
-        LIVE --> STORE --> OVL
-        OVL -->|"reportVideoSyncDelay"| PLAYER
-    end
-
-    KONG --> LIVE
-    OVL -->|"regiões acendem + bounding boxes + log"| UI["Operador"]
+```widget
+src: _widgets/diagrams/analitico-deteccao-ao-vivo.html
 ```
 
 ## Decisões técnicas (o quê e o porquê)

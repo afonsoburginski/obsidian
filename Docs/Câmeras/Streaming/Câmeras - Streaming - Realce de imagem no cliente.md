@@ -97,15 +97,8 @@ Na primeira vez que um player entra em `playing`, o supervisor pergunta a cada m
 comporta. O resultado vale para o app inteiro até a página recarregar. Cada motor é carregado por `import()`
 dinâmico só quando a primeira sessão dele começa, então os shaders e o worker ficam fora dos bundles até lá.
 
-```mermaid
-flowchart TD
-    A[Primeiro player em playing] --> B{"WebGPU de hardware<br/>e compositor na GPU?"}
-    B -- sim --> W[Motor WebGPU]
-    B -- não --> C{WebGL2 de hardware?}
-    C -- sim --> G[Motor WebGL2]
-    C -- não --> D{"Worker, VideoFrame e OffscreenCanvas<br/>e 8 threads ou mais?"}
-    D -- sim --> P[Motor CPU, só tom e cor]
-    D -- não --> N[Sem realce: o item não aparece]
+```widget
+src: _widgets/diagrams/streaming-motor-de-realce.html
 ```
 
 | Motor | Condição exata no código | Vagas | Fidelidade automática |

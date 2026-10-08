@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sprint 28 — fases e fila</title>
+  <link rel="stylesheet" href="../lumi-runtime.css">
+  <link rel="stylesheet" href="../flow.css">
+  <script src="../widget-runtime.js"></script>
+</head>
+<body>
+  <div class="widget-container"></div>
+  <script type="application/json" id="flow-spec">
+{
+  "title": "Sprint 28 — fases e fila",
+  "direction": "LR",
+  "nodes": [
+    {
+      "id": "f0",
+      "label": "fase 0",
+      "sub": "terminologia (docs)",
+      "kind": "accent"
+    },
+    {
+      "id": "f1",
+      "label": "fase 1",
+      "sub": "API e contratos"
+    },
+    {
+      "id": "f2",
+      "label": "fase 2",
+      "sub": "rota e i18n (front)"
+    },
+    {
+      "id": "ctx",
+      "label": "CTX-videowall",
+      "sub": "docs/modules"
+    },
+    {
+      "id": "spec",
+      "label": "2201 especificação",
+      "sub": "do alvo videowall"
+    },
+    {
+      "id": "codec",
+      "label": "codec NovaStar",
+      "sub": "golden vectors"
+    },
+    {
+      "id": "fila",
+      "label": "fila back",
+      "sub": "cadastro, catálogo, fontes IPC,\nlayout/preset, brilho",
+      "kind": "muted"
+    },
+    {
+      "id": "front",
+      "label": "frontend em backlog",
+      "sub": "casca, cadastro, capacidades, fontes,\njanelas, brilho, lançador radial",
+      "kind": "muted"
+    }
+  ],
+  "edges": [
+    {
+      "from": "f0",
+      "to": "f1"
+    },
+    {
+      "from": "f1",
+      "to": "f2"
+    },
+    {
+      "from": "f0",
+      "to": "ctx"
+    },
+    {
+      "from": "ctx",
+      "to": "spec"
+    },
+    {
+      "from": "spec",
+      "to": "codec"
+    },
+    {
+      "from": "codec",
+      "to": "fila",
+      "dashed": true
+    },
+    {
+      "from": "fila",
+      "to": "front",
+      "dashed": true
+    },
+    {
+      "from": "f2",
+      "to": "front"
+    }
+  ]
+}
+  </script>
+  <script src="../flow.js"></script>
+</body>
+</html>

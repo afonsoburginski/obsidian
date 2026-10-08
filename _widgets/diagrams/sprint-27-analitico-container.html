@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sprint 27 — analítico em container</title>
+  <link rel="stylesheet" href="../lumi-runtime.css">
+  <link rel="stylesheet" href="../flow.css">
+  <script src="../widget-runtime.js"></script>
+</head>
+<body>
+  <div class="widget-container"></div>
+  <script type="application/json" id="flow-spec">
+{
+  "title": "Sprint 27 — analítico em container",
+  "direction": "LR",
+  "nodes": [
+    {
+      "id": "cam",
+      "label": "Câmera comum",
+      "kind": "accent"
+    },
+    {
+      "id": "anl",
+      "label": "Analítico em container",
+      "sub": "2394 ingestão, 2395 detecção\n2396 ocupação"
+    },
+    {
+      "id": "conn",
+      "label": "connector de laço virtual",
+      "sub": "2387 spec, 2390 código"
+    },
+    {
+      "id": "hist",
+      "label": "ms-detector-history",
+      "sub": "pronto",
+      "kind": "accent"
+    },
+    {
+      "id": "bind",
+      "label": "vínculo região para detector",
+      "sub": "no ms-cameras (2389)",
+      "kind": "muted"
+    },
+    {
+      "id": "emb",
+      "label": "Analítico embarcado",
+      "sub": "entregue em 15/07",
+      "kind": "muted"
+    }
+  ],
+  "edges": [
+    {
+      "from": "cam",
+      "to": "anl",
+      "label": "stream do ADR (2385)"
+    },
+    {
+      "from": "anl",
+      "to": "conn",
+      "label": "ocupação por região (2397)"
+    },
+    {
+      "from": "conn",
+      "to": "hist",
+      "label": "attlas.detectors.raw"
+    },
+    {
+      "from": "bind",
+      "to": "conn",
+      "dashed": true
+    },
+    {
+      "from": "emb",
+      "to": "conn",
+      "label": "mesmo contrato depois (2388)",
+      "dashed": true
+    }
+  ]
+}
+  </script>
+  <script src="../flow.js"></script>
+</body>
+</html>

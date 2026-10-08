@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vínculo de câmeras</title>
+  <link rel="stylesheet" href="../lumi-runtime.css">
+  <link rel="stylesheet" href="../flow.css">
+  <script src="../widget-runtime.js"></script>
+</head>
+<body>
+  <div class="widget-container"></div>
+  <script type="application/json" id="flow-spec">
+{
+  "title": "Vínculo de câmeras",
+  "direction": "TB",
+  "nodes": [
+    {
+      "id": "a",
+      "label": "Leitura chega",
+      "sub": "ComputerID + CamID + CamName",
+      "kind": "accent"
+    },
+    {
+      "id": "b",
+      "label": "Já tem vínculo\nnesta instância?",
+      "kind": "decision"
+    },
+    {
+      "id": "c",
+      "label": "Leitura gravada na câmera",
+      "kind": "accent"
+    },
+    {
+      "id": "d",
+      "label": "Leitura descartada\ne contada como pendente",
+      "kind": "muted"
+    },
+    {
+      "id": "e",
+      "label": "CamName igual ao nome de UMA câmera\nque o operador não desassociou?",
+      "kind": "decision"
+    },
+    {
+      "id": "f",
+      "label": "Vínculo automático",
+      "sub": "a câmera fica associada",
+      "kind": "accent"
+    },
+    {
+      "id": "g",
+      "label": "Fica pendente",
+      "sub": "nova tentativa a cada 60 s",
+      "kind": "muted"
+    }
+  ],
+  "edges": [
+    {
+      "from": "a",
+      "to": "b"
+    },
+    {
+      "from": "b",
+      "to": "c",
+      "label": "sim"
+    },
+    {
+      "from": "b",
+      "to": "d",
+      "label": "não"
+    },
+    {
+      "from": "d",
+      "to": "e"
+    },
+    {
+      "from": "e",
+      "to": "f",
+      "label": "sim"
+    },
+    {
+      "from": "e",
+      "to": "g",
+      "label": "não"
+    },
+    {
+      "from": "f",
+      "to": "c",
+      "dashed": true
+    }
+  ]
+}
+  </script>
+  <script src="../flow.js"></script>
+</body>
+</html>

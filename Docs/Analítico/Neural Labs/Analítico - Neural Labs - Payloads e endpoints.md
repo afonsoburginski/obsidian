@@ -37,12 +37,8 @@ Os valores conferem com o código da PR #6225.
 
 ## Caminho de uma leitura
 
-```mermaid
-flowchart LR
-  NS[NEURAL SERVER] -- "TCP 17000, XML ou JSON" --> VA[ms-video-analytics]
-  VA -- "pares e janelas de 5 min" --> DB[(db-video-analytics)]
-  TM[ms-traffic-model] -- "HTTP interno" --> VA
-  WEB[web-attlas, trajeto no painel] -- "Kong /api/traffic-model" --> TM
+```widget
+src: _widgets/diagrams/neural-labs-payloads.html
 ```
 
 O caminho tem quatro passos:

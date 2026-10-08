@@ -30,18 +30,8 @@ Volta para [[Analítico]].
 Onde cada peça mora está em [[Analítico - Arquitetura e estratégias]]; a placa ACOM, em
 [[Analítico - Vínculo com a ACOM]]; a leitura de placas, em [[Analítico - Neural Labs - Arquitetura e estratégias]].
 
-```mermaid
-flowchart LR
-    APP["App embarcado<br/>Kafka do equipamento"] --> C["ms-cameras<br/>DeviceStreamConsumer"]
-    C -->|"caixas e presença"| WS["Socket cameras-analytics<br/>desenho ao vivo"]
-    C -->|"incidente"| LOG["CameraEventLog ANALYTICS<br/>com dedup"]
-    LOG --> FILA["Fila de incidentes<br/>Alarmes, Notificações"]
-    C -->|"objetos por região"| MIN["CameraRegionMinuteMetric"]
-    C -->|"ocupação na transição"| OCC["attlas.virtual-loop.region-occupancy"]
-    TCP["App de laço<br/>TCP 3091"] --> CON["ms-connector-virtual-loop"] --> OCC
-    OCC --> VA["ms-video-analytics<br/>tradução pelo vínculo"]
-    VA --> RAW["attlas.detectors.raw"] --> DH["ms-detector-history"]
-    OCC --> SP["ms-selective-priority"]
+```widget
+src: _widgets/diagrams/analitico-fluxos.html
 ```
 
 ## Pôr uma câmera para funcionar com o embarcado
