@@ -1,0 +1,12 @@
+{
+  "colors": {
+    "Docs": "#00d4aa",
+    "Docs/Câmeras": "#00d4aa",
+    "Docs/Analítico": "#00d4aa",
+    "Docs/Infraestrutura": "#00d4aa",
+    "Docs/Processo": "#e8a040",
+    "Sprint": "#ff6ec7",
+    "Reports": "#7d8fa6",
+    "Compose y puertos": "#a070e0"
+  }
+}
