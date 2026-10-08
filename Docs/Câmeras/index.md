@@ -8,7 +8,7 @@ aliases:
   - "ms-cameras - visão geral"
   - "Diagramas do ms-cameras"
 10|atualizado: 2026-10-07
-banner: "surveillance camera technology"
+banner: "https://images.unsplash.com/photo-1557597774-9d273605dfa9?w=1200"
 banner_y: 0.3
 servico: ms-cameras
 fonte: apps/ms-cameras

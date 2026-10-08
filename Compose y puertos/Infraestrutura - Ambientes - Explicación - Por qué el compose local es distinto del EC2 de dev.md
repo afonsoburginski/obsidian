@@ -8,7 +8,7 @@ aliases:
   - "Por qué el compose local es distinto del EC2 de dev"
   - "Infraestrutura - Ambientes - Explicação - Por que o compose local é diferente do EC2 de dev"
 atualizado: 2026-10-08
-banner: "server room datacenter"
+banner: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1200"
 ---
 
 # Infraestrutura - Ambientes - Explicación - Por qué el compose local es distinto del EC2 de dev

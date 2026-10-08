@@ -6,7 +6,7 @@ tags:
 aliases:
   - "Reports diários"
 8|atualizado: 2026-10-02
-banner: "analytics charts dark"
+banner: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200"
 banner_y: 0.5
 ---
 

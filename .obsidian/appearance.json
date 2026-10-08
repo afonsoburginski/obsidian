@@ -11,6 +11,13 @@
   "enabledCssSnippets": [
     "galaxy-graph",
     "liquid-glass",
-    "attlas-blue"
+    "attlas-blue",
+    "custom-checkboxes",
+    "sleek-callouts",
+    "timeline-callout",
+    "code-language-label",
+    "faded-completed-tasks",
+    "heading-indicators",
+    "task-priorities"
   ]
 }

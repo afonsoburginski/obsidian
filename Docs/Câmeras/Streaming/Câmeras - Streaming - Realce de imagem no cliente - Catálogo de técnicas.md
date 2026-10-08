@@ -12,7 +12,7 @@ aliases:
   - "Catálogo de técnicas de realce de imagem"
   - "Tecnologias de fabricante para realce de imagem na web"
 atualizado: 2026-10-07
-banner: "video streaming network"
+banner: "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=1200"
 ---
 
 # Câmeras - Streaming - Realce de imagem no cliente - Catálogo de técnicas

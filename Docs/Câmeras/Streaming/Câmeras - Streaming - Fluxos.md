@@ -8,7 +8,7 @@ aliases:
   - "Streaming - Fluxos e SLA"
   - "Câmeras - Streaming - Fluxos"
 atualizado: 2026-10-07
-banner: "video streaming network"
+banner: "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=1200"
 ---
 
 # Câmeras - Streaming - Fluxos

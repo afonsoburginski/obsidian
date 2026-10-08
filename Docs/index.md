@@ -5,7 +5,7 @@ tags:
 aliases:
   - "Docs - índice raiz"
 atualizado: 2026-10-07
-banner: "lofi desk setup cozy"
+banner: "https://images.unsplash.com/photo-1483058712412-4245e9b90334?w=1200"
 banner_y: 0.275
 ---
 

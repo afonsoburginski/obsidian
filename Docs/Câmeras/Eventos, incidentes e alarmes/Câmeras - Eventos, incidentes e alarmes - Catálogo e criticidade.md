@@ -8,7 +8,7 @@ tags:
 aliases:
   - "Eventos, incidentes e alarmes - Catálogo e criticidade"
 atualizado: 2026-10-07
-banner: "alarm alert notification"
+banner: "https://images.unsplash.com/photo-1614064641938-3bbee52942c7?w=1200"
 ---
 
 # Câmeras - Eventos, incidentes e alarmes - Catálogo e criticidade

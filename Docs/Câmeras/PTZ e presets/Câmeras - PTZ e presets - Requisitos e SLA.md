@@ -7,7 +7,7 @@ tags:
 aliases:
   - "PTZ e presets - Requisitos e SLA"
 atualizado: 2026-10-07
-banner: "ptz camera security"
+banner: "https://images.unsplash.com/photo-1557597774-9d273605dfa9?w=1200"
 ---
 
 # Câmeras - PTZ e presets - Requisitos e SLA

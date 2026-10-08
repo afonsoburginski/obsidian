@@ -5,7 +5,7 @@ tags:
 aliases:
   - "Sprint Dashboard"
 atualizado: 2026-10-08
-banner: "sprint agile kanban board"
+banner: "https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=1200"
 ---
 
 # Sprint Dashboard

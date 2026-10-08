@@ -6,7 +6,7 @@ tags:
 aliases:
   - "Dashboard de câmeras - Arquitetura e estratégias"
 atualizado: 2026-10-07
-banner: "dashboard analytics dark"
+banner: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200"
 ---
 
 # Câmeras - Dashboard - Arquitetura e estratégias

@@ -15,7 +15,7 @@ aliases:
   - "Consultar câmera Hikvision"
   - "Runbook - câmeras reais e teste por terminal"
 atualizado: 2026-10-07
-banner: "surveillance camera technology"
+banner: "https://images.unsplash.com/photo-1557597774-9d273605dfa9?w=1200"
 ---
 
 # Câmeras - Integração com dispositivo - Runbook

@@ -24,8 +24,24 @@
   "unresolvedLinks": false,
   "recentFilesStore": [
     {
-      "filepath": "Analítico - Neural Labs - Explicação - Como cada leitura chega na câmera certa.md",
-      "timestamp": 1791481980234
+      "filepath": "Docs/Analítico/Neural Labs/Analítico - Neural Labs - Payloads e endpoints.md",
+      "timestamp": 1791482172616
+    },
+    {
+      "filepath": "Docs/Analítico/Neural Labs/Analítico - Neural Labs - Heartbeat e eventos do Orchestrator.md",
+      "timestamp": 1791482169020
+    },
+    {
+      "filepath": "Docs/index.md",
+      "timestamp": 1791482062190
+    },
+    {
+      "filepath": "Excalidraw/Drawing 2026-10-08 14.54.13.excalidraw.md",
+      "timestamp": 1791482053961
+    },
+    {
+      "filepath": "Sprint/Sprint Dashboard.md",
+      "timestamp": 1791482032835
     }
   ],
   "bookmarkedFileStore": [],
