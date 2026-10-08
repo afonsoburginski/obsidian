@@ -6,7 +6,7 @@ aliases:
   - "Docs - índice raiz"
 atualizado: 2026-10-07
 banner: "assets/banners/cozy-desk.jpg"
-banner_y: 0.4
+banner_y: 0.275
 ---
 
 # Docs - índice raiz
