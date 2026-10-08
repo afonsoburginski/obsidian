@@ -1,65 +1,62 @@
 /* ==========================================================================
-   Attlas Cyan — dark theme, compact layout (VSCode-like), smart typography
+   Attlas Gemini — dark blue, royal blue accents, clean sans-serif
+   Inspired by Google Gemini's interactive HTML output style
    ========================================================================== */
 
 .theme-dark {
-  /* ── Fundo ── */
-  --background-primary: #0d1117;
-  --background-primary-alt: #101820;
-  --background-secondary: #0a0f15;
-  --background-secondary-alt: #080c12;
-  --background-modifier-border: rgba(0, 210, 190, 0.10);
-  --background-modifier-form-field: rgba(12, 20, 30, 0.6);
-  --background-modifier-hover: rgba(0, 210, 190, 0.06);
-  --background-modifier-active-hover: rgba(0, 210, 190, 0.10);
+  /* ── Fundo — azul-escuro profundo (não preto puro) ── */
+  --background-primary: #131724;
+  --background-primary-alt: #171c2e;
+  --background-secondary: #0f1320;
+  --background-secondary-alt: #0c101a;
+  --background-modifier-border: rgba(60, 90, 200, 0.12);
+  --background-modifier-form-field: rgba(20, 28, 50, 0.6);
+  --background-modifier-hover: rgba(60, 90, 200, 0.06);
+  --background-modifier-active-hover: rgba(60, 90, 200, 0.10);
   --background-modifier-success: rgba(40, 200, 140, 0.15);
   --background-modifier-error: rgba(220, 60, 60, 0.15);
 
-  /* ── Texto corpo ── */
-  --text-normal: #c9d1d9;
-  --text-muted: #6e7a8a;
-  --text-faint: #3d4654;
+  /* ── Texto ── */
+  --text-normal: #c8cfe0;
+  --text-muted: #6b7a94;
+  --text-faint: #3d4a60;
   --text-on-accent: #ffffff;
-  --text-accent: #00d4aa;
-  --text-accent-hover: #33e0be;
+  --text-accent: #5b8def;
+  --text-accent-hover: #7aa4ff;
   --font-text-size: 15px;
-  --line-height: 1.55;
+  --line-height: 1.6;
 
-  /* ── Interativo ── */
-  --interactive-normal: #0d1420;
-  --interactive-hover: rgba(0, 210, 190, 0.08);
-  --interactive-accent: #00d4aa;
-  --interactive-accent-hover: #33e0be;
+  /* ── Interativo — azul royal ── */
+  --interactive-normal: #151a2c;
+  --interactive-hover: rgba(60, 90, 200, 0.08);
+  --interactive-accent: #4a7aee;
+  --interactive-accent-hover: #6090ff;
 
   /* ── Links ── */
-  --link-color: #00d4aa;
-  --link-color-hover: #33e0be;
-  --link-external-color: #58a6ff;
-  --link-external-color-hover: #79bbff;
-  --link-unresolved-color: #2a6860;
+  --link-color: #5b8def;
+  --link-color-hover: #7aa4ff;
+  --link-external-color: #5b8def;
+  --link-external-color-hover: #7aa4ff;
+  --link-unresolved-color: #3a5080;
   --link-unresolved-opacity: 0.6;
 
-  /* ── Tags — discretas ── */
-  --tag-color: #58a6ff;
-  --tag-background: rgba(88, 166, 255, 0.08);
-  --tag-radius: 4px;
-  --tag-padding-x: 6px;
-  --tag-padding-y: 1px;
-  --tag-size: 0.82em;
+  /* ── Tags — pill badges azuis ── */
+  --tag-color: #7aa4ff;
+  --tag-background: rgba(74, 122, 238, 0.10);
+  --tag-radius: 10px;
+  --tag-padding-x: 8px;
+  --tag-padding-y: 2px;
+  --tag-size: 0.8em;
 
-  /* ── Headings — hierarquia visual forte ──
-       H1: cyan brilhante (título de seção)
-       H2: branco (subseção principal, o mais lido)
-       H3: cinza claro (detalhe)
-       H4-H6: desbotam progressivamente              */
-  --h1-color: #00d4aa;
-  --h2-color: #e6edf3;
-  --h3-color: #adb8c8;
-  --h4-color: #7d8fa6;
-  --h5-color: #6e7a8a;
-  --h6-color: #586470;
-  --h1-size: 1.45em;
-  --h2-size: 1.25em;
+  /* ── Headings — branco limpo, escala de peso ── */
+  --h1-color: #e8ecf4;
+  --h2-color: #d0d8e8;
+  --h3-color: #a0b0c8;
+  --h4-color: #8098b8;
+  --h5-color: #6b80a0;
+  --h6-color: #586888;
+  --h1-size: 1.5em;
+  --h2-size: 1.28em;
   --h3-size: 1.1em;
   --h4-size: 1.0em;
   --h5-size: 0.95em;
@@ -70,246 +67,152 @@
   --h4-weight: 500;
   --h5-weight: 500;
   --h6-weight: 400;
-  --h1-line-height: 1.2;
-  --h2-line-height: 1.3;
 
   /* ── Inline title ── */
-  --inline-title-color: #00d4aa;
-  --inline-title-size: 1.6em;
+  --inline-title-color: #e8ecf4;
+  --inline-title-size: 1.7em;
   --inline-title-weight: 700;
-  --inline-title-line-height: 1.2;
 
-  /* ── Espaçamento compacto (tipo VSCode) ── */
+  /* ── Spacing ── */
   --p-spacing: 0.5em;
-  --heading-spacing: 1.1em;
-  --list-spacing: 0.15em;
   --list-indent: 1.6em;
 
-  /* ── Inline code — destaque mas sem poluir ── */
-  --code-normal: #79c0ff;
-  --code-background: rgba(88, 166, 255, 0.08);
+  /* ── Inline code — azul pill ── */
+  --code-normal: #7aa4ff;
+  --code-background: rgba(74, 122, 238, 0.10);
   --code-size: 0.88em;
 
   /* ── Code blocks ── */
-  --pre-code: #c0d0e0;
-  --code-block-alt-bg: rgba(8, 16, 24, 0.5);
+  --pre-code: #b8c8e0;
+  --code-block-alt-bg: rgba(10, 16, 30, 0.5);
 
-  /* ── Bold = branco puro (ênfase máxima)
-       Italic = azul claro (destaque semântico)
-       Strikethrough = desbotado                      */
+  /* ── Bold/Italic ── */
   --bold-color: #ffffff;
-  --italic-color: #79c0ff;
+  --italic-color: #40c090;
 
   /* ── Blockquotes ── */
-  --blockquote-border-color: rgba(0, 210, 170, 0.30);
+  --blockquote-border-color: rgba(74, 122, 238, 0.35);
   --blockquote-border-thickness: 3px;
 
-  /* ── Callouts ── */
-  --callout-default: rgba(0, 210, 170, 0.06);
-  --callout-warning: rgba(235, 180, 55, 0.12);
-  --callout-radius: 8px;
-  --callout-padding: 12px 16px;
+  /* ── Callouts — Gemini card style ── */
+  --callout-default: rgba(40, 60, 120, 0.12);
+  --callout-radius: 12px;
 
-  /* ── Tabelas ── */
-  --table-header-color: #00d4aa;
+  /* ── Tables ── */
+  --table-header-color: #c8d4e8;
   --table-header-weight: 600;
-  --table-header-background: rgba(0, 210, 170, 0.06);
-  --table-row-alt-background: rgba(0, 210, 170, 0.02);
+  --table-header-background: rgba(40, 60, 120, 0.15);
+  --table-row-alt-background: rgba(40, 60, 120, 0.04);
 
   /* ── Checkbox ── */
-  --checkbox-color: #00d4aa;
+  --checkbox-color: #4a7aee;
 
   /* ── Divider ── */
-  --hr-color: rgba(0, 210, 170, 0.12);
-  --hr-thickness: 1px;
+  --hr-color: rgba(60, 90, 200, 0.12);
 
   /* ── Tabs ── */
-  --tab-text-color-focused-active: #e6edf3;
+  --tab-text-color-focused-active: #d0d8e8;
   --tab-text-color-focused-active-current: #ffffff;
 
-  /* ── Vault / Nav ── */
-  --vault-name-color: #00d4aa;
-  --nav-item-color: #6e7a8a;
-  --nav-item-color-hover: #adb8c8;
-  --nav-item-color-active: #00d4aa;
-
-  /* ── File explorer ── */
-  --indentation-guide-color: rgba(0, 210, 170, 0.05);
-  --indentation-guide-color-active: rgba(0, 210, 170, 0.15);
+  /* ── Nav ── */
+  --vault-name-color: #5b8def;
+  --nav-item-color: #6b7a94;
+  --nav-item-color-hover: #a0b0c8;
+  --nav-item-color-active: #5b8def;
+  --indentation-guide-color: rgba(60, 90, 200, 0.05);
+  --indentation-guide-color-active: rgba(60, 90, 200, 0.15);
   --nav-item-size: 13px;
 
-  /* ── Cursor / selection ── */
-  --cursor-color: #00d4aa;
-  --text-selection: rgba(0, 210, 170, 0.18);
-  --text-highlight-bg: rgba(0, 210, 170, 0.12);
+  /* ── Cursor ── */
+  --cursor-color: #5b8def;
+  --text-selection: rgba(74, 122, 238, 0.20);
+  --text-highlight-bg: rgba(74, 122, 238, 0.14);
 
-  /* ── Minimal theme specific ── */
-  --minimal-tab-text-color: #6e7a8a;
+  /* ── Minimal ── */
+  --minimal-tab-text-color: #6b7a94;
   --minimal-tab-text-color-active: #ffffff;
 }
 
-/* ═══ COMPACT FORMATTING (VSCode-like) ═══ */
+/* ═══ COMPACT FORMATTING ═══ */
 
-/* Parágrafos — menos espaço entre eles */
-.markdown-rendered p {
-  margin-top: 0.3em;
-  margin-bottom: 0.3em;
-}
-
-/* Headings — espaço antes, quase nada depois */
-.markdown-rendered h1 { margin: 1.4em 0 0.3em; }
-.markdown-rendered h2 { margin: 1.2em 0 0.25em; border-bottom: 1px solid rgba(0, 210, 170, 0.08); padding-bottom: 0.2em; }
+.markdown-rendered p { margin: 0.35em 0; }
+.markdown-rendered h1 { margin: 1.4em 0 0.35em; }
+.markdown-rendered h2 { margin: 1.3em 0 0.3em; border-bottom: 1px solid rgba(60,90,200,0.10); padding-bottom: 0.25em; }
 .markdown-rendered h3 { margin: 1.0em 0 0.2em; }
-.markdown-rendered h4,
-.markdown-rendered h5,
-.markdown-rendered h6 { margin: 0.8em 0 0.15em; }
+.markdown-rendered h4, .markdown-rendered h5, .markdown-rendered h6 { margin: 0.8em 0 0.15em; }
+.markdown-rendered ul, .markdown-rendered ol { margin: 0.25em 0; }
+.markdown-rendered li { margin: 0.1em 0; }
 
-/* Listas — compactas */
-.markdown-rendered ul,
-.markdown-rendered ol {
-  margin-top: 0.2em;
-  margin-bottom: 0.2em;
-}
+/* ═══ TABLES — Gemini (clean, bordered) ═══ */
 
-.markdown-rendered li {
-  margin-top: 0.08em;
-  margin-bottom: 0.08em;
-}
-
-/* Listas nested — menos indent */
-.markdown-rendered ul ul,
-.markdown-rendered ol ol,
-.markdown-rendered ul ol,
-.markdown-rendered ol ul {
-  margin-top: 0.05em;
-  margin-bottom: 0.05em;
-}
-
-/* Tabelas — mais compactas e legíveis */
 .markdown-rendered table {
-  font-size: 0.9em;
-  border-collapse: collapse;
-  width: 100%;
+  font-size: 0.9em; border-collapse: collapse; width: 100%;
+  border: 1px solid rgba(60,90,200,0.10); border-radius: 8px; overflow: hidden;
 }
-
 .markdown-rendered th {
-  color: #00d4aa !important;
-  font-weight: 600;
-  background: rgba(0, 210, 170, 0.06);
-  padding: 6px 10px;
-  text-align: left;
-  border-bottom: 2px solid rgba(0, 210, 170, 0.15);
+  color: #c8d4e8 !important; font-weight: 600;
+  background: rgba(40,60,120,0.15); padding: 8px 12px; text-align: left;
+  border-bottom: 2px solid rgba(60,90,200,0.18);
 }
-
-.markdown-rendered td {
-  padding: 4px 10px;
-  border-bottom: 1px solid rgba(0, 210, 170, 0.05);
-}
-
-.markdown-rendered tr:nth-child(even) td {
-  background: rgba(0, 210, 170, 0.015);
-}
-
-/* Strikethrough — desbotado */
-.markdown-rendered del,
-.cm-strikethrough {
-  color: #3d4654;
-  opacity: 0.6;
-}
+.markdown-rendered td { padding: 6px 12px; border-bottom: 1px solid rgba(60,90,200,0.06); }
+.markdown-rendered tr:nth-child(even) td { background: rgba(40,60,120,0.04); }
+.markdown-rendered del, .cm-strikethrough { color: #3d4a60; opacity: 0.6; }
 
 /* ═══ INLINE TITLE ═══ */
-.inline-title {
-  color: #00d4aa !important;
-}
+.inline-title { color: #e8ecf4 !important; }
 
 /* ═══ GRAPH ═══ */
 .workspace-leaf-content[data-type='graph'],
 .workspace-leaf-content[data-type='localgraph'] {
-  --background-secondary: #080c12;
-  --graph-line: rgba(0, 210, 170, 0.10);
-  --graph-node: #00d4aa;
+  --background-secondary: #0c101a;
+  --graph-line: rgba(74,122,238,0.10);
+  --graph-node: #5b8def;
   --graph-node-focused: #ffffff;
   --graph-node-tag: #f0c050;
   --graph-node-attachment: #e08850;
-  --graph-node-unresolved: rgba(60, 100, 90, 0.40);
+  --graph-node-unresolved: rgba(60,80,120,0.40);
 }
 
-/* ═══ CALLOUTS ═══ */
+/* ═══ CALLOUTS — Gemini card ═══ */
 .callout {
-  background: rgba(0, 80, 70, 0.20) !important;
-  border: 1px solid rgba(0, 210, 170, 0.15) !important;
-  border-radius: 8px;
-  padding: 8px 14px;
-  margin: 0.6em 0;
+  background: rgba(25,35,65,0.50) !important;
+  border: 1px solid rgba(74,122,238,0.25) !important;
+  border-radius: 12px; padding: 10px 16px; margin: 0.6em 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
-
-.callout-title {
-  color: #00d4aa !important;
-  font-weight: 600;
-  font-size: 0.95em;
-}
+.callout-title { color: #7aa4ff !important; font-weight: 600; font-size: 0.95em; }
 
 /* ═══ CODE BLOCKS ═══ */
 .markdown-rendered pre {
-  padding: 10px 14px;
-  border-radius: 6px;
-  font-size: 0.88em;
-  line-height: 1.5;
-  border: 1px solid rgba(0, 210, 170, 0.06);
+  padding: 12px 16px; border-radius: 10px; font-size: 0.88em; line-height: 1.5;
+  border: 1px solid rgba(60,90,200,0.10); background: rgba(10,16,30,0.6) !important;
 }
 
 /* ═══ BLOCKQUOTES ═══ */
 .markdown-rendered blockquote {
-  margin: 0.4em 0;
-  padding: 0.3em 1em;
-  border-left-width: 3px;
+  margin: 0.4em 0; padding: 0.3em 1em; border-left-width: 3px;
+  background: rgba(40,60,120,0.05); border-radius: 0 8px 8px 0;
 }
 
 /* ═══ PROPERTIES ═══ */
 .metadata-container {
-  border: 1px solid rgba(0, 210, 170, 0.06);
-  border-radius: 6px;
-  background: rgba(8, 16, 24, 0.2);
-  margin-bottom: 0.5em;
-  font-size: 0.88em;
+  border: 1px solid rgba(60,90,200,0.08); border-radius: 8px;
+  background: rgba(15,20,36,0.3); margin-bottom: 0.5em; font-size: 0.88em;
 }
-
-.metadata-properties-heading {
-  color: #6e7a8a !important;
-  font-size: 0.85em;
-}
+.metadata-properties-heading { color: #6b7a94 !important; font-size: 0.85em; }
 
 /* ═══ SEARCH ═══ */
-.search-result-file-matched-text,
-.cm-highlight {
-  background: rgba(0, 210, 170, 0.18) !important;
-  border-radius: 2px;
+.search-result-file-matched-text, .cm-highlight {
+  background: rgba(74,122,238,0.20) !important; border-radius: 2px;
 }
 
 /* ═══ NAV ═══ */
-.nav-file-title.is-active {
-  color: #00d4aa !important;
-}
+.nav-file-title.is-active { color: #5b8def !important; }
+.nav-file-title:hover, .nav-folder-title:hover { background: rgba(60,90,200,0.06) !important; }
+.view-header-title { color: #6b7a94; font-size: 0.85em; }
+.status-bar-item { color: #3d4a60; font-size: 0.8em; }
 
-.view-header-title {
-  color: #6e7a8a;
-  font-size: 0.85em;
-}
-
-.status-bar-item {
-  color: #3d4654;
-  font-size: 0.8em;
-}
-
-/* ═══ FRONTMATTER LINKS ("Volta para") ═══ */
-.markdown-rendered p:first-of-type {
-  font-size: 0.85em;
-  color: #6e7a8a;
-  margin-bottom: 0.8em;
-}
-
-/* ═══ IMAGES IN NOTES — max height to prevent huge banners ═══ */
+/* ═══ IMAGES ═══ */
 .markdown-rendered img:not(.banner-image) {
-  max-height: 400px;
-  border-radius: 6px;
+  max-height: 400px; border-radius: 8px; border: 1px solid rgba(60,90,200,0.10);
 }
