@@ -144,6 +144,7 @@
       "mode": "any"
     }
   ],
+  "textToolbarCommands": [],
   "hide": {
     "statusbar": [],
     "leftRibbon": [
@@ -154,7 +155,9 @@
       "Templater",
       "Open quick switcher",
       "Open command palette"
-    ]
+    ],
+    "editorMenuItems": [],
+    "fileMenuItems": []
   },
   "spacing": "2",
   "advancedToolbar": {
@@ -171,5 +174,6 @@
     ],
     "tooltips": false,
     "heightOffset": 8
-  }
+  },
+  "spacingReset": true
 }
