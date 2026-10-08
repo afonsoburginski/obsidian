@@ -2,5 +2,14 @@
   "newFileLocation": "current",
   "attachmentFolderPath": "./",
   "alwaysUpdateLinks": true,
-  "promptDelete": false
+  "promptDelete": false,
+  "propertiesInDocument": "visible",
+  "livePreview": true,
+  "defaultViewMode": "preview",
+  "showFrontmatter": false,
+  "foldHeading": true,
+  "showLineNumber": false,
+  "readableLineLength": true,
+  "strictLineBreaks": false,
+  "showInlineTitle": true
 }

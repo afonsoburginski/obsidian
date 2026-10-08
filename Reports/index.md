@@ -5,7 +5,9 @@ tags:
   - index
 aliases:
   - "Reports diários"
-atualizado: 2026-10-02
+8|atualizado: 2026-10-02
+banner: "assets/banners/code-screen.jpg"
+banner_y: 0.5
 ---
 
 # Reports diários

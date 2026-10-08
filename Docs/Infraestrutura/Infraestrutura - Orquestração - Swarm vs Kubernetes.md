@@ -10,7 +10,7 @@ aliases:
   - "Docker Swarm"
   - "Orquestração de containers"
 atualizado: 2026-10-08
-banner: "https://images.unsplash.com/photo-1667372393119-3d4c48d07fc9?w=1200"
+banner: "assets/banners/servers.jpg"
 banner_y: 0.3
 ---
 

@@ -7,7 +7,9 @@ aliases:
   - "Infraestrutura"
   - "Server e CI"
   - "Server e CI - índice"
-atualizado: 2026-10-07
+10|atualizado: 2026-10-07
+banner: "assets/banners/servers.jpg"
+banner_y: 0.3
 ---
 
 # Infraestrutura

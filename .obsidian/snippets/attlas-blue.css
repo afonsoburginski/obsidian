@@ -51,6 +51,11 @@
   --h1-weight: 700;
   --h2-weight: 600;
 
+  /* Inline title (o título grande da nota) — cyan */
+  --inline-title-color: #00d4aa;
+  --inline-title-size: 1.6em;
+  --inline-title-weight: 700;
+
   /* Inline code */
   --code-normal: #33e0be;
   --code-background: rgba(0, 210, 170, 0.08);
@@ -104,6 +109,11 @@
   --minimal-tab-text-color-active: #ffffff;
 }
 
+/* Inline title — força cyan */
+.inline-title {
+  color: #00d4aa !important;
+}
+
 /* Graph — cyan nodes */
 .workspace-leaf-content[data-type='graph'],
 .workspace-leaf-content[data-type='localgraph'] {
@@ -116,15 +126,20 @@
   --graph-node-unresolved: rgba(60, 100, 90, 0.40);
 }
 
-/* Callout links section — fundo teal escuro como na screenshot */
+/* Callout — fundo teal escuro pronunciado como na screenshot */
 .callout {
-  background: rgba(0, 210, 170, 0.05) !important;
-  border-color: rgba(0, 210, 170, 0.15) !important;
-  border-radius: 8px;
+  background: rgba(0, 80, 70, 0.25) !important;
+  border: 1px solid rgba(0, 210, 170, 0.18) !important;
+  border-radius: 10px;
 }
 
 .callout-title {
   color: #00d4aa !important;
+  font-weight: 600;
+}
+
+.callout-content {
+  color: #e6edf3;
 }
 
 /* Search highlight */
@@ -134,14 +149,28 @@
   border-radius: 2px;
 }
 
-/* Properties / metadata */
+/* Properties widget — discreto */
 .metadata-container {
-  border: 1px solid rgba(0, 210, 170, 0.08);
+  border: 1px solid rgba(0, 210, 170, 0.06);
   border-radius: 8px;
-  background: rgba(8, 16, 24, 0.3);
+  background: rgba(8, 16, 24, 0.2);
+}
+
+.metadata-properties-heading {
+  color: #7d8fa6 !important;
 }
 
 /* Active nav item — cyan highlight */
 .nav-file-title.is-active {
   color: #00d4aa !important;
+}
+
+/* Breadcrumb / file path bar */
+.view-header-title {
+  color: #7d8fa6;
+}
+
+/* Status bar — info em cyan */
+.status-bar-item {
+  color: #48566a;
 }

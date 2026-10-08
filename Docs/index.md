@@ -5,7 +5,7 @@ tags:
 aliases:
   - "Docs - índice raiz"
 atualizado: 2026-10-07
-banner: "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=1200"
+banner: "assets/banners/cozy-desk.jpg"
 banner_y: 0.4
 ---
 

@@ -4,7 +4,9 @@ tags:
   - index
 aliases:
   - "Sprints - índice raiz"
-atualizado: 2026-10-07
+7|atualizado: 2026-10-07
+banner: "assets/banners/tech-code.jpg"
+banner_y: 0.4
 ---
 
 # Sprints - índice raiz

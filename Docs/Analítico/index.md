@@ -6,7 +6,9 @@ aliases:
   - "Analítico"
   - "Analítico de vídeo"
   - "VL e ATSPM"
-atualizado: 2026-10-07
+9|atualizado: 2026-10-07
+banner: "assets/banners/code-screen.jpg"
+banner_y: 0.4
 ---
 
 # Analítico
