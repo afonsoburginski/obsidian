@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Caminho do vídeo nos dois modos</title>
+  <link rel="stylesheet" href="../lumi-runtime.css">
+  <link rel="stylesheet" href="../flow.css">
+  <script src="../widget-runtime.js"></script>
+</head>
+<body>
+  <div class="widget-container"></div>
+  <script type="application/json" id="flow-spec">
+{
+  "title": "Caminho do vídeo nos dois modos",
+  "subtitle": "Espelho e projeção nativa até o painel",
+  "direction": "LR",
+  "groups": [
+    {
+      "id": "espelho",
+      "label": "Espelho"
+    },
+    {
+      "id": "nativa",
+      "label": "Projeção nativa"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "op",
+      "label": "Operador",
+      "group": "espelho",
+      "kind": "accent"
+    },
+    {
+      "id": "mtx1",
+      "label": "MediaMTX",
+      "sub": "videowall-mirror-*",
+      "group": "espelho"
+    },
+    {
+      "id": "h91",
+      "label": "H9",
+      "group": "espelho"
+    },
+    {
+      "id": "p1",
+      "label": "Painel",
+      "group": "espelho",
+      "kind": "accent"
+    },
+    {
+      "id": "cam",
+      "label": "Câmeras",
+      "group": "nativa",
+      "kind": "accent"
+    },
+    {
+      "id": "mtx2",
+      "label": "MediaMTX",
+      "sub": "videowall-projection-*",
+      "group": "nativa"
+    },
+    {
+      "id": "h92",
+      "label": "H9",
+      "group": "nativa"
+    },
+    {
+      "id": "p2",
+      "label": "Painel",
+      "group": "nativa",
+      "kind": "accent"
+    }
+  ],
+  "edges": [
+    {
+      "from": "op",
+      "to": "mtx1",
+      "label": "WebRTC"
+    },
+    {
+      "from": "mtx1",
+      "to": "h91",
+      "label": "RTSP"
+    },
+    {
+      "from": "h91",
+      "to": "p1",
+      "label": "DVI"
+    },
+    {
+      "from": "cam",
+      "to": "mtx2",
+      "label": "RTSP"
+    },
+    {
+      "from": "mtx2",
+      "to": "h92",
+      "label": "RTSP"
+    },
+    {
+      "from": "h92",
+      "to": "p2",
+      "label": "DVI"
+    }
+  ]
+}
+  </script>
+  <script src="../flow.js"></script>
+</body>
+</html>

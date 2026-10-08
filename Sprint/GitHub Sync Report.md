@@ -11,7 +11,7 @@ banner: "https://images.unsplash.com/photo-1556075798-4825dfaaf498?w=1200"
 
 # GitHub Sync Report
 
-Última sincronização: **2026-10-08 15:00**
+Última sincronização: **2026-10-08 17:01**
 Sprint: **36** (2026-10-05 → 2026-10-11)
 
 ## Resumo
@@ -19,20 +19,20 @@ Sprint: **36** (2026-10-05 → 2026-10-11)
 | Métrica | Valor |
 | --- | --- |
 | PRs total | 40 |
-| Merged | 36 |
-| Open | 3 |
+| Merged | 38 |
+| Open | 1 |
 | Closed | 1 |
-| Linhas adicionadas | +76034 |
-| Linhas removidas | -22317 |
-| Arquivos tocados | 2891 |
+| Linhas adicionadas | +76102 |
+| Linhas removidas | -22302 |
+| Arquivos tocados | 2897 |
 
 ## PRs da Sprint 36
 
 | # | Título | Estado | Data | +/- |
 | --- | --- | --- | --- | --- |
-| #6336 | docs: migração do object storage — MinIO arquivado, proposta SeaweedFS | OPEN | 2026-10-08 | +329/-77 |
-| #6306 | refactor: analítico sai do ms-cameras e roda só no ms-video-analytics (CROSS-200 passos 10 a 13) | OPEN | 2026-10-08 | +18194/-9841 |
-| #6225 | feat: Neural Labs de ponta a ponta - socket aceita JSON e o LPR chega no trajeto do painel de operação | OPEN | 2026-10-07 | +4575/-465 |
+| #6336 | docs: migração do object storage, MinIO na Chainguard e proposta SeaweedFS | MERGED | 2026-10-08 | +312/-27 |
+| #6306 | refactor: analítico sai do ms-cameras e roda só no ms-video-analytics (CROSS-200 passos 10 a 13) | OPEN | 2026-10-08 | +18279/-9876 |
+| #6225 | feat: Neural Labs de ponta a ponta - socket aceita JSON e o LPR chega no trajeto do painel de operação | MERGED | 2026-10-08 | +4575/-465 |
 | #6213 | fix(ms-cameras): ajustes do review da #6171 no outbox de sincronização de câmera | MERGED | 2026-10-07 | +308/-300 |
 | #6212 | fix(ms-cameras): ajustes do review da #6171 no outbox de sincronização de câmera | CLOSED | 2026-10-07 | +233/-216 |
 | #6198 | feat: mecanismo de handoff do analítico entre ms-cameras e ms-video-analytics, sem fatia registrada | MERGED | 2026-10-07 | +10988/-201 |
@@ -73,9 +73,7 @@ Sprint: **36** (2026-10-05 → 2026-10-11)
 
 ## Ação necessária (PRs abertas)
 
-- [ ] **#6225** feat: Neural Labs de ponta a ponta - socket aceita JSON e o LPR chega no trajeto do painel de operação — aberta em 2026-10-07 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6225))
 - [ ] **#6306** refactor: analítico sai do ms-cameras e roda só no ms-video-analytics (CROSS-200 passos 10 a 13) — aberta em 2026-10-08 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6306))
-- [ ] **#6336** docs: migração do object storage — MinIO arquivado, proposta SeaweedFS — aberta em 2026-10-08 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6336))
 
 ## Entregues (merged)
 
@@ -115,5 +113,7 @@ Sprint: **36** (2026-10-05 → 2026-10-11)
 - [x] **#6198** feat: mecanismo de handoff do analítico entre ms-cameras e ms-video-analytics, sem fatia registrada — merged em 2026-10-07
 - [x] **#6167** feat: menu de três pontos no detalhe da câmera e dialog de substituição igual ao Figma — merged em 2026-10-07
 - [x] **#6213** fix(ms-cameras): ajustes do review da #6171 no outbox de sincronização de câmera — merged em 2026-10-07
+- [x] **#6225** feat: Neural Labs de ponta a ponta - socket aceita JSON e o LPR chega no trajeto do painel de operação — merged em 2026-10-08
+- [x] **#6336** docs: migração do object storage, MinIO na Chainguard e proposta SeaweedFS — merged em 2026-10-08
 
 Gerado automaticamente por `scripts/github-sprint-sync.sh`.

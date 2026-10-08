@@ -1,0 +1,119 @@
+/* flow.css — layout dos widgets de diagrama montados por flow.js.
+ * Cor, fonte, raio e espacamento vem exclusivamente dos tokens do lumi-runtime.css.
+ */
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--ff-sans);
+  color: var(--on-surface);
+  background: transparent;
+  overflow-y: hidden;
+}
+
+.widget-container {
+  width: 100%;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: var(--spacing-m);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-m);
+}
+
+.flow-header h2 {
+  margin: 0;
+  color: var(--on-surface);
+}
+
+.flow-header p {
+  margin: 2px 0 0 0;
+  color: var(--on-surface-variant);
+}
+
+.diagram-card {
+  background: var(--surface-dim);
+  border-radius: var(--r-l);
+  padding: var(--spacing-m);
+  box-sizing: border-box;
+}
+
+.flow-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+
+.flow-node.is-clickable {
+  cursor: pointer;
+}
+
+.flow-node > rect,
+.flow-node > polygon {
+  transition: stroke 0.15s ease, stroke-width 0.15s ease, fill 0.15s ease;
+}
+
+.flow-node:hover > rect,
+.flow-node:hover > polygon {
+  stroke: var(--primary);
+  stroke-width: 2;
+}
+
+.flow-node.is-selected > rect,
+.flow-node.is-selected > polygon {
+  stroke: var(--primary);
+  stroke-width: 2.2;
+  fill: var(--accent-container);
+}
+
+.flow-svg text {
+  stroke: none;
+  paint-order: fill;
+  user-select: none;
+}
+
+.details-card {
+  background: var(--surface-bright);
+  border: 1px solid var(--stroke-default);
+  border-radius: var(--r-m);
+  padding: var(--spacing-m);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  min-height: 72px;
+  box-sizing: border-box;
+}
+
+.details-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-s);
+}
+
+.details-title {
+  font-family: var(--ff-sans);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--on-surface);
+}
+
+.details-tag {
+  font-family: var(--ff-mono);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--primary);
+  background: var(--accent-container);
+  padding: 2px 8px;
+  border-radius: var(--r-full);
+  white-space: nowrap;
+}
+
+.details-desc {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--on-surface-variant);
+}

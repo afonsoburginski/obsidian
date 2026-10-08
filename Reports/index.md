@@ -5,7 +5,7 @@ tags:
   - index
 aliases:
   - "Reports diários"
-8|atualizado: 2026-10-02
+atualizado: 2026-10-08
 banner: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200"
 banner_y: 0.5
 ---
@@ -14,6 +14,8 @@ banner_y: 0.5
 
 O report de cada dia útil, com o bloco que vai para o gestor. É registro do dia, não fonte de verdade: decisão, arquitetura e plano moram em `Docs/` e na sprint da semana.
 
+- [[2026-10-08]]
+- [[2026-10-07]]
 - [[2026-10-02]]
 - [[2026-10-01]]
 - [[2026-09-30]]
