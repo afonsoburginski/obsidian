@@ -8,49 +8,49 @@
   "collapse-color-groups": false,
   "colorGroups": [
     {
-      "query": "path:\"Docs/ms-cameras/Videowall externo\"",
+      "query": "path:\"Docs/Câmeras/Videowall\"",
       "color": {
         "a": 1,
         "rgb": 16106215
       }
     },
     {
-      "query": "path:\"Docs/ms-cameras/VMS\"",
+      "query": "path:\"Docs/Câmeras/VMS\"",
       "color": {
         "a": 1,
         "rgb": 7653356
       }
     },
     {
-      "query": "path:\"Docs/ms-cameras/Diagramas\"",
+      "query": "file:.excalidraw",
       "color": {
         "a": 1,
         "rgb": 16376495
       }
     },
     {
-      "query": "path:\"Docs/ms-cameras\" -path:\"Docs/ms-cameras/VMS\" -path:\"Docs/ms-cameras/Videowall externo\" -path:\"Docs/ms-cameras/Diagramas\"",
+      "query": "path:\"Docs/Câmeras\" -path:\"Docs/Câmeras/VMS\" -path:\"Docs/Câmeras/Videowall\" -file:.excalidraw",
       "color": {
         "a": 1,
         "rgb": 9024762
       }
     },
     {
-      "query": "path:\"Docs/kubernetes\"",
+      "query": "path:\"Docs/Processo\"",
       "color": {
         "a": 1,
         "rgb": 9757397
       }
     },
     {
-      "query": "path:\"Docs/server\"",
+      "query": "path:\"Docs/Infraestrutura\"",
       "color": {
         "a": 1,
-        "rgb": 10937249
+        "rgb": 1660626
       }
     },
     {
-      "query": "path:\"Docs\" -path:\"Docs/ms-cameras\" -path:\"Docs/kubernetes\" -path:\"Docs/server\"",
+      "query": "path:\"Docs\" -path:\"Docs/Câmeras\" -path:\"Docs/Processo\" -path:\"Docs/Infraestrutura\"",
       "color": {
         "a": 1,
         "rgb": 11845374
@@ -93,15 +93,15 @@
     }
   ],
   "collapse-display": false,
-  "showArrow": false,
-  "textFadeMultiplier": -1.4,
-  "nodeSizeMultiplier": 1.35,
-  "lineSizeMultiplier": 0.55,
+  "showArrow": true,
+  "textFadeMultiplier": -0.2,
+  "nodeSizeMultiplier": 0.598781907052525,
+  "lineSizeMultiplier": 0.128132516098999,
   "collapse-forces": false,
-  "centerStrength": 0.15,
-  "repelStrength": 16,
-  "linkStrength": 0.45,
-  "linkDistance": 320,
-  "scale": 0.04231590325791128,
+  "centerStrength": 0.0963612382651874,
+  "repelStrength": 15.0886272586052,
+  "linkStrength": 0.452866785631158,
+  "linkDistance": 100,
+  "scale": 0.10116538843064356,
   "close": true
 }

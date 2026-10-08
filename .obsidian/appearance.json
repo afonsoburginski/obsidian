@@ -1,14 +1,16 @@
 {
   "theme": "obsidian",
-  "accentColor": "#3794eb",
+  "accentColor": "#3b9eff",
   "interfaceFontFamily": "",
   "textFontFamily": "",
   "baseFontSizeAction": true,
-  "baseFontSize": 14,
+  "baseFontSize": 15,
   "translucency": true,
-  "cssTheme": "GitHub Theme",
-  "nativeMenus": true,
+  "cssTheme": "Minimal",
+  "nativeMenus": false,
   "enabledCssSnippets": [
-    "galaxy-graph"
+    "galaxy-graph",
+    "liquid-glass",
+    "attlas-blue"
   ]
 }

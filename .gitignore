@@ -7,3 +7,8 @@
 # Artefatos transitórios do conector MCP não são conteúdo do vault.
 /.obsidian-mcp/transactions/
 /.obsidian-mcp/locks/
+
+# Cache do Obsidian (não propagar entre máquinas)
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+.obsidian/cache

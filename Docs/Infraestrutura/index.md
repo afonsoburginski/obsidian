@@ -29,10 +29,14 @@ repositório `Developer/kubernetes` e na skill `attlas-kubernetes`.
 | [[Infraestrutura - Ambientes]] | precisa saber o que roda onde, como o deploy do dev.v2 funciona ou por que um container caiu |
 | [[Infraestrutura - CI e runners]] | o CI está vermelho, lento, parado ou sem check, ou você vai mexer em `.github/workflows/` ou `scripts/ci/` |
 | [[Infraestrutura - Observabilidade]] | vai subir Prometheus, Grafana e Loki, ou quer saber o que falta medir no CI |
+| [[Infraestrutura - Orquestração - Swarm vs Kubernetes]] | precisa entender a diferença entre Swarm e K8s e por que o Attlas usa Swarm |
 
 ## Explicações para usuário
 
-O domínio não tem explicação para usuário final na raiz do vault.
+| Explicação | Responde |
+| --- | --- |
+| [[Infraestrutura - Ambientes - Explicación - Por qué el compose local es distinto del EC2 de dev]] | por qué el mismo `docker-compose.yml` levanta cosas distintas en tu máquina y en el EC2, con ejemplos |
+| [[Infraestrutura - Mapa de puertos]] | qué puerto usa cada servicio, en tu máquina y en el EC2, y qué puertos están expuestos |
 
 ## Diagramas
 

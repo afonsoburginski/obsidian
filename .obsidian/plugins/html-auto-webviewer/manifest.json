@@ -1,0 +1,9 @@
+{
+  "id": "html-auto-webviewer",
+  "name": "HTML Auto Web Viewer",
+  "version": "0.1.0",
+  "minAppVersion": "1.8.0",
+  "description": "Open HTML files in the built-in web viewer and let the URL bar accept file:// and relative paths.",
+  "author": "Jake",
+  "isDesktopOnly": true
+}

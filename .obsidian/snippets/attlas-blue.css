@@ -1,0 +1,131 @@
+/* ==========================================================================
+   Attlas Blue — paleta dark com branco e tons de azul
+   Sobreescreve variáveis do Minimal theme
+   ========================================================================== */
+
+.theme-dark {
+  /* Fundo principal */
+  --background-primary: #0a0e18;
+  --background-primary-alt: #0d1220;
+  --background-secondary: #080c16;
+  --background-secondary-alt: #060a12;
+  --background-modifier-border: rgba(55, 148, 235, 0.12);
+  --background-modifier-form-field: rgba(15, 22, 40, 0.6);
+  --background-modifier-hover: rgba(55, 148, 235, 0.06);
+  --background-modifier-active-hover: rgba(55, 148, 235, 0.10);
+  --background-modifier-success: rgba(40, 167, 120, 0.15);
+  --background-modifier-error: rgba(220, 60, 60, 0.15);
+
+  /* Texto — branco limpo com hierarquia */
+  --text-normal: #e8edf5;
+  --text-muted: #8a9ab5;
+  --text-faint: #4a5a78;
+  --text-on-accent: #ffffff;
+  --text-accent: #5baaff;
+  --text-accent-hover: #7dc0ff;
+
+  /* Interativo — azul vivo */
+  --interactive-normal: #10162a;
+  --interactive-hover: rgba(55, 148, 235, 0.10);
+  --interactive-accent: #3b9eff;
+  --interactive-accent-hover: #5baaff;
+
+  /* Links */
+  --link-color: #5baaff;
+  --link-color-hover: #7dc0ff;
+  --link-external-color: #4d97e6;
+  --link-external-color-hover: #6daff0;
+  --link-unresolved-color: #3a5a8a;
+
+  /* Tags */
+  --tag-color: #5baaff;
+  --tag-background: rgba(55, 148, 235, 0.10);
+
+  /* Headings — escala de azul para branco */
+  --h1-color: #ffffff;
+  --h2-color: #d0e4ff;
+  --h3-color: #a0c8f0;
+  --h4-color: #80b0e0;
+  --h5-color: #6098d0;
+  --h6-color: #4a80b8;
+  --h1-weight: 700;
+  --h2-weight: 600;
+
+  /* Inline code */
+  --code-normal: #7dc0ff;
+  --code-background: rgba(55, 148, 235, 0.08);
+
+  /* Code blocks */
+  --pre-code: #c8d8f0;
+  --code-block-alt-bg: rgba(10, 18, 35, 0.6);
+
+  /* Blockquotes */
+  --blockquote-border-color: rgba(55, 148, 235, 0.30);
+
+  /* Callouts */
+  --callout-default: rgba(55, 148, 235, 0.08);
+  --callout-warning: rgba(235, 180, 55, 0.12);
+
+  /* Bold / italic */
+  --bold-color: #ffffff;
+  --italic-color: #a0c8f0;
+
+  /* Checkbox */
+  --checkbox-color: #3b9eff;
+
+  /* Divider */
+  --hr-color: rgba(55, 148, 235, 0.15);
+
+  /* Tab header */
+  --tab-text-color-focused-active: #ffffff;
+  --tab-text-color-focused-active-current: #ffffff;
+
+  /* Vault name */
+  --vault-name-color: #5baaff;
+
+  /* Nav */
+  --nav-item-color: #8a9ab5;
+  --nav-item-color-hover: #c8d8f0;
+  --nav-item-color-active: #ffffff;
+
+  /* File explorer indent guides */
+  --indentation-guide-color: rgba(55, 148, 235, 0.08);
+  --indentation-guide-color-active: rgba(55, 148, 235, 0.20);
+
+  /* Cursor */
+  --cursor-color: #5baaff;
+
+  /* Selection */
+  --text-selection: rgba(55, 148, 235, 0.20);
+  --text-highlight-bg: rgba(55, 148, 235, 0.15);
+
+  /* Minimal theme specific */
+  --minimal-tab-text-color: #8a9ab5;
+  --minimal-tab-text-color-active: #ffffff;
+}
+
+/* Graph — atualiza o galaxy-graph pra combinar */
+.workspace-leaf-content[data-type='graph'],
+.workspace-leaf-content[data-type='localgraph'] {
+  --background-secondary: #060a12;
+  --graph-line: rgba(55, 148, 235, 0.12);
+  --graph-node: #8ab4e0;
+  --graph-node-focused: #ffffff;
+  --graph-node-tag: #f0c050;
+  --graph-node-attachment: #e08850;
+  --graph-node-unresolved: rgba(80, 100, 140, 0.40);
+}
+
+/* Highlight em busca */
+.search-result-file-matched-text,
+.cm-highlight {
+  background: rgba(55, 148, 235, 0.18) !important;
+  border-radius: 2px;
+}
+
+/* Properties / metadata — discreto */
+.metadata-container {
+  border: 1px solid rgba(55, 148, 235, 0.08);
+  border-radius: 8px;
+  background: rgba(10, 18, 35, 0.3);
+}

@@ -1,0 +1,17 @@
+{
+  "hideStatusBar": false,
+  "hideScrollbar": true,
+  "hideTitleBar": false,
+  "hideVaultName": false,
+  "hideTooltips": false,
+  "hideSearchSuggestions": false,
+  "hideInstructions": true,
+  "hidePropertiesRecommendations": true,
+  "hideMetadataLabel": false,
+  "hideTabHeaderCloseButton": false,
+  "hideTabHeaderNewTabButton": false,
+  "hideNewTabButton": false,
+  "hideSidebarToggle": false,
+  "hideWindowFrame": false,
+  "showResizeHandle": true
+}
