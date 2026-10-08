@@ -14,8 +14,8 @@
       "bottom": 0,
       "left": 0
     },
-    "iconInTabsEnabled": false,
-    "iconInTitleEnabled": false,
+    "iconInTabsEnabled": true,
+    "iconInTitleEnabled": true,
     "iconInTitlePosition": "above",
     "iconInFrontmatterEnabled": false,
     "iconInFrontmatterFieldName": "icon",
@@ -27,5 +27,23 @@
     "lucideIconPackType": "native",
     "debugMode": false,
     "useInternalPlugins": false
-  }
+  },
+  "Docs": "📚",
+  "Docs/Câmeras": "📹",
+  "Docs/Câmeras/Videowall": "🖥️",
+  "Docs/Câmeras/VMS": "💾",
+  "Docs/Câmeras/Streaming": "📡",
+  "Docs/Câmeras/Eventos, incidentes e alarmes": "🚨",
+  "Docs/Câmeras/PTZ e presets": "🎯",
+  "Docs/Câmeras/Cadastro": "📋",
+  "Docs/Câmeras/Dashboard": "📊",
+  "Docs/Câmeras/Saúde e monitoramento": "💚",
+  "Docs/Câmeras/Integração com dispositivo": "🔌",
+  "Docs/Analítico": "🧠",
+  "Docs/Analítico/Neural Labs": "🔬",
+  "Docs/Infraestrutura": "🏗️",
+  "Docs/Processo": "📐",
+  "Sprint": "🏃",
+  "Reports": "📈",
+  "Compose y puertos": "🐳"
 }
