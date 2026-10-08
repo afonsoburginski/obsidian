@@ -8,6 +8,7 @@ aliases:
   - "Dashboard de câmeras"
   - "00 - Dashboard de câmeras"
 atualizado: 2026-10-07
+banner: "dashboard analytics dark"
 ---
 
 # Câmeras - Dashboard

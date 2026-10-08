@@ -9,6 +9,7 @@ aliases:
   - "Runbook - Streaming"
   - "Câmeras - Streaming - Runbook"
 atualizado: 2026-10-07
+banner: "video streaming network"
 ---
 
 # Câmeras - Streaming - Runbook

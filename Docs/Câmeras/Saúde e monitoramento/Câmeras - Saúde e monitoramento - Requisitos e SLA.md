@@ -10,6 +10,7 @@ aliases:
   - "Saúde da Câmera - regras de negócio e contratos"
   - "Saúde e monitoramento - Requisitos e SLA"
 atualizado: 2026-10-07
+banner: "health monitoring system"
 ---
 
 # Câmeras - Saúde e monitoramento - Requisitos e SLA

@@ -11,6 +11,7 @@ aliases:
   - "AV1, H.265 e H.264"
   - "Streaming - Codecs"
 atualizado: 2026-10-07
+banner: "video streaming network"
 ---
 
 # Câmeras - Streaming - Codecs

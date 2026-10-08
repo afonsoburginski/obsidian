@@ -10,6 +10,7 @@ aliases:
   - "Videowall - Referência técnica H9"
   - "H9 Open API reference"
 atualizado: 2026-10-08
+banner: "led video wall display"
 ---
 
 # Câmeras - Videowall - Open API e hardware do H9

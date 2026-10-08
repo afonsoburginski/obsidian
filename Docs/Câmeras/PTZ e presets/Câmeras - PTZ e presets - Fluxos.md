@@ -7,6 +7,7 @@ tags:
 aliases:
   - "PTZ e presets - Fluxos"
 atualizado: 2026-10-07
+banner: "ptz camera security"
 ---
 
 # Câmeras - PTZ e presets - Fluxos

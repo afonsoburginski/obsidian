@@ -14,6 +14,7 @@ aliases:
   - "Ajustes nativos Axis e Hikvision"
   - "Streaming - Qualidade de imagem na câmera"
 atualizado: 2026-10-07
+banner: "video streaming network"
 ---
 
 # Câmeras - Streaming - Qualidade de imagem na câmera

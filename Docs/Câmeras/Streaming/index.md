@@ -9,6 +9,7 @@ aliases:
   - "Streaming"
   - "00 - Streaming"
 atualizado: 2026-10-07
+banner: "video streaming network"
 ---
 
 # Câmeras - Streaming

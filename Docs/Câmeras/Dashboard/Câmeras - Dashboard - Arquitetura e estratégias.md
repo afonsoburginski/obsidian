@@ -6,6 +6,7 @@ tags:
 aliases:
   - "Dashboard de câmeras - Arquitetura e estratégias"
 atualizado: 2026-10-07
+banner: "dashboard analytics dark"
 ---
 
 # Câmeras - Dashboard - Arquitetura e estratégias

@@ -7,6 +7,7 @@ tags:
 aliases:
   - "Dashboard de câmeras - Como cada número é calculado"
 atualizado: 2026-10-07
+banner: "surveillance camera technology"
 ---
 
 # Câmeras - Dashboard - Explicação - Como cada número é calculado

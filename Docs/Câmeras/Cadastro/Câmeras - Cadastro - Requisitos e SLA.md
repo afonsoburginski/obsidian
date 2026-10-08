@@ -6,6 +6,7 @@ tags:
 aliases:
   - "Cameras - Requisitos e SLA"
 atualizado: 2026-10-07
+banner: "database registry system"
 ---
 
 # Câmeras - Cadastro - Requisitos e SLA

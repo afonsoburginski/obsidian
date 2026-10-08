@@ -11,6 +11,7 @@ aliases:
   - "Transporte do espelhamento de tela"
   - "Videowall - Arquitetura e estratégias"
 atualizado: 2026-10-07
+banner: "led video wall display"
 ---
 
 # Câmeras - Videowall - Arquitetura e estratégias

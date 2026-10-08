@@ -8,6 +8,7 @@ aliases:
   - "Carga desnecessária nas câmeras - reconciler do analítico e conexões duplicadas"
   - "Integração com dispositivo - Arquitetura e estratégias"
 atualizado: 2026-10-07
+banner: "surveillance camera technology"
 ---
 
 # Câmeras - Integração com dispositivo - Arquitetura e estratégias

@@ -7,6 +7,7 @@ aliases:
   - "Cameras - Arquitetura"
   - "Cameras - Arquitetura e estratégias"
 atualizado: 2026-10-07
+banner: "database registry system"
 ---
 
 # Câmeras - Cadastro - Arquitetura e estratégias

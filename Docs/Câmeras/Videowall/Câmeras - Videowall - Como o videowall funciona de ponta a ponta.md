@@ -10,6 +10,7 @@ aliases:
   - "Videowall - Funcionamento ponta a ponta"
   - "Videowall - Validação IPC e mosaico"
 atualizado: 2026-10-08
+banner: "led video wall display"
 ---
 
 # Câmeras - Videowall - Como o videowall funciona de ponta a ponta

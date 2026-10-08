@@ -7,6 +7,7 @@ aliases:
   - "Mapa de puertos"
   - "Infraestrutura - Mapa de portas"
 atualizado: 2026-10-08
+banner: "server room datacenter"
 ---
 
 # Infraestrutura - Mapa de puertos

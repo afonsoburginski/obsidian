@@ -6,6 +6,7 @@ tags:
 aliases:
   - "Cameras - Fluxos"
 atualizado: 2026-10-07
+banner: "database registry system"
 ---
 
 # Câmeras - Cadastro - Fluxos

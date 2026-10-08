@@ -8,6 +8,7 @@ aliases:
   - "Video Wall - Fluxos"
   - "VMS - Fluxos"
 atualizado: 2026-10-07
+banner: "video management system"
 ---
 
 # Câmeras - VMS - Fluxos

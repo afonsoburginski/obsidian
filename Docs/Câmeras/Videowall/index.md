@@ -11,6 +11,7 @@ aliases:
   - "Videowall"
   - "00 - Videowall externo (NovaStar H9)"
 atualizado: 2026-10-07
+banner: "led video wall display"
 ---
 
 # Câmeras - Videowall

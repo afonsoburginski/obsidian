@@ -8,6 +8,7 @@ aliases:
   - "Streaming - Requisitos e SLA"
   - "Câmeras - Streaming - Requisitos e SLA"
 atualizado: 2026-10-07
+banner: "video streaming network"
 ---
 
 # Câmeras - Streaming - Requisitos e SLA

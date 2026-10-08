@@ -6,7 +6,7 @@ tags:
 aliases:
   - "Reports diários"
 8|atualizado: 2026-10-02
-banner: "assets/banners/code-screen.jpg"
+banner: "analytics charts dark"
 banner_y: 0.5
 ---
 

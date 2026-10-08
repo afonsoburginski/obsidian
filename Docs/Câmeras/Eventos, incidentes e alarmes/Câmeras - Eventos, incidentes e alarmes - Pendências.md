@@ -8,6 +8,7 @@ tags:
 aliases:
   - "Câmeras - Eventos, incidentes e alarmes - Pendências"
 atualizado: 2026-10-07
+banner: "alarm alert notification"
 ---
 
 # Câmeras - Eventos, incidentes e alarmes - Pendências

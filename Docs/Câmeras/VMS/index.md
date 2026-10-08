@@ -10,6 +10,7 @@ aliases:
   - "00 - Video Wall"
   - "Video Wall (ms-cameras)"
 atualizado: 2026-10-07
+banner: "video management system"
 ---
 
 # Câmeras - VMS

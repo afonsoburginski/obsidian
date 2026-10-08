@@ -9,6 +9,7 @@ aliases:
   - "Video Wall - Requisitos e SLA"
   - "VMS - Arquitetura e estratégias"
 atualizado: 2026-10-07
+banner: "video management system"
 ---
 
 # Câmeras - VMS - Arquitetura e estratégias

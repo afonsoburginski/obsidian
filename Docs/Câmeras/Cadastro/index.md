@@ -9,6 +9,7 @@ aliases:
   - "00 - Cameras"
   - "Cameras - cadastro e ciclo de vida"
 atualizado: 2026-10-07
+banner: "database registry system"
 ---
 
 # Câmeras - Cadastro

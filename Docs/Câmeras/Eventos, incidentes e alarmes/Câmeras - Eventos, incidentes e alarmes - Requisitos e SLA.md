@@ -7,6 +7,7 @@ tags:
 aliases:
   - "Eventos, incidentes e alarmes - Requisitos e SLA"
 atualizado: 2026-10-07
+banner: "alarm alert notification"
 ---
 
 # Câmeras - Eventos, incidentes e alarmes - Requisitos e SLA

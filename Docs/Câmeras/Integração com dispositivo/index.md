@@ -9,6 +9,7 @@ aliases:
   - "Integração com dispositivo"
   - "00 - Integração com dispositivo"
 atualizado: 2026-10-07
+banner: "surveillance camera technology"
 ---
 
 # Câmeras - Integração com dispositivo

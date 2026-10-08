@@ -9,6 +9,7 @@ aliases:
   - "PTZ e presets"
   - "00 - PTZ e presets"
 atualizado: 2026-10-07
+banner: "ptz camera security"
 ---
 
 # Câmeras - PTZ e presets

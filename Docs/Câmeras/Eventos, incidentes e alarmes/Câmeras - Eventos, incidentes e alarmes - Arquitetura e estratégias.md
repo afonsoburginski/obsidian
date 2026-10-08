@@ -7,6 +7,7 @@ tags:
 aliases:
   - "Eventos, incidentes e alarmes - Arquitetura e estratégias"
 atualizado: 2026-10-07
+banner: "alarm alert notification"
 ---
 
 # Câmeras - Eventos, incidentes e alarmes - Arquitetura e estratégias

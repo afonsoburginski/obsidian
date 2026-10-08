@@ -9,6 +9,7 @@ aliases:
   - "Eventos, incidentes e alarmes"
   - "00 - Eventos, incidentes e alarmes"
 atualizado: 2026-10-07
+banner: "alarm alert notification"
 ---
 
 # Câmeras - Eventos, incidentes e alarmes

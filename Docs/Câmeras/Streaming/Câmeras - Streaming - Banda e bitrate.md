@@ -14,6 +14,7 @@ aliases:
   - "Streaming - Banda e bitrate"
   - "Câmeras - Streaming - Banda e bitrate"
 atualizado: 2026-10-07
+banner: "video streaming network"
 ---
 
 # Câmeras - Streaming - Banda e bitrate

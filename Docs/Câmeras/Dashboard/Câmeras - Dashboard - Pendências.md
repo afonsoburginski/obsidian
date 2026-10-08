@@ -7,6 +7,7 @@ tags:
 aliases:
   - "Câmeras - Dashboard - Pendências"
 atualizado: 2026-10-07
+banner: "dashboard analytics dark"
 ---
 
 # Câmeras - Dashboard - Pendências

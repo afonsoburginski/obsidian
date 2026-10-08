@@ -7,6 +7,7 @@ aliases:
   - "Câmeras - Videowall - Fluxos"
   - "Videowall - Fluxos"
 atualizado: 2026-10-07
+banner: "led video wall display"
 ---
 
 # Câmeras - Videowall - Fluxos

@@ -6,6 +6,7 @@ tags:
 aliases:
   - "Dashboard de câmeras - Fluxos"
 atualizado: 2026-10-07
+banner: "dashboard analytics dark"
 ---
 
 # Câmeras - Dashboard - Fluxos

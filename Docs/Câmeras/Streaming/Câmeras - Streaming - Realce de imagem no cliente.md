@@ -14,6 +14,7 @@ aliases:
   - "Pesquisa - melhoria de imagem e upscale"
   - "Streaming - Realce de imagem no cliente"
 atualizado: 2026-10-07
+banner: "video streaming network"
 ---
 
 # Câmeras - Streaming - Realce de imagem no cliente

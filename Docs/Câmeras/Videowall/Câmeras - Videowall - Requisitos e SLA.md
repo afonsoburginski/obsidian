@@ -13,6 +13,7 @@ aliases:
   - "Módulo de gestión de videowall (contrato)"
   - "Videowall - Requisitos e SLA"
 atualizado: 2026-10-07
+banner: "led video wall display"
 ---
 
 # Câmeras - Videowall - Requisitos e SLA
