@@ -33,7 +33,7 @@ Pré-requisitos: a empresa aprovou a política de dados de placa (LGPD) e defini
    ```
 
 4. **Cadastrar a instância** pela tela, com o IP descrito em [[Analítico - Neural Labs - Arquitetura e estratégias#Qual IP cadastrar]].
-5. **Configurar o equipamento**: Client mode discando para o Attlas na 17000, formato XML completo (não o curto nem o JSON), "Send Image" desligado e um `ComputerID` por servidor.
+5. **Configurar o equipamento**: Client mode discando para o Attlas na 17000, formato XML completo (não o curto; o JSON é aceito, mas só depois de capturar e conferir um quadro real), "Send Image" desligado e um `ComputerID` por servidor.
 6. **Conferir**: o `lastFrameAt` da instância anda e as câmeras do equipamento aparecem em "Aguardando vínculo".
 7. **Vincular as câmeras** pela lista do equipamento ou pelo nome, e acompanhar na página da instância.
 

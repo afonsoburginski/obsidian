@@ -45,7 +45,7 @@ O que vale para o Attlas:
 | Opção | Valor para o Attlas | Por quê |
 | --- | --- | --- |
 | Modo | Client mode | o Attlas só escuta; não disca para o Server mode |
-| Type | `Format XML` | em JSON o Attlas nunca acha o fim do quadro (`</infoplate>`) e derruba a conexão no teto de 2 MiB |
+| Type | `Format XML` | o Attlas aceita JSON também, mas o formato JSON do equipamento não foi capturado; o XML é o formato conferido ([[Analítico - Neural Labs - Payloads e endpoints]]) |
 | Close connection after send | ligado ou desligado | o Attlas não fecha conexão quieta, então os dois funcionam |
 | Send Image | desligado | a imagem em base64 pode passar do teto de 2 MiB |
 

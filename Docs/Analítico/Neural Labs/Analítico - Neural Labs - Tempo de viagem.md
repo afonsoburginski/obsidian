@@ -106,7 +106,7 @@ Ele é a regra que o Attlas deve seguir. Onde o Attlas diverge, e a posição re
 | Na releitura, ficar com a de maior confiança | fica com a primeira | |
 | Descartar leitura de confiança baixa | `LPR_MIN_CONFIDENCE` é opcional e fica desligada: toda leitura conta | o documento deixa o limiar para calibrar em campo |
 | Resultado do intervalo guardado para sempre | a retenção apaga também o resultado | registrado no documento |
-| Trajeto completo (soma de trechos e ponta a ponta) e porcentagem de emparelhamento | só trecho a trecho | |
+| Trajeto completo (soma de trechos e ponta a ponta) e porcentagem de emparelhamento | soma das pernas como valor principal, com série de 30 min; ponta a ponta e porcentagem de emparelhamento não existem | a regra da soma está em [[Analítico - Neural Labs - Payloads e endpoints#Como o total é calculado]] |
 
 ## Pendências
 

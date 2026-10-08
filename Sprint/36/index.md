@@ -67,6 +67,7 @@ Brasília.
 | S36-14 | [[S36-14 - Infraestrutura - Ambientes - Arquivos de ambiente padronizados e sem backup com segredo\|Arquivos de ambiente padronizados e sem backup com segredo]] | `[Infra]` | - | #5998, #6146 | #5998 mergeada (06/10); #6146 aberta |
 | S36-15 | [[S36-15 - Câmeras - Detalhe da câmera - Rótulos dos Perfis de Mídia e ajuda no token da origem\|Rótulos dos Perfis de Mídia e ajuda no token da origem]] | `[Front]` | - | #6006 | mergeada (07/10); atende parte da issue 5977, que segue aberta |
 | S36-16 | [[S36-16 - Analítico - Separação de serviços - O ms-video-analytics sem as sobras do pipeline removido\|O ms-video-analytics sem as sobras do pipeline removido]] | `[Back]` | - | #6147 | **aberta**, sem review |
+| S36-17 | [[S36-17 - Analítico - Neural Labs - Leitura de placas de ponta a ponta até o trajeto do painel\|Neural Labs de ponta a ponta: socket aceita JSON e o LPR chega no trajeto do painel]] | `[Full]` | - | #6225 | **aberta** (07/10), aguardando CI e review |
 
 **14 de 16 tasks com todas as PRs mergeadas.** A S36-14 tem uma de duas, e a S36-16 está aberta. Das
 issues que as PRs atacam, seis estão fechadas (1875, 5255, 5257, 5978, 5988 e 5999); a 5469 foi reaberta

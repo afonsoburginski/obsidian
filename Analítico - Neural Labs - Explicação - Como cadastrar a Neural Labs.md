@@ -51,7 +51,7 @@ o aviso é "Já existe uma instância Neural Labs cadastrada com este endereço 
 No NEURAL SERVER, configurar o envio para o Attlas:
 
 - **Client mode**, com o endereço do Attlas e a **porta 17000**.
-- **XML completo** (não o "light weight" nem o JSON).
+- **XML completo** (não o "light weight"). O JSON também é aceito, mas o XML é o formato já conferido.
 - **Send Image desligado**: a imagem deixa a mensagem grande demais.
 - Se houver mais de um servidor da Neural Labs saindo pelo mesmo roteador, cada um com um `ComputerID`
   diferente.

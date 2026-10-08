@@ -26,6 +26,7 @@ fornecedor.
 
 | Nota | Abra quando |
 | --- | --- |
+| [[Analítico - Neural Labs - Payloads e endpoints]] | **comece por aqui**: o que o equipamento manda (XML e JSON), as rotas, a medição do trajeto que a tela recebe, as variáveis e o teste de ponta a ponta |
 | [[Analítico - Neural Labs - Arquitetura e estratégias]] | precisa saber onde mora cada peça, as rotas, as tabelas, as variáveis e as métricas |
 | [[Analítico - Neural Labs - Pendências]] | quer saber o que falta na integração: decisões da empresa, primeira captura real, perguntas ao fornecedor e ajustes de produto |
 | [[Analítico - Neural Labs - Runbook]] | vai ligar um NEURAL SERVER real: ambiente, porta, cadastro e conferência |

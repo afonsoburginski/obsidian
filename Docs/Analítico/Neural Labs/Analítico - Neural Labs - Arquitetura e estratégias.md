@@ -92,7 +92,8 @@ cabeçalho `System-Id`.
 | `GET /api/internal/lpr/camera-mappings` | `ms-video-analytics` | vínculos do Sistema, em todas as instâncias |
 | `GET /api/internal/lpr/camera-mappings/read-activity` | `ms-video-analytics` | última leitura e leituras da última hora de cada vínculo do Sistema |
 | `GET /api/internal/lpr/segments/{segmentId}/measurement` | `ms-video-analytics` | medição de um trecho ([[Analítico - Neural Labs - Tempo de viagem]]) |
-| `GET /api/internal/lpr/journeys/{journeyId}/measurement` | `ms-video-analytics` | medição de um Trajeto, trecho a trecho |
+| `GET /api/internal/lpr/journeys/{journeyId}/measurement` | `ms-video-analytics` | medição de um Trajeto, trecho a trecho e o total pela soma das pernas |
+| `GET /api/internal/lpr/journeys/{journeyId}/measurement-series` | `ms-video-analytics` | série de 30 min do total do Trajeto, no eixo da fonte externa |
 | `POST /api/internal/lpr/journeys/{journeyId}/sync` | `ms-video-analytics` | sincroniza na hora os trechos de um Trajeto |
 | `GET /api/internal/cameras/neural-labs/auto-link-candidates?camName=` | `ms-cameras` | candidatas do vínculo automático, em todos os Sistemas |
 | `POST /api/internal/cameras/{cameraId}/lpr-observations` | `ms-cameras` | relato da evidência LPR de uma câmera |
@@ -264,8 +265,9 @@ dúvida, deixar o equipamento discar e ler o IP no log `neural_lpr_connection_re
 
 - **Servidores atrás do mesmo NAT** chegam com o mesmo IP, que só uma instância pode ter. Nesse caso cada
   servidor precisa de `ComputerID` diferente.
-- **Formato JSON** na tela "Sending Connection": o Attlas nunca acha o fim do quadro (`</infoplate>`) e
-  derruba a conexão no teto de 2 MiB.
+- **Formato JSON** na tela "Sending Connection": o Attlas aceita, com ou sem o cabeçalho `NEURAL`, mas o
+  formato real do equipamento ainda não foi capturado. O XML completo segue como a configuração
+  recomendada até a captura ([[Analítico - Neural Labs - Payloads e endpoints]]).
 - **"Send Image" ligado**: a imagem em base64 pode passar do teto de 2 MiB e derrubar a conexão.
 - **XML curto** (`SendLigthWeigthXML = True`): toda leitura é recusada como `missing_field`.
 - **Trocar `LPR_FINGERPRINT_KEY`** faz as leituras de antes e de depois deixarem de parear.

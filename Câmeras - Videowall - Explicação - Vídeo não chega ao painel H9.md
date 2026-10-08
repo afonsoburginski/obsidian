@@ -28,16 +28,15 @@ rede entre a placa de vídeo, em Quito, e o servidor do Attlas, não na tela do 
 
 Exemplo: o operador monta no VMS uma cena com quatro câmeras e clica em "Enviar ao painel".
 
-| Passo | O que acontece | Funciona hoje |
-| --- | --- | --- |
-| 1 | O servidor do Attlas (dev.v2) manda os comandos ao H9, em `10.200.0.51`, porta `8000`, pelo túnel VPN até Quito | Sim |
-| 2 | Para cada uma das quatro câmeras, o H9 recebe uma fonte com o endereço do vídeo no servidor do Attlas, no formato `rtsp://3.15.199.101:8554/<caminho>`. O endereço é sempre do servidor, nunca da câmera | Sim |
-| 3 | O H9 abre na tela uma janela por câmera, já ligada à fonte | Sim |
-| 4 | A placa de vídeo do H9 conecta no endereço da fonte e puxa o vídeo do servidor | Não |
-| 5 | Cada janela mostra o vídeo da sua câmera | Não, porque depende do passo 4 |
+| Passo | O que acontece                                                                                                                                                                                           | Funciona hoje                  |
+| ----- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------ |
+| 1     | O servidor do Attlas (dev.v2) manda os comandos ao H9, em `10.200.0.51`, porta `8000`, pelo túnel VPN até Quito                                                                                          | Sim                            |
+| 2     | Para cada uma das quatro câmeras, o H9 recebe uma fonte com o endereço do vídeo no servidor do Attlas, no formato `rtsp://3.15.199.101:8554/<caminho>`. O endereço é sempre do servidor, nunca da câmera | Sim                            |
+| 3     | O H9 abre na tela uma janela por câmera, já ligada à fonte                                                                                                                                               | Sim                            |
+| 4     | A placa de vídeo do H9 conecta no endereço da fonte e puxa o vídeo do servidor                                                                                                                           | Não                            |
+| 5     | Cada janela mostra o vídeo da sua câmera                                                                                                                                                                 | Não, porque depende do passo 4 |
 
-O mesmo vale para o espelho da tela do operador: o Attlas cria a fonte e a janela, e a placa precisaria buscar
-o vídeo da tela no servidor.
+O mesmo vale para o espelho da tela do operador: o Attlas cria a fonte e a janela, e a placa precisaria buscar o vídeo da tela no servidor.
 
 Na tela do Attlas, o palco do painel não mostra o vídeo das telas espelhadas quando o painel é o H9 real; ele
 mostra só os retângulos. Isso é comportamento normal da tela e não indica falha.

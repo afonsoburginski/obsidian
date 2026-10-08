@@ -35,6 +35,7 @@ um Resumo, que já responde o essencial. Para achar algo rápido, use a tabela "
 | O que falta no Analítico | [[Analítico - Pendências]] |
 | Operar o analítico embarcado na câmera | [[Analítico - Runbook - Embarcado]] |
 | Integração com a Neural Labs (leitura de placa) | [[Analítico - Neural Labs - Arquitetura e estratégias]] |
+| Neural Labs: payloads, rotas e teste de ponta a ponta | [[Analítico - Neural Labs - Payloads e endpoints]] |
 | O que o cliente exige | [[Processo - Edital do cliente]] |
 | Como nomear uma nota ou uma task | [[Processo - Convenção de nomes]] |
 | Como escrever nota, PR ou review | [[Processo - Convenções de escrita]] |

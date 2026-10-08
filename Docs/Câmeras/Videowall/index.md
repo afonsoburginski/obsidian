@@ -31,7 +31,9 @@ chega ao painel, como explica [[Câmeras - Videowall - Explicação - Vídeo nã
 | --- | --- |
 | [[Câmeras - Videowall - Arquitetura e estratégias]] | precisa saber onde está cada peça, as rotas, os tópicos, as tabelas, o transporte do espelho, a escrita no equipamento, o equipamento de Quito, a rede até ele e as armadilhas |
 | [[Câmeras - Videowall - Fluxos]] | precisa do passo a passo: cadastrar processador, espelhar, liberar, projetar cena, plano de resposta, grupos, rotação, brilho e leitura de estado |
-| [[Câmeras - Videowall - Requisitos e SLA]] | precisa da cláusula 16.13 literal, das obrigações e do que o código entrega, das leituras registradas, da precedência na parede ou de uma variável de ambiente |
+|| [[Câmeras - Videowall - Requisitos e SLA]] | precisa da cláusula 16.13 literal, das obrigações e do que o código entrega, das leituras registradas, da precedência na parede ou de uma variável de ambiente |
+| [[Câmeras - Videowall - Como o videowall funciona de ponta a ponta]] | precisa entender o fluxo completo, se o mosaico vai direto ao painel, competição entre computadores, limites de fontes simultâneas |
+| [[Câmeras - Videowall - Open API e hardware do H9]] | precisa dos limites de decodificação do card IP, endpoints da Open API com screenshots, specs do chassi, comportamento observado no H9 real |
 
 ## Explicações para usuário
 
