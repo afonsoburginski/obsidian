@@ -1,0 +1,9 @@
+{
+  "pinned": [
+    "file-explorer:move-file",
+    "app:toggle-ribbon",
+    "app:delete-file",
+    "workspace:edit-file-title",
+    "outline:open"
+  ]
+}

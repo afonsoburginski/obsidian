@@ -1,5 +1,4 @@
 {
-  "folder": "Reports",
-  "format": "YYYY-MM-DD",
-  "template": "Reports/Report diario"
+  "folder": "Templates",
+  "autorun": false
 }
