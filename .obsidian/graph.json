@@ -1,107 +1,22 @@
 {
-  "collapse-filter": true,
+  "collapse-filter": false,
   "search": "",
-  "showTags": true,
-  "showAttachments": true,
+  "showTags": false,
+  "showAttachments": false,
   "hideUnresolved": false,
   "showOrphans": true,
-  "collapse-color-groups": false,
-  "colorGroups": [
-    {
-      "query": "path:\"Docs/Câmeras/Videowall\"",
-      "color": {
-        "a": 1,
-        "rgb": 16106215
-      }
-    },
-    {
-      "query": "path:\"Docs/Câmeras/VMS\"",
-      "color": {
-        "a": 1,
-        "rgb": 7653356
-      }
-    },
-    {
-      "query": "file:.excalidraw",
-      "color": {
-        "a": 1,
-        "rgb": 16376495
-      }
-    },
-    {
-      "query": "path:\"Docs/Câmeras\" -path:\"Docs/Câmeras/VMS\" -path:\"Docs/Câmeras/Videowall\" -file:.excalidraw",
-      "color": {
-        "a": 1,
-        "rgb": 9024762
-      }
-    },
-    {
-      "query": "path:\"Docs/Processo\"",
-      "color": {
-        "a": 1,
-        "rgb": 9757397
-      }
-    },
-    {
-      "query": "path:\"Docs/Infraestrutura\"",
-      "color": {
-        "a": 1,
-        "rgb": 1660626
-      }
-    },
-    {
-      "query": "path:\"Docs\" -path:\"Docs/Câmeras\" -path:\"Docs/Processo\" -path:\"Docs/Infraestrutura\"",
-      "color": {
-        "a": 1,
-        "rgb": 11845374
-      }
-    },
-    {
-      "query": "path:\"Sprint/26\"",
-      "color": {
-        "a": 1,
-        "rgb": 13346551
-      }
-    },
-    {
-      "query": "path:\"Sprint\" -path:\"Sprint/26\"",
-      "color": {
-        "a": 1,
-        "rgb": 15442092
-      }
-    },
-    {
-      "query": "path:\"Reports\"",
-      "color": {
-        "a": 1,
-        "rgb": 7106694
-      }
-    },
-    {
-      "query": "path:\"Templates\"",
-      "color": {
-        "a": 1,
-        "rgb": 16113884
-      }
-    },
-    {
-      "query": "file:.png OR file:.canvas",
-      "color": {
-        "a": 1,
-        "rgb": 16429959
-      }
-    }
-  ],
-  "collapse-display": false,
-  "showArrow": true,
-  "textFadeMultiplier": -0.2,
-  "nodeSizeMultiplier": 0.598781907052525,
-  "lineSizeMultiplier": 0.128132516098999,
-  "collapse-forces": false,
-  "centerStrength": 0.0963612382651874,
-  "repelStrength": 15.0886272586052,
-  "linkStrength": 0.452866785631158,
-  "linkDistance": 100,
-  "scale": 0.10116538843064356,
+  "collapse-color-groups": true,
+  "colorGroups": [],
+  "collapse-display": true,
+  "showArrow": false,
+  "textFadeMultiplier": 0,
+  "nodeSizeMultiplier": 1,
+  "lineSizeMultiplier": 1,
+  "collapse-forces": true,
+  "centerStrength": 0.518713248970312,
+  "repelStrength": 10,
+  "linkStrength": 1,
+  "linkDistance": 250,
+  "scale": 1.3878926147019293,
   "close": true
 }

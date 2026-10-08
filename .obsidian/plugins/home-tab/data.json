@@ -24,8 +24,24 @@
   "unresolvedLinks": false,
   "recentFilesStore": [
     {
-      "filepath": "Sprint/26/S26-04 - Câmeras - Eventos, incidentes e alarmes - Validação E2E de dados de eventos.md",
-      "timestamp": 1791483050959
+      "filepath": "Docs/Câmeras/Eventos, incidentes e alarmes/Câmeras - Eventos, incidentes e alarmes - Pendências.md",
+      "timestamp": 1791483389422
+    },
+    {
+      "filepath": "Docs/Câmeras/Eventos, incidentes e alarmes/Câmeras - Eventos, incidentes e alarmes - Diagrama.excalidraw.md",
+      "timestamp": 1791483388581
+    },
+    {
+      "filepath": "Docs/Câmeras/Eventos, incidentes e alarmes/Câmeras - Eventos, incidentes e alarmes - Catálogo e criticidade.md",
+      "timestamp": 1791483387023
+    },
+    {
+      "filepath": "Docs/Câmeras/Eventos, incidentes e alarmes/Câmeras - Eventos, incidentes e alarmes - Fluxos.md",
+      "timestamp": 1791483385329
+    },
+    {
+      "filepath": "Sprint/36/S36-06 - Infraestrutura - Ambientes - A borda na frente do Kong para os streams de tempo real.md",
+      "timestamp": 1791483378418
     }
   ],
   "bookmarkedFileStore": [],

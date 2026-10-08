@@ -1,23 +1,17 @@
 {
-  "theme": "obsidian",
-  "accentColor": "#4a7aee",
-  "interfaceFontFamily": "",
-  "textFontFamily": "",
-  "baseFontSizeAction": true,
-  "baseFontSize": 15,
-  "translucency": true,
-  "cssTheme": "Minimal",
-  "nativeMenus": false,
+  "cssTheme": "Border",
+  "accentColor": "#2788d3",
+  "textFontFamily": "Inter,Lucida Console,Arial,Courier New,Consolas,Source Code Pro",
+  "baseFontSize": 18,
+  "baseFontSizeAction": false,
   "enabledCssSnippets": [
     "galaxy-graph",
-    "liquid-glass",
-    "attlas-blue",
-    "custom-checkboxes",
-    "sleek-callouts",
-    "timeline-callout",
-    "code-language-label",
-    "faded-completed-tasks",
-    "heading-indicators",
-    "task-priorities"
-  ]
+    "max-width"
+  ],
+  "nativeMenus": false,
+  "showViewHeader": true,
+  "interfaceFontFamily": "Inter,Segoe Print,MV Boli,Source Code Pro,Segoe UI,Gill Sans",
+  "theme": "obsidian",
+  "showRibbon": true,
+  "translucency": false
 }

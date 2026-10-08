@@ -1,243 +1,374 @@
 {
-  "choices": [],
+  "choices": [
+    {
+      "id": "37c580e5-6b24-47e6-832e-84c0ec7b8765",
+      "name": "📥 inbox",
+      "type": "Template",
+      "command": true,
+      "templatePath": "x_⚙️Constants/🔧templates/🗓️ Date_Time.md",
+      "fileNameFormat": {
+        "enabled": false,
+        "format": "{{date}}"
+      },
+      "folder": {
+        "enabled": true,
+        "folders": [
+          "_📥 inbox"
+        ],
+        "chooseWhenCreatingNote": false,
+        "createInSameFolderAsActiveFile": false,
+        "chooseFromSubfolders": false
+      },
+      "appendLink": false,
+      "openFileInNewTab": {
+        "enabled": false,
+        "direction": "horizontal",
+        "focus": true
+      },
+      "openFile": true,
+      "openFileInMode": "default",
+      "fileExistsMode": "Increment the file name",
+      "setFileExistsBehavior": false
+    },
+    {
+      "id": "1286b094-dc3d-4ee9-b523-c8a13f321601",
+      "name": "🚀 Weekly reset",
+      "type": "Template",
+      "command": true,
+      "templatePath": "x_⚙️Constants/🔧templates/Weekly reset.md",
+      "fileNameFormat": {
+        "enabled": true,
+        "format": "weekly-reset"
+      },
+      "folder": {
+        "enabled": true,
+        "folders": [
+          "_📥 Inbox"
+        ],
+        "chooseWhenCreatingNote": false,
+        "createInSameFolderAsActiveFile": false,
+        "chooseFromSubfolders": false
+      },
+      "appendLink": false,
+      "openFileInNewTab": {
+        "enabled": false,
+        "direction": "vertical",
+        "focus": false
+      },
+      "openFile": true,
+      "openFileInMode": "default",
+      "fileExistsMode": "Increment the file name",
+      "setFileExistsBehavior": true
+    },
+    {
+      "id": "e517c72e-6595-4609-8119-68b1cb4bb43f",
+      "name": "✔️ New day",
+      "type": "Template",
+      "command": true,
+      "templatePath": "x_⚙️Constants/🔧templates/✔️ New day.md",
+      "fileNameFormat": {
+        "enabled": true,
+        "format": "{{date}}"
+      },
+      "folder": {
+        "enabled": true,
+        "folders": [
+          "🥳 Life/✔️ Daily work task-lists"
+        ],
+        "chooseWhenCreatingNote": false,
+        "createInSameFolderAsActiveFile": false,
+        "chooseFromSubfolders": false
+      },
+      "appendLink": false,
+      "openFileInNewTab": {
+        "enabled": false,
+        "direction": "vertical",
+        "focus": true
+      },
+      "openFile": true,
+      "openFileInMode": "default",
+      "fileExistsMode": "Append to the bottom of the file",
+      "setFileExistsBehavior": true
+    },
+    {
+      "id": "4ae9964a-5e14-4f4a-afff-5bafa6390421",
+      "name": "🧩 Miscellaneous",
+      "type": "Template",
+      "command": true,
+      "templatePath": "x_⚙️Constants/🔧templates/🗓️ Date_Time.md",
+      "fileNameFormat": {
+        "enabled": false,
+        "format": ""
+      },
+      "folder": {
+        "enabled": true,
+        "folders": [
+          "🧩 Miscellaneous"
+        ],
+        "chooseWhenCreatingNote": false,
+        "createInSameFolderAsActiveFile": false,
+        "chooseFromSubfolders": false
+      },
+      "appendLink": false,
+      "openFileInNewTab": {
+        "enabled": false,
+        "direction": "vertical",
+        "focus": true
+      },
+      "openFile": true,
+      "openFileInMode": "default",
+      "fileExistsMode": "Increment the file name",
+      "setFileExistsBehavior": false
+    }
+  ],
+  "macros": [
+    {
+      "name": "test macro",
+      "id": "242374bc-9e13-460b-8330-bb5c55005438",
+      "commands": [
+        {
+          "name": "Untitled Capture Choice",
+          "type": "NestedChoice",
+          "id": "38590a0e-7ec8-4657-a0b6-a9ffbf6f22ff",
+          "choice": {
+            "id": "2201de2b-2d9c-48d5-9b4e-a37491c7a067",
+            "name": "Untitled Capture Choice",
+            "type": "Capture",
+            "command": false,
+            "appendLink": false,
+            "captureTo": "",
+            "captureToActiveFile": false,
+            "createFileIfItDoesntExist": {
+              "enabled": false,
+              "createWithTemplate": false,
+              "template": ""
+            },
+            "format": {
+              "enabled": false,
+              "format": ""
+            },
+            "insertAfter": {
+              "enabled": false,
+              "after": "",
+              "insertAtEnd": false,
+              "considerSubsections": false,
+              "createIfNotFound": false,
+              "createIfNotFoundLocation": "top"
+            },
+            "prepend": false,
+            "task": false,
+            "openFileInNewTab": {
+              "enabled": false,
+              "direction": "vertical",
+              "focus": true
+            },
+            "openFile": false,
+            "openFileInMode": "default"
+          }
+        },
+        {
+          "name": "Untitled Capture Choice",
+          "type": "NestedChoice",
+          "id": "9d10343a-511f-4d48-a0ba-b09048a47d55",
+          "choice": {
+            "id": "0d2c6545-4fcf-4684-ac34-f46f1dad52ab",
+            "name": "Untitled Capture Choice",
+            "type": "Capture",
+            "command": false,
+            "appendLink": false,
+            "captureTo": "",
+            "captureToActiveFile": false,
+            "createFileIfItDoesntExist": {
+              "enabled": false,
+              "createWithTemplate": false,
+              "template": ""
+            },
+            "format": {
+              "enabled": false,
+              "format": ""
+            },
+            "insertAfter": {
+              "enabled": false,
+              "after": "",
+              "insertAtEnd": false,
+              "considerSubsections": false,
+              "createIfNotFound": false,
+              "createIfNotFoundLocation": "top"
+            },
+            "prepend": false,
+            "task": false,
+            "openFileInNewTab": {
+              "enabled": false,
+              "direction": "vertical",
+              "focus": true
+            },
+            "openFile": false,
+            "openFileInMode": "default"
+          }
+        },
+        {
+          "name": "Untitled Template Choice",
+          "type": "NestedChoice",
+          "id": "5f00a8ff-e515-4c1e-9d4c-0a6b412c12cf",
+          "choice": {
+            "id": "5df6dece-1a82-4311-a0c9-c76bad4ab095",
+            "name": "Untitled Template Choice",
+            "type": "Template",
+            "command": false,
+            "templatePath": "",
+            "fileNameFormat": {
+              "enabled": false,
+              "format": ""
+            },
+            "folder": {
+              "enabled": false,
+              "folders": [],
+              "chooseWhenCreatingNote": false,
+              "createInSameFolderAsActiveFile": false,
+              "chooseFromSubfolders": false
+            },
+            "appendLink": false,
+            "openFileInNewTab": {
+              "enabled": false,
+              "direction": "vertical",
+              "focus": true
+            },
+            "openFile": false,
+            "openFileInMode": "default",
+            "fileExistsMode": "Increment the file name",
+            "setFileExistsBehavior": false
+          }
+        },
+        {
+          "name": "Untitled Template Choice",
+          "type": "NestedChoice",
+          "id": "e930f2fc-d783-48dd-907a-899b536a7d1f",
+          "choice": {
+            "id": "c1974404-d4a2-4ea4-acb8-c54aebf6bc1c",
+            "name": "Untitled Template Choice",
+            "type": "Template",
+            "command": false,
+            "templatePath": "",
+            "fileNameFormat": {
+              "enabled": false,
+              "format": ""
+            },
+            "folder": {
+              "enabled": false,
+              "folders": [],
+              "chooseWhenCreatingNote": false,
+              "createInSameFolderAsActiveFile": false,
+              "chooseFromSubfolders": false
+            },
+            "appendLink": false,
+            "openFileInNewTab": {
+              "enabled": false,
+              "direction": "vertical",
+              "focus": true
+            },
+            "openFile": false,
+            "openFileInMode": "default",
+            "fileExistsMode": "Increment the file name",
+            "setFileExistsBehavior": false
+          }
+        },
+        {
+          "name": "Open settings",
+          "type": "Obsidian",
+          "id": "9ef41495-8853-45ca-9490-43cd2b3d5b47",
+          "commandId": "app:open-settings"
+        },
+        {
+          "name": "Copy",
+          "type": "EditorCommand",
+          "id": "bbd547cc-39a2-4b7f-9fb6-90f619528780",
+          "editorCommandType": "Copy"
+        },
+        {
+          "name": "axios-utils",
+          "type": "UserScript",
+          "id": "fdf5a03a-40f0-4123-8c1f-10a5c4ed448f",
+          "path": "🧑‍💻 Web Development/📔 Old web-development-notes/frontEnd/react-query/utils/axios-utils.js",
+          "settings": {}
+        },
+        {
+          "name": "inbox",
+          "type": "Choice",
+          "id": "c7f0161e-84e1-4a21-a001-32bc8f4dfa3d",
+          "choiceId": "37c580e5-6b24-47e6-832e-84c0ec7b8765"
+        }
+      ],
+      "runOnStartup": false
+    }
+  ],
   "inputPrompt": "single-line",
-  "persistInputPromptDrafts": true,
-  "useSelectionAsCaptureValue": true,
-  "namePastedImagesAfterNoteTitle": false,
-  "searchNestedChoices": true,
-  "templateFolderLauncherRow": "bottom",
   "devMode": false,
-  "templateFolderPaths": [],
-  "announceUpdates": "major",
-  "version": "2.32.0",
-  "globalVariables": {},
-  "onePageInputEnabled": false,
+  "templateFolderPath": "x_⚙️Constants/🔧templates",
+  "announceUpdates": true,
+  "version": "1.11.0",
   "disableOnlineFeatures": true,
-  "enableUriCallbacks": false,
-  "enableRibbonIcon": false,
-  "showCaptureNotification": true,
-  "showInputCancellationNotification": false,
-  "enableTemplatePropertyTypes": false,
-  "dateAliases": {
-    "t": "today",
-    "tm": "tomorrow",
-    "yd": "yesterday",
-    "nw": "next week",
-    "nm": "next month",
-    "ny": "next year",
-    "lw": "last week",
-    "lm": "last month",
-    "ly": "last year"
-  },
-  "showDateCalendar": true,
+  "enableRibbonIcon": true,
   "ai": {
     "defaultModel": "Ask me",
-    "defaultSystemPrompt": "As an AI assistant within Obsidian, your primary goal is to help users manage their ideas and knowledge more effectively. Format your responses using Markdown syntax. Please use the [[Obsidian]] link format. You can write aliases for the links by writing [[Obsidian|the alias after the pipe symbol]]. To use mathematical notation, use LaTeX syntax. LaTeX syntax for larger equations should be on separate lines, surrounded with double dollar signs ($$). You can also inline math expressions by wrapping it in $ symbols. For example, use $$w_{ij}^{\\text{new}}:=w_{ij}^{\\text{current}}+\\eta\\cdot\\delta_j\\cdot x_{ij}$$ on a separate line, but you can write \"($\\eta$ = learning rate, $\\delta_j$ = error term, $x_{ij}$ = input)\" inline.",
+    "defaultSystemPrompt": "As an AI assistant within Obsidian, your primary goal is to help users manage their ideas and knowledge more effectively. Format your responses using Markdown syntax. Please use the [[Obsidian]] link format. You can write aliases for the links by writing [[Obsidian|the alias after the pipe symbol]]. To use mathematical notation, use LaTeX syntax. LaTeX syntax for larger equations should be on separate lines, surrounded with double dollar signs ($$). You can also inline math expressions by wrapping it in $ symbols. For example, use $$w_{ij}^{\text{new}}:=w_{ij}^{\text{current}}+etacdotdelta_jcdot x_{ij}$$ on a separate line, but you can write \"($eta$ = learning rate, $delta_j$ = error term, $x_{ij}$ = input)\" inline.",
     "promptTemplatesFolderPath": "",
     "showAssistant": true,
     "providers": [
       {
-        "id": "openai",
         "name": "OpenAI",
         "endpoint": "https://api.openai.com/v1",
-        "kind": "openai",
         "apiKey": "",
         "models": [
           {
-            "name": "gpt-6-sol",
-            "maxTokens": 1050000,
-            "maxOutputTokens": 128000,
-            "supportsTemperature": false
+            "name": "text-davinci-003",
+            "maxTokens": 4096
           },
           {
-            "name": "gpt-6-luna",
-            "maxTokens": 1050000,
-            "maxOutputTokens": 128000,
-            "supportsTemperature": false
+            "name": "gpt-3.5-turbo",
+            "maxTokens": 4096
           },
           {
-            "name": "gpt-6-astra",
-            "maxTokens": 1050000,
-            "maxOutputTokens": 128000,
-            "supportsTemperature": false
+            "name": "gpt-3.5-turbo-16k",
+            "maxTokens": 16384
           },
           {
-            "name": "gpt-5.6-sol",
-            "maxTokens": 1050000,
-            "maxOutputTokens": 128000,
-            "supportsTemperature": false
+            "name": "gpt-3.5-turbo-1106",
+            "maxTokens": 16385
           },
           {
-            "name": "gpt-5.6-luna",
-            "maxTokens": 1050000,
-            "maxOutputTokens": 128000,
-            "supportsTemperature": false
+            "name": "gpt-4",
+            "maxTokens": 8192
           },
           {
-            "name": "gpt-5.6-terra",
-            "maxTokens": 1050000,
-            "maxOutputTokens": 128000,
-            "supportsTemperature": false
+            "name": "gpt-4-32k",
+            "maxTokens": 32768
           },
           {
-            "name": "gpt-5.5",
-            "maxTokens": 1050000,
-            "maxOutputTokens": 128000,
-            "supportsTemperature": false
+            "name": "gpt-4-1106-preview",
+            "maxTokens": 128000
           },
           {
-            "name": "gpt-5.4",
-            "maxTokens": 1050000,
-            "maxOutputTokens": 128000,
-            "supportsTemperature": true
-          },
-          {
-            "name": "gpt-5.4-mini",
-            "maxTokens": 400000,
-            "maxOutputTokens": 128000,
-            "supportsTemperature": true
-          },
-          {
-            "name": "gpt-5.4-nano",
-            "maxTokens": 400000,
-            "maxOutputTokens": 128000,
-            "supportsTemperature": true
-          },
-          {
-            "name": "gpt-4.1",
-            "maxTokens": 1047576,
-            "maxOutputTokens": 32768,
-            "supportsTemperature": true
-          },
-          {
-            "name": "gpt-4.1-mini",
-            "maxTokens": 1047576,
-            "maxOutputTokens": 32768,
-            "supportsTemperature": true
+            "name": "gpt-4-turbo",
+            "maxTokens": 128000
           },
           {
             "name": "gpt-4o",
-            "maxTokens": 128000,
-            "maxOutputTokens": 16384,
-            "supportsTemperature": true
+            "maxTokens": 128000
           },
           {
             "name": "gpt-4o-mini",
-            "maxTokens": 128000,
-            "maxOutputTokens": 16384,
-            "supportsTemperature": true
-          },
-          {
-            "name": "o3",
-            "maxTokens": 200000,
-            "maxOutputTokens": 100000,
-            "supportsTemperature": false
-          },
-          {
-            "name": "o4-mini",
-            "maxTokens": 200000,
-            "maxOutputTokens": 100000,
-            "supportsTemperature": false
+            "maxTokens": 128000
           }
-        ],
-        "autoSyncModels": true,
-        "modelSource": "modelsDev"
-      },
-      {
-        "id": "gemini",
-        "name": "Gemini",
-        "endpoint": "https://generativelanguage.googleapis.com",
-        "kind": "gemini",
-        "apiKey": "",
-        "models": [
-          {
-            "name": "gemini-3.8-flash",
-            "maxTokens": 1048576,
-            "maxOutputTokens": 65536,
-            "supportsTemperature": true
-          },
-          {
-            "name": "gemini-3.7-flash",
-            "maxTokens": 1048576,
-            "maxOutputTokens": 65536,
-            "supportsTemperature": true
-          },
-          {
-            "name": "gemini-3.6-flash",
-            "maxTokens": 1048576,
-            "maxOutputTokens": 65536,
-            "supportsTemperature": true
-          },
-          {
-            "name": "gemini-3.5-flash",
-            "maxTokens": 1048576,
-            "maxOutputTokens": 65536,
-            "supportsTemperature": true
-          },
-          {
-            "name": "gemini-3.5-flash-lite",
-            "maxTokens": 1048576,
-            "maxOutputTokens": 65536,
-            "supportsTemperature": true
-          },
-          {
-            "name": "gemini-3.1-pro-preview",
-            "maxTokens": 1048576,
-            "maxOutputTokens": 65536,
-            "supportsTemperature": true
-          },
-          {
-            "name": "gemini-3.1-flash-lite",
-            "maxTokens": 1048576,
-            "maxOutputTokens": 65536,
-            "supportsTemperature": true
-          },
-          {
-            "name": "gemini-3-flash-preview",
-            "maxTokens": 1048576,
-            "maxOutputTokens": 65536,
-            "supportsTemperature": true
-          },
-          {
-            "name": "gemini-2.5-pro",
-            "maxTokens": 1048576,
-            "maxOutputTokens": 65536,
-            "supportsTemperature": true
-          },
-          {
-            "name": "gemini-2.5-flash",
-            "maxTokens": 1048576,
-            "maxOutputTokens": 65536,
-            "supportsTemperature": true
-          },
-          {
-            "name": "gemini-2.5-flash-lite",
-            "maxTokens": 1048576,
-            "maxOutputTokens": 65536,
-            "supportsTemperature": true
-          }
-        ],
-        "autoSyncModels": true,
-        "modelSource": "modelsDev"
+        ]
       }
-    ],
-    "confirmToolCalls": "destructive"
+    ]
   },
   "migrations": {
+    "migrateToMacroIDFromEmbeddedMacro": true,
     "useQuickAddTemplateFolder": true,
     "incrementFileNameSettingMoveToDefaultBehavior": true,
-    "consolidateFileExistsBehavior": true,
-    "repairTemplateFileExistsBehavior": true,
     "mutualExclusionInsertAfterAndWriteToBottomOfFile": true,
     "setVersionAfterUpdateModalRelease": true,
-    "addDefaultAIProviders": true,
-    "removeMacroIndirection": true,
-    "migrateFileOpeningSettings": true,
-    "backfillFileOpeningDefaults": true,
-    "setProviderModelDiscoveryMode": true,
-    "migrateProviderApiKeysToSecretStorage": true,
-    "migrateToMultipleTemplateFolders": true,
-    "refreshStaleDefaultModelSeeds": true,
-    "pinAiModelRefs": true
+    "addDefaultAIProviders": true
   }
 }

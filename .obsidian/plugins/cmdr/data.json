@@ -1,0 +1,175 @@
+{
+  "confirmDeletion": false,
+  "showAddCommand": false,
+  "debug": false,
+  "editorMenu": [
+    {
+      "id": "workspace:open-in-new-window",
+      "icon": "lucide-maximize",
+      "name": "Open current tab in new window",
+      "mode": "any"
+    },
+    {
+      "id": "markdown:toggle-preview",
+      "icon": "lucide-book-open",
+      "name": "Toggle reading view",
+      "mode": "any"
+    },
+    {
+      "id": "workspace:split-vertical",
+      "icon": "lucide-separator-vertical",
+      "name": "Split right",
+      "mode": "any"
+    }
+  ],
+  "fileMenu": [
+    {
+      "id": "workspace:copy-url",
+      "icon": "lucide-copy",
+      "name": "Copy Obsidian URL",
+      "mode": "any"
+    },
+    {
+      "id": "workspace:close-others",
+      "icon": "lucide-x",
+      "name": "Close all other tabs",
+      "mode": "any"
+    }
+  ],
+  "leftRibbon": [
+    {
+      "id": "workspace:new-tab",
+      "icon": "lucide-square",
+      "name": "New tab",
+      "mode": "desktop"
+    },
+    {
+      "id": "outline:open",
+      "icon": "lucide-list",
+      "name": "Show outline",
+      "mode": "any"
+    },
+    {
+      "id": "file-explorer:open",
+      "icon": "lucide-files",
+      "name": "Show file explorer",
+      "mode": "any"
+    },
+    {
+      "id": "app:go-back",
+      "icon": "lucide-arrow-left",
+      "name": "Navigate back",
+      "mode": "desktop"
+    }
+  ],
+  "rightRibbon": [],
+  "titleBar": [],
+  "statusBar": [
+    {
+      "id": "workspace:next-tab",
+      "icon": "lucide-arrow-right",
+      "name": "Go to next tab",
+      "mode": "desktop"
+    },
+    {
+      "id": "app:toggle-right-sidebar",
+      "icon": "activity",
+      "name": "Toggle right sidebar",
+      "mode": "desktop"
+    },
+    {
+      "id": "app:toggle-left-sidebar",
+      "icon": "toggle-left",
+      "name": "Toggle left sidebar",
+      "mode": "desktop"
+    }
+  ],
+  "pageHeader": [
+    {
+      "id": "app:delete-file",
+      "icon": "lucide-trash-2",
+      "name": "Delete current file",
+      "mode": "any",
+      "color": "#ff2954"
+    },
+    {
+      "id": "workspace:close",
+      "icon": "lucide-x",
+      "name": "Close current tab",
+      "mode": "any"
+    },
+    {
+      "id": "switcher:open",
+      "icon": "lucide-navigation",
+      "name": "Quick switcher: Open quick switcher",
+      "mode": "any"
+    }
+  ],
+  "macros": [
+    {
+      "macro": [
+        {
+          "action": 0,
+          "commandId": "app:toggle-left-sidebar"
+        }
+      ],
+      "name": "Left Sidebar",
+      "icon": "star",
+      "startup": false
+    }
+  ],
+  "explorer": [
+    {
+      "id": "global-search:open",
+      "icon": "lucide-search",
+      "name": "Search: Search in all files",
+      "mode": "any"
+    },
+    {
+      "id": "quickadd:runQuickAdd",
+      "icon": "file-plus-2",
+      "name": "QuickAdd: Run QuickAdd",
+      "mode": "any"
+    },
+    {
+      "id": "quickadd:choice:37c580e5-6b24-47e6-832e-84c0ec7b8765",
+      "icon": "inbox",
+      "name": "Add Note in Inbox ",
+      "mode": "any"
+    },
+    {
+      "id": "workspace:new-tab",
+      "icon": "box-select",
+      "name": "New tab",
+      "mode": "any"
+    }
+  ],
+  "hide": {
+    "statusbar": [],
+    "leftRibbon": [
+      "Open graph view",
+      "Insert template",
+      "Start/stop recording",
+      "Undo close tab",
+      "Templater",
+      "Open quick switcher",
+      "Open command palette"
+    ]
+  },
+  "spacing": "2",
+  "advancedToolbar": {
+    "rowHeight": 30,
+    "rowCount": 2,
+    "spacing": 0,
+    "buttonWidth": 30,
+    "columnLayout": true,
+    "mappedIcons": [
+      {
+        "commandID": "quickadd:runQuickAdd",
+        "iconID": "plus-square"
+      }
+    ],
+    "tooltips": false,
+    "heightOffset": 8
+  }
+}
