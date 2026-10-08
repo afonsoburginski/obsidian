@@ -10,56 +10,110 @@ banner: "https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=1200"
 
 # Sprint Dashboard
 
-Visão consolidada da sprint corrente e histórico, gerada por Dataview.
+Central de operações. Fonte de verdade: este vault. GitHub é input, ClickUp é output.
+
+> [!tip] Sincronizar com GitHub
+> Roda `bash scripts/github-sprint-sync.sh 36 2026-10-05 2026-10-11` para puxar PRs.
+> Ver resultado: [[GitHub Sync Report]]
 
 ## Sprint corrente
 
 ```dataview
 TABLE WITHOUT ID
   file.link AS "Sprint",
-  status AS "Status",
-  sprint AS "Janela"
+  sprint AS "Janela",
+  status AS "Situação"
 FROM "Sprint"
-WHERE contains(tags, "moc")
-SORT file.name DESC
+WHERE contains(tags, "moc") AND contains(tags, "sprint-36")
 LIMIT 1
 ```
 
-## Tasks da sprint corrente (por estado)
-
-### Abertas
-
-```dataview
-TABLE WITHOUT ID
-  file.link AS "Task",
-  natureza AS "Tipo",
-  estado AS "Estado"
-FROM "Sprint/36"
-WHERE estado != null AND !contains(estado, "feita") AND !contains(estado, "mergeada")
-SORT file.name ASC
-```
-
-### Feitas
-
-```dataview
-TABLE WITHOUT ID
-  file.link AS "Task",
-  natureza AS "Tipo",
-  estado AS "Estado"
-FROM "Sprint/36"
-WHERE estado != null AND (contains(estado, "feita") OR contains(estado, "mergeada"))
-SORT file.name ASC
-```
-
-## Histórico de sprints
+## Velocidade (últimas 5 sprints)
 
 ```dataview
 TABLE WITHOUT ID
   file.link AS "Sprint",
   sprint AS "Janela",
-  length(file.outlinks) AS "Links"
+  length(file.outlinks) AS "Tasks"
 FROM "Sprint"
 WHERE contains(tags, "moc")
 SORT file.name DESC
-LIMIT 10
+LIMIT 5
 ```
+
+## Tasks da Sprint 36 — por natureza
+
+### Frontend
+
+```dataview
+TABLE WITHOUT ID
+  file.link AS "Task",
+  estado AS "Estado"
+FROM "Sprint/36"
+WHERE file.name != "index" AND contains(file.outlinks, [[]])
+FLATTEN file.frontmatter AS fm
+WHERE contains(string(file.name), "Front") OR contains(string(file.name), "Câmeras") OR contains(string(file.name), "Detalhe")
+SORT file.name ASC
+LIMIT 20
+```
+
+### Backend
+
+```dataview
+TABLE WITHOUT ID
+  file.link AS "Task",
+  estado AS "Estado"
+FROM "Sprint/36"
+WHERE file.name != "index" AND (contains(string(file.name), "Back") OR contains(string(file.name), "PTZ") OR contains(string(file.name), "Cadastro"))
+SORT file.name ASC
+LIMIT 20
+```
+
+### Infraestrutura
+
+```dataview
+TABLE WITHOUT ID
+  file.link AS "Task",
+  estado AS "Estado"
+FROM "Sprint/36"
+WHERE file.name != "index" AND (contains(string(file.name), "Infra") OR contains(string(file.name), "Ambiente"))
+SORT file.name ASC
+LIMIT 20
+```
+
+### Analítico
+
+```dataview
+TABLE WITHOUT ID
+  file.link AS "Task",
+  estado AS "Estado"
+FROM "Sprint/36"
+WHERE file.name != "index" AND contains(string(file.name), "Anal")
+SORT file.name ASC
+LIMIT 20
+```
+
+## Todas as tasks da Sprint 36
+
+```dataview
+TABLE WITHOUT ID
+  file.link AS "Task",
+  estado AS "Estado",
+  dateformat(file.mtime, "dd/MM") AS "Última edição"
+FROM "Sprint/36"
+WHERE file.name != "index"
+SORT file.name ASC
+```
+
+## Timeline de sprints
+
+> [!timeline] Histórico completo
+> ```dataview
+> TABLE WITHOUT ID
+>   file.link AS "Sprint",
+>   sprint AS "Janela",
+>   length(file.outlinks) AS "Tasks"
+> FROM "Sprint"
+> WHERE contains(tags, "moc")
+> SORT file.name DESC
+> ```

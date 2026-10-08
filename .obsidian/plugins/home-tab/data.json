@@ -24,24 +24,24 @@
   "unresolvedLinks": false,
   "recentFilesStore": [
     {
+      "filepath": "Sprint/26/S26-04 - Câmeras - Eventos, incidentes e alarmes - Validação E2E de dados de eventos.md",
+      "timestamp": 1791482441726
+    },
+    {
+      "filepath": "Sprint/26/S26-03 - Câmeras - Dashboard - Validação E2E de dados.md",
+      "timestamp": 1791482441258
+    },
+    {
+      "filepath": "Sprint/26/S26-02 - Câmeras - Cadastro - Fluxo E2E de cadastro de câmera.md",
+      "timestamp": 1791482440497
+    },
+    {
+      "filepath": "Sprint/26/S26-01 - Câmeras - Dashboard - Interseção na edição, cards de eventos e export do dashboard.md",
+      "timestamp": 1791482439707
+    },
+    {
       "filepath": "Docs/Processo/Processo - Edital do cliente.md",
-      "timestamp": 1791482395909
-    },
-    {
-      "filepath": "Docs/Processo/Processo - Convenções de escrita.md",
-      "timestamp": 1791482394223
-    },
-    {
-      "filepath": "Docs/Processo/Processo - Convenção de nomes.md",
-      "timestamp": 1791482391429
-    },
-    {
-      "filepath": "Docs/Analítico/Neural Labs/Analítico - Neural Labs - Payloads e endpoints.md",
-      "timestamp": 1791482172616
-    },
-    {
-      "filepath": "Docs/Analítico/Neural Labs/Analítico - Neural Labs - Heartbeat e eventos do Orchestrator.md",
-      "timestamp": 1791482169020
+      "timestamp": 1791482437954
     }
   ],
   "bookmarkedFileStore": [],
