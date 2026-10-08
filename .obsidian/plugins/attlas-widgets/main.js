@@ -64,7 +64,6 @@ class WidgetView extends MarkdownRenderChild {
     const iframe = wrapper.createEl('iframe', { cls: 'attlas-widget__frame' });
     this.iframe = iframe;
 
-    iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-popups');
     iframe.setAttribute('loading', 'lazy');
     iframe.setAttribute('title', this.file.basename || 'widget');
     iframe.style.height = `${this.clamp(this.options.height || DEFAULT_HEIGHT)}px`;
@@ -73,7 +72,10 @@ class WidgetView extends MarkdownRenderChild {
     const bust = this.file.stat ? this.file.stat.mtime : Date.now();
     iframe.src = `${resourcePath}${resourcePath.includes('?') ? '&' : '?'}v=${bust}`;
 
-    this.registerDomEvent(iframe, 'load', () => this.pushTheme());
+    this.registerDomEvent(iframe, 'load', () => {
+      this.pushTheme();
+      this.measure();
+    });
     this.messageHandler = (event) => {
       if (!this.iframe || event.source !== this.iframe.contentWindow) return;
       const data = event.data;
@@ -83,6 +85,21 @@ class WidgetView extends MarkdownRenderChild {
     };
     this.registerDomEvent(window, 'message', this.messageHandler);
     this.plugin.register(this.plugin.onThemeChange(() => this.pushTheme()));
+  }
+
+  /* Fallback de altura: se o widget nao publicar widget-resize (arquivo sem o
+     runtime compartilhado), mede o documento do iframe direto. */
+  measure() {
+    if (this.options.height || !this.iframe) return;
+    try {
+      const doc = this.iframe.contentDocument;
+      if (!doc || !doc.body) return;
+      const target = doc.querySelector('.widget-container') || doc.body;
+      const height = this.clamp(Math.ceil(target.getBoundingClientRect().bottom) + 8);
+      if (Number.isFinite(height) && height > MIN_HEIGHT) this.iframe.style.height = `${height}px`;
+    } catch (e) {
+      /* documento cross-origin: a altura fica por conta da mensagem widget-resize */
+    }
   }
 
   clamp(value) {
