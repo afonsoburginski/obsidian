@@ -11,30 +11,34 @@ banner: "https://images.unsplash.com/photo-1556075798-4825dfaaf498?w=1200"
 
 # GitHub Sync Report
 
-Última sincronização: **2026-10-09 13:11**
+Última sincronização: **2026-10-09 15:12**
 Sprint: **36** (2026-10-05 → 2026-10-11)
 
 ## Resumo
 
 | Métrica | Valor |
 | --- | --- |
-| PRs total | 43 |
-| Merged | 38 |
-| Open | 4 |
+| PRs total | 47 |
+| Merged | 39 |
+| Open | 7 |
 | Closed | 1 |
-| Linhas adicionadas | +104410 |
-| Linhas removidas | -22203 |
-| Arquivos tocados | 3109 |
+| Linhas adicionadas | +104583 |
+| Linhas removidas | -22345 |
+| Arquivos tocados | 3137 |
 
 ## PRs da Sprint 36
 
 | # | Título | Estado | Data | +/- |
 | --- | --- | --- | --- | --- |
+| #6604 | fix: painel de edição de automação alinhado ao protótipo | OPEN | 2026-10-09 | +106/-45 |
+| #6603 | fix: detalhe da instância com trilha pelo identificador e legenda de limite só quando há limite | OPEN | 2026-10-09 | +38/-3 |
+| #6602 | fix: painel Saúde da Câmera da grid de conectividade fora do padrão | OPEN | 2026-10-09 | +21/-86 |
+| #6601 | fix: marcador de câmera em contorno nos mapas e ícone de Acionamentos relacionados | OPEN | 2026-10-09 | +8/-8 |
 | #6552 | chore: ship the prisma seed as seed.js in the service images | OPEN | 2026-10-09 | +21/-1 |
 | #6535 | chore: dependabot para npm, imagens docker e github actions | OPEN | 2026-10-09 | +105/-0 |
 | #6474 | feat: atman platform (deploy do attlas sobre argo cd com gitops) | OPEN | 2026-10-08 | +26204/-0 |
 | #6336 | docs: migração do object storage, MinIO na Chainguard e proposta SeaweedFS | MERGED | 2026-10-08 | +312/-27 |
-| #6306 | refactor: analítico sai do ms-cameras e roda só no ms-video-analytics (CROSS-200 passos 10 a 13) | OPEN | 2026-10-08 | +20257/-9776 |
+| #6306 | refactor: analítico sai do ms-cameras e roda só no ms-video-analytics (CROSS-200 passos 10 a 13) | MERGED | 2026-10-09 | +20257/-9776 |
 | #6225 | feat: Neural Labs de ponta a ponta - socket aceita JSON e o LPR chega no trajeto do painel de operação | MERGED | 2026-10-08 | +4575/-465 |
 | #6213 | fix(ms-cameras): ajustes do review da #6171 no outbox de sincronização de câmera | MERGED | 2026-10-07 | +308/-300 |
 | #6212 | fix(ms-cameras): ajustes do review da #6171 no outbox de sincronização de câmera | CLOSED | 2026-10-07 | +233/-216 |
@@ -76,10 +80,13 @@ Sprint: **36** (2026-10-05 → 2026-10-11)
 
 ## Ação necessária (PRs abertas)
 
-- [ ] **#6306** refactor: analítico sai do ms-cameras e roda só no ms-video-analytics (CROSS-200 passos 10 a 13) — aberta em 2026-10-08 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6306))
 - [ ] **#6474** feat: atman platform (deploy do attlas sobre argo cd com gitops) — aberta em 2026-10-08 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6474))
 - [ ] **#6535** chore: dependabot para npm, imagens docker e github actions — aberta em 2026-10-09 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6535))
 - [ ] **#6552** chore: ship the prisma seed as seed.js in the service images — aberta em 2026-10-09 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6552))
+- [ ] **#6601** fix: marcador de câmera em contorno nos mapas e ícone de Acionamentos relacionados — aberta em 2026-10-09 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6601))
+- [ ] **#6602** fix: painel Saúde da Câmera da grid de conectividade fora do padrão — aberta em 2026-10-09 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6602))
+- [ ] **#6603** fix: detalhe da instância com trilha pelo identificador e legenda de limite só quando há limite — aberta em 2026-10-09 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6603))
+- [ ] **#6604** fix: painel de edição de automação alinhado ao protótipo — aberta em 2026-10-09 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6604))
 
 ## Entregues (merged)
 
@@ -121,5 +128,6 @@ Sprint: **36** (2026-10-05 → 2026-10-11)
 - [x] **#6213** fix(ms-cameras): ajustes do review da #6171 no outbox de sincronização de câmera — merged em 2026-10-07
 - [x] **#6225** feat: Neural Labs de ponta a ponta - socket aceita JSON e o LPR chega no trajeto do painel de operação — merged em 2026-10-08
 - [x] **#6336** docs: migração do object storage, MinIO na Chainguard e proposta SeaweedFS — merged em 2026-10-08
+- [x] **#6306** refactor: analítico sai do ms-cameras e roda só no ms-video-analytics (CROSS-200 passos 10 a 13) — merged em 2026-10-09
 
 Gerado automaticamente por `scripts/github-sprint-sync.sh`.
