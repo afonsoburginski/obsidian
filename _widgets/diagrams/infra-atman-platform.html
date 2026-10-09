@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Atman Platform: hub e clusters</title>
+  <link rel="stylesheet" href="../lumi-runtime.css">
+  <link rel="stylesheet" href="../flow.css">
+  <script src="../widget-runtime.js"></script>
+</head>
+<body>
+  <div class="widget-container"></div>
+  <script type="application/json" id="flow-spec">
+{
+  "title": "Atman Platform: hub e clusters",
+  "subtitle": "Plano de controle no hub; plano de dados nos clusters (hub ou cliente pela VPN)",
+  "direction": "TB",
+  "groups": [
+    { "id": "dev", "label": "Plataforma de desenvolvimento" },
+    { "id": "cp", "label": "Plano de controle (hub, EC2 dev)" },
+    { "id": "net", "label": "Rede privada" },
+    { "id": "dp", "label": "Plano de dados" }
+  ],
+  "nodes": [
+    { "id": "console", "label": "Atman Platform", "sub": "tela :8090", "kind": "accent", "group": "dev", "detail": "Deploy, releases, pipelines, ambientes, templates, clusters, observabilidade em tempo real e documentação." },
+    { "id": "ci", "label": "GitHub Actions", "sub": "CI e imagens", "group": "dev" },
+    { "id": "gitops", "label": "Repositório GitOps", "sub": "attlas-gitops", "kind": "store", "group": "cp", "detail": "Fonte da verdade: templates, environments, infra, services, apps, catalog. Hoje local no EC2 (git daemon)." },
+    { "id": "argo", "label": "Argo CD 3.5", "sub": "ApplicationSets", "kind": "accent", "group": "cp", "detail": "Lê o GitOps e aplica nos clusters registrados. Kind attlas no EC2 dev." },
+    { "id": "ts", "label": "Tailscale", "sub": "tailnet da Atman", "group": "net" },
+    { "id": "wg", "label": "WireGuard", "sub": "10.66.0.0/24, UDP 51820", "group": "net" },
+    { "id": "vpn", "label": "VPN do cliente", "sub": "OpenVPN, IPsec", "group": "net" },
+    { "id": "hub", "label": "Cluster do hub", "sub": "attlas-dev e attlas-prod", "group": "dp", "detail": "Ambiente dev completo: 22 serviços com HPA e 41 componentes de infraestrutura com réplica fixa." },
+    { "id": "cli", "label": "RKE2 do cliente", "sub": "data center, ex.: Quito", "group": "dp", "detail": "Criado pelo Terraform do template prod (RKE2 por SSH) e conectado na plataforma com o JSON de registro." }
+  ],
+  "edges": [
+    { "from": "console", "to": "gitops", "label": "commit" },
+    { "from": "ci", "to": "gitops", "label": "catálogo", "dashed": true },
+    { "from": "gitops", "to": "argo" },
+    { "from": "argo", "to": "hub", "label": "in-cluster" },
+    { "from": "argo", "to": "ts" },
+    { "from": "argo", "to": "wg" },
+    { "from": "argo", "to": "vpn" },
+    { "from": "ts", "to": "cli", "label": ":6443" },
+    { "from": "wg", "to": "cli", "label": ":6443" },
+    { "from": "vpn", "to": "cli", "label": ":6443" }
+  ]
+}
+  </script>
+  <script src="../flow.js"></script>
+</body>
+</html>

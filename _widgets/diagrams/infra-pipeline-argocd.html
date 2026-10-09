@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pipeline de CI/CD com Argo CD</title>
+  <link rel="stylesheet" href="../lumi-runtime.css">
+  <link rel="stylesheet" href="../flow.css">
+  <script src="../widget-runtime.js"></script>
+</head>
+<body>
+  <div class="widget-container"></div>
+  <script type="application/json" id="flow-spec">
+{
+  "title": "Pipeline de CI/CD com Argo CD",
+  "subtitle": "GitHub Actions constrói e versiona; a Atman Platform grava no GitOps; o Argo CD aplica",
+  "direction": "LR",
+  "groups": [
+    { "id": "github", "label": "GitHub Actions" },
+    { "id": "registry", "label": "Docker Hub" },
+    { "id": "platform", "label": "Atman Platform" },
+    { "id": "gitops", "label": "Repositório GitOps" },
+    { "id": "argo", "label": "Argo CD" },
+    { "id": "k8s", "label": "Kubernetes" }
+  ],
+  "nodes": [
+    {
+      "id": "pr",
+      "label": "Pull request",
+      "sub": "ci-pr: lint e testes",
+      "group": "github",
+      "detail": "Sem mudança. O ci-pr segue rodando lint, testes e validadores só dos projetos afetados."
+    },
+    {
+      "id": "build",
+      "label": "Merge na develop",
+      "sub": "ci-develop: build dos afetados",
+      "kind": "accent",
+      "group": "github",
+      "detail": "Sem mudança no build: nx affected, pulo por hash de conteúdo e push das imagens :<sha> (e :dev, até o corte do compose)."
+    },
+    {
+      "id": "release",
+      "label": "Release semver",
+      "sub": "planejado: job no CI",
+      "group": "github",
+      "detail": "Calcula a versão de cada serviço pelos commits convencionais, retaga :<sha> como :<versão> e grava a entrada em catalog/<serviço>.yaml. Hoje o catálogo é preenchido por commit no GitOps."
+    },
+    {
+      "id": "sha",
+      "label": "Imagem :<sha>",
+      "sub": "atmanadmin/attlas-<ms>",
+      "kind": "store",
+      "group": "registry",
+      "detail": "Imutável: identifica exatamente o commit."
+    },
+    {
+      "id": "deploy",
+      "label": "Fazer deploy",
+      "sub": "deploy, rollback, promover",
+      "kind": "accent",
+      "group": "platform",
+      "detail": "A tela escolhe serviço, ambiente e release. O botão diz o que vai acontecer: Deploy (versão nova), Rollback (anterior), Promover (versão do dev) ou Reaplicar."
+    },
+    {
+      "id": "catalog",
+      "label": "catalog/<serviço>.yaml",
+      "sub": "releases publicadas",
+      "kind": "store",
+      "group": "gitops",
+      "detail": "Lista de versões semver por serviço: tag (sha), version, título, autor e data."
+    },
+    {
+      "id": "apps",
+      "label": "apps/<ambiente>/<serviço>.yaml",
+      "sub": "image.tag implantada",
+      "kind": "store",
+      "group": "gitops",
+      "detail": "Cada deploy é um commit trocando image.tag: deploy(<env>) ou rollback(<env>), com o usuário como autor."
+    },
+    {
+      "id": "appset",
+      "label": "ApplicationSets",
+      "sub": "ambientes × serviços",
+      "group": "argo",
+      "detail": "attlas (serviços, chart atman-service) e attlas-infra (bancos, filas, gateway, chart atman-infra). Ambiente com autoSync aplica sozinho; manual espera o sync disparado pela plataforma."
+    },
+    {
+      "id": "kdev",
+      "label": "Cluster do hub",
+      "sub": "dev (e prod de avaliação)",
+      "group": "k8s"
+    },
+    {
+      "id": "kcli",
+      "label": "Cluster do cliente",
+      "sub": "via VPN, um por cliente",
+      "group": "k8s"
+    }
+  ],
+  "edges": [
+    { "from": "pr", "to": "build", "label": "merge" },
+    { "from": "build", "to": "sha", "label": "push" },
+    { "from": "release", "to": "catalog", "label": "commit", "dashed": true },
+    { "from": "catalog", "to": "deploy", "label": "lista" },
+    { "from": "deploy", "to": "apps", "label": "commit" },
+    { "from": "apps", "to": "appset" },
+    { "from": "appset", "to": "kdev", "label": "sync automático" },
+    { "from": "appset", "to": "kcli", "label": "sync manual" }
+  ]
+}
+  </script>
+  <script src="../flow.js"></script>
+</body>
+</html>
