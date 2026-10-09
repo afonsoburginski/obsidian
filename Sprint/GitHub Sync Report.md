@@ -11,25 +11,26 @@ banner: "https://images.unsplash.com/photo-1556075798-4825dfaaf498?w=1200"
 
 # GitHub Sync Report
 
-Última sincronização: **2026-10-09 11:10**
+Última sincronização: **2026-10-09 13:11**
 Sprint: **36** (2026-10-05 → 2026-10-11)
 
 ## Resumo
 
 | Métrica | Valor |
 | --- | --- |
-| PRs total | 42 |
+| PRs total | 43 |
 | Merged | 38 |
-| Open | 3 |
+| Open | 4 |
 | Closed | 1 |
-| Linhas adicionadas | +104389 |
-| Linhas removidas | -22202 |
-| Arquivos tocados | 3097 |
+| Linhas adicionadas | +104410 |
+| Linhas removidas | -22203 |
+| Arquivos tocados | 3109 |
 
 ## PRs da Sprint 36
 
 | # | Título | Estado | Data | +/- |
 | --- | --- | --- | --- | --- |
+| #6552 | chore: ship the prisma seed as seed.js in the service images | OPEN | 2026-10-09 | +21/-1 |
 | #6535 | chore: dependabot para npm, imagens docker e github actions | OPEN | 2026-10-09 | +105/-0 |
 | #6474 | feat: atman platform (deploy do attlas sobre argo cd com gitops) | OPEN | 2026-10-08 | +26204/-0 |
 | #6336 | docs: migração do object storage, MinIO na Chainguard e proposta SeaweedFS | MERGED | 2026-10-08 | +312/-27 |
@@ -78,6 +79,7 @@ Sprint: **36** (2026-10-05 → 2026-10-11)
 - [ ] **#6306** refactor: analítico sai do ms-cameras e roda só no ms-video-analytics (CROSS-200 passos 10 a 13) — aberta em 2026-10-08 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6306))
 - [ ] **#6474** feat: atman platform (deploy do attlas sobre argo cd com gitops) — aberta em 2026-10-08 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6474))
 - [ ] **#6535** chore: dependabot para npm, imagens docker e github actions — aberta em 2026-10-09 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6535))
+- [ ] **#6552** chore: ship the prisma seed as seed.js in the service images — aberta em 2026-10-09 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6552))
 
 ## Entregues (merged)
 
