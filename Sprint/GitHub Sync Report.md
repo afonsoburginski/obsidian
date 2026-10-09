@@ -11,32 +11,49 @@ banner: "https://images.unsplash.com/photo-1556075798-4825dfaaf498?w=1200"
 
 # GitHub Sync Report
 
-Última sincronização: **2026-10-09 15:12**
+Última sincronização: **2026-10-09 17:13**
 Sprint: **36** (2026-10-05 → 2026-10-11)
 
 ## Resumo
 
 | Métrica | Valor |
 | --- | --- |
-| PRs total | 47 |
+| PRs total | 64 |
 | Merged | 39 |
-| Open | 7 |
-| Closed | 1 |
-| Linhas adicionadas | +104583 |
-| Linhas removidas | -22345 |
-| Arquivos tocados | 3137 |
+| Open | 23 |
+| Closed | 2 |
+| Linhas adicionadas | +113028 |
+| Linhas removidas | -25096 |
+| Arquivos tocados | 3478 |
 
 ## PRs da Sprint 36
 
 | # | Título | Estado | Data | +/- |
 | --- | --- | --- | --- | --- |
-| #6604 | fix: painel de edição de automação alinhado ao protótipo | OPEN | 2026-10-09 | +106/-45 |
-| #6603 | fix: detalhe da instância com trilha pelo identificador e legenda de limite só quando há limite | OPEN | 2026-10-09 | +38/-3 |
+| #6647 | feat: criar, editar e excluir perfis de mídia | OPEN | 2026-10-09 | +623/-12 |
+| #6646 | fix: provision and drop ms-audit partitions without bind params in DO block | OPEN | 2026-10-09 | +138/-38 |
+| #6642 | chore: remove o workflow de deploy por docker compose | OPEN | 2026-10-09 | +12/-311 |
+| #6640 | fix: estado vazio do Log de Eventos no painel lateral igual ao protótipo | OPEN | 2026-10-09 | +103/-22 |
+| #6622 | fix: linha do tempo do incidente exibe eventos de conectividade da câmera | OPEN | 2026-10-09 | +1271/-222 |
+| #6619 | fix: Reportar ocorrência permite registrar o mesmo evento várias vezes | OPEN | 2026-10-09 | +984/-207 |
+| #6618 | fix: aplicar grupo salvo falha com painel em uso enquanto a tela o indica livre | OPEN | 2026-10-09 | +783/-59 |
+| #6617 | fix: contador de "Todas" não passa mais a contar o resultado filtrado ao selecionar um marcador, inclusive "Não reconhecido" | OPEN | 2026-10-09 | +220/-64 |
+| #6616 | fix: camada Interseções do mapa da Detecção mostra só as interseções com câmera e abre a interseção clicada | OPEN | 2026-10-09 | +474/-45 |
+| #6615 | fix: dashboard de Câmeras alinhado ao protótipo (abas de conectividade, heatmap, rótulos e tooltips) | OPEN | 2026-10-09 | +1503/-980 |
+| #6614 | fix: estado vazio do Log de Eventos igual ao protótipo (reteste da busca da coluna Descrição) | OPEN | 2026-10-09 | +162/-15 |
+| #6613 | fix: janela de expandir o gráfico do ATSPM com título traduzido, gráfico alinhado e dentro da tela | OPEN | 2026-10-09 | +263/-138 |
+| #6609 | fix: detalhe de câmera com identificador inválido mostra "não encontrada" e o botão Editar só aparece com a câmera carregada | OPEN | 2026-10-09 | +161/-92 |
+| #6608 | fix: substituir câmera com estoque vazio deixa o modal sem saída e sem explicação | OPEN | 2026-10-09 | +85/-13 |
+| #6607 | fix: região excluída pela lixeira reaparece ao criar uma nova região | OPEN | 2026-10-09 | +150/-11 |
+| #6606 | fix: Tela de Eventos das câmeras: busca, filtro de câmera e colunas alinhados ao protótipo | OPEN | 2026-10-09 | +148/-239 |
+| #6605 | fix: abas do painel de perfil de mídia divergem do protótipo | OPEN | 2026-10-09 | +1271/-235 |
+| #6604 | fix: painel de edição de automação alinhado ao protótipo | OPEN | 2026-10-09 | +172/-63 |
+| #6603 | fix: detalhe da instância com trilha pelo identificador e legenda de limite só quando há limite | OPEN | 2026-10-09 | +40/-7 |
 | #6602 | fix: painel Saúde da Câmera da grid de conectividade fora do padrão | OPEN | 2026-10-09 | +21/-86 |
-| #6601 | fix: marcador de câmera em contorno nos mapas e ícone de Acionamentos relacionados | OPEN | 2026-10-09 | +8/-8 |
+| #6601 | fix: marcador de câmera em contorno nos mapas e ícone de Acionamentos relacionados | OPEN | 2026-10-09 | +34/-34 |
 | #6552 | chore: ship the prisma seed as seed.js in the service images | OPEN | 2026-10-09 | +21/-1 |
 | #6535 | chore: dependabot para npm, imagens docker e github actions | OPEN | 2026-10-09 | +105/-0 |
-| #6474 | feat: atman platform (deploy do attlas sobre argo cd com gitops) | OPEN | 2026-10-08 | +26204/-0 |
+| #6474 | feat: atman platform (deploy do attlas sobre argo cd com gitops) | CLOSED | 2026-10-08 | +26204/-0 |
 | #6336 | docs: migração do object storage, MinIO na Chainguard e proposta SeaweedFS | MERGED | 2026-10-08 | +312/-27 |
 | #6306 | refactor: analítico sai do ms-cameras e roda só no ms-video-analytics (CROSS-200 passos 10 a 13) | MERGED | 2026-10-09 | +20257/-9776 |
 | #6225 | feat: Neural Labs de ponta a ponta - socket aceita JSON e o LPR chega no trajeto do painel de operação | MERGED | 2026-10-08 | +4575/-465 |
@@ -80,13 +97,29 @@ Sprint: **36** (2026-10-05 → 2026-10-11)
 
 ## Ação necessária (PRs abertas)
 
-- [ ] **#6474** feat: atman platform (deploy do attlas sobre argo cd com gitops) — aberta em 2026-10-08 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6474))
 - [ ] **#6535** chore: dependabot para npm, imagens docker e github actions — aberta em 2026-10-09 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6535))
 - [ ] **#6552** chore: ship the prisma seed as seed.js in the service images — aberta em 2026-10-09 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6552))
 - [ ] **#6601** fix: marcador de câmera em contorno nos mapas e ícone de Acionamentos relacionados — aberta em 2026-10-09 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6601))
 - [ ] **#6602** fix: painel Saúde da Câmera da grid de conectividade fora do padrão — aberta em 2026-10-09 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6602))
 - [ ] **#6603** fix: detalhe da instância com trilha pelo identificador e legenda de limite só quando há limite — aberta em 2026-10-09 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6603))
 - [ ] **#6604** fix: painel de edição de automação alinhado ao protótipo — aberta em 2026-10-09 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6604))
+- [ ] **#6605** fix: abas do painel de perfil de mídia divergem do protótipo — aberta em 2026-10-09 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6605))
+- [ ] **#6606** fix: Tela de Eventos das câmeras: busca, filtro de câmera e colunas alinhados ao protótipo — aberta em 2026-10-09 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6606))
+- [ ] **#6607** fix: região excluída pela lixeira reaparece ao criar uma nova região — aberta em 2026-10-09 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6607))
+- [ ] **#6608** fix: substituir câmera com estoque vazio deixa o modal sem saída e sem explicação — aberta em 2026-10-09 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6608))
+- [ ] **#6609** fix: detalhe de câmera com identificador inválido mostra "não encontrada" e o botão Editar só aparece com a câmera carregada — aberta em 2026-10-09 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6609))
+- [ ] **#6613** fix: janela de expandir o gráfico do ATSPM com título traduzido, gráfico alinhado e dentro da tela — aberta em 2026-10-09 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6613))
+- [ ] **#6614** fix: estado vazio do Log de Eventos igual ao protótipo (reteste da busca da coluna Descrição) — aberta em 2026-10-09 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6614))
+- [ ] **#6615** fix: dashboard de Câmeras alinhado ao protótipo (abas de conectividade, heatmap, rótulos e tooltips) — aberta em 2026-10-09 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6615))
+- [ ] **#6616** fix: camada Interseções do mapa da Detecção mostra só as interseções com câmera e abre a interseção clicada — aberta em 2026-10-09 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6616))
+- [ ] **#6617** fix: contador de "Todas" não passa mais a contar o resultado filtrado ao selecionar um marcador, inclusive "Não reconhecido" — aberta em 2026-10-09 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6617))
+- [ ] **#6618** fix: aplicar grupo salvo falha com painel em uso enquanto a tela o indica livre — aberta em 2026-10-09 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6618))
+- [ ] **#6619** fix: Reportar ocorrência permite registrar o mesmo evento várias vezes — aberta em 2026-10-09 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6619))
+- [ ] **#6622** fix: linha do tempo do incidente exibe eventos de conectividade da câmera — aberta em 2026-10-09 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6622))
+- [ ] **#6640** fix: estado vazio do Log de Eventos no painel lateral igual ao protótipo — aberta em 2026-10-09 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6640))
+- [ ] **#6642** chore: remove o workflow de deploy por docker compose — aberta em 2026-10-09 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6642))
+- [ ] **#6646** fix: provision and drop ms-audit partitions without bind params in DO block — aberta em 2026-10-09 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6646))
+- [ ] **#6647** feat: criar, editar e excluir perfis de mídia — aberta em 2026-10-09 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6647))
 
 ## Entregues (merged)
 
