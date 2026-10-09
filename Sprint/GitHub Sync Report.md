@@ -5,13 +5,13 @@ tags:
   - sprint-36
 aliases:
   - "GitHub Sync"
-atualizado: 2026-10-08
+atualizado: 2026-10-09
 banner: "https://images.unsplash.com/photo-1556075798-4825dfaaf498?w=1200"
 ---
 
 # GitHub Sync Report
 
-Última sincronização: **2026-10-08 23:04**
+Última sincronização: **2026-10-09 01:05**
 Sprint: **36** (2026-10-05 → 2026-10-11)
 
 ## Resumo
@@ -22,15 +22,15 @@ Sprint: **36** (2026-10-05 → 2026-10-11)
 | Merged | 38 |
 | Open | 2 |
 | Closed | 1 |
-| Linhas adicionadas | +83269 |
+| Linhas adicionadas | +96214 |
 | Linhas removidas | -22197 |
-| Arquivos tocados | 2949 |
+| Arquivos tocados | 3009 |
 
 ## PRs da Sprint 36
 
 | # | Título | Estado | Data | +/- |
 | --- | --- | --- | --- | --- |
-| #6474 | feat: attlas deploy sobre argo cd com gitops | OPEN | 2026-10-08 | +5904/-0 |
+| #6474 | feat: attlas deploy sobre argo cd com gitops | OPEN | 2026-10-08 | +18849/-0 |
 | #6336 | docs: migração do object storage, MinIO na Chainguard e proposta SeaweedFS | MERGED | 2026-10-08 | +312/-27 |
 | #6306 | refactor: analítico sai do ms-cameras e roda só no ms-video-analytics (CROSS-200 passos 10 a 13) | OPEN | 2026-10-08 | +19542/-9771 |
 | #6225 | feat: Neural Labs de ponta a ponta - socket aceita JSON e o LPR chega no trajeto do painel de operação | MERGED | 2026-10-08 | +4575/-465 |
