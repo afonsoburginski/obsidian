@@ -11,25 +11,26 @@ banner: "https://images.unsplash.com/photo-1556075798-4825dfaaf498?w=1200"
 
 # GitHub Sync Report
 
-Última sincronização: **2026-10-08 19:02**
+Última sincronização: **2026-10-08 21:03**
 Sprint: **36** (2026-10-05 → 2026-10-11)
 
 ## Resumo
 
 | Métrica | Valor |
 | --- | --- |
-| PRs total | 40 |
+| PRs total | 41 |
 | Merged | 38 |
-| Open | 1 |
+| Open | 2 |
 | Closed | 1 |
-| Linhas adicionadas | +77365 |
+| Linhas adicionadas | +77724 |
 | Linhas removidas | -22197 |
-| Arquivos tocados | 2923 |
+| Arquivos tocados | 2938 |
 
 ## PRs da Sprint 36
 
 | # | Título | Estado | Data | +/- |
 | --- | --- | --- | --- | --- |
+| #6474 | chore: base de deploy em kubernetes com devtron | OPEN | 2026-10-08 | +359/-0 |
 | #6336 | docs: migração do object storage, MinIO na Chainguard e proposta SeaweedFS | MERGED | 2026-10-08 | +312/-27 |
 | #6306 | refactor: analítico sai do ms-cameras e roda só no ms-video-analytics (CROSS-200 passos 10 a 13) | OPEN | 2026-10-08 | +19542/-9771 |
 | #6225 | feat: Neural Labs de ponta a ponta - socket aceita JSON e o LPR chega no trajeto do painel de operação | MERGED | 2026-10-08 | +4575/-465 |
@@ -74,6 +75,7 @@ Sprint: **36** (2026-10-05 → 2026-10-11)
 ## Ação necessária (PRs abertas)
 
 - [ ] **#6306** refactor: analítico sai do ms-cameras e roda só no ms-video-analytics (CROSS-200 passos 10 a 13) — aberta em 2026-10-08 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6306))
+- [ ] **#6474** chore: base de deploy em kubernetes com devtron — aberta em 2026-10-08 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6474))
 
 ## Entregues (merged)
 
