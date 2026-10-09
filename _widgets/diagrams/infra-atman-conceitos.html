@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Atman Platform: cluster, template, ambiente, release, deploy</title>
+  <link rel="stylesheet" href="../lumi-runtime.css">
+  <link rel="stylesheet" href="../flow.css">
+  <script src="../widget-runtime.js"></script>
+</head>
+<body>
+  <div class="widget-container"></div>
+  <script type="application/json" id="flow-spec">
+{
+  "title": "As cinco peças",
+  "subtitle": "Ambiente = template + cluster. Deploy = uma release num ambiente.",
+  "direction": "LR",
+  "groups": [
+    { "id": "once", "label": "Uma vez" },
+    { "id": "env", "label": "Por instalação" },
+    { "id": "always", "label": "A cada versão" }
+  ],
+  "nodes": [
+    { "id": "cluster", "label": "Cluster", "sub": "onde roda", "group": "once", "detail": "Máquinas com Kubernetes. Clusters → Conectar cluster. Hoje: attlas (kind no EC2). Um servidor do cliente vira um cluster depois de ter RKE2 e rede até o hub." },
+    { "id": "template", "label": "Template", "sub": "a receita", "group": "once", "detail": "Como roda: réplicas, HPA, recursos, PDB e deploy automático ou manual. Templates → Novo template. Existem dev (automático) e prod (manual)." },
+    { "id": "env", "label": "Ambiente", "sub": "template + cluster", "kind": "accent", "group": "env", "detail": "A instalação do Attlas num cluster, com namespace, domínio, serviços e bancos próprios. Ambientes → Novo ambiente." },
+    { "id": "release", "label": "Release", "sub": "o que roda", "kind": "store", "group": "always", "detail": "Versão de um serviço publicada pelo CI (ex.: web-attlas v1.2.0). O switch CI do serviço decide se releases novas são oferecidas." },
+    { "id": "deploy", "label": "Deploy", "sub": "release → ambiente", "kind": "accent", "group": "always", "detail": "Um serviço (Deploy de um serviço, Promover, Rollback) ou todos (Deploy do ambiente). Cada clique vira um commit no GitOps e o Argo CD aplica no cluster do ambiente." }
+  ],
+  "edges": [
+    { "from": "cluster", "to": "env" },
+    { "from": "template", "to": "env" },
+    { "from": "env", "to": "deploy" },
+    { "from": "release", "to": "deploy" }
+  ]
+}
+  </script>
+  <script src="../flow.js"></script>
+</body>
+</html>

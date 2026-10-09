@@ -11,28 +11,29 @@ banner: "https://images.unsplash.com/photo-1556075798-4825dfaaf498?w=1200"
 
 # GitHub Sync Report
 
-Última sincronização: **2026-10-09 09:09**
+Última sincronização: **2026-10-09 11:10**
 Sprint: **36** (2026-10-05 → 2026-10-11)
 
 ## Resumo
 
 | Métrica | Valor |
 | --- | --- |
-| PRs total | 41 |
+| PRs total | 42 |
 | Merged | 38 |
-| Open | 2 |
+| Open | 3 |
 | Closed | 1 |
-| Linhas adicionadas | +101471 |
+| Linhas adicionadas | +104389 |
 | Linhas removidas | -22202 |
-| Arquivos tocados | 3083 |
+| Arquivos tocados | 3097 |
 
 ## PRs da Sprint 36
 
 | # | Título | Estado | Data | +/- |
 | --- | --- | --- | --- | --- |
-| #6474 | feat: attlas deploy sobre argo cd com gitops | OPEN | 2026-10-08 | +23418/-0 |
+| #6535 | chore: dependabot para npm, imagens docker e github actions | OPEN | 2026-10-09 | +105/-0 |
+| #6474 | feat: atman platform (deploy do attlas sobre argo cd com gitops) | OPEN | 2026-10-08 | +26204/-0 |
 | #6336 | docs: migração do object storage, MinIO na Chainguard e proposta SeaweedFS | MERGED | 2026-10-08 | +312/-27 |
-| #6306 | refactor: analítico sai do ms-cameras e roda só no ms-video-analytics (CROSS-200 passos 10 a 13) | OPEN | 2026-10-08 | +20230/-9776 |
+| #6306 | refactor: analítico sai do ms-cameras e roda só no ms-video-analytics (CROSS-200 passos 10 a 13) | OPEN | 2026-10-08 | +20257/-9776 |
 | #6225 | feat: Neural Labs de ponta a ponta - socket aceita JSON e o LPR chega no trajeto do painel de operação | MERGED | 2026-10-08 | +4575/-465 |
 | #6213 | fix(ms-cameras): ajustes do review da #6171 no outbox de sincronização de câmera | MERGED | 2026-10-07 | +308/-300 |
 | #6212 | fix(ms-cameras): ajustes do review da #6171 no outbox de sincronização de câmera | CLOSED | 2026-10-07 | +233/-216 |
@@ -75,7 +76,8 @@ Sprint: **36** (2026-10-05 → 2026-10-11)
 ## Ação necessária (PRs abertas)
 
 - [ ] **#6306** refactor: analítico sai do ms-cameras e roda só no ms-video-analytics (CROSS-200 passos 10 a 13) — aberta em 2026-10-08 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6306))
-- [ ] **#6474** feat: attlas deploy sobre argo cd com gitops — aberta em 2026-10-08 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6474))
+- [ ] **#6474** feat: atman platform (deploy do attlas sobre argo cd com gitops) — aberta em 2026-10-08 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6474))
+- [ ] **#6535** chore: dependabot para npm, imagens docker e github actions — aberta em 2026-10-09 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6535))
 
 ## Entregues (merged)
 

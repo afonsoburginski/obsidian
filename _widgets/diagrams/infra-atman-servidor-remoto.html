@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Atman Platform: subir o Attlas num servidor remoto</title>
+  <link rel="stylesheet" href="../lumi-runtime.css">
+  <script src="../widget-runtime.js"></script>
+  <style>
+    body { margin: 0; padding: 0; font-family: var(--ff-sans); color: var(--on-surface); background: transparent; overflow-y: hidden; }
+    .widget-container { width: 100%; max-width: 760px; margin: 0 auto; padding: var(--spacing-m); box-sizing: border-box; display: flex; flex-direction: column; gap: var(--spacing-m); }
+    .head h2 { margin: 0; }
+    .head p { margin: 2px 0 0; color: var(--on-surface-variant); }
+
+    .rail { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+    .step-btn { all: unset; cursor: pointer; display: grid; gap: 4px; padding: 10px; border-radius: var(--r-m); background: var(--surface-dim); border: 1px solid var(--stroke-default); }
+    .step-btn:hover { border-color: var(--outline); }
+    .step-btn.is-selected { border-color: var(--primary); background: var(--accent-container); }
+    .step-btn .n { font: 600 12px var(--ff-mono); color: var(--primary); }
+    .step-btn .t { font-size: 13px; font-weight: 600; line-height: 1.25; }
+    .step-btn .w { font-size: 11px; color: var(--on-surface-variant); }
+
+    .panel { background: var(--surface-dim); border-radius: var(--r-l); padding: var(--spacing-m); display: grid; gap: var(--spacing-s); }
+    .where { display: inline-flex; gap: 6px; align-items: center; font: 600 11px var(--ff-mono); text-transform: uppercase; letter-spacing: .05em; padding: 3px 8px; border-radius: var(--r-full); border: 1px solid var(--outline); color: var(--on-surface-variant); width: fit-content; }
+    .where[data-w="plataforma"] { border-color: var(--primary); color: var(--primary); }
+    .panel h3 { margin: 0; font-size: 17px; }
+    .panel p { margin: 0; color: var(--on-surface-variant); line-height: 1.5; }
+    .cmd { margin: 0; padding: 10px 12px; border-radius: var(--r-m); background: var(--surface-container-high); font: 12.5px/1.55 var(--ff-mono); white-space: pre-wrap; word-break: break-word; }
+    .check { display: flex; gap: 8px; align-items: flex-start; font-size: 13px; }
+    .check b { color: var(--positive); font-family: var(--ff-mono); }
+
+    .mock { border: 1px solid var(--outline); border-radius: var(--r-m); padding: 12px; display: grid; gap: 10px; background: var(--surface); }
+    .mock .title { font-weight: 600; }
+    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: start; }
+    .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; align-items: start; }
+    .f { display: grid; gap: 4px; font-size: 12px; color: var(--on-surface-variant); }
+    .f .v { padding: 7px 9px; border-radius: 6px; border: 1px solid var(--stroke-default); background: var(--surface-dim); color: var(--on-surface); font: 12px var(--ff-mono); white-space: pre-wrap; word-break: break-all; }
+    .f .note { font-size: 11px; color: var(--primary); }
+    .f.opt .v { color: var(--on-surface-low); font-style: italic; }
+    .seg { display: flex; gap: 4px; flex-wrap: wrap; }
+    .seg span { padding: 4px 9px; border-radius: 6px; border: 1px solid var(--stroke-default); font-size: 12px; color: var(--on-surface-variant); }
+    .seg span.on { border-color: var(--primary); color: var(--primary); font-weight: 600; }
+    .btnmock { justify-self: end; padding: 6px 12px; border-radius: 6px; background: var(--primary); color: var(--surface); font-size: 12px; font-weight: 600; }
+
+    .nav { display: flex; justify-content: space-between; }
+    @media (max-width: 620px) { .rail { grid-template-columns: repeat(3, 1fr); } .row2, .row3 { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="widget-container">
+    <div class="head">
+      <h2 class="lumi-headline-m">Subir o Attlas num servidor remoto</h2>
+      <p class="lumi-body-s">Exemplo com o servidor fictício <b>cliente-x</b> (IP 10.20.0.5, na tailnet). Clique em cada passo.</p>
+    </div>
+    <div class="rail" id="rail"></div>
+    <div class="panel" id="panel"></div>
+    <div class="nav">
+      <button type="button" class="lumi-btn lumi-btn--secondary lumi-btn--small" id="prev">Anterior</button>
+      <button type="button" class="lumi-btn lumi-btn--primary lumi-btn--small" id="next">Próximo</button>
+    </div>
+  </div>
+
+  <script>
+    const STEPS = [
+      {
+        t: 'Kubernetes no servidor', w: 'servidor',
+        h: 'Instalar o RKE2 no cliente-x',
+        p: 'A plataforma só faz deploy em Kubernetes. Um servidor só com Docker não serve. Uma vez por servidor.',
+        cmd: 'curl -sfL https://get.rke2.io | sudo sh -\nsudo systemctl enable --now rke2-server\nsudo /var/lib/rancher/rke2/bin/kubectl \\\n  --kubeconfig /etc/rancher/rke2/rke2.yaml get nodes',
+        ok: 'o nó aparece como Ready',
+      },
+      {
+        t: 'Rede até o hub', w: 'servidor + hub',
+        h: 'O hub (EC2) precisa alcançar a porta 6443 do cliente-x',
+        p: 'Escolha um caminho: Tailscale no servidor (mais simples), WireGuard da Atman, VPN do cliente ou IP público. Depois teste a partir do hub.',
+        cmd: '# no cliente-x\nsudo tailscale up\n\n# no hub (EC2)\nbash ~/attlas-deploy/remote/check-remote.sh 10.20.0.5',
+        ok: 'as 5 etapas do check-remote passam',
+      },
+      {
+        t: 'Gerar o JSON', w: 'servidor',
+        h: 'Criar o acesso da plataforma e imprimir o JSON de registro',
+        p: 'O script cria as contas de serviço da Atman Platform no cluster e imprime um JSON com o endereço da API e os tokens. Esse JSON é o que você cola no próximo passo.',
+        cmd: 'sudo KUBECONFIG=/etc/rancher/rke2/rke2.yaml \\\n  bash connect-cluster.sh cliente-x https://10.20.0.5:6443\n\n# saída (também em ./cliente-x-registration.json):\n{ "name": "cliente-x", "server": "https://10.20.0.5:6443",\n  "caData": "LS0tLS1CRUdJTi…", "token": "eyJhbGciOi…",\n  "consoleToken": "eyJhbGciOi…" }',
+        ok: 'o arquivo cliente-x-registration.json existe',
+      },
+      {
+        t: 'Conectar cluster', w: 'plataforma', mock: 'cluster',
+        h: 'Clusters → Conectar cluster',
+        p: 'Cole o JSON. Nome e Host SSH se preenchem sozinhos. Escolha por onde o hub chega no servidor (a mesma rede do passo 2).',
+        ok: 'o cluster aparece em Clusters como Pronto',
+      },
+      {
+        t: 'Criar o ambiente', w: 'plataforma', mock: 'env',
+        h: 'Ambientes → Novo ambiente (template + cluster)',
+        p: 'O ambiente é a instalação do Attlas naquele cluster. Ele leva todos os serviços e, se escolher, a infraestrutura (bancos, Redis, Kafka, Kong, MinIO), num único commit.',
+        cmd: '# Secrets dos serviços no namespace novo (uma vez, no hub):\nKUBECTL="kubectl --kubeconfig cliente-x.yaml" \\\n  bash ~/attlas-deploy/local/env-secrets.sh attlas-cliente-x ~',
+        ok: 'o ambiente aparece em Ambientes com 22 serviços em "Aguardando deploy"',
+      },
+      {
+        t: 'Deploy', w: 'plataforma',
+        h: 'Ambiente cliente-x → Deploy do ambiente',
+        p: 'Marque os serviços (por padrão, todos com mudança), escolha a origem das versões ("Igual ao dev" ou "Última release") e confirme. Depois, versão nova de um serviço: "Deploy de um serviço" ou Promover.',
+        cmd: 'Clique  →  commit no GitOps  →  Argo CD do hub lê  →  aplica no cliente-x',
+        ok: 'os serviços ficam "Rodando" e o endereço aparece no topo da tela',
+      },
+    ];
+
+    const MOCKS = {
+      cluster: () => `
+        <div class="mock">
+          <div class="title">Conectar cluster</div>
+          <div class="f">JSON de registro
+            <div class="v">{ "name": "cliente-x", "server": "https://10.20.0.5:6443", "caData": "…", "token": "…", "consoleToken": "…" }</div>
+            <span class="note">a saída do passo 3, inteira</span></div>
+          <div class="row2">
+            <div class="f">Nome<div class="v">cliente-x</div><span class="note">vem do JSON</span></div>
+            <div class="f">Provedor<div class="v">RKE2</div></div>
+          </div>
+          <div class="f">Como o hub alcança este cluster
+            <div class="seg"><span class="on">Tailnet da Atman</span><span>WireGuard da Atman</span><span>VPN do cliente</span><span>Rede direta</span></div>
+            <span class="note">a rede do passo 2</span></div>
+          <div class="row2">
+            <div class="f opt">Observação da rede<div class="v">opcional</div></div>
+            <div class="f">Endereço do ingress (domínios)<div class="v">10.20.0.5</div><span class="note">IP para onde o DNS do domínio aponta</span></div>
+          </div>
+          <div class="row3">
+            <div class="f">Usuário SSH<div class="v">ubuntu</div></div>
+            <div class="f">Host SSH<div class="v">10.20.0.5</div><span class="note">vem do JSON</span></div>
+            <div class="f opt">Jump host<div class="v">vazio na tailnet</div></div>
+          </div>
+          <span class="btnmock">Testar e conectar</span>
+        </div>`,
+      env: () => `
+        <div class="mock">
+          <div class="title">Novo ambiente</div>
+          <div class="row2">
+            <div class="f">Nome<div class="v">cliente-x</div><span class="note">namespace attlas-cliente-x</span></div>
+            <div class="f">Template<div class="v">Produção (prod) · deploy manual</div><span class="note">a receita</span></div>
+          </div>
+          <div class="f">Cluster<div class="v">cliente-x · Tailnet da Atman</div><span class="note">o servidor do passo 4</span></div>
+          <div class="row2">
+            <div class="f">Versões dos serviços<div class="v">Mesmas versões do dev</div></div>
+            <div class="f">Infraestrutura<div class="v">Copiar de dev</div><span class="note">bancos, Redis, Kafka, Kong, MinIO</span></div>
+          </div>
+          <div class="f">Implantar agora<div class="v">desmarcado: você confere e usa Deploy do ambiente</div></div>
+          <span class="btnmock">Criar ambiente</span>
+        </div>`,
+    };
+
+    const state = { step: 0 };
+    const rail = document.getElementById('rail');
+    const panel = document.getElementById('panel');
+    const esc = (s) => s.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]);
+
+    function updateViz() {
+      rail.innerHTML = STEPS.map((s, i) => `
+        <button type="button" class="step-btn${i === state.step ? ' is-selected' : ''}" data-i="${i}">
+          <span class="n">${i + 1}</span><span class="t">${s.t}</span><span class="w">${s.w}</span>
+        </button>`).join('');
+      const s = STEPS[state.step];
+      panel.innerHTML = `
+        <span class="where" data-w="${s.w}">${s.w}</span>
+        <h3>${s.h}</h3>
+        <p>${s.p}</p>
+        ${s.mock ? MOCKS[s.mock]() : ''}
+        ${s.cmd ? `<pre class="cmd">${esc(s.cmd)}</pre>` : ''}
+        <div class="check"><b>OK quando</b><span>${s.ok}</span></div>`;
+      document.getElementById('prev').disabled = state.step === 0;
+      document.getElementById('next').disabled = state.step === STEPS.length - 1;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      rail.addEventListener('click', (ev) => {
+        const b = ev.target.closest('.step-btn');
+        if (b) { state.step = Number(b.dataset.i); updateViz(); }
+      });
+      document.getElementById('prev').addEventListener('click', () => { state.step = Math.max(0, state.step - 1); updateViz(); });
+      document.getElementById('next').addEventListener('click', () => { state.step = Math.min(STEPS.length - 1, state.step + 1); updateViz(); });
+      updateViz();
+    });
+  </script>
+</body>
+</html>
