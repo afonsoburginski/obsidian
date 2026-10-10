@@ -11,47 +11,51 @@ banner: "https://images.unsplash.com/photo-1556075798-4825dfaaf498?w=1200"
 
 # GitHub Sync Report
 
-Última sincronização: **2026-10-09 19:14**
+Última sincronização: **2026-10-09 21:15**
 Sprint: **36** (2026-10-05 → 2026-10-11)
 
 ## Resumo
 
 | Métrica | Valor |
 | --- | --- |
-| PRs total | 65 |
-| Merged | 44 |
-| Open | 19 |
+| PRs total | 69 |
+| Merged | 61 |
+| Open | 6 |
 | Closed | 2 |
-| Linhas adicionadas | +113273 |
-| Linhas removidas | -25197 |
-| Arquivos tocados | 3503 |
+| Linhas adicionadas | +120976 |
+| Linhas removidas | -25969 |
+| Arquivos tocados | 3665 |
 
 ## PRs da Sprint 36
 
 | # | Título | Estado | Data | +/- |
 | --- | --- | --- | --- | --- |
+| #6670 | fix: tela de Detecção sem barra de rolagem, rótulo de atualização e player quando a detecção não carrega | OPEN | 2026-10-10 | +221/-77 |
+| #6669 | feat: criar, editar e excluir perfis de mídia | OPEN | 2026-10-10 | +7392/-686 |
+| #6668 | fix: código do incidente sem tela aparece como texto, sem o aviso de módulo indisponível | MERGED | 2026-10-09 | +86/-17 |
+| #6666 | fix: testes de grupo salvo sobre parede ocupada colidiam no nome do grupo | MERGED | 2026-10-09 | +4/-1 |
 | #6651 | fix: switch de LPR liberado na edição da câmera quando a leitura de placa não carrega | MERGED | 2026-10-09 | +14/-6 |
-| #6647 | feat: criar, editar e excluir perfis de mídia | OPEN | 2026-10-09 | +624/-12 |
+| #6647 | feat: criar, editar e excluir perfis de mídia | MERGED | 2026-10-09 | +624/-12 |
 | #6646 | fix: provision and drop ms-audit partitions without bind params in DO block | OPEN | 2026-10-09 | +138/-38 |
 | #6642 | chore: remove o workflow de deploy por docker compose | OPEN | 2026-10-09 | +12/-311 |
-| #6640 | fix: estado vazio do Log de Eventos no painel lateral igual ao protótipo | OPEN | 2026-10-09 | +103/-23 |
-| #6622 | fix: linha do tempo do incidente exibe eventos de conectividade da câmera | OPEN | 2026-10-09 | +1330/-248 |
-| #6619 | fix: Reportar ocorrência permite registrar o mesmo evento várias vezes | OPEN | 2026-10-09 | +1010/-213 |
-| #6618 | fix: aplicar grupo salvo falha com painel em uso enquanto a tela o indica livre | OPEN | 2026-10-09 | +849/-65 |
+| #6640 | fix: estado vazio do Log de Eventos no painel lateral igual ao protótipo | MERGED | 2026-10-09 | +103/-23 |
+| #6622 | fix: linha do tempo do incidente exibe eventos de conectividade da câmera | MERGED | 2026-10-09 | +1330/-248 |
+| #6619 | fix: Reportar ocorrência permite registrar o mesmo evento várias vezes | MERGED | 2026-10-09 | +1016/-213 |
+| #6618 | fix: aplicar grupo salvo falha com painel em uso enquanto a tela o indica livre | MERGED | 2026-10-09 | +849/-65 |
 | #6617 | fix: contador de "Todas" não passa mais a contar o resultado filtrado ao selecionar um marcador, inclusive "Não reconhecido" | MERGED | 2026-10-09 | +220/-64 |
 | #6616 | fix: camada Interseções do mapa da Detecção mostra só as interseções com câmera e abre a interseção clicada | MERGED | 2026-10-09 | +474/-45 |
-| #6615 | fix: dashboard de Câmeras alinhado ao protótipo (abas de conectividade, heatmap, rótulos e tooltips) | OPEN | 2026-10-09 | +1562/-985 |
-| #6614 | fix: estado vazio do Log de Eventos igual ao protótipo (reteste da busca da coluna Descrição) | OPEN | 2026-10-09 | +158/-15 |
-| #6613 | fix: janela de expandir o gráfico do ATSPM com título traduzido, gráfico alinhado e dentro da tela | OPEN | 2026-10-09 | +270/-143 |
+| #6615 | fix: dashboard de Câmeras alinhado ao protótipo (abas de conectividade, heatmap, rótulos e tooltips) | MERGED | 2026-10-09 | +1571/-991 |
+| #6614 | fix: estado vazio do Log de Eventos igual ao protótipo (reteste da busca da coluna Descrição) | MERGED | 2026-10-09 | +158/-15 |
+| #6613 | fix: janela de expandir o gráfico do ATSPM com título traduzido, gráfico alinhado e dentro da tela | MERGED | 2026-10-09 | +270/-143 |
 | #6609 | fix: detalhe de câmera com identificador inválido mostra "não encontrada" e o botão Editar só aparece com a câmera carregada | MERGED | 2026-10-09 | +161/-92 |
 | #6608 | fix: substituir câmera com estoque vazio deixa o modal sem saída e sem explicação | MERGED | 2026-10-09 | +85/-13 |
-| #6607 | fix: região excluída pela lixeira reaparece ao criar uma nova região | OPEN | 2026-10-09 | +154/-12 |
-| #6606 | fix: Tela de Eventos das câmeras: busca, filtro de câmera e colunas alinhados ao protótipo | OPEN | 2026-10-09 | +151/-240 |
-| #6605 | fix: abas do painel de perfil de mídia divergem do protótipo | OPEN | 2026-10-09 | +1233/-235 |
-| #6604 | fix: painel de edição de automação alinhado ao protótipo | OPEN | 2026-10-09 | +158/-67 |
-| #6603 | fix: detalhe da instância com trilha pelo identificador e legenda de limite só quando há limite | OPEN | 2026-10-09 | +43/-7 |
-| #6602 | fix: painel Saúde da Câmera da grid de conectividade fora do padrão | OPEN | 2026-10-09 | +58/-126 |
-| #6601 | fix: marcador de câmera em contorno nos mapas e ícone de Acionamentos relacionados | OPEN | 2026-10-09 | +56/-34 |
+| #6607 | fix: região excluída pela lixeira reaparece ao criar uma nova região | MERGED | 2026-10-09 | +154/-12 |
+| #6606 | fix: Tela de Eventos das câmeras: busca, filtro de câmera e colunas alinhados ao protótipo | MERGED | 2026-10-09 | +151/-240 |
+| #6605 | fix: abas do painel de perfil de mídia divergem do protótipo | MERGED | 2026-10-09 | +1233/-235 |
+| #6604 | fix: painel de edição de automação alinhado ao protótipo | MERGED | 2026-10-09 | +158/-67 |
+| #6603 | fix: detalhe da instância com trilha pelo identificador e legenda de limite só quando há limite | MERGED | 2026-10-09 | +43/-7 |
+| #6602 | fix: painel Saúde da Câmera da grid de conectividade fora do padrão | MERGED | 2026-10-09 | +58/-126 |
+| #6601 | fix: marcador de câmera em contorno nos mapas e ícone de Acionamentos relacionados | MERGED | 2026-10-09 | +41/-19 |
 | #6552 | chore: ship the prisma seed as seed.js in the service images | OPEN | 2026-10-09 | +21/-1 |
 | #6535 | chore: dependabot para npm, imagens docker e github actions | OPEN | 2026-10-09 | +105/-0 |
 | #6474 | feat: atman platform (deploy do attlas sobre argo cd com gitops) | CLOSED | 2026-10-08 | +26204/-0 |
@@ -100,23 +104,10 @@ Sprint: **36** (2026-10-05 → 2026-10-11)
 
 - [ ] **#6535** chore: dependabot para npm, imagens docker e github actions — aberta em 2026-10-09 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6535))
 - [ ] **#6552** chore: ship the prisma seed as seed.js in the service images — aberta em 2026-10-09 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6552))
-- [ ] **#6601** fix: marcador de câmera em contorno nos mapas e ícone de Acionamentos relacionados — aberta em 2026-10-09 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6601))
-- [ ] **#6602** fix: painel Saúde da Câmera da grid de conectividade fora do padrão — aberta em 2026-10-09 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6602))
-- [ ] **#6603** fix: detalhe da instância com trilha pelo identificador e legenda de limite só quando há limite — aberta em 2026-10-09 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6603))
-- [ ] **#6604** fix: painel de edição de automação alinhado ao protótipo — aberta em 2026-10-09 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6604))
-- [ ] **#6605** fix: abas do painel de perfil de mídia divergem do protótipo — aberta em 2026-10-09 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6605))
-- [ ] **#6606** fix: Tela de Eventos das câmeras: busca, filtro de câmera e colunas alinhados ao protótipo — aberta em 2026-10-09 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6606))
-- [ ] **#6607** fix: região excluída pela lixeira reaparece ao criar uma nova região — aberta em 2026-10-09 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6607))
-- [ ] **#6613** fix: janela de expandir o gráfico do ATSPM com título traduzido, gráfico alinhado e dentro da tela — aberta em 2026-10-09 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6613))
-- [ ] **#6614** fix: estado vazio do Log de Eventos igual ao protótipo (reteste da busca da coluna Descrição) — aberta em 2026-10-09 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6614))
-- [ ] **#6615** fix: dashboard de Câmeras alinhado ao protótipo (abas de conectividade, heatmap, rótulos e tooltips) — aberta em 2026-10-09 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6615))
-- [ ] **#6618** fix: aplicar grupo salvo falha com painel em uso enquanto a tela o indica livre — aberta em 2026-10-09 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6618))
-- [ ] **#6619** fix: Reportar ocorrência permite registrar o mesmo evento várias vezes — aberta em 2026-10-09 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6619))
-- [ ] **#6622** fix: linha do tempo do incidente exibe eventos de conectividade da câmera — aberta em 2026-10-09 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6622))
-- [ ] **#6640** fix: estado vazio do Log de Eventos no painel lateral igual ao protótipo — aberta em 2026-10-09 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6640))
 - [ ] **#6642** chore: remove o workflow de deploy por docker compose — aberta em 2026-10-09 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6642))
 - [ ] **#6646** fix: provision and drop ms-audit partitions without bind params in DO block — aberta em 2026-10-09 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6646))
-- [ ] **#6647** feat: criar, editar e excluir perfis de mídia — aberta em 2026-10-09 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6647))
+- [ ] **#6669** feat: criar, editar e excluir perfis de mídia — aberta em 2026-10-10 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6669))
+- [ ] **#6670** fix: tela de Detecção sem barra de rolagem, rótulo de atualização e player quando a detecção não carrega — aberta em 2026-10-10 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6670))
 
 ## Entregues (merged)
 
@@ -164,5 +155,22 @@ Sprint: **36** (2026-10-05 → 2026-10-11)
 - [x] **#6616** fix: camada Interseções do mapa da Detecção mostra só as interseções com câmera e abre a interseção clicada — merged em 2026-10-09
 - [x] **#6617** fix: contador de "Todas" não passa mais a contar o resultado filtrado ao selecionar um marcador, inclusive "Não reconhecido" — merged em 2026-10-09
 - [x] **#6651** fix: switch de LPR liberado na edição da câmera quando a leitura de placa não carrega — merged em 2026-10-09
+- [x] **#6603** fix: detalhe da instância com trilha pelo identificador e legenda de limite só quando há limite — merged em 2026-10-09
+- [x] **#6614** fix: estado vazio do Log de Eventos igual ao protótipo (reteste da busca da coluna Descrição) — merged em 2026-10-09
+- [x] **#6602** fix: painel Saúde da Câmera da grid de conectividade fora do padrão — merged em 2026-10-09
+- [x] **#6607** fix: região excluída pela lixeira reaparece ao criar uma nova região — merged em 2026-10-09
+- [x] **#6613** fix: janela de expandir o gráfico do ATSPM com título traduzido, gráfico alinhado e dentro da tela — merged em 2026-10-09
+- [x] **#6604** fix: painel de edição de automação alinhado ao protótipo — merged em 2026-10-09
+- [x] **#6605** fix: abas do painel de perfil de mídia divergem do protótipo — merged em 2026-10-09
+- [x] **#6606** fix: Tela de Eventos das câmeras: busca, filtro de câmera e colunas alinhados ao protótipo — merged em 2026-10-09
+- [x] **#6618** fix: aplicar grupo salvo falha com painel em uso enquanto a tela o indica livre — merged em 2026-10-09
+- [x] **#6622** fix: linha do tempo do incidente exibe eventos de conectividade da câmera — merged em 2026-10-09
+- [x] **#6615** fix: dashboard de Câmeras alinhado ao protótipo (abas de conectividade, heatmap, rótulos e tooltips) — merged em 2026-10-09
+- [x] **#6640** fix: estado vazio do Log de Eventos no painel lateral igual ao protótipo — merged em 2026-10-09
+- [x] **#6601** fix: marcador de câmera em contorno nos mapas e ícone de Acionamentos relacionados — merged em 2026-10-09
+- [x] **#6619** fix: Reportar ocorrência permite registrar o mesmo evento várias vezes — merged em 2026-10-09
+- [x] **#6666** fix: testes de grupo salvo sobre parede ocupada colidiam no nome do grupo — merged em 2026-10-09
+- [x] **#6647** feat: criar, editar e excluir perfis de mídia — merged em 2026-10-09
+- [x] **#6668** fix: código do incidente sem tela aparece como texto, sem o aviso de módulo indisponível — merged em 2026-10-09
 
 Gerado automaticamente por `scripts/github-sprint-sync.sh`.
