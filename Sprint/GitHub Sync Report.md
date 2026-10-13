@@ -11,28 +11,29 @@ banner: "https://images.unsplash.com/photo-1556075798-4825dfaaf498?w=1200"
 
 # GitHub Sync Report
 
-Última sincronização: **2026-10-13 12:02**
+Última sincronização: **2026-10-13 14:03**
 Sprint: **36** (2026-10-05 → 2026-10-11)
 
 ## Resumo
 
 | Métrica | Valor |
 | --- | --- |
-| PRs total | 72 |
-| Merged | 64 |
-| Open | 4 |
+| PRs total | 73 |
+| Merged | 66 |
+| Open | 3 |
 | Closed | 4 |
-| Linhas adicionadas | +121942 |
-| Linhas removidas | -27316 |
-| Arquivos tocados | 3730 |
+| Linhas adicionadas | +122039 |
+| Linhas removidas | -27405 |
+| Arquivos tocados | 3734 |
 
 ## PRs da Sprint 36
 
 | # | Título | Estado | Data | +/- |
 | --- | --- | --- | --- | --- |
+| #7000 | refactor: extract region re-parenting into a repository helper | OPEN | 2026-10-13 | +96/-89 |
 | #6947 | fix: validate-credentials concurrency and parallel ONVIF+ACAP probes | OPEN | 2026-10-13 | +139/-76 |
-| #6932 | fix: streaming surfaces, creation settings and enhancement toggle | OPEN | 2026-10-13 | +437/-248 |
-| #6925 | docs: perfis de mídia são só leitura, sem criar, editar ou excluir pela tela | OPEN | 2026-10-13 | +12/-624 |
+| #6932 | fix: streaming surfaces, creation settings and enhancement toggle | OPEN | 2026-10-13 | +438/-248 |
+| #6925 | docs: perfis de mídia são só leitura, sem criar, editar ou excluir pela tela | MERGED | 2026-10-13 | +12/-624 |
 | #6670 | fix: tela de Detecção sem barra de rolagem, rótulo de atualização e player quando a detecção não carrega | MERGED | 2026-10-13 | +323/-86 |
 | #6669 | feat: criar, editar e excluir perfis de mídia | CLOSED | 2026-10-10 | +7521/-686 |
 | #6668 | fix: código do incidente sem tela aparece como texto, sem o aviso de módulo indisponível | MERGED | 2026-10-09 | +86/-17 |
@@ -40,7 +41,7 @@ Sprint: **36** (2026-10-05 → 2026-10-11)
 | #6651 | fix: switch de LPR liberado na edição da câmera quando a leitura de placa não carrega | MERGED | 2026-10-09 | +14/-6 |
 | #6647 | feat: criar, editar e excluir perfis de mídia | MERGED | 2026-10-09 | +624/-12 |
 | #6646 | fix: provision and drop ms-audit partitions without bind params in DO block | CLOSED | 2026-10-09 | +138/-38 |
-| #6642 | chore: remove o workflow de deploy por docker compose | OPEN | 2026-10-09 | +69/-668 |
+| #6642 | chore: remove o workflow de deploy por docker compose | MERGED | 2026-10-13 | +69/-668 |
 | #6640 | fix: estado vazio do Log de Eventos no painel lateral igual ao protótipo | MERGED | 2026-10-09 | +103/-23 |
 | #6622 | fix: linha do tempo do incidente exibe eventos de conectividade da câmera | MERGED | 2026-10-09 | +1330/-248 |
 | #6619 | fix: Reportar ocorrência permite registrar o mesmo evento várias vezes | MERGED | 2026-10-09 | +1016/-213 |
@@ -105,10 +106,9 @@ Sprint: **36** (2026-10-05 → 2026-10-11)
 
 ## Ação necessária (PRs abertas)
 
-- [ ] **#6642** chore: remove o workflow de deploy por docker compose — aberta em 2026-10-09 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6642))
-- [ ] **#6925** docs: perfis de mídia são só leitura, sem criar, editar ou excluir pela tela — aberta em 2026-10-13 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6925))
 - [ ] **#6932** fix: streaming surfaces, creation settings and enhancement toggle — aberta em 2026-10-13 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6932))
 - [ ] **#6947** fix: validate-credentials concurrency and parallel ONVIF+ACAP probes — aberta em 2026-10-13 ([ver](https://github.com/atmanadmin/attlas-2026/pull/6947))
+- [ ] **#7000** refactor: extract region re-parenting into a repository helper — aberta em 2026-10-13 ([ver](https://github.com/atmanadmin/attlas-2026/pull/7000))
 
 ## Entregues (merged)
 
@@ -176,5 +176,7 @@ Sprint: **36** (2026-10-05 → 2026-10-11)
 - [x] **#6535** chore: dependabot para npm, imagens docker e github actions — merged em 2026-10-13
 - [x] **#6670** fix: tela de Detecção sem barra de rolagem, rótulo de atualização e player quando a detecção não carrega — merged em 2026-10-13
 - [x] **#6552** chore: ship the prisma seed as seed.js in the service images — merged em 2026-10-13
+- [x] **#6642** chore: remove o workflow de deploy por docker compose — merged em 2026-10-13
+- [x] **#6925** docs: perfis de mídia são só leitura, sem criar, editar ou excluir pela tela — merged em 2026-10-13
 
 Gerado automaticamente por `scripts/github-sprint-sync.sh`.
