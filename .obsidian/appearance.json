@@ -1,12 +1,13 @@
 {
   "cssTheme": "Border",
-  "accentColor": "#2788d3",
+  "accentColor": "#3186ff",
   "textFontFamily": "Inter,Lucida Console,Arial,Courier New,Consolas,Source Code Pro",
   "baseFontSize": 18,
   "baseFontSizeAction": false,
   "enabledCssSnippets": [
     "galaxy-graph",
-    "max-width"
+    "max-width",
+    "attlas-blue"
   ],
   "nativeMenus": false,
   "showViewHeader": true,

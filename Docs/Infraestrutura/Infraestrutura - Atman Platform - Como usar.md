@@ -59,7 +59,8 @@ src: _widgets/diagrams/infra-atman-servidor-remoto.html
 | Versão nova chegou no dev | Nada: dev é automático |
 | Levar a versão do dev para o prod | Serviço → **Promover**, ou Ambiente prod → **Deploy do ambiente** com "Igual ao dev" |
 | Voltar uma versão | Serviço → Releases → **Rollback** na versão anterior |
-| Algo caiu | Clicar no aviso (toast): abre Observar → Eventos do serviço |
+| Algo caiu | Sininho no topo (ou o toast): abre o serviço/ambiente afetado. Histórico com busca em **Notificações** |
+| Ser avisado com a aba fechada | Sininho → **Avisar também fora da aba** |
 | Abrir o Attlas de um ambiente | Botão com o endereço no topo da tela |
 | Ajustar um seed | Templates → Seeds → arquivo → editar → **Salvar…** (mostra o diff, pede nota, guarda a versão anterior) |
 | Subir um seed novo | Templates → Seeds → arrastar o `.sql` (o nome do arquivo vira o serviço) |

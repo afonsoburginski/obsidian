@@ -33,6 +33,7 @@ avaliação num `kind` no EC2 dev, com o ambiente dev completo do Attlas.
 | [[Infraestrutura - Atman Platform - Plano e bootstrap]] | vai usar ou subir a Atman Platform (Argo CD, templates, ambientes, clusters), fazer deploy em servidor de cliente por VPN ou montar o Terraform e o RKE2 |
 | [[Infraestrutura - Atman Platform - Como usar]] | precisa explicar ou seguir o fluxo cluster → template → ambiente → deploy, ou subir o Attlas num servidor remoto |
 | [[Infraestrutura - Pipeline de CI-CD]] | quer entender o caminho do commit ao cluster, o versionamento por serviço, o que muda no GitHub Actions ou como promover para cliente |
+| [[Infraestrutura - CI-CD de ponta a ponta]] | quer a visão completa do pipeline: CI (lint, build, push), CD atual (SSH + compose) e CD alvo (Argo CD + k8s), tudo num lugar só |
 
 ## Explicações para usuário
 
