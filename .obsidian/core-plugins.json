@@ -7,6 +7,7 @@
   "canvas": true,
   "outgoing-link": false,
   "tag-pane": true,
+  "footnotes": false,
   "properties": true,
   "page-preview": true,
   "daily-notes": false,
@@ -16,7 +17,6 @@
   "slash-command": true,
   "editor-status": true,
   "bookmarks": true,
-  "markdown-importer": false,
   "zk-prefixer": false,
   "random-note": false,
   "outline": true,
@@ -27,7 +27,6 @@
   "file-recovery": true,
   "publish": false,
   "sync": false,
-  "webviewer": true,
-  "footnotes": false,
-  "bases": true
+  "bases": true,
+  "webviewer": true
 }
