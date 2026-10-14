@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Orbit: cluster, template, ambiente, release e deploy</title>
+  <link rel="stylesheet" href="../lumi-runtime.css">
+  <link rel="stylesheet" href="../flow.css">
+  <script src="../widget-runtime.js"></script>
+</head>
+<body>
+  <div class="widget-container"></div>
+  <script type="application/json" id="flow-spec">
+{
+  "title": "As cinco peças",
+  "subtitle": "Ambiente = template + cluster. Deploy = uma release num ambiente.",
+  "direction": "LR",
+  "groups": [
+    { "id": "once", "label": "Uma vez" },
+    { "id": "env", "label": "Por instalação" },
+    { "id": "always", "label": "A cada versão" }
+  ],
+  "nodes": [
+    { "id": "cluster", "label": "Cluster", "sub": "onde roda", "group": "once", "detail": "Máquina ou conjunto de máquinas com Kubernetes. Hoje: attlas (kind no hub dev) e sumo (RKE2 de nó único, sem ambiente). Um servidor novo vira cluster pelo Adicionar servidor." },
+    { "id": "template", "label": "Template", "sub": "a receita", "group": "once", "detail": "Como roda: réplicas, HPA, recursos, PDB, deploy automático ou manual e o pacote de seeds padrão. Existem dev (automático), prod (manual) e compose (servidor Docker)." },
+    { "id": "env", "label": "Ambiente", "sub": "template + cluster", "kind": "accent", "group": "env", "detail": "A instalação do Attlas num cluster, com namespace, domínio, serviços e bancos próprios. Criado pelo assistente Novo ambiente." },
+    { "id": "release", "label": "Release", "sub": "o que roda", "kind": "store", "group": "always", "detail": "Versão de um serviço registrada pelo Orbit a partir de um run verde do ci-develop (ex.: web-attlas 1.2.80). O switch CI do serviço decide se releases novas são oferecidas." },
+    { "id": "deploy", "label": "Deploy", "sub": "release no ambiente", "kind": "accent", "group": "always", "detail": "Um serviço (Deploy, Promover, Rollback) ou todos (Deploy do ambiente). Cada ação vira um commit no GitOps e o Argo CD aplica no cluster do ambiente." }
+  ],
+  "edges": [
+    { "from": "cluster", "to": "env" },
+    { "from": "template", "to": "env" },
+    { "from": "env", "to": "deploy" },
+    { "from": "release", "to": "deploy" }
+  ]
+}
+  </script>
+  <script src="../flow.js"></script>
+</body>
+</html>

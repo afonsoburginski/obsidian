@@ -7,7 +7,7 @@ aliases:
   - "Observabilidade CI - plano (stack completa)"
   - "Observabilidade - Aplicação e CI"
   - "Infraestrutura - Observabilidade"
-atualizado: 2026-10-07
+atualizado: 2026-10-14
 ---
 
 # Infraestrutura - Observabilidade
@@ -16,10 +16,18 @@ Volta para [[Infraestrutura]].
 
 ## Resumo
 
-A aplicação tem uma stack de métricas e logs versionada em `docker/observability/`: Prometheus e Grafana para
-métricas, Loki e Grafana Alloy para logs, feita para máquina de desenvolvimento. O CI não tem observabilidade
-além do passo `Resumo` de cada job e dos alertas de disco no journal da VM. A regra de quem pode raspar
-`/metrics` e do que um label de métrica pode carregar está em `docs/architecture/observability.md`.
+A observabilidade tem três camadas. A máquina de desenvolvimento usa a stack versionada em
+`docker/observability/` (Prometheus e Grafana para métricas, Loki e Grafana Alloy para logs). O ambiente dev não
+tem essa stack: o Orbit lê direto as fontes do cluster e mostra tudo no Monitoramento. O CI não tem
+observabilidade além do passo `Resumo` de cada job, dos alertas de disco no journal da VM e dos alertas do Orbit
+sobre o runner. A regra de quem pode raspar `/metrics` e do que um label de métrica pode carregar está em
+`docs/architecture/observability.md`.
+
+| Camada | Onde | Ferramenta |
+| --- | --- | --- |
+| Máquina de desenvolvimento | local | Prometheus, Grafana, Loki e Alloy ([[#Stack da aplicação]]) |
+| Ambiente dev | hub dev | Monitoramento do Orbit ([[#Ambiente dev]]) |
+| CI | VM `ci-runner` | passo `Resumo`, journal e alertas do Orbit ([[#CI]]) |
 
 ## Stack da aplicação
 
@@ -95,6 +103,21 @@ Em consulta de métrica, o `keep` descarta os campos antes de agregar; sem ele c
 a consulta pode estourar o limite de séries do Loki. Container que morre antes da primeira varredura de 5 s
 escapa da coleta; nesse caso `docker logs <container>` continua sendo a fonte.
 
+## Ambiente dev
+
+Não há Prometheus, Loki nem Grafana no hub. O Orbit lê direto as fontes e guarda o mínimo:
+
+| Dado | Fonte |
+| --- | --- |
+| CPU e memória de nós e pods | metrics-server |
+| Pods, reinícios e eventos Warning | API do Kubernetes |
+| Saúde e sincronização dos serviços | API do Argo CD |
+| Erros e avisos dos logs | `pods/log`, coleta contínua a cada 30 s, 24 h em memória, erros agrupados por mensagem |
+| Tráfego, 5xx e latência | `/metrics` do Kong |
+| Lag e mensagens por segundo do Kafka | kafka-exporter |
+
+O Monitoramento do Orbit cobre o ambiente inteiro; logs e métricas de um serviço ficam na página do serviço. Erro de ruído conhecido é declarado em `~/orbit/state/secrets/observe-expected.json`: continua visível, marcado como esperado, e sai dos contadores e das notificações. O que vira notificação (sininho, toast e aviso do sistema) e a autocorreção estão em [[Infraestrutura - Orbit#Entrega e autocorreção]]. Se o Orbit cair, nada notifica enquanto ele estiver fora; o cron do host o reinicia depois de 3 falhas do `/healthz`.
+
 ## Ambiente remoto
 
 Para raspar outro ambiente através do gateway:
@@ -108,10 +131,10 @@ Antes de subir, trocar `__GATEWAY_HOST__` pelo host do gateway e ajustar o label
 Prometheus passa a raspar `https://<gateway>/api/<serviço>/metrics`, e o `metrics-token` passa a ser o
 `METRICS_SCRAPE_TOKEN` daquele ambiente. Os logs continuam sendo só os do Docker local.
 
-> [!warning] Valor do `METRICS_SCRAPE_TOKEN` no dev.v2 não conferido
-> O deploy recusa serviço cujo `.env.docker` não tem a chave `METRICS_SCRAPE_TOKEN`, mas aceita a chave
-> vazia, e com valor vazio o serviço recusa todo scrape. Conferir o valor no host antes de apontar um
-> Prometheus remoto para lá; ver [[Infraestrutura - Ambientes#O .env.docker do host]].
+> [!warning] Chave vazia recusa todo scrape
+> Um `METRICS_SCRAPE_TOKEN` vazio no Secret `<serviço>-env` do dev faz o serviço recusar todo scrape. Conferir o
+> comprimento do valor, sem imprimi-lo, antes de apontar um Prometheus remoto para lá; ver
+> [[Infraestrutura - Ambientes#Variáveis dos serviços]].
 
 ## Segurança
 
@@ -129,12 +152,13 @@ Prometheus passa a raspar `https://<gateway>/api/<serviço>/metrics`, e o `metri
 ## CI
 
 O que existe é o passo `Resumo` (`scripts/ci/ci-summary.mjs`) no fim de cada job, que escreve no resumo do
-run a tabela do que veio do cache e quanto tempo cada parte levou, e os alertas do `ci-disk-watch` no
-journal da VM. Não há Prometheus, Grafana nem alerta de fila ou de runner. O diagnóstico é manual:
+run a tabela do que veio do cache e quanto tempo cada parte levou, os alertas do `ci-disk-watch` no journal da
+VM e os alertas do Orbit sobre o runner (serviço do scale set parado, reiniciando ou com token inválido). Não há
+Prometheus, Grafana nem alerta de fila parada ou de job lento. O diagnóstico é manual:
 
 ```bash
 gh run list --workflow ci-pr.yml --limit 5
-sudo journalctl -u ci-scaleset -f
+sudo journalctl -u ci-scaleset -u ci-scaleset-develop -f
 journalctl -t ci-disk-watch -p warning
 ```
 
@@ -149,7 +173,7 @@ Observabilidade do CI, dentro da VM `ci-runner` e sem SaaS, porque o host sumo n
 | Fila e duração por poller: um script com `gh` a cada 2 min lê runs e jobs com conta de colaborador e emite fila atual, espera até iniciar, duração por job em p50 e p95, taxa de sucesso em 24 h e 7 dias e o status do último run da `develop` | mostra fila parada e job lento sem abrir o GitHub; webhook exigiria admin no repositório e endpoint alcançável pelo GitHub | VM `ci-runner` |
 | Saúde da VM por `node_exporter` com textfile local: units das vagas, idade do `Runner.Worker` mais velho, volumes sem uso, testcontainers vivos, sentinela do `npm ci` | acha job zumbi antes do reaper e disco enchendo antes do alerta | VM `ci-runner` |
 | Cache hit do Nx enviado a um Pushgateway por um passo curto com `\|\| true`, mais as métricas nativas do MinIO do cache remoto | mede o ganho do cache sem nunca quebrar o CI | `scripts/ci/` e host sumo |
-| Alertas: disco acima de 85% por 10 min, RAM livre baixa ou swap acima de 50%, fila parada com zero jobs em execução, worker acima de 80 min, volumes sem uso crescendo, pipeline de métrica mudo há 48 h e o serviço `ci-scaleset` fora do ar | hoje nada avisa | VM `ci-runner` |
+| Alertas: disco acima de 85% por 10 min, RAM livre baixa ou swap acima de 50%, fila parada com zero jobs em execução, worker acima de 80 min, volumes sem uso crescendo, e pipeline de métrica mudo há 48 h | hoje nada avisa; o serviço do scale set parado e o token inválido já são alertas do Orbit | VM `ci-runner` |
 | Se o CI for para o ARC, as métricas do próprio ARC (fila, runners ocupados, espera) substituem o poller | evita manter dois coletores | [[Infraestrutura - CI e runners#Pendências]] |
 
 ## Glossário

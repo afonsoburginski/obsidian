@@ -6,7 +6,7 @@ tags:
 aliases:
   - "Processo - Convenção de nomes"
   - "Convenção de nomes"
-atualizado: 2026-10-07
+atualizado: 2026-10-14
 ---
 
 # Processo - Convenção de nomes
@@ -52,7 +52,7 @@ Docs/<Domínio>/<Subdomínio>/<Domínio> - <Subdomínio> - <Faceta>.md
 | --- | --- | --- |
 | `Docs/Câmeras` | o módulo Câmeras (CCTV), todo servido pelo `ms-cameras` | Cadastro, Dashboard, Eventos, incidentes e alarmes, Integração com dispositivo, PTZ e presets, Saúde e monitoramento, Streaming, Videowall, VMS |
 | `Docs/Analítico` | laço virtual, ATSPM e leitura de placas, embarcado na câmera ou no servidor da Neural Labs | Neural Labs |
-| `Docs/Infraestrutura` | CI, ambientes, acessos e observabilidade | nenhum |
+| `Docs/Infraestrutura` | servidores e rede, ambientes, Orbit e CD, CI, acessos e observabilidade | nenhum |
 | `Docs/Processo` | como o trabalho é feito e contra o quê: convenções e o edital do cliente | nenhum |
 
 - O domínio leva o nome do produto em português, nunca o nome do serviço do repositório: `Câmeras`, não

@@ -1,13 +1,13 @@
 ---
 tags:
   - doc
-  - infra
+  - infraestrutura
   - ssh
   - acesso
 aliases:
   - "Acessos SSH - Infra Attlas"
   - "Infraestrutura - Acessos SSH"
-atualizado: 2026-10-07
+atualizado: 2026-10-14
 ---
 
 # Infraestrutura - Acessos SSH
@@ -18,14 +18,23 @@ Volta para [[Infraestrutura]].
 
 | Comando | Máquina | O que é |
 | --- | --- | --- |
-| `ssh sumo` | `develop@10.1.1.115` | servidor físico que hoje só hospeda o CI (VM `ci-runner`) |
-| `ssh -J sumo ubuntu@192.168.122.66` | VM `ci-runner` | onde o CI roda |
-| `ssh aws-attlas-26` | `ubuntu@3.15.199.101` | EC2 do dev.v2; na tailnet, host `aws-attlas-dev-v2` |
+| `ssh ec2-attlas` | `ubuntu@100.101.165.32` | hub dev pela tailnet |
+| `ssh aws-attlas-26` | `ubuntu@3.15.199.101` | o mesmo hub, pelo IP público |
+| `ssh sumo` | `develop@10.1.1.115` | servidor físico que hospeda a VM do CI |
+| `ssh sumo`, depois `ssh ubuntu@192.168.122.66` | VM `ci-runner` | onde o CI roda |
 
-Tudo em `10.1.1.x` só responde pela tailnet `atmansystems.com` com `--accept-routes` (ver
-[[Infraestrutura - Ambientes#Rede]]). O que roda em cada máquina está em [[Infraestrutura - Ambientes]] e
-[[Infraestrutura - CI e runners]]; comando genérico de SSH, Docker e servidor está em
-[[Infraestrutura - Runbook - Comandos]].
+Tudo em `10.1.1.x` só responde pela tailnet `atmansystems.com` com `--accept-routes` (ver [[Infraestrutura - Servidores e rede#Rede]]). O que roda em cada máquina está em [[Infraestrutura - Servidores e rede]] e [[Infraestrutura - Ambientes]]; comando genérico de SSH, Docker e Kubernetes está em [[Infraestrutura - Runbook - Comandos]].
+
+O Orbit também abre terminal SSH no navegador para quem tem a permissão Terminal SSH, sem chave na máquina local; a chave que ele usa para entrar nos servidores está em Configurações, Acesso aos servidores e só aparece depois de digitar a senha de novo.
+
+## Hub dev
+
+```bash
+ssh ec2-attlas
+ssh ec2-attlas 'export PATH=$HOME/bin:$PATH; kubectl --context kind-attlas -n attlas-dev get pods'
+```
+
+O `ec2-attlas` entra pela tailnet. O `aws-attlas-26` usa o IP público e a chave `~/.ssh/id_ed25519_aws_attlas`; depois de 5 ou mais handshakes em poucos segundos, a porta 22 pública fica bloqueada para aquele IP de origem por cerca de 2 min. Nesse caso entrar pela tailnet, com `-o ControlMaster=no` se houver conexão multiplexada presa. `kubectl`, `kind` e `helm` ficam em `~/bin` do hub, fora do `PATH` padrão.
 
 ## Sumo
 
@@ -33,28 +42,18 @@ Tudo em `10.1.1.x` só responde pela tailnet `atmansystems.com` com `--accept-ro
 ssh sumo
 ```
 
-O alias do `~/.ssh/config` da Dell resolve para `develop@10.1.1.115`. Quando o servidor pede senha, no SSH
-sem chave ou no `sudo`, é a senha do usuário `develop` (ver a seção Credenciais).
+O alias do `~/.ssh/config` resolve para `develop@10.1.1.115`. Quando o servidor pede senha, no SSH sem chave ou no `sudo`, é a senha do usuário `develop` (ver [[#Credenciais]]).
 
-## VM do CI (`ci-runner`)
+## VM do CI
 
-A VM fica atrás da rede NAT do libvirt no sumo, com IP interno `192.168.122.66` e usuário `ubuntu`. A partir
-do usuário `develop` do sumo ela entra direto, sem senha.
-
-Em dois passos:
+A VM fica atrás da rede NAT do libvirt no sumo, com IP interno `192.168.122.66` e usuário `ubuntu`. A chave do usuário `develop` do sumo entra nela sem senha:
 
 ```bash
 ssh sumo
 ssh ubuntu@192.168.122.66
 ```
 
-Em um passo, saltando pelo sumo:
-
-```bash
-ssh -J sumo ubuntu@192.168.122.66
-```
-
-Para usar `ssh ci-runner`, o bloco abaixo vai no `~/.ssh/config`:
+Em um passo, `ssh -J sumo ubuntu@192.168.122.66`, só funciona se a chave da máquina local estiver no `authorized_keys` da VM; sem ela, vale o caminho em dois passos. Para usar `ssh ci-runner`, o bloco abaixo vai no `~/.ssh/config`:
 
 ```text
 Host ci-runner
@@ -63,61 +62,28 @@ Host ci-runner
     ProxyJump sumo
 ```
 
-Quando o SSH da VM não responde, o console serial pelo libvirt do sumo ainda entra. O `virsh` do sumo só
-enxerga a VM com `--connect qemu:///system`:
+Quando o SSH da VM não responde, o console serial pelo libvirt do sumo ainda entra. O `virsh` do sumo só enxerga a VM com `--connect qemu:///system`:
 
 ```bash
 sudo virsh --connect qemu:///system list
 sudo virsh --connect qemu:///system console ci-runner
 ```
 
-A primeira linha confirma que o domínio se chama `ci-runner`; a segunda abre o console, e `Ctrl+]` sai dele.
-
-## EC2 do dev.v2
-
-```bash
-ssh aws-attlas-26
-```
-
-O alias resolve para `ubuntu@3.15.199.101` com a chave `~/.ssh/id_ed25519_aws_attlas`. Depois de muitos
-handshakes em poucos segundos, a porta 22 do IP público fica bloqueada para aquele IP de origem por cerca de
-2 min. Nesse caso a entrada é pela tailnet, com a mesma chave:
-
-```bash
-ssh -o ControlMaster=no -i ~/.ssh/id_ed25519_aws_attlas ubuntu@aws-attlas-dev-v2
-```
-
-## VMs da LAN (`attlas-vm-1..7`)
-
-Removidas: o libvirt do sumo só tem a `ci-runner` e os IPs `10.1.1.120` a `10.1.1.127` não respondem mais.
+A primeira linha confirma que o domínio se chama `ci-runner`; a segunda abre o console, e `Ctrl+]` sai dele. A chave pública do Orbit também precisa estar no `authorized_keys` de `develop` (sumo) e de `ubuntu` (VM), e o `ubuntu` precisa de `sudo` sem senha, para o Orbit gravar o token e reiniciar os scale sets.
 
 ## Credenciais
 
-Nenhuma senha ou token fica no vault: a tabela diz onde cada um está guardado. As memórias locais do Claude
-Code citadas ficam na Dell, em
-`~/.claude/projects/-home-afonso--rea-de-trabalho-Developer-attlas-2026/memory/`.
+Nenhuma senha ou token fica no vault: a tabela diz onde cada um está guardado. As memórias locais do Claude Code citadas ficam na Dell, em `~/.claude/projects/-home-afonso--rea-de-trabalho-Developer-attlas-2026/memory/`.
 
 | Credencial | Usada em | Onde está guardada |
 | --- | --- | --- |
-| Chave `~/.ssh/id_ed25519_aws_attlas` | SSH no EC2 do dev.v2 | na Dell; o alias `aws-attlas-26` já aponta para ela |
-| Chave `sumo@attlas` | SSH do sumo para a `ci-runner` e as `attlas-vm-1..7` | `~/.ssh/id_ed25519` do `develop` no sumo |
+| Chave `~/.ssh/id_ed25519_aws_attlas` | SSH no hub dev pelo IP público | na Dell; o alias `aws-attlas-26` já aponta para ela |
+| Chave `sumo@attlas` | SSH do sumo para a VM do CI | `~/.ssh/id_ed25519` do `develop` no sumo |
 | Senha do usuário `develop` no sumo | `sudo` no sumo e SSH sem chave | memória local `reference_rancher_sumo.md` |
-| Senha do usuário `ubuntu` das `attlas-vm-1..7` | console e SSH sem chave | cloud-init das VMs, no módulo Terraform `~/iac/attlas-vms/` do sumo; cópia na memória local `project_sumo_standalone_vms.md` |
-| Login do painel Rancher | painel do sumo, quando reinstalado | memória local `reference_rancher_sumo.md`; é outra conta, diferente da do SSH |
-| Token do scale set (PAT clássico com escopo `repo`) | serviço `ci-scaleset` da VM do CI | `/etc/ci-scaleset/token` na VM, legível só por root; cópia em `~/.config/attlas-ci/scaleset-token` na Dell |
-| `DEPLOY_HOST`, `DEPLOY_SSH_KEY`, `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN`, `NX_REMOTE_CACHE_TOKEN` | workflows do CI e do deploy | secrets do repositório `atmanadmin/attlas-2026` no GitHub |
-
-## Painéis web do sumo
-
-> [!warning] Rancher e app web do sumo fora do ar
-> As duas URLs abaixo eram servidas pelo RKE2 `local` do sumo, que foi desinstalado. Só respondem depois
-> de reinstalar o RKE2 e o Rancher.
-
-- Rancher: `https://rancher.10.1.1.115.sslip.io`.
-- App web: `http://web.10.1.1.115.sslip.io`, com a API em `api.10.1.1.115.sslip.io`.
-
-O cache remoto do Nx no sumo não é painel; endereço e operação estão em
-[[Infraestrutura - CI e runners#Caches]].
+| Token do GitHub (Orbit e scale sets do CI) | leitura de runs e releases, registro de runners | `/secrets/github-token` do Orbit e `/etc/ci-scaleset/token` na VM, legível só por root; o Orbit grava os dois pela tela. Cópia em `~/.config/attlas-ci/scaleset-token` na Dell |
+| Senha do dono do Orbit (`AtmanAdmin`) | login do Orbit | `~/orbit/state/secrets/console-password` no hub; os demais usuários têm login individual criado em Usuários e acesso |
+| Segredos do Orbit (tokens, kubeconfigs, pacotes de seeds, chave SSH) | operação do hub | `~/orbit/state/secrets/` no hub, modo 700; backup em `~/.local/share/orbit/backups/hub-secrets.tar` na máquina de quem opera, fora do repositório |
+| `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN`, `NX_REMOTE_CACHE_TOKEN`, `CLAUDE_CODE_OAUTH_TOKEN` | workflows do CI | secrets do repositório `atmanadmin/attlas-2026` no GitHub |
 
 ## Glossário
 
@@ -126,6 +92,4 @@ O cache remoto do Nx no sumo não é painel; endereço e operação estão em
 | tailnet | a rede privada do Tailscale; a da empresa é a `atmansystems.com` |
 | `--accept-routes` | flag do `tailscale up` que instala as rotas anunciadas por outro nó, como a `10.1.1.0/24` |
 | ProxyJump (`-J`) | SSH que atravessa uma máquina intermediária até o destino |
-| libvirt e `virsh` | camada de virtualização do sumo e a linha de comando que administra as VMs |
-| bridge `br0` | interface do sumo que põe as VMs direto na LAN, com IP próprio |
-| VIP do kube-vip | IP virtual do plano de controle do Kubernetes, que responde em qualquer nó do cluster |
+| libvirt e `virsh` | camada de virtualização do sumo e a linha de comando que administra a VM do CI |

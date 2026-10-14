@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Servidores e rede da infraestrutura</title>
+  <link rel="stylesheet" href="../lumi-runtime.css">
+  <link rel="stylesheet" href="../flow.css">
+  <script src="../widget-runtime.js"></script>
+</head>
+<body>
+  <div class="widget-container"></div>
+  <script type="application/json" id="flow-spec">
+{
+  "title": "Servidores e rede",
+  "subtitle": "O hub dev entrega o Attlas e hospeda o Orbit; o sumo hospeda o CI; GitHub e Docker Hub ficam fora",
+  "direction": "LR",
+  "groups": [
+    { "id": "acesso", "label": "Acesso" },
+    { "id": "hub", "label": "EC2 aws-attlas-dev-v2" },
+    { "id": "sumo", "label": "sumo 10.1.1.115" },
+    { "id": "ext", "label": "Serviços externos" }
+  ],
+  "nodes": [
+    {
+      "id": "user",
+      "label": "Navegador",
+      "sub": "dev.v2.attlas.atmansystems.com",
+      "group": "acesso",
+      "detail": "Acesso público por HTTPS. Entra pelo nginx do host, que termina o TLS."
+    },
+    {
+      "id": "team",
+      "label": "Equipe",
+      "sub": "tailnet atmansystems.com",
+      "group": "acesso",
+      "detail": "SSH, Orbit pelo IP da tailnet (100.101.165.32:8090) e a LAN 10.1.1.0/24, que o aquario-server anuncia como rota."
+    },
+    {
+      "id": "nginx",
+      "label": "nginx do host",
+      "sub": ":443 e :80",
+      "group": "hub",
+      "detail": "Termina o TLS do dev.v2 e do Orbit, limita requisições e repassa para 127.0.0.1:8081 (Attlas) e 127.0.0.1:8090 (Orbit)."
+    },
+    {
+      "id": "ingress",
+      "label": "orbit-ingress",
+      "sub": "socat :8081, Caddy :8443",
+      "group": "hub",
+      "detail": "O socat leva a porta 8081 até o NodePort 30081 do nó kind. O Caddy serve a tailnet em HTTPS com HTTP/3 na porta 8443."
+    },
+    {
+      "id": "kind",
+      "label": "kind attlas",
+      "sub": "Attlas dev e Argo CD",
+      "kind": "accent",
+      "group": "hub",
+      "detail": "Cluster de um nó (Kubernetes v1.37), namespace attlas-dev com 23 serviços, bancos, Redis, Kafka, MinIO, Kong e MediaMTX. O Orbit grava no GitOps e o Argo CD aplica aqui."
+    },
+    {
+      "id": "orbit",
+      "label": "Orbit One",
+      "sub": ":8090 e repositório GitOps",
+      "kind": "accent",
+      "group": "hub",
+      "detail": "Tela e API de entrega. Containers orbit e orbit-gitops. Estado e segredos em ~/orbit/state."
+    },
+    {
+      "id": "coturn",
+      "label": "coturn",
+      "sub": ":3478 e :3479",
+      "kind": "muted",
+      "group": "hub",
+      "detail": "Relay TURN do WebRTC público, em container com rede do host, fora do cluster."
+    },
+    {
+      "id": "vm",
+      "label": "VM ci-runner",
+      "sub": "96 vCPU, 86 GB, 2 scale sets",
+      "group": "sumo",
+      "detail": "VM libvirt em NAT (192.168.122.66). Scale set sumo-ci-runner para os PRs e sumo-ci-develop para a develop."
+    },
+    {
+      "id": "cache",
+      "label": "Cache do Nx",
+      "sub": "MinIO :8388",
+      "kind": "store",
+      "group": "sumo",
+      "detail": "nx-cache-server mais MinIO no host, compartilhado entre todos os runners."
+    },
+    {
+      "id": "rke2",
+      "label": "RKE2 do sumo",
+      "sub": "cluster sumo, sem ambiente",
+      "kind": "muted",
+      "group": "sumo",
+      "detail": "Nó único registrado no Orbit como cluster sumo. Ainda não recebe ambiente."
+    },
+    {
+      "id": "gh",
+      "label": "GitHub",
+      "sub": "Actions e repositório",
+      "group": "ext",
+      "detail": "Dispara os jobs do CI e guarda o código. O Orbit lê os runs do ci-develop."
+    },
+    {
+      "id": "dh",
+      "label": "Docker Hub",
+      "sub": "atmanadmin/attlas-*",
+      "kind": "store",
+      "group": "ext",
+      "detail": "Registry das imagens :<sha> que o cluster puxa."
+    }
+  ],
+  "edges": [
+    { "from": "user", "to": "nginx", "label": "HTTPS" },
+    { "from": "nginx", "to": "ingress", "label": "8081" },
+    { "from": "ingress", "to": "kind", "label": "NodePort" },
+    { "from": "team", "to": "orbit", "label": "tailnet" },
+    { "from": "orbit", "to": "kind" },
+    { "from": "orbit", "to": "rke2", "label": "SSH e 6443", "dashed": true },
+    { "from": "orbit", "to": "vm", "label": "token", "dashed": true },
+    { "from": "gh", "to": "vm", "label": "jobs" },
+    { "from": "vm", "to": "dh", "label": "push" },
+    { "from": "dh", "to": "kind", "label": "pull" }
+  ]
+}
+  </script>
+  <script src="../flow.js"></script>
+</body>
+</html>

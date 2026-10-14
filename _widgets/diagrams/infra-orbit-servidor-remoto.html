@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Orbit: subir o Attlas num servidor novo</title>
+  <link rel="stylesheet" href="../lumi-runtime.css">
+  <link rel="stylesheet" href="../flow.css">
+  <script src="../widget-runtime.js"></script>
+</head>
+<body>
+  <div class="widget-container"></div>
+  <script type="application/json" id="flow-spec">
+{
+  "title": "Servidor novo",
+  "subtitle": "O Orbit entra por SSH, prepara o Kubernetes e registra o cluster; o ambiente e o deploy vêm depois",
+  "direction": "LR",
+  "groups": [
+    { "id": "once", "label": "Uma vez por servidor" },
+    { "id": "env", "label": "Por instalação" },
+    { "id": "always", "label": "A cada versão" }
+  ],
+  "nodes": [
+    {
+      "id": "net",
+      "label": "Rede até o hub",
+      "sub": "SSH 22 e API 6443",
+      "group": "once",
+      "detail": "O hub precisa alcançar o servidor por SSH e, depois do registro, a API do Kubernetes na porta 6443. Serve rede direta, Tailscale, VPN ou jump host global, configurado em Configurações, Acesso aos servidores."
+    },
+    {
+      "id": "key",
+      "label": "Chave SSH do Orbit",
+      "sub": "authorized_keys do usuário",
+      "group": "once",
+      "detail": "A chave pública ed25519 do Orbit, sem senha, entra no authorized_keys de um usuário do servidor com sudo sem senha. O Orbit também aceita a senha do sudo uma única vez."
+    },
+    {
+      "id": "add",
+      "label": "Adicionar servidor",
+      "sub": "nome e usuário@endereço",
+      "kind": "accent",
+      "group": "once",
+      "detail": "Cinco etapas com progresso ao vivo: ssh, kubernetes (detecta RKE2 ou k3s, ou instala RKE2 de nó único, de 3 a 10 min), storage (StorageClass padrão), acesso (ServiceAccounts do Orbit) e registro no Argo CD."
+    },
+    {
+      "id": "cluster",
+      "label": "Cluster registrado",
+      "sub": "aba Ambientes",
+      "kind": "store",
+      "group": "once"
+    },
+    {
+      "id": "env",
+      "label": "Novo ambiente",
+      "sub": "Onde, O que, Dados, Revisar",
+      "kind": "accent",
+      "group": "env",
+      "detail": "Escolhe cluster e template, os serviços, a infraestrutura de dados e os dados iniciais, revisa e cria num único commit. Os Secrets dos serviços do namespace novo vêm de local/env-secrets.sh no hub."
+    },
+    {
+      "id": "deploy",
+      "label": "Deploy",
+      "sub": "release no ambiente",
+      "group": "always",
+      "detail": "Deploy do ambiente inteiro na primeira vez; depois, um serviço por vez ou o CD automático em ondas."
+    }
+  ],
+  "edges": [
+    { "from": "net", "to": "add" },
+    { "from": "key", "to": "add" },
+    { "from": "add", "to": "cluster", "label": "registro" },
+    { "from": "cluster", "to": "env" },
+    { "from": "env", "to": "deploy" }
+  ]
+}
+  </script>
+  <script src="../flow.js"></script>
+</body>
+</html>

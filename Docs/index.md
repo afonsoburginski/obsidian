@@ -4,7 +4,7 @@ tags:
   - attlas
 aliases:
   - "Docs - índice raiz"
-atualizado: 2026-10-07
+atualizado: 2026-10-14
 banner: "https://images.unsplash.com/photo-1483058712412-4245e9b90334?w=1200"
 banner_y: 0.275
 ---
@@ -23,9 +23,10 @@ um Resumo, que já responde o essencial. Para achar algo rápido, use a tabela "
 | --- | --- |
 | Um comando de ferramenta (Docker, ffmpeg, ONVIF, VAPIX, ISAPI, psql, Kafka, SSH, gh) | [[Infraestrutura - Runbook - Comandos]] |
 | Entrar num servidor | [[Infraestrutura - Acessos SSH]] |
-| Saber onde roda cada coisa (local, dev.v2, Dell, sumo) | [[Infraestrutura - Ambientes]] |
+| Saber que máquinas existem, o que roda em cada uma e como a rede funciona | [[Infraestrutura - Servidores e rede]] |
+| Entender como o dev é montado e o ambiente local | [[Infraestrutura - Ambientes]] |
+| Entender o deploy, o CD em ondas e o Orbit | [[Infraestrutura - Orbit]], [[Infraestrutura - CI-CD de ponta a ponta]] |
 | Entender um CI vermelho, lento ou parado | [[Infraestrutura - CI e runners]] |
-| Diagnosticar o dev.v2 lento | [[Infraestrutura - Runbook - Desempenho do dev.v2]] |
 | Ver logs e métricas da aplicação | [[Infraestrutura - Observabilidade]] |
 | Rotas, tópicos Kafka e tabelas do `ms-cameras` | [[Câmeras - Arquitetura e estratégias]] |
 | Diagnosticar vídeo que não abre, trava ou fica preto | [[Câmeras - Streaming - Runbook]] |
@@ -49,7 +50,7 @@ um Resumo, que já responde o essencial. Para achar algo rápido, use a tabela "
 | --- | --- | --- |
 | [[Câmeras]] | o módulo Câmeras (CCTV), servido inteiro pelo `ms-cameras` | [[Câmeras - Cadastro\|Cadastro]], [[Câmeras - Dashboard\|Dashboard]], [[Câmeras - Eventos, incidentes e alarmes\|Eventos, incidentes e alarmes]], [[Câmeras - Integração com dispositivo\|Integração com dispositivo]], [[Câmeras - PTZ e presets\|PTZ e presets]], [[Câmeras - Saúde e monitoramento\|Saúde e monitoramento]], [[Câmeras - Streaming\|Streaming]], [[Câmeras - Videowall\|Videowall]], [[Câmeras - VMS\|VMS]] |
 | [[Analítico]] | laço virtual, ATSPM e leitura de placas, no app embarcado da câmera ou no servidor da Neural Labs | [[Analítico - Neural Labs\|Neural Labs]] |
-| [[Infraestrutura]] | CI self-hosted, ambientes, rede, observabilidade, acessos e a referência de comandos | nenhum |
+| [[Infraestrutura]] | servidores e rede, ambientes, Orbit e CD, CI self-hosted, observabilidade, acessos e a referência de comandos | nenhum |
 | [[Processo]] | convenções de nome e de escrita, e o edital do cliente | nenhum |
 
 O `web-attlas` não tem domínio próprio: cada tela fica no subdomínio de backend que ela serve.

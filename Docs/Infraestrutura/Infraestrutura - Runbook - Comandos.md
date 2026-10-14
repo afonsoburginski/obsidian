@@ -8,7 +8,7 @@ aliases:
   - "Infraestrutura - Runbook - Comandos"
   - "Comandos"
   - "Comandos gerais"
-atualizado: 2026-10-07
+atualizado: 2026-10-14
 ---
 
 # Infraestrutura - Runbook - Comandos
@@ -19,38 +19,38 @@ Volta para [[Infraestrutura]].
 
 | Ferramenta | Para que serve | Onde roda | Seção |
 | --- | --- | --- | --- |
-| SSH e Tailscale | entrar no dev.v2, no sumo, na VM do CI e na Dell; alcançar a LAN das câmeras | máquina local | [[#Acesso aos servidores]] |
-| Docker e Docker Compose | subir, derrubar, ler log, entrar e recriar serviço da stack | máquina local e dev.v2 | [[#Docker e Docker Compose]] |
+| SSH e Tailscale | entrar no hub dev, no sumo e na VM do CI; alcançar a LAN das câmeras | máquina local | [[#Acesso aos servidores]] |
+| kubectl | estado, logs, exec, banco, Kafka, Redis e MediaMTX do ambiente dev | hub dev | [[#Kubernetes no hub dev]] |
+| Docker e Docker Compose | subir, derrubar, ler log, entrar e recriar serviço da stack local | máquina local | [[#Docker e Docker Compose]] |
 | npm e Nx | preparar a máquina, servir um projeto em desenvolvimento, gerar client e migrar Prisma | máquina local | [[#Monorepo]] |
-| psql | consultar o banco de cada serviço | containers `attlas-db-*` | [[#Banco de dados]] |
-| ferramentas do Kafka | listar tópicos, ler mensagens, ver lag de consumer group | container `attlas-kafka` | [[#Kafka]] |
-| redis-cli | achar chave, ler valor e TTL, medir latência | containers `attlas-redis-*` | [[#Redis]] |
-| curl na API | obter token, chamar rota pelo Kong, health e metrics | máquina local ou host da stack | [[#API do Attlas por HTTP]] |
-| API de controle do MediaMTX | paths, leitores, sessões e erro da puxada | rede `attlas-net` do host da stack | [[#MediaMTX]] |
+| psql | consultar o banco de cada serviço | containers `attlas-db-*` (local) e pods `db-<serviço>-0` (dev) | [[#Banco de dados]] |
+| ferramentas do Kafka | listar tópicos, ler mensagens, ver lag de consumer group | container `attlas-kafka` (local) e pod `kafka-0` (dev) | [[#Kafka]] |
+| redis-cli | achar chave, ler valor e TTL, medir latência | `attlas-redis-*` (local) e `redis-<serviço>-0` (dev) | [[#Redis]] |
+| curl na API | obter token, chamar rota pelo Kong, health e metrics | máquina local ou hub dev | [[#API do Attlas por HTTP]] |
+| API de controle do MediaMTX | paths, leitores, sessões e erro da puxada | rede `attlas-net` (local) e cluster (dev) | [[#MediaMTX]] |
 | ffmpeg, ffprobe e ffplay | abrir RTSP, medir codec, FPS, GOP, bitrate e latência, tirar quadro, gravar trecho | máquina com rota até a câmera | [[#ffmpeg, ffprobe e ffplay]] |
 | ONVIF | descoberta, capacidades, perfis, URL de stream e PTZ de qualquer fabricante | máquina com rota até a câmera | [[#ONVIF]] |
 | VAPIX | API HTTP da Axis | máquina com rota até a câmera | [[#VAPIX da Axis]] |
 | ISAPI | API HTTP da Hikvision | máquina com rota até a câmera | [[#ISAPI da Hikvision]] |
-| ss, nc, tcpdump, tailscale, iptables | rede do host e dos containers | dev.v2 e máquina local | [[#Rede do host]] |
-| nginx e systemd | borda HTTPS do dev.v2 e serviços do sistema nos hosts | dev.v2, sumo e VM do CI | [[#nginx e systemd no host]] |
-| git e gh | ler a `develop`, acompanhar PR, checks, runs e logs de job, disparar deploy | máquina local | [[#Git e GitHub CLI]] |
+| ss, nc, tcpdump, tailscale, iptables | rede do host e dos containers | hub dev e máquina local | [[#Rede do host]] |
+| nginx e systemd | borda HTTPS do hub dev e serviços do sistema nos hosts | hub dev, sumo e VM do CI | [[#nginx e systemd no host]] |
+| git e gh | ler a `develop`, acompanhar PR, checks, runs e logs de job | máquina local | [[#Git e GitHub CLI]] |
 
 Os procedimentos de diagnóstico de cada domínio ficam nos runbooks dele: [[Câmeras - Streaming - Runbook]],
-[[Câmeras - Integração com dispositivo - Runbook]], [[Analítico - Runbook - Embarcado]] e
-[[Infraestrutura - Runbook - Desempenho do dev.v2]]. Esta nota guarda o comando de cada ferramenta e a leitura da
-saída; a ordem dos passos de um diagnóstico mora no runbook do domínio.
+[[Câmeras - Integração com dispositivo - Runbook]] e [[Analítico - Runbook - Embarcado]]. Esta nota guarda o
+comando de cada ferramenta e a leitura da saída; a ordem dos passos de um diagnóstico mora no runbook do domínio.
 
-Kubernetes não entra aqui porque nenhum cluster de aplicação está no ar: o Attlas roda em Docker Compose. "Local"
-nesta nota é a máquina de desenvolvimento (a Dell), com o repositório em
-`~/Área de trabalho/Developer/attlas-2026`. Nenhuma credencial aparece nos comandos: cada `$VARIÁVEL` está em
-[[#Variáveis usadas nesta nota]].
+"Local" nesta nota é a máquina de desenvolvimento (a Dell), com o repositório em
+`~/Área de trabalho/Developer/attlas-2026`, onde o Attlas roda em Docker Compose. "Dev" é o ambiente do hub, em
+Kubernetes (ver [[Infraestrutura - Ambientes]]): os comandos de `kubectl` rodam no hub, por `ssh ec2-attlas`.
+Nenhuma credencial aparece nos comandos: cada `$VARIÁVEL` está em [[#Variáveis usadas nesta nota]].
 
 ## Acesso aos servidores
 
 ### Para que serve
 
 O SSH entra nos servidores. O Tailscale põe a máquina local na tailnet `atmansystems.com`, que é o único caminho até o
-sumo, as VMs dele e as câmeras da LAN `10.1.1.0/24`.
+sumo, a VM do CI e as câmeras da LAN `10.1.1.0/24`.
 
 ### Comandos
 
@@ -58,37 +58,37 @@ sumo, as VMs dele e as câmeras da LAN `10.1.1.0/24`.
 
 | Host | Comando de entrada | O que roda |
 | --- | --- | --- |
-| dev.v2, EC2 `3.15.199.101` | `ssh aws-attlas-26` | a stack Compose inteira do ambiente de desenvolvimento, em `~`, atrás de um nginx do host |
-| dev.v2 pela tailnet | `ssh -o ControlMaster=no -i ~/.ssh/id_ed25519_aws_attlas ubuntu@aws-attlas-dev-v2` | o mesmo host, quando a porta 22 pública dá timeout |
-| sumo, `10.1.1.115` | `ssh sumo` | VM do CI, cache remoto do Nx (MinIO na porta 8388), stack legada do Attlas 25 e VMs `attlas-vm-1..7` |
-| VM do CI `ci-runner`, `192.168.122.66` | `ssh -J sumo ubuntu@192.168.122.66` | os runners do GitHub Actions (scale set `sumo-ci-runner`) |
-| `attlas-vm-1..7`, `10.1.1.120` a `10.1.1.125` e `10.1.1.127` | `ssh -J sumo ubuntu@<ip>` | VMs em bridge na LAN; `10.1.1.126` é o VIP do kube-vip |
-| Dell | `ssh <usuário>@afonso-dell-14-dc14250.tail4b16e5.ts.net` | máquina de desenvolvimento; Kong na porta 8000 |
+| hub dev, EC2 `3.15.199.101` | `ssh ec2-attlas` (tailnet) ou `ssh aws-attlas-26` (IP público) | cluster kind com o Attlas dev, o Orbit e o nginx do host |
+| sumo, `10.1.1.115` | `ssh sumo` | VM do CI, cache remoto do Nx (MinIO na porta 8388), RKE2 de nó único e stack legada do Attlas 25 |
+| VM do CI `ci-runner`, `192.168.122.66` | `ssh sumo`, depois `ssh ubuntu@192.168.122.66` | os runners do GitHub Actions (scale sets `sumo-ci-runner` e `sumo-ci-develop`) |
+| Dell | `ssh <usuário>@afonso-dell-14-dc14250.tailca0a03.ts.net` | máquina de desenvolvimento; Kong na porta 8000 |
 | `aquario-server`, `100.77.100.21` na tailnet | sem acesso do time; só responde a `tailscale ping` | subnet router que anuncia `10.1.1.0/24` e as redes `10.11.x.x` |
 
-**Entrar no dev.v2 e rodar vários comandos numa conexão só**
+**Entrar no hub e rodar vários comandos numa conexão só**
 
 ```bash
 # local
-ssh aws-attlas-26
-ssh aws-attlas-26 'docker compose ps -a'          # o diretório inicial é ~, onde está o docker-compose.yml
-ssh aws-attlas-26 'bash -s' < script.sh           # vários comandos, um handshake só
+ssh ec2-attlas
+ssh ec2-attlas 'export PATH=$HOME/bin:$PATH; kubectl --context kind-attlas -n attlas-dev get pods'
+ssh ec2-attlas 'bash -s' < script.sh              # vários comandos, um handshake só
 ```
 
-**Abrir no navegador local uma porta que o dev.v2 só publica para ele mesmo**
+**Abrir no navegador local uma porta que o dev só tem dentro do cluster**
 
 ```bash
-# local; Kafdrop em http://localhost:9000 e MailHog em http://localhost:8025
-ssh -N -L 9000:localhost:9000 -L 8025:localhost:8025 aws-attlas-26
+# local; Kafdrop em http://localhost:9000; o túnel dura enquanto o port-forward do hub rodar
+ssh -L 9000:localhost:9000 ec2-attlas 'export PATH=$HOME/bin:$PATH; kubectl --context kind-attlas -n attlas-dev port-forward svc/kafdrop 9000:9000'
 # ms-cameras direto, sem passar pelo Kong, em http://localhost:13300
-ssh -N -L 13300:localhost:3300 aws-attlas-26
+ssh -L 13300:localhost:13300 ec2-attlas 'export PATH=$HOME/bin:$PATH; kubectl --context kind-attlas -n attlas-dev port-forward svc/ms-cameras 13300:3300'
 ```
 
 **Entrar na VM do CI**
 
 ```bash
 # local
-ssh -J sumo ubuntu@192.168.122.66
+ssh sumo
+ssh ubuntu@192.168.122.66                 # no sumo; a chave do usuário develop entra sem senha
+ssh -J sumo ubuntu@192.168.122.66         # em um passo, só com a chave local no authorized_keys da VM
 ```
 
 **Criar o alias `ssh ci-runner` no `~/.ssh/config`**
@@ -112,11 +112,11 @@ virsh --connect qemu:///system console ci-runner     # sair com Ctrl+]
 
 ```bash
 # local
-tailscale switch --list                 # contas logadas; a certa é a @atmansystems.com
+tailscale switch --list                 # o tailnet ativo precisa ser o Atman Systems (atmansystems.com)
 sudo tailscale up --accept-routes       # sem a flag, a rota do aquario-server não entra na tabela
 tailscale status | grep -E 'aquario|aws-attlas|dell'
 ip route get 10.1.1.78                  # tem de sair por dev tailscale0
-# conta errada logada: sudo tailscale logout e depois sudo tailscale up --accept-routes, com a conta @atmansystems.com
+# tailnet errado: tailscale switch para o Atman Systems e repetir o up
 ```
 
 ### Leitura do resultado
@@ -125,7 +125,7 @@ ip route get 10.1.1.78                  # tem de sair por dev tailscale0
 | --- | --- |
 | `ip route get 10.1.1.78` mostra `dev tailscale0 table 52` | a rota da LAN de câmeras está ativa |
 | a rota aparece em `tailscale status --json` (`AllowedIPs`), mas `ip route get` sai pela interface física | falta `--accept-routes` |
-| `ssh aws-attlas-26` dá `Connection timed out` com o site respondendo | bloqueio da porta 22 pública para o seu IP; entrar pela tailnet |
+| `ssh aws-attlas-26` dá `Connection timed out` com o site respondendo | bloqueio da porta 22 pública para o seu IP; entrar por `ssh ec2-attlas` |
 | `ssh sumo` sem resposta e `tailscale ping 100.77.100.21` sem pong | o `aquario-server` caiu; tudo em `10.1.1.x` some de uma vez |
 | `virsh list` vazio no sumo | o `virsh` sem `--connect qemu:///system` abre a sessão do usuário, que não tem VM |
 
@@ -133,10 +133,116 @@ ip route get 10.1.1.78                  # tem de sair por dev tailscale0
 
 | O que dá errado | Como evitar |
 | --- | --- |
-| Tailnet pessoal logada (a do GitHub do dono ou a do Vision Team): nenhuma rota para a rede da Atman | `tailscale switch` para a conta `@atmansystems.com` |
-| Cinco ou mais handshakes SSH em poucos segundos bloqueiam a porta 22 do dev.v2 para aquele IP por cerca de 2 min | agrupar comandos em `bash -s`, ou entrar pela tailnet |
-| O `aquario-server` é ponto único de falha: sem ele somem sumo, VMs e câmeras | conferir `tailscale ping 100.77.100.21` antes de suspeitar do Attlas; o conserto é no local, não existe caminho remoto até ele |
-| `terraform apply` em `~/iac/attlas-vms` no sumo destrói as VMs, porque o state ainda as coloca na rede NAT `default` | não rodar até reconciliar o state |
+| Tailnet pessoal logada: nenhuma rota para a rede da Atman | `tailscale switch` para o tailnet Atman Systems |
+| Cinco ou mais handshakes SSH em poucos segundos bloqueiam a porta 22 pública do hub para aquele IP por cerca de 2 min | agrupar comandos em `bash -s`, ou entrar pela tailnet |
+| O `aquario-server` é ponto único de falha: sem ele somem sumo, a VM do CI e as câmeras | conferir `tailscale ping 100.77.100.21` antes de suspeitar do Attlas; o conserto é no local, não existe caminho remoto até ele |
+
+## Kubernetes no hub dev
+
+### Para que serve
+
+O ambiente dev roda no cluster kind `attlas` do hub, namespace `attlas-dev`. Cada serviço é um Deployment com o nome
+dele; cada banco (`db-<serviço>`), Redis (`redis-<serviço>`), o Kafka, o ZooKeeper e o MinIO é um StatefulSet com
+o pod `-0`. Os comandos rodam no hub (`ssh ec2-attlas`), onde `kubectl`, `kind` e `helm` ficam em `~/bin`. A entrega
+é do Orbit: os comandos de escrita abaixo reiniciam pods, mas não mudam o GitOps.
+
+### Comandos
+
+**Preparar a sessão**
+
+```bash
+# no hub
+export PATH=$HOME/bin:$PATH
+K="kubectl --context kind-attlas -n attlas-dev"
+```
+
+**Ver o estado**
+
+```bash
+$K get pods | grep -vE 'Running|Completed'          # o que não está de pé
+$K get pods --no-headers | awk '$4 + 0 > 0 {print $1, $4}'     # pods com reinício
+$K top pods --sort-by=memory | head
+$K get events --sort-by=.lastTimestamp | tail -20
+kubectl --context kind-attlas -n argocd get applications        # Synced e Healthy por aplicativo
+```
+
+**Ver os logs de um serviço**
+
+```bash
+$K logs --tail 200 -f deploy/<svc>
+$K logs --since 30m deploy/<svc> | grep -E '"level":(50|60)'    # só erro e fatal
+$K logs --previous <pod>                                         # container que reiniciou
+```
+
+**Entrar num pod e ver o ambiente dele**
+
+```bash
+$K exec -it deploy/<svc> -- sh
+$K exec deploy/<svc> -- printenv | cut -d= -f1 | sort            # só os nomes das variáveis, sem valor
+```
+
+**Reiniciar um serviço e acompanhar**
+
+```bash
+$K rollout restart deploy/<svc>
+$K rollout status deploy/<svc>
+$K describe pod <pod> | sed -n '/Events:/,$p'
+```
+
+**Abrir o psql de um serviço, só para leitura**
+
+```bash
+$K exec -it db-<svc>-0 -- sh -c 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB"'
+# de fora, com a consulta no arquivo q.sql e a proteção de leitura (local)
+ssh ec2-attlas "export PATH=\$HOME/bin:\$PATH; kubectl --context kind-attlas -n attlas-dev exec -i db-cameras-0 -- sh -c 'PGOPTIONS=\"-c default_transaction_read_only=on\" psql -U \"\$POSTGRES_USER\" -d \"\$POSTGRES_DB\"'" < q.sql
+```
+
+**Ligar um cliente gráfico ao banco**
+
+```bash
+# local; depois conectar em localhost:15432 com o usuário e a senha do Secret do serviço
+ssh -L 15432:localhost:15432 ec2-attlas 'export PATH=$HOME/bin:$PATH; kubectl --context kind-attlas -n attlas-dev port-forward pod/db-cameras-0 15432:5432'
+```
+
+**Kafka e Redis**
+
+```bash
+$K exec kafka-0 -- kafka-topics --bootstrap-server kafka:29092 --list
+$K exec kafka-0 -- kafka-consumer-groups --bootstrap-server kafka:29092 --describe --group <grupo>
+$K exec redis-<svc>-0 -- redis-cli INFO keyspace
+$K exec redis-<svc>-0 -- timeout 15 redis-cli --latency
+```
+
+**Health e MediaMTX por dentro do cluster**
+
+```bash
+$K exec deploy/ms-cameras -- wget -qO- http://localhost:3300/health/ready
+$K exec deploy/ms-cameras -- wget -qO- http://mediamtx:9997/v3/paths/list
+$K logs --tail 300 deploy/mediamtx | grep -E ' (ERR|WAR) |<cameraId>'
+```
+
+### Leitura do resultado
+
+| Saída | O que significa |
+| --- | --- |
+| `CrashLoopBackOff` | o boot falhou: variável faltando no Secret, migration Prisma (P3018) ou tópico Kafka ausente; o motivo está em `logs --previous` |
+| `OOMKilled` no `describe pod` | o limite de memória estourou; o Orbit sobe o limite sozinho até o teto |
+| `Init` ou `ContainerCreating` por minutos | pull de imagem ou volume; `describe pod` mostra qual |
+| `kafka-init` e `minio-init` como `Completed` | normal: são Jobs de uma execução, recriados a cada sync da infraestrutura |
+| aplicativo `Progressing` por horas no Argo CD | Ingress sem status no kind, ou onda de deploy em andamento |
+| `cannot execute UPDATE in a read-only transaction` | a proteção de leitura funcionou |
+| `LAG` crescendo entre duas leituras do consumer group | consumidor lento ou parado |
+
+### Armadilhas
+
+| O que dá errado | Como evitar |
+| --- | --- |
+| `kubectl` sem `PATH` ou sem `--context kind-attlas` | o binário fica em `~/bin` do hub; o contexto padrão pode ser outro |
+| `kubectl exec` em pod de um serviço sem `sh`, `wget` ou `ffmpeg` | a imagem do MediaMTX só tem o binário; chamar a API de outro pod, como acima |
+| `printenv`, `kubectl get secret -o yaml` e `describe` com valor | imprimem segredos; não colar a saída em PR, chat ou nota |
+| `rollout restart` para trocar versão | a versão é do GitOps: o Argo CD desfaz a troca de tag feita à mão; deploy e rollback são do Orbit |
+| Escrever no banco do dev | só na receita de recuperação de migration; para o resto, `default_transaction_read_only=on` |
+| Reiniciar vários serviços de uma vez com o host em load alto | as probes estouram e os pods entram em loop; um serviço por vez |
 
 ## Docker e Docker Compose
 
@@ -144,8 +250,8 @@ ip route get 10.1.1.78                  # tem de sair por dev tailscale0
 
 O `docker-compose.yml` descreve a stack inteira: a infraestrutura comum fica sem perfil e sobe com `npm run infra:up`;
 microsserviços, `web-attlas` e alguns bancos e Redis ficam no perfil `full`. Na máquina local o
-`docker-compose.override.yml` é carregado sozinho e aponta o Kong para os serviços em `nx serve`; no dev.v2 a stack mora
-em `~` e o `.env.docker` de cada serviço em `~/apps/<ms>/`.
+`docker-compose.override.yml` é carregado sozinho e aponta o Kong para os serviços em `nx serve`. O dev não usa
+Compose: seus comandos estão em [[#Kubernetes no hub dev]].
 
 ### Comandos
 
@@ -161,7 +267,7 @@ docker compose --profile full up -d    # tudo, cerca de 57 containers
 **Subir ou recriar um serviço só**
 
 ```bash
-# local ou no dev.v2 (em ~)
+# local
 docker compose up -d --no-deps <svc>                       # nomear o serviço ativa o perfil dele
 docker compose up -d --no-deps --force-recreate <svc>      # depois de mudar env, imagem ou compose
 docker compose --profile full up -d --no-deps --no-build --force-recreate <svc>   # erro "network ... not found"
@@ -222,23 +328,6 @@ docker run --rm --entrypoint sh atmanadmin/attlas-<svc>:dev -c 'grep -c <símbol
 npx nx run <svc>:docker:build --skip-nx-cache      # local; sem a flag o Nx pode servir do cache
 ```
 
-**Levar uma imagem local para o dev.v2 sem registry**
-
-```bash
-# local
-docker save atmanadmin/attlas-<svc>:dev | gzip -1 | ssh aws-attlas-26 'gunzip | docker load'
-# no dev.v2, em ~, sem pull
-docker compose --profile full up -d --no-deps --force-recreate <svc>
-```
-
-**Comparar o `.env.docker` do dev.v2 com o `.env.example`**
-
-```bash
-# no dev.v2, em ~; o deploy deixa o .env.example ao lado de cada .env.docker
-bash scripts/ci/deploy-env-keys-check.sh -f docker-compose.yml <svc>
-diff <(grep -oE '^[A-Z0-9_]+' ~/apps/<ms>/.env.docker | sort) <(grep -oE '^[A-Z0-9_]+' ~/apps/<ms>/.env.example | sort)
-```
-
 **Subir Prometheus, Grafana e Loki na máquina local**
 
 ```bash
@@ -252,7 +341,7 @@ docker compose -f docker/observability/docker-compose.yml up -d
 df -h /
 docker system df
 docker image prune -f                           # imagens sem tag
-docker image prune -af --filter "until=72h"     # o mesmo corte que o deploy usa
+docker image prune -af --filter "until=72h"     # imagens sem uso há mais de 72 h
 docker builder prune -af                        # cache de build
 sudo du -sh /var/lib/docker/containers/*/*-json.log | sort -h | tail     # logs de container
 ```
@@ -263,18 +352,17 @@ sudo du -sh /var/lib/docker/containers/*/*-json.log | sort -h | tail     # logs 
 | --- | --- |
 | `Exited (0)` em `attlas-kafka-init` e `attlas-minio-init` | normal: são containers de uma execução só |
 | `Exited (1)` num `attlas-ms-*` | o boot falhou: variável faltando no `.env.docker`, migration Prisma (P3018) ou tópico Kafka ausente; o motivo está no fim do `docker compose logs` |
-| `Exited (137)` | SIGKILL: shutdown acima de 10 s no deploy, ou falta de memória quando `OOMKilled` vem `true` |
+| `Exited (137)` | SIGKILL: shutdown acima de 10 s ao recriar, ou falta de memória quando `OOMKilled` vem `true` |
 | `RestartCount` subindo a cada leitura | o container está em laço de reinício |
 | `"level":40`, `50` e `60` no log | warn, error e fatal do pino; em container o serviço roda com `NODE_ENV=production` e loga JSON, em `nx serve` loga texto colorido |
 | `responseTime` | duração da requisição em ms; em SSE e WebSocket é o tempo de vida da conexão |
-| o `deploy-env-keys-check.sh` lista chaves e sai com código 1 | o `.env.docker` do host não tem uma chave que o `.env.example` declara |
 
 Portas que o compose publica no host:
 
 | Porta | Container |
 | --- | --- |
 | 8000, 8001, 8100 | `attlas-kong`: proxy das rotas `/api/*`, Admin API e `/metrics` |
-| 9092, 9094 | `attlas-kafka`: listener do host e listener externo para o equipamento publicar no dev.v2 |
+| 9092, 9094 | `attlas-kafka`: listener do host e listener externo para o equipamento publicar |
 | 9000 | `attlas-kafdrop` |
 | 8025 | `attlas-mailhog`, interface web |
 | 9100, 9101 | `attlas-minio`: API S3 e console |
@@ -288,17 +376,15 @@ Portas que o compose publica no host:
 
 | O que dá errado | Como evitar |
 | --- | --- |
-| Na máquina local, o Kong guarda o IP antigo de um serviço recriado e responde 502 ou 404, porque o override desliga o `KONG_DNS_VALID_TTL` | `docker compose up -d --force-recreate kong` depois de recriar um serviço; no dev.v2 o TTL de 10 s resolve sozinho |
+| Na máquina local, o Kong guarda o IP antigo de um serviço recriado e responde 502 ou 404, porque o override desliga o `KONG_DNS_VALID_TTL` | `docker compose up -d --force-recreate kong` depois de recriar um serviço |
 | O override aponta `<ms>:host-gateway` para um serviço que está em container: o Kong bate na porta do `nx serve` e recebe `connection refused` | cada linha do `extra_hosts` só vale para serviço em `nx serve`; com o serviço em container, comentar a linha dele e recriar o Kong |
-| `docker compose pull` depois de um `docker load` | traz a imagem do Docker Hub por cima da carregada; no deploy direto não se usa `pull` |
 | `nx run-many -t docker:build` serve do cache e não roda o `docker build` | `--skip-nx-cache` e conferir o `{{.Created}}` da imagem |
 | `docker volume prune` ou `docker system prune --volumes` | apaga os bancos; nunca no host da aplicação |
 | Kafka cai no boot com `NodeExists` depois de reinício rápido | `docker restart attlas-zookeeper`, `docker start attlas-kafka` e `docker compose run --rm kafka-init` |
 | Mudança de env ou de compose sem efeito | `restart` reaproveita o container antigo; usar `--force-recreate` |
-| Recriar o Kong derruba todo WebSocket e SSE; recriar o MediaMTX derruba todo vídeo | só quando a configuração deles mudou; o deploy já decide isso pelo hash do `docker/kong.yml` e do `docker/mediamtx.yml` |
+| Recriar o Kong derruba todo WebSocket e SSE; recriar o MediaMTX derruba todo vídeo | só quando a configuração deles mudou |
 | `docker compose config` e `printenv` com valor | imprimem segredos; não colar a saída em PR, chat ou nota |
 | `--profile full` na Dell | cerca de 57 containers não cabem nos 15 GiB; subir só os serviços nomeados |
-| Chave nova no `.env.example` | o deploy não sincroniza o `.env.docker` do dev.v2; a chave entra à mão e o serviço é recriado |
 
 ## Monorepo
 
@@ -327,7 +413,7 @@ npm run serve ms-cameras
 npm run serve web-attlas          # http://localhost:4200
 ```
 
-**Servir o front local contra o dev.v2**
+**Servir o front local contra o dev**
 
 ```bash
 ATTLAS_API=https://dev.v2.attlas.atmansystems.com \
@@ -405,24 +491,18 @@ npm run validate:pre-pr                             # varredura leve do diff da 
 
 ### Para que serve
 
-Cada serviço tem um Postgres 15 próprio no container `attlas-db-<serviço>` (o do `ms-cameras` é `attlas-db-cameras`). O
-usuário e o banco estão nas variáveis `POSTGRES_USER` e `POSTGRES_DB` do próprio container, e o `psql` roda lá dentro,
-pelo socket local, sem senha.
+Cada serviço tem um Postgres 15 próprio: no container `attlas-db-<serviço>` na máquina local (o do `ms-cameras` é
+`attlas-db-cameras`) e no pod `db-<serviço>-0` no dev, com os comandos em [[#Kubernetes no hub dev]]. O usuário e o
+banco estão nas variáveis `POSTGRES_USER` e `POSTGRES_DB` do próprio container, e o `psql` roda lá dentro, pelo
+socket local, sem senha.
 
 ### Comandos
 
 **Abrir o psql de um serviço**
 
 ```bash
-# local ou no dev.v2
+# local
 docker exec -it attlas-db-<serviço> sh -c 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB"'
-```
-
-**Consultar o dev.v2 só para leitura**
-
-```bash
-# local; a consulta fica no arquivo q.sql e vai por stdin
-ssh aws-attlas-26 'docker exec -i -e PGOPTIONS="-c default_transaction_read_only=on" attlas-db-cameras sh -c "psql -U \$POSTGRES_USER -d \$POSTGRES_DB"' < q.sql
 ```
 
 **Preencher `$CRED` com a credencial de uma câmera**
@@ -455,12 +535,13 @@ SELECT datname, temp_files, pg_size_pretty(temp_bytes) FROM pg_stat_database;
 SELECT "systemId", "ipAddress", count(*) FROM "Camera" WHERE "deletedAt" IS NULL GROUP BY 1, 2 HAVING count(*) > 1;
 ```
 
-**Ligar um cliente gráfico ao banco do dev.v2**
+**Ligar um cliente gráfico ao banco local**
 
 ```bash
-# local; depois conectar em localhost:15432 com o usuário e a senha do serviço no docker-compose.yml
-ssh -N -L 15432:localhost:5432 aws-attlas-26      # 5432 é o attlas-db-cameras; os outros, no docker compose ps
+# conectar em localhost:5432 (attlas-db-cameras; os outros bancos entre 5401 e 5415) com o usuário e a senha do serviço no docker-compose.yml
 ```
+
+Para o banco do dev, o túnel está em [[#Kubernetes no hub dev]].
 
 ### Leitura do resultado
 
@@ -481,22 +562,22 @@ ssh -N -L 15432:localhost:5432 aws-attlas-26      # 5432 é o attlas-db-cameras;
 | Aspas aninhadas em `ssh ... docker exec ... psql -c` travam o shell | consulta num arquivo, mandada por stdin |
 | Câmera inserida à mão com id derivado de hash | usar `gen_random_uuid()`; o WebSocket do analítico recusa id que não é UUID válido |
 | Procurar consulta lenta pelo `pg_stat_statements` | a extensão não está ligada em nenhum Postgres |
-| Duplicata antiga quebra a migration de um índice único no boot (P3018 com erro 23505) | rodar o `GROUP BY ... HAVING count(*) > 1` em todo ambiente antes; a recuperação está em [[Infraestrutura - Ambientes]] |
-| Escrita no banco do dev.v2 | só na receita de recuperação; para o resto, `default_transaction_read_only=on` |
+| Duplicata antiga quebra a migration de um índice único no boot (P3018 com erro 23505) | rodar o `GROUP BY ... HAVING count(*) > 1` em todo ambiente antes; a recuperação está em [[Infraestrutura - Ambientes#Armadilhas conhecidas]] |
 
 ## Kafka
 
 ### Para que serve
 
 Um broker só, `attlas-kafka` (imagem `confluentinc/cp-kafka:7.0.1`), atende todos os serviços. As ferramentas de linha
-de comando já vêm no container; dentro da rede `attlas-net` o endereço do broker é `kafka:29092`.
+de comando já vêm no container (`attlas-kafka` local, pod `kafka-0` no dev); dentro da rede `attlas-net` e do cluster o
+endereço do broker é `kafka:29092`.
 
 ### Comandos
 
 **Listar e descrever tópicos**
 
 ```bash
-# local ou no dev.v2
+# local; no dev, o mesmo comando em `kubectl exec kafka-0`
 docker exec attlas-kafka kafka-topics --bootstrap-server kafka:29092 --list
 docker exec attlas-kafka kafka-topics --bootstrap-server kafka:29092 --describe --topic <tópico>
 grep -i '<parte do nome>' docker/kafka-topics.list       # local: a lista que o kafka-init cria
@@ -526,7 +607,7 @@ docker compose run --rm kafka-init
 docker restart attlas-zookeeper && docker start attlas-kafka      # broker parado com NodeExists no log
 ```
 
-**Testar a porta em que o equipamento publica no dev.v2**
+**Testar a porta em que o equipamento publica no dev**
 
 ```bash
 # local
@@ -534,7 +615,7 @@ nc -vz dev.v2.attlas.atmansystems.com 9094
 ```
 
 A interface web é o Kafdrop: `http://localhost:9000` na máquina local, ou pelo túnel de [[#Acesso aos servidores]] no
-dev.v2.
+dev.
 
 ### Leitura do resultado
 
@@ -553,7 +634,7 @@ dev.v2.
 | O que dá errado | Como evitar |
 | --- | --- |
 | `kafka-console-consumer --group <grupo de um serviço>` | entra no grupo do serviço, toma partições dele e grava offset; sem `--group` o console usa um grupo descartável |
-| Tópico novo no código, ausente no broker, derruba o consumidor no boot | `docker compose run --rm kafka-init`; o deploy já roda esse passo |
+| Tópico novo no código, ausente no broker, derruba o consumidor no boot | `docker compose run --rm kafka-init` (local); no dev o job `kafka-init` roda a cada sync da infraestrutura |
 | `ANALYTICS_STREAM_BROKERS` do `ms-cameras` apontando para outro broker que não o do equipamento | a região de detecção para de acender sem erro nenhum; conferir no `.env.docker` |
 
 ## Redis
@@ -568,7 +649,7 @@ porta 6390 no host). Ele guarda cache, estado de curta duração e travas; o ban
 **Abrir o redis-cli**
 
 ```bash
-# local ou no dev.v2
+# local; no dev, o mesmo comando em `kubectl exec redis-<serviço>-0`
 docker exec -it attlas-redis-cameras redis-cli
 docker exec -it -e REDISCLI_AUTH="$REDIS_PASS" attlas-redis-alarms redis-cli     # Redis com senha
 ```
@@ -648,7 +729,7 @@ curl -s "$ATTLAS_API/api/cameras/<id>/stream-diagnostics?quality=PRIMARY&codec=H
 **Ver health e metrics de um serviço**
 
 ```bash
-# no host que roda o serviço (local ou dev.v2)
+# local, no host da stack; no dev, a mesma chamada por kubectl exec (ver Kubernetes no hub dev)
 curl -s localhost:<porta>/health/live
 curl -s localhost:<porta>/health/ready | jq .
 curl -s localhost:<porta>/metrics -H "Authorization: Bearer $METRICS_SCRAPE_TOKEN" | grep '^ms_cameras_stream_'
@@ -675,7 +756,7 @@ curl -s -o /dev/null -D - --compressed "$ATTLAS_API/api/organization/users/me/pe
 **Ver as rotas e validar a configuração do Kong**
 
 ```bash
-# no host que roda a stack
+# local
 curl -s 'localhost:8001/routes?size=1000' | jq -r '.data[].paths[]' | grep '/api/cameras'
 docker exec attlas-kong kong config parse /tmp/kong.yml
 ```
@@ -699,8 +780,7 @@ docker exec attlas-ms-cameras node -e "fetch('http://ms-detector-history:3000/<r
 | 403 com `PERMISSION_RESOLVER_UNAVAILABLE` | o serviço não alcançou o `ms-organization` para checar permissão, e a checagem falha fechada |
 | 404 numa câmera que existe | a câmera é de outro Sistema; o serviço responde 404, não 403 |
 | 200 com lista vazia | `System-Id` sem dados; conferir o id |
-| 502 no `ms-cameras` por 4 a 5 min depois de um deploy | janela de boot; esperar, não reiniciar |
-| 503 `{"message":"name resolution failed"}` | o container do serviço não existe ou está parado |
+| 503 `{"message":"name resolution failed"}` | o container (ou pod) do serviço não existe ou está parado |
 | `/health/ready` com 503 e `"status":"error"` | uma dependência (banco, Redis, Kafka) está fora; o campo `error` diz qual |
 | `X-Accel-Buffering: no` nos headers do SSE | a rota tem o plugin que solta os eventos na borda |
 | `content-encoding: gzip` | o Kong comprimiu o JSON |
@@ -711,7 +791,6 @@ docker exec attlas-ms-cameras node -e "fetch('http://ms-detector-history:3000/<r
 | --- | --- |
 | Login por `curl` recusado com o reCAPTCHA ligado (`RECAPTCHA_ENABLED=true` no `ms-organization`): a rota exige o header `x-recaptcha-token` | copiar o token de uma requisição do navegador no DevTools |
 | Ranking de latência com SSE e WebSocket dentro | a duração deles é o tempo de vida da conexão; tirar `/realtime` e as rotas de stream da conta |
-| Reiniciar o `ms-cameras` porque respondeu 502 logo depois do deploy | a janela de boot dura de 4 a 5 min |
 | Kong 503 e reinício do Kong às cegas | o 503 diz que o container sumiu; achar por que ele caiu |
 
 ## MediaMTX
@@ -721,14 +800,14 @@ docker exec attlas-ms-cameras node -e "fetch('http://ms-detector-history:3000/<r
 O MediaMTX (`attlas-mediamtx`) puxa o RTSP de cada câmera sob demanda e entrega WebRTC (WHEP), LL-HLS e RTSP. Cada
 stream é um path `<cameraId>-<primary|secondary|tertiary>`, com `-h265` ou `-av1` no fim quando o codec não é H.264; o
 videowall usa `videowall-mirror-*` e `videowall-projection-*`. A API de controle, na porta 9997, mostra paths, leitores,
-sessões e o erro da última puxada, e não é publicada no host do dev.v2 porque devolve a senha das câmeras.
+sessões e o erro da última puxada, e não é publicada no host do dev (lá é NodePort do nó kind) porque devolve a senha das câmeras.
 
 ### Comandos
 
 **Listar paths, bytes recebidos e leitores**
 
 ```bash
-# no dev.v2 ou na stack local em container: pelo ms-cameras, o mesmo caminho que o serviço usa
+# na stack local em container: pelo ms-cameras, o mesmo caminho que o serviço usa (no dev, `kubectl exec deploy/ms-cameras`)
 docker exec attlas-ms-cameras wget -qO- http://mediamtx:9997/v3/paths/list \
   | python3 -c 'import json,sys; [print(p["name"], p.get("available"), p.get("inboundBytes"), len(p.get("readers") or [])) for p in json.load(sys.stdin)["items"]]'
 # local com o override, que publica a 9997 só em 127.0.0.1
@@ -909,7 +988,7 @@ ffplay -rtsp_transport tcp "rtsp://$CRED@$CAM:554/axis-media/media.amp?resolutio
 | URL com credencial aparece em `ps` e no histórico do shell | montar a URL com `$CRED` e não colar saída de `ps` |
 | `videobitratemode=mbr` na URL da Axis faz o RTSP levar cerca de 12 s para responder, e o MediaMTX desiste da fonte | não usar MBR em tier H.264 |
 | Parâmetro de URL ignorado pela Axis | só vale em `/axis-media/media.amp`; câmera cadastrada com `/onvif-media/` serve o próprio perfil |
-| `ffplay` no dev.v2 | o servidor não tem tela; lá só ffprobe e ffmpeg |
+| `ffplay` no hub | o servidor não tem tela; lá só ffprobe e ffmpeg |
 
 ## ONVIF
 
@@ -1179,7 +1258,7 @@ curl -s --digest -u "$CRED" "http://$CAM/ISAPI/PTZCtrl/channels/1/capabilities"
 ### Para que serve
 
 Estes comandos respondem se o caminho até a câmera, o serviço ou o navegador está de pé, e quem está falando com quem.
-Servem no dev.v2 e na máquina local; os que olham dentro de container pedem `sudo`.
+Servem no hub e na máquina local; os que olham dentro de container pedem `sudo` e só valem para container Docker da máquina local, porque no dev os pods ficam dentro do nó kind.
 
 ### Comandos
 
@@ -1218,7 +1297,7 @@ docker network inspect <rede> --format '{{range .Containers}}{{.IPv4Address}} {{
 **Ver RTT e janela TCP dos navegadores na borda**
 
 ```bash
-# no dev.v2
+# no hub
 ss -ti '( sport = :443 )'
 ```
 
@@ -1259,27 +1338,27 @@ O tempo de cada fase de uma chamada HTTP está em [[#API do Attlas por HTTP]].
 | O que dá errado | Como evitar |
 | --- | --- |
 | `ss` no host não mostra socket de container | entrar na rede do container com `nsenter -t <pid> -n` |
-| Conexão que chega pela tailnet num container aparece vinda do gateway da bridge (no dev.v2, `172.18.0.1`), porque o Tailscale faz MASQUERADE | allowlist por IP de origem dentro do container não identifica quem vem pela tailnet |
+| Conexão que chega pela tailnet num container aparece vinda do gateway da bridge, porque o Tailscale faz MASQUERADE | allowlist por IP de origem dentro do container não identifica quem vem pela tailnet |
 | Porta publicada pelo Docker não passa pelo firewall de entrada do host | restringir no security group, na cadeia `DOCKER-USER` ou no bind por IP do compose |
 | Atualizar o Tailscale do host remove o salto da `FORWARD` para o `DOCKER` | manter o `fix-docker-forward.service` habilitado |
-| No sumo, VM em bridge pinga o host e não sai: o Docker liga `bridge-nf-call-iptables` com `FORWARD` em DROP | `iptables -I DOCKER-USER -i br0 -o br0 -j ACCEPT`, persistido em `br0-forward-accept.service` |
-| Reiniciar o Tailscale do dev.v2 quando o `aquario-server` caiu | não resolve e atrapalha as outras câmeras; o defeito está no roteador |
+| Reiniciar o Tailscale do hub quando o `aquario-server` caiu | não resolve e atrapalha as outras câmeras; o defeito está no roteador |
 
 ## nginx e systemd no host
 
 ### Para que serve
 
-O nginx do host do dev.v2 termina o HTTPS de `dev.v2.attlas.atmansystems.com` e repassa para o Kong; a configuração foi
-feita à mão e fica fora do repositório. O systemd mantém os serviços do sistema que sustentam rede e CI:
-`fix-docker-forward.service` no dev.v2, `br0-forward-accept.service` no sumo, e `ci-scaleset.service` com os timers de
-limpeza na VM do CI.
+O nginx do host do hub termina o HTTPS de `dev.v2.attlas.atmansystems.com` e de `orbit.3-15-199-101.sslip.io` e
+repassa para o gateway do cluster (`127.0.0.1:8081`) e para o Orbit (`127.0.0.1:8090`); a configuração foi feita à
+mão e fica fora do repositório. O systemd mantém os serviços do sistema que sustentam rede e CI:
+`fix-docker-forward.service` no hub, `br0-forward-accept.service` no sumo, e `ci-scaleset.service` e
+`ci-scaleset-develop.service` com os timers de limpeza na VM do CI.
 
 ### Comandos
 
 **Testar e recarregar o nginx**
 
 ```bash
-# no dev.v2
+# no hub
 sudo nginx -t
 sudo systemctl reload nginx
 sudoedit /etc/nginx/sites-available/attlas
@@ -1307,7 +1386,7 @@ systemctl list-timers
 
 ```bash
 # na VM ci-runner
-sudo journalctl -u ci-scaleset -f
+sudo journalctl -u ci-scaleset -u ci-scaleset-develop -f
 journalctl -t ci-disk-watch -p warning
 sudo dmesg -T | grep -iE 'killed process|out of memory'
 sudo /usr/local/bin/ci-runner-drain.sh --poweroff     # manutenção: para o scale set, espera os jobs e desliga a VM
@@ -1325,7 +1404,7 @@ cd ~/nx-cache && docker compose ps
 | Saída | O que significa |
 | --- | --- |
 | `nginx: configuration file /etc/nginx/nginx.conf test is successful` | pode recarregar |
-| linha `101` de 109 bytes no `access.log` | WebSocket que abriu e fechou sem entrar no namespace; em geral, front local de desenvolvedor apontado para o dev.v2 |
+| linha `101` de 109 bytes no `access.log` | WebSocket que abriu e fechou sem entrar no namespace; em geral, front local de desenvolvedor apontado para o dev |
 | SSE parado com `body_bytes_sent` mais 432 múltiplo de 16384 | o nginx segurou blocos TLS de 16 KiB; a rota precisa da âncora `*sse-edge-unbuffered-plugin` no `docker/kong.yml` |
 | `Active: active (exited)` num serviço `oneshot` | a regra foi aplicada no boot e o serviço terminou, o normal |
 | aviso do `ci-disk-watch` | disco da VM do CI acima de 75% ou de 88% |
@@ -1335,17 +1414,17 @@ cd ~/nx-cache && docker compose ps
 
 | O que dá errado | Como evitar |
 | --- | --- |
-| A configuração do nginx, o ajuste de TCP (`/etc/sysctl.d/99-attlas-edge.conf`) e o `ci-scaleset` existem só nos hosts | um host recriado perde tudo; a mudança precisa ser repetida à mão |
+| A configuração do nginx, o ajuste de TCP (`/etc/sysctl.d/99-attlas-edge.conf`) e os serviços `ci-scaleset` existem só nos hosts | um host recriado perde tudo; a mudança precisa ser repetida à mão |
 | O nginx do host comprime só `text/html` | a compressão de JSON é do Kong; `text/event-stream` não se comprime |
 | `reload` com configuração quebrada | rodar `nginx -t` antes |
-| Medo de reiniciar o `ci-scaleset` | é seguro: os jobs em curso rodam em units próprias |
+| Medo de reiniciar o `ci-scaleset` | é seguro: os jobs em curso rodam em units próprias; o Orbit também reinicia os serviços ao trocar o token |
 
 ## Git e GitHub CLI
 
 ### Para que serve
 
 O `git` lê a `develop` sem trocar de branch. O `gh` acompanha PRs, checks, runs e logs de job do
-`atmanadmin/attlas-2026` e dispara CI e deploy.
+`atmanadmin/attlas-2026` e dispara o CI. Release e deploy não passam pelo `gh`: são do Orbit.
 
 ### Comandos
 
@@ -1380,15 +1459,6 @@ gh run rerun <run-id> --failed
 gh workflow run ci-pr.yml --ref <branch>       # PR empilhada, que não ganha check sozinha
 ```
 
-**Fazer deploy no dev.v2**
-
-```bash
-gh run list --workflow ci-develop.yml -L 3                    # o Build & Push precisa estar verde antes
-gh workflow run deploy.yml                                    # todos os serviços com código
-gh workflow run deploy.yml -f projects=ms-cameras,web-attlas
-gh run list --workflow deploy.yml -L 3
-```
-
 **Mudar título, corpo e responsável de uma PR**
 
 ```bash
@@ -1417,7 +1487,7 @@ gh pr view <n> --json title,assignees
 | Escrever em PR de outra pessoa | nada de commit, push, merge, rebase ou deleção da branch dela; conferir `gh pr view <n> --json author` antes de qualquer escrita |
 | Pedir novo review a quem já aprovou | só quem está em `CHANGES_REQUESTED` no `latestReviews` recebe pedido novo |
 | CI vermelho que parece sem causa | olhar as PRs mergeadas na `develop` nas últimas horas antes de diagnosticar |
-| Deploy derruba streams e WebSockets por 2 a 4 min | disparar à mão, só com o Build & Push verde |
+| Rollout do dev derruba streams e WebSockets dos serviços trocados | o Orbit faz o deploy em ondas; evitar `rollout restart` em vários serviços ao mesmo tempo |
 
 ## Variáveis usadas nesta nota
 
@@ -1426,11 +1496,11 @@ compose, igual ao nome do projeto no Nx (`ms-cameras`). Variável usada por scri
 
 | Variável | O que é | Onde obter |
 | --- | --- | --- |
-| `$ATTLAS_API` | URL base do Kong | local `http://localhost:8000`; dev.v2 `https://dev.v2.attlas.atmansystems.com`; Dell pela tailnet `http://afonso-dell-14-dc14250.tail4b16e5.ts.net:8000` |
-| `$ATTLAS_USER`, `$ATTLAS_PASS` | e-mail e senha de login no Attlas | `BOOTSTRAP_MASTER_EMAIL` e `BOOTSTRAP_MASTER_PASSWORD` em `apps/ms-organization/.env` (local) ou em `~/apps/ms-organization/.env.docker` (dev.v2) |
+| `$ATTLAS_API` | URL base do Kong | local `http://localhost:8000`; dev `https://dev.v2.attlas.atmansystems.com`; Dell pela tailnet `http://afonso-dell-14-dc14250.tailca0a03.ts.net:8000` |
+| `$ATTLAS_USER`, `$ATTLAS_PASS` | e-mail e senha de login no Attlas | `BOOTSTRAP_MASTER_EMAIL` e `BOOTSTRAP_MASTER_PASSWORD` em `apps/ms-organization/.env` (local) ou no `.env.docker` do `ms-organization` em `~/orbit/state/secrets/compose-env/apps/ms-organization/` (dev) |
 | `$TOKEN` | access token JWT | login em [[#API do Attlas por HTTP]], ou o header `Authorization` de uma requisição no DevTools |
 | `$SYSTEM_ID` | id do Sistema, mandado no header `System-Id` | `GET /api/organization/systems/me/overview`, ou o header `system-id` no DevTools |
-| `$METRICS_SCRAPE_TOKEN` | credencial do `/metrics` dos serviços | `METRICS_SCRAPE_TOKEN` no `.env` do serviço (local) ou no `~/apps/<ms>/.env.docker` (dev.v2); para o Prometheus local, o arquivo `docker/observability/metrics-token`, que fica fora do git |
+| `$METRICS_SCRAPE_TOKEN` | credencial do `/metrics` dos serviços | `METRICS_SCRAPE_TOKEN` no `.env` do serviço (local) ou no Secret `<serviço>-env` (dev); para o Prometheus local, o arquivo `docker/observability/metrics-token`, que fica fora do git |
 | `$CAM` | IP da câmera | coluna `ipAddress` da tabela `Camera`; as câmeras de bancada estão em [[Câmeras - Integração com dispositivo - Runbook]] |
 | `$CRED` | `usuário:senha` da câmera | tabela `CameraCredential` do `attlas-db-cameras`, pelo comando em [[#Banco de dados]] |
 | `$RTSP` | URL RTSP do teste | montada com `$CRED` e `$CAM`, em [[#ffmpeg, ffprobe e ffplay]] |
@@ -1439,11 +1509,11 @@ compose, igual ao nome do projeto no Nx (`ms-cameras`). Variável usada por scri
 | `$REDIS_PASS` | senha de um Redis com `requirepass` | `command:` do serviço no `docker-compose.yml`, ou `REDIS_PASSWORD` no `.env` do serviço |
 | `$PID` | PID do processo principal de um container | `docker inspect -f '{{.State.Pid}}' <container>` |
 | `100.77.100.21` | IP do `aquario-server` na tailnet | `tailscale status` |
-| `aws-attlas-dev-v2` | nome do dev.v2 na tailnet | `tailscale status` |
+| `aws-attlas-dev-v2` | nome do hub dev na tailnet | `tailscale status` |
 | `10.1.1.115` | sumo na LAN | alias `sumo` no `~/.ssh/config` |
 | `192.168.122.66` | VM `ci-runner`, na rede NAT do libvirt do sumo | `virsh --connect qemu:///system net-dhcp-leases default`, no sumo |
-| `~/.ssh/id_ed25519_aws_attlas` | chave SSH do dev.v2 | já referenciada pelo alias `aws-attlas-26` |
-| senhas de SSH do sumo e das VMs | login e `sudo` | [[Infraestrutura - Acessos SSH]] |
+| `~/.ssh/id_ed25519_aws_attlas` | chave SSH do hub dev | já referenciada pelo alias `aws-attlas-26` |
+| senha de SSH do sumo | login e `sudo` | [[Infraestrutura - Acessos SSH]] |
 
 ## Glossário
 
@@ -1453,6 +1523,8 @@ compose, igual ao nome do projeto no Nx (`ms-cameras`). Variável usada por scri
 | subnet router | nó da tailnet que anuncia uma rede física; o `aquario-server` anuncia `10.1.1.0/24` |
 | DERP | servidor de relay do Tailscale, usado quando não há caminho direto entre dois nós |
 | ProxyJump (`-J`) | SSH que passa por um host intermediário |
+| `kubectl port-forward` | túnel de uma porta local até um pod ou Service do cluster |
+| context | cluster e usuário que o `kubectl` usa; o do hub é `kind-attlas` |
 | perfil do Compose | rótulo (`full`) que deixa um serviço fora do `up` até ele ser pedido pelo nome ou por `--profile` |
 | override | `docker-compose.override.yml`, carregado sozinho pelo Compose por cima do `docker-compose.yml` |
 | nível do pino | número do nível de log no JSON: 30 info, 40 warn, 50 error, 60 fatal |
