@@ -23,8 +23,8 @@ date: 2026-10-13
 3. `ms-video-analytics` sem restarts com o Redis caindo (`kubectl -n attlas-dev get pods`).
 
 ## Em andamento (Claude Code, worktrees locais no Mac)
-- **Hash de build determinístico** — `~/.hermes/cache/scratch/build-hash`, branch `shared/fix/NO-CARD-deterministic-build-hash`.
-  O `push-images.sh` já pula imagem com build inalterado (label `attlas.build-sha256`), mas o run 38480859639 pulou 0 de 22: o dist muda a cada build, então todo merge redeploya ~23 serviços. Brief: `~/.hermes/cache/scratch/build-hash-brief.md`. Falta: revisar o diff, abrir a PR (assignee afonsoburginski) e mergear.
+- **Por que todo merge redeploya ~23 serviços — investigado (#7107, só docs).** O build é determinístico. O skip do `push-images.sh` não dispara porque todo backend embute todos os catálogos i18n (`TRANSLATION_CATALOGS`) e o `ErrorCode` compartilhado: qualquer mensagem nova muda o `main.js` de todos.
+  **Decisão pendente (Afonso):** cada backend embutir só `core.json` + catálogos do próprio módulo (os que traduzem chaves de outros módulos, como notifications, reports e audit, seguem com todos). Muda a regra do CLAUDE.md e do `contracts.md`, então precisa de spec CROSS. Até lá o CD em ondas segura a estabilidade.
 - **Autocorreção no Orbit** — `~/.hermes/cache/scratch/orbit-remed`, branch `feat/auto-remediation`.
   OOMKilled sobe o limite de memória via gitops (x1.5, teto, cooldown); crash loop após onda reverte a tag. Brief: `~/.hermes/cache/scratch/orbit-remed-brief.md`. Falta: revisar, push na main/master e deploy (rsync de console/ para `atman:orbit/console/` + `docker restart orbit`).
 
