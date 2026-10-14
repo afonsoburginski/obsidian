@@ -18,10 +18,9 @@ Volta para [[Infraestrutura]].
 
 | Comando | Máquina | O que é |
 | --- | --- | --- |
-| `ssh sumo` | `develop@10.1.1.115` | servidor físico de gestão: VM do CI, cache remoto do Nx, stack legada do Attlas 25 e as VMs da LAN |
+| `ssh sumo` | `develop@10.1.1.115` | servidor físico que hoje só hospeda o CI (VM `ci-runner`) |
 | `ssh -J sumo ubuntu@192.168.122.66` | VM `ci-runner` | onde o CI roda |
 | `ssh aws-attlas-26` | `ubuntu@3.15.199.101` | EC2 do dev.v2; na tailnet, host `aws-attlas-dev-v2` |
-| `ssh sumo`, depois `ssh ubuntu@10.1.1.120` | `attlas-vm-1..7` | VMs Ubuntu na LAN, em bridge `br0` |
 
 Tudo em `10.1.1.x` só responde pela tailnet `atmansystems.com` com `--accept-routes` (ver
 [[Infraestrutura - Ambientes#Rede]]). O que roda em cada máquina está em [[Infraestrutura - Ambientes]] e
@@ -90,26 +89,7 @@ ssh -o ControlMaster=no -i ~/.ssh/id_ed25519_aws_attlas ubuntu@aws-attlas-dev-v2
 
 ## VMs da LAN (`attlas-vm-1..7`)
 
-As VMs estão em bridge `br0` na LAN, com IP fixo. A chave autorizada nelas é a `sumo@attlas`, que é a
-`~/.ssh/id_ed25519` do `develop` no sumo; por isso o caminho sem senha passa pelo sumo:
-
-```bash
-ssh sumo
-ssh ubuntu@10.1.1.120
-```
-
-| VM | IP |
-| --- | --- |
-| `attlas-vm-1` | `10.1.1.120` |
-| `attlas-vm-2` | `10.1.1.121` |
-| `attlas-vm-3` | `10.1.1.122` |
-| `attlas-vm-4` | `10.1.1.123` |
-| `attlas-vm-5` | `10.1.1.124` |
-| `attlas-vm-6` | `10.1.1.125` |
-| `attlas-vm-7` | `10.1.1.127` |
-
-O `10.1.1.126` é o VIP do kube-vip, não uma VM. O cuidado com o Terraform dessas VMs está em
-[[Infraestrutura - Ambientes#sumo]].
+Removidas: o libvirt do sumo só tem a `ci-runner` e os IPs `10.1.1.120` a `10.1.1.127` não respondem mais.
 
 ## Credenciais
 
