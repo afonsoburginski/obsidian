@@ -25,8 +25,8 @@ date: 2026-10-13
 ## Em andamento (Claude Code, worktrees locais no Mac)
 - **Por que todo merge redeploya ~23 serviços — investigado (#7107, só docs).** O build é determinístico. O skip do `push-images.sh` não dispara porque todo backend embute todos os catálogos i18n (`TRANSLATION_CATALOGS`) e o `ErrorCode` compartilhado: qualquer mensagem nova muda o `main.js` de todos.
   **Decisão pendente (Afonso):** cada backend embutir só `core.json` + catálogos do próprio módulo (os que traduzem chaves de outros módulos, como notifications, reports e audit, seguem com todos). Muda a regra do CLAUDE.md e do `contracts.md`, então precisa de spec CROSS. Até lá o CD em ondas segura a estabilidade.
-- **Autocorreção no Orbit** — `~/.hermes/cache/scratch/orbit-remed`, branch `feat/auto-remediation`.
-  OOMKilled sobe o limite de memória via gitops (x1.5, teto, cooldown); crash loop após onda reverte a tag. Brief: `~/.hermes/cache/scratch/orbit-remed-brief.md`. Falta: revisar, push na main/master e deploy (rsync de console/ para `atman:orbit/console/` + `docker restart orbit`).
+- **Autocorreção no Orbit — no ar (`12370b3`, main/master, deploy feito).** OOMKilled sobe o limite de memória via gitops (x1.5, teto `AUTO_REMEDIATION_MEMORY_CAP`=1Gi, cooldown de 30 min); crash loop depois de uma onda reverte a tag (uma vez por release). Card "Autocorreções" na aba Serviços do ambiente. Desligar com `AUTO_REMEDIATION=off`.
+  A verificar: primeira ação real. Atenção: o OOM edita `templates/dev/values.yaml` (`profile.resources.<svc>`) quando o serviço está lá, e isso vale para todo ambiente que lê o template. O `local/up.sh` não repassa as envs `CD_*`/`AUTO_REMEDIATION*` ao container (valem os padrões).
 
 ## Próximos passos do "ambiente que se ajusta sozinho"
 - Ajuste à carga do host: o Orbit lê a carga e reduz a onda / pausa o CD / pausa os simuladores (`asc-simulador-*`, simulação Python ~3 GB) quando o host satura (load chegou a 117 em 8 cores).
