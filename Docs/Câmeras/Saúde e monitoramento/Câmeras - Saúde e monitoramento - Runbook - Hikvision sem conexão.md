@@ -5,10 +5,17 @@ tags:
   - hikvision
   - quito
   - runbook
-atualizado: 2026-10-02
+aliases:
+  - "Quito - Hikvision sem conexão"
+atualizado: 2026-10-14
 ---
 
-# Quito - Hikvision "Sin conexión"
+# Câmeras - Saúde e monitoramento - Runbook - Hikvision sem conexão
+
+Volta para [[Câmeras - Saúde e monitoramento - Arquitetura e estratégias]]
+
+> [!warning] Causa no código
+> O timeout de conexão do `alertStream` (`HIKVISION_ALERT_STREAM_CONNECT_TIMEOUT_MS`, 8000) vale para o stream inteiro: câmera 8 s sem evento cai e reconecta, piscando ONLINE e OFFLINE. Quito está com 45000 como paliativo. Correção em revisão; a lista completa está em [[Câmeras - Streaming - Pendências#Problemas com muitas câmeras]].
 
 **Causa:** o canal de saúde da Hikvision (`/ISAPI/Event/notification/alertStream`) está falhando, então a câmera fica "Sin conexión" e o front nem tenta abrir o vídeo ao vivo. Rede e senha estão ok: o thumbnail e o serial/modelo vêm do ISAPI da mesma câmera.
 

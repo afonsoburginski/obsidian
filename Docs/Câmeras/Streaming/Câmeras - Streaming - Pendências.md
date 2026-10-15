@@ -31,6 +31,28 @@ Sete itens faltam no vídeo ao vivo: o TURN para acesso fora da rede do cliente 
 | Matriz das quatro combinações (analítico ligado e desligado, uma e duas ingestões) | só uma medição está registrada | `apps/ms-cameras/docs/runbooks/stream-ingest-saturation.md`, seção 5 |
 | Saber se o MediaMTX retransmite por NACK e se o Safari negocia HEVC por WHEP | decide a resiliência do WebRTC e o alcance do H.265 | sem spec |
 
+## Problemas com muitas câmeras
+
+Encontrados no teste de carga do VMS e nos logs do dev e de Quito. Resultado do teste em [[Câmeras - Streaming - Explicação - VMS com muitas câmeras e banda]].
+
+| Problema | Sintoma | Marcas e modelos | Situação |
+| --- | --- | --- | --- |
+| Entrada das câmeras por Tailscale com relay | entrada trava em ~87 Mbps; subnet router caiu com 50 câmeras | todas | infra: link direto |
+| Servidor do mediamtx sem CPU, dividido com todos os serviços e o Kafka | fps cai, frames descartados a partir de 20 câmeras | todas | infra: nó dedicado |
+| Deploy completo derruba quem está assistindo | vídeo cai no deploy | todas | infra: nó dedicado |
+| MediaMTX esquece os paths ao reiniciar | `no stream is available on path` | todas | correção em revisão |
+| Teto de sessões contando path e codec | erro 429 antes do limite real | todas | correção em revisão |
+| Fila de escrita pequena no MediaMTX | `reader is too slow`, frames descartados | todas | correção em revisão |
+| Player sem reconexão automática | operador precisa clicar em "reconectar" | todas | correção em revisão |
+| Readiness do ms-cameras reprova por heap | serviço sai de rotação sob carga, sessões falham com 503 | todas | correção em revisão |
+| Status perdido com Kafka fora | transições ONLINE e OFFLINE somem | todas | correção em revisão |
+| Timeout do `alertStream` vale para o stream inteiro | ONLINE e OFFLINE a cada ~8 s ([[Câmeras - Saúde e monitoramento - Runbook - Hikvision sem conexão]]) | Hikvision | correção em revisão; Quito com 45000 ms |
+| WebSocket de eventos sem detectar conexão morta | câmera fica ONLINE com canal morto, ou pisca | Axis | correção em revisão |
+| Tertiary com parâmetros VAPIX em URL ONVIF | RTSP 400, tile nunca abre | Axis com perfil ONVIF (visto na M1135 Mk II) | correção em revisão |
+| Câmera entrega H.264 quando o pedido é H.265 | bitrate maior que o esperado | AXIS M1135 Mk II (parte delas) | configuração da câmera |
+| Mesmo heap no readiness | igual ao do ms-cameras | ms-selective-priority, ms-connector-virtual-loop, ms-connector-neo, ms-controllers, ms-traffic-model, ms-simulation | sem correção |
+| Eventos `event-logged`, `incident-created`, `alarm-raised` perdidos com Kafka fora | eventos de câmera somem | todas | sem correção |
+
 ## Divergências de documentação
 
 O código vence. Estes pontos da documentação do repositório discordam dele.

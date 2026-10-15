@@ -4,7 +4,7 @@ tags:
   - index
 aliases:
   - "Sprints - índice raiz"
-7|atualizado: 2026-10-07
+atualizado: 2026-10-15
 banner: "assets/banners/tech-code.jpg"
 banner_y: 0.4
 ---
@@ -22,12 +22,19 @@ Fonte de verdade: **este vault**. O ClickUp é publicação para o gestor, não 
 
 | Sprint | Janela | Frente | Situação |
 | --- | --- | --- | --- |
-| [[Attlas - Sprint 36\|36]] | 05-11/10 | **Câmeras e Analítico** - telas de Eventos, realce e AV1 no player, Neural Labs pela tela | Aberta em 05/10. Em 07/10 de manhã, 21 PRs mergeadas em 16 tasks, 14 delas com todas as PRs mergeadas; abertas a #6146 (fim dos backups `.bak` do `setup:env`) e a #6147 (limpeza do `ms-video-analytics`). Seis issues fechadas; a 5469 foi reaberta pelo QA em 06/10, e a 5808 e a 5977 seguem abertas, atendidas em parte. Nenhum card no ClickUp |
+| [[Attlas - Sprint 37\|37]] | 12-18/10 | **Infraestrutura** - limpeza do EC2 do dev | Aberta. Só a S37-01 (limpeza do EC2 e consumo da instância, 16/10) está registrada no vault; o resto da semana não. Nenhum card no ClickUp |
+
+## Próxima semana
+
+| Sprint | Janela | Frente | Situação |
+| --- | --- | --- | --- |
+| [[Attlas - Sprint 38\|38]] | 19-25/10 | **Câmeras e Infraestrutura** - preset em vigor no status da câmera, ms-cameras estável sob carga, Kafka, deploy e mediamtx do dev | Planejada em 15/10 com 10 tasks e 30 pts: o pedido do Daniel Zanotelli (S38-01) e nove tasks da medição do dev. Nenhum card no ClickUp |
 
 ## Histórico
 
 | Sprint | Janela | Frente | Como fechou |
 | --- | --- | --- | --- |
+| [[Attlas - Sprint 36\|36]] | 05-11/10 | **Câmeras e Analítico** - telas de Eventos, realce e AV1 no player, Neural Labs pela tela | Fechada com as 17 tasks mergeadas e 8 issues fechadas. A 5977 (Perfis de Mídia) segue aberta, atendida em parte. Nenhum card no ClickUp |
 | [[Attlas - Sprint 35\|35]] | 28/09-04/10 | **Câmeras e Analítico** - issues abertas, Neural Labs, Métricas e caixa da Detecção | Fechada com 48 PRs mergeadas em 31 tasks e as 19 issues que elas atacavam fechadas em 29/09. O novo desenho da caixa sobre o vídeo foi revertido no dia seguinte, o plano da pipeline de CI e CD (#5666) segue em rascunho com pedido de mudança, e sete PRs abertas na semana foram mergeadas na 36. Nenhum card no ClickUp |
 | [[Attlas - Sprint 34\|34]] | 21-27/09 | **ms-cameras** - streaming, issues abertas e o ANPR do cliente | Fechada com as 32 tasks da tabela entregues e 58 PRs mergeadas: streaming sem vazamento de publicador, 27 das 28 issues do rótulo `cameras` (a 1875 fechou em 05/10) e a integração com o NEURAL SERVER |
 | [[Attlas - Sprint 33\|33]] | 14-20/09 | **Analítico** - entrega e validação | Fechada com as 34 PRs integradas. Era a semana do prazo externo do módulo Analítico, 18/09, front e backend |

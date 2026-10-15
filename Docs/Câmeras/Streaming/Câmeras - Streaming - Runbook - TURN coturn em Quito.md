@@ -6,12 +6,15 @@ tags:
   - turn
   - quito
 aliases:
+  - "Deploy - TURN coturn - Guia Quito"
   - TURN Quito
   - coturn deploy
 atualizado: 2026-10-08
 ---
 
-# Deploy — TURN (coturn) — Guia Quito
+# Câmeras - Streaming - Runbook - TURN coturn em Quito
+
+Volta para [[Câmeras - Streaming - Explicação - TURN]]
 
 ## Resumo
 
