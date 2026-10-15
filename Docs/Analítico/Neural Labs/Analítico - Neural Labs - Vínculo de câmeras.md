@@ -23,7 +23,7 @@ Volta para [[Analítico - Neural Labs]].
 Cada câmera do Attlas responde a duas perguntas sobre a Neural Labs, e cada uma tem dono e modo
 automático próprios. A Neural Labs identifica a câmera pelo par `ComputerID` + `CamID`, sem IP nem série,
 então o vínculo é o que diz em qual câmera do Attlas cada leitura entra. A explicação com exemplo, para
-usuário, está em [[Analítico - Neural Labs - Explicação - Como cada leitura chega na câmera certa]].
+usuário, está em [[Neural Labs - Leitura na câmera certa]].
 
 | | Associação | Vínculo |
 | --- | --- | --- |

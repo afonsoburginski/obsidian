@@ -1,0 +1,239 @@
+/* Notes rendered like the VS Code markdown preview, Expo Dark colours. */
+
+.theme-dark {
+  --background-primary: #111113;
+  --background-primary-alt: #18191b;
+  --background-secondary: #0c0d0e;
+  --background-secondary-alt: #0c0d0e;
+  --background-modifier-border: #212225;
+  --background-modifier-border-hover: #363a3f;
+  --background-modifier-hover: #272a2d;
+  --background-modifier-active-hover: #212225;
+  --background-modifier-form-field: #18191b;
+
+  --text-normal: #d4d4d4;
+  --text-muted: #9d9d9d;
+  --text-faint: #6e7681;
+  --text-accent: #3794ff;
+  --text-accent-hover: #4daafc;
+  --interactive-accent: #2870bd;
+  --interactive-accent-hover: #3b82d6;
+
+  --link-color: #3794ff;
+  --link-color-hover: #4daafc;
+  --link-external-color: #3794ff;
+  --link-external-color-hover: #4daafc;
+  --link-unresolved-color: #3794ff;
+  --link-unresolved-opacity: 0.75;
+  --link-decoration: none;
+  --link-external-decoration: none;
+  --link-decoration-hover: underline;
+
+  --code-background: rgba(10, 10, 10, 0.4);
+  --code-normal: #d4d4d4;
+  --blockquote-border-color: rgba(0, 122, 204, 0.5);
+  --blockquote-background-color: rgba(127, 127, 127, 0.1);
+  --hr-color: rgba(255, 255, 255, 0.18);
+  --table-border-color: rgba(255, 255, 255, 0.18);
+  --table-header-background: transparent;
+  --table-header-background-hover: transparent;
+  --table-row-background-hover: transparent;
+}
+
+body {
+  --font-text-size: 18px;
+  --font-ui-smaller: 16px;
+  --font-ui-small: 17px;
+  --font-ui-medium: 18px;
+  --font-ui-large: 24px;
+  --nav-item-size: 17px;
+  --tab-font-size: 17px;
+  --line-height-normal: 1.6;
+  --file-line-width: 100%;
+  --h1-size: 2em;
+  --h2-size: 1.5em;
+  --h3-size: 1.25em;
+  --h4-size: 1em;
+  --h5-size: 0.875em;
+  --h6-size: 0.85em;
+  --h1-weight: 600;
+  --h2-weight: 600;
+  --h3-weight: 600;
+  --h4-weight: 600;
+  --h5-weight: 600;
+  --h6-weight: 600;
+  --h1-line-height: 1.25;
+  --h2-line-height: 1.25;
+  --h3-line-height: 1.25;
+  --h1-color: var(--text-normal);
+  --h2-color: var(--text-normal);
+  --h3-color: var(--text-normal);
+  --h4-color: var(--text-normal);
+  --h5-color: var(--text-normal);
+  --h6-color: var(--text-normal);
+  --bold-color: inherit;
+  --italic-color: inherit;
+}
+
+.markdown-preview-view,
+.markdown-source-view.mod-cm6 .cm-scroller {
+  padding-left: 26px;
+  padding-right: 26px;
+}
+
+.markdown-rendered h1,
+.markdown-rendered h2,
+.markdown-rendered h3,
+.markdown-rendered h4,
+.markdown-rendered h5,
+.markdown-rendered h6 {
+  margin-top: 24px;
+  margin-bottom: 16px;
+}
+
+.markdown-rendered h1,
+.markdown-rendered h2 {
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid var(--hr-color);
+}
+
+.markdown-rendered > div:first-child h1,
+.markdown-rendered .mod-header + div h1 {
+  margin-top: 0;
+}
+
+.markdown-rendered p,
+.markdown-rendered ul,
+.markdown-rendered ol {
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+.markdown-rendered hr {
+  border: 0;
+  height: 0;
+  border-bottom: 1px solid var(--hr-color);
+}
+
+.markdown-rendered :not(pre) > code {
+  color: #d7ba7d;
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 1px 3px;
+  border-radius: 4px;
+  font-size: 1em;
+}
+
+.markdown-rendered pre {
+  padding: 16px;
+  border-radius: 3px;
+  border: 1px solid #212225;
+  background-color: var(--code-background);
+}
+
+.markdown-rendered pre code {
+  font-size: 1em;
+  line-height: 1.357em;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.markdown-rendered blockquote {
+  margin: 0 0 16px 0;
+  padding: 2px 16px 0 10px;
+  border-left: 5px solid var(--blockquote-border-color);
+  border-radius: 2px;
+  background: var(--blockquote-background-color);
+  font-style: normal;
+}
+
+.markdown-rendered .callout {
+  --callout-padding: 2px 16px 2px 10px;
+  border: 0;
+  border-left: 5px solid rgb(var(--callout-color));
+  border-radius: 2px;
+  background: var(--blockquote-background-color);
+  mix-blend-mode: normal;
+}
+
+.markdown-rendered .callout-title {
+  font-weight: 600;
+}
+
+.markdown-rendered table {
+  border-collapse: collapse;
+  margin-bottom: 0.7em;
+}
+
+.markdown-rendered th,
+.markdown-rendered td {
+  padding: 5px 10px;
+  border: 0;
+}
+
+.markdown-rendered th {
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 1px solid var(--table-border-color);
+}
+
+.markdown-rendered tbody tr + tr td {
+  border-top: 1px solid var(--table-border-color);
+}
+
+.markdown-rendered a {
+  text-decoration: none;
+}
+
+.markdown-rendered a:hover {
+  text-decoration: underline;
+}
+
+.markdown-rendered .frontmatter-container,
+.markdown-rendered .metadata-container {
+  display: none;
+}
+
+/* Larger interface text and icons everywhere outside the note. */
+body {
+  --icon-xs: 16px;
+  --icon-s: 18px;
+  --icon-m: 20px;
+  --icon-l: 22px;
+  --icon-xl: 34px;
+  --status-bar-font-size: var(--font-ui-small);
+}
+
+.workspace-sidedock-vault-profile,
+.workspace-drawer-vault-name,
+.workspace-drawer-vault-switcher,
+.workspace-drawer-vault-actions,
+.nav-files-container,
+.tree-item-self,
+.nav-file-title,
+.nav-folder-title,
+.view-header-title,
+.workspace-tab-header-inner-title,
+.vertical-tab-nav-item,
+.vertical-tab-header-group-title,
+.setting-item-name,
+.setting-item-heading,
+.prompt-input,
+.suggestion-item,
+.menu-item,
+.search-input-container input,
+.status-bar {
+  font-size: var(--font-ui-medium) !important;
+}
+
+.setting-item-description,
+.suggestion-note,
+.tree-item-flair,
+.nav-file-tag {
+  font-size: var(--font-ui-small) !important;
+}
+
+.modal-title,
+.vertical-tab-content h1,
+.vertical-tab-content h2 {
+  font-size: var(--font-ui-large) !important;
+}

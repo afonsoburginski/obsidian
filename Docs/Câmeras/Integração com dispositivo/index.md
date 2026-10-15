@@ -34,7 +34,7 @@ codecs declarados a [[Câmeras - Streaming]], [[Câmeras - PTZ e presets]], [[C�
 
 ## Explicações para usuário
 
-Não há explicação para usuário deste subdomínio na raiz do vault.
+Não há explicação para usuário deste subdomínio na pasta `Acesso rápido`.
 
 ## Diagramas
 

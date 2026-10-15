@@ -5,14 +5,15 @@ tags:
   - neural-labs
   - lpr
 aliases:
+  - "Neural Labs - Leitura na câmera certa"
   - "Neural Labs - resumo ilustrado"
   - "Neural Labs - Como funciona a associação e o mapeamento de câmeras"
   - "Neural Labs - Como cada leitura chega na câmera certa"
+  - "Analítico - Neural Labs - Explicação - Como cada leitura chega na câmera certa"
 atualizado: 2026-10-07
 ---
 
-# Analítico - Neural Labs - Explicação - Como cada leitura chega na câmera certa
-
+# Neural Labs - Leitura na câmera certa
 Volta para [[Analítico - Neural Labs]].
 
 ## Resumo

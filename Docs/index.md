@@ -22,7 +22,7 @@ um Resumo, que já responde o essencial. Para achar algo rápido, use a tabela "
 | Preciso de | Abra |
 | --- | --- |
 | Um comando de ferramenta (Docker, ffmpeg, ONVIF, VAPIX, ISAPI, psql, Kafka, SSH, gh) | [[Infraestrutura - Runbook - Comandos]] |
-| Entrar num servidor | [[Infraestrutura - Acessos SSH]] |
+| Entrar num servidor | [[Infraestrutura - Acessos SSH]], [[Infraestrutura - IPs e SSH]] |
 | Saber que máquinas existem, o que roda em cada uma e como a rede funciona | [[Infraestrutura - Servidores e rede]] |
 | Entender como o dev é montado e o ambiente local | [[Infraestrutura - Ambientes]] |
 | Entender o deploy, o CD em ondas e o Orbit | [[Infraestrutura - Orbit]], [[Infraestrutura - CI-CD de ponta a ponta]] |
@@ -31,7 +31,7 @@ um Resumo, que já responde o essencial. Para achar algo rápido, use a tabela "
 | Rotas, tópicos Kafka e tabelas do `ms-cameras` | [[Câmeras - Arquitetura e estratégias]] |
 | Diagnosticar vídeo que não abre, trava ou fica preto | [[Câmeras - Streaming - Runbook]] |
 | Falar direto com uma câmera (ONVIF, VAPIX, ISAPI, RTSP) | [[Câmeras - Integração com dispositivo - Runbook]] |
-| Liberar o vídeo ao vivo num servidor novo | [[Câmeras - Streaming - Explicação - Como liberar o WebRTC num servidor novo]] |
+| Liberar o vídeo ao vivo num servidor novo | [[Streaming - WebRTC em servidor novo]] |
 | Codec, banda e qualidade de imagem | [[Câmeras - Streaming - Codecs]], [[Câmeras - Streaming - Banda e bitrate]], [[Câmeras - Streaming - Qualidade de imagem na câmera]] |
 | Como a saúde e a disponibilidade da câmera são calculadas | [[Câmeras - Saúde e monitoramento - Arquitetura e estratégias]] |
 | Eventos, incidentes, alarmes e criticidade | [[Câmeras - Eventos, incidentes e alarmes - Catálogo e criticidade]] |
@@ -57,16 +57,16 @@ O `web-attlas` não tem domínio próprio: cada tela fica no subdomínio de back
 
 ## Explicações para usuário
 
-Notas na raiz do vault, em linguagem de usuário final, para repassar a outra pessoa.
+Notas na pasta `Acesso rápido`, na raiz do vault, em linguagem de usuário final, para repassar a outra pessoa. A mesma pasta guarda as folhas de consulta rápida: [[Infraestrutura - IPs e SSH]], [[Videowall - Credenciais H9]] e [[Videowall - Endpoints H9]].
 
 | Explicação | Responde |
 | --- | --- |
-| [[Câmeras - Cadastro - Explicação - Estados de cadastro]] | os quatro estados da câmera e quem decide cada mudança |
-| [[Câmeras - Dashboard - Explicação - Como cada número é calculado]] | de onde sai cada indicador do dashboard |
-| [[Câmeras - Streaming - Explicação - Como liberar o WebRTC num servidor novo]] | portas e configuração para o vídeo ao vivo funcionar num servidor novo |
-| [[Câmeras - Videowall - Explicação - Vídeo não chega ao painel H9]] | como o vídeo deveria chegar ao painel H9 de Quito e onde ele para |
-| [[Analítico - Neural Labs - Explicação - Como cada leitura chega na câmera certa]] | o caminho de uma leitura de placa, com exemplo |
-| [[Analítico - Neural Labs - Explicação - Como cadastrar a Neural Labs]] | o passo a passo do cadastro da Neural Labs no Attlas |
+| [[Cadastro - Estados]] | os quatro estados da câmera e quem decide cada mudança |
+| [[Dashboard - Números]] | de onde sai cada indicador do dashboard |
+| [[Streaming - WebRTC em servidor novo]] | portas e configuração para o vídeo ao vivo funcionar num servidor novo |
+| [[Videowall - Vídeo não chega ao H9]] | como o vídeo deveria chegar ao painel H9 de Quito e onde ele para |
+| [[Neural Labs - Leitura na câmera certa]] | o caminho de uma leitura de placa, com exemplo |
+| [[Neural Labs - Como cadastrar]] | o passo a passo do cadastro da Neural Labs no Attlas |
 
 ## Planejamento
 

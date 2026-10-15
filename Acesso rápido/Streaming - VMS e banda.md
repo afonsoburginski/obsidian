@@ -7,14 +7,14 @@ tags:
   - dimensionamento
   - explicacao
 aliases:
-  - "Câmeras - Streaming - Explicação - VMS com muitas câmeras e banda"
+  - "Streaming - VMS e banda"
   - "Dimensionamento de rede e banda do VMS"
   - "Resultado do teste de carga do VMS"
+  - "Câmeras - Streaming - Explicação - VMS com muitas câmeras e banda"
 atualizado: 2026-10-14
 ---
 
-# Câmeras - Streaming - Explicação - VMS com muitas câmeras e banda
-
+# Streaming - VMS e banda
 Volta para [[Câmeras - Streaming - Banda e bitrate]]
 
 Referência para dimensionar rede, banda e servidor de vídeo do Attlas em qualquer instalação. Os números vêm de medição real (ver [[#Base da medição]]). As recomendações já incluem margem.
@@ -65,7 +65,7 @@ Por modelo:
 
 Rede do operador:
 
-- UDP 8189 liberado até o servidor de vídeo. Sem UDP o vídeo não abre: o TURN ainda não está ativo ([[Câmeras - Streaming - Explicação - TURN]]).
+- UDP 8189 liberado até o servidor de vídeo. Sem UDP o vídeo não abre: o TURN ainda não está ativo ([[Streaming - TURN]]).
 - Rede cabeada para grid de 16 ou mais. Wi-Fi compartilhado perde pacote e o vídeo trava.
 - A banda é por computador: dois operadores no mesmo link somam.
 

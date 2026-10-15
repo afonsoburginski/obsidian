@@ -1,18 +1,18 @@
 {
-  "cssTheme": "Border",
-  "accentColor": "#3186ff",
-  "textFontFamily": "Inter,Lucida Console,Arial,Courier New,Consolas,Source Code Pro",
+  "cssTheme": "",
+  "accentColor": "#2870bd",
+  "textFontFamily": "Noto Sans,Segoe UI,Ubuntu,Droid Sans,sans-serif",
   "baseFontSize": 18,
   "baseFontSizeAction": false,
   "enabledCssSnippets": [
     "galaxy-graph",
-    "max-width",
-    "attlas-blue"
+    "vscode-preview"
   ],
   "nativeMenus": false,
   "showViewHeader": true,
   "interfaceFontFamily": "Inter,Segoe Print,MV Boli,Source Code Pro,Segoe UI,Gill Sans",
   "theme": "obsidian",
   "showRibbon": true,
-  "translucency": false
+  "translucency": false,
+  "monospaceFontFamily": "DejaVu Sans Mono,Droid Sans Mono,monospace"
 }

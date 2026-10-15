@@ -42,5 +42,5 @@ As três mergeadas em 01/10.
 
 ## Relacionado
 
-- [[Câmeras - Videowall - Explicação - Vídeo não chega ao painel H9]]
+- [[Videowall - Vídeo não chega ao H9|Câmeras - Videowall - Explicação - Vídeo não chega ao painel H9]]
 - [[Câmeras - Videowall - Arquitetura e estratégias]]

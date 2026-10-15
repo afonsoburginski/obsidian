@@ -1,0 +1,604 @@
+{
+  "info": {
+    "name": "Videowall H9 Quito — NovaStar Open API",
+    "_postman_id": "a7f0d1c2-9b31-4c55-8f2a-h9quito0001",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "H9 de Quito (10.200.1.52:8000), pId YzFk.\n\nPASTA 1 'Auto-sign': recalcula timeStamp/sign a cada envio. COMECE POR AQUI.\nPASTA 2 'Par fixo 16:07': par literal gerado em 14/10/2026 16:07 -03.\n\nSe a pasta 1 funciona e a 2 nao, o H9 recusa timeStamp velho.\nSe as duas dao Params_Error, o device esta com cifra ligada (body DES + secretKey Y2Y2MmUy no sign)."
+  },
+  "variable": [
+    {
+      "key": "ts",
+      "value": ""
+    },
+    {
+      "key": "sign",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "1 — Auto-sign (recomendado)",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const ts = String(Date.now());",
+              "const hex = CryptoJS.MD5(ts + 'YzFk').toString();",
+              "pm.collectionVariables.set('ts', ts);",
+              "pm.collectionVariables.set('sign', CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(hex)));"
+            ]
+          }
+        }
+      ],
+      "item": [
+        {
+          "name": "main/initStatus — versao/SN do device — o teste mais inofensivo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "http://10.200.1.52:8000/open/api/main/initStatus",
+              "protocol": "http",
+              "host": [
+                "10",
+                "200",
+                "1",
+                "52"
+              ],
+              "port": "8000",
+              "path": [
+                "open",
+                "api",
+                "main",
+                "initStatus"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"body\": {\n    \"deviceId\": 0\n  },\n  \"sign\": \"{{sign}}\",\n  \"pId\": \"YzFk\",\n  \"timeStamp\": \"{{ts}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "versao/SN do device — o teste mais inofensivo"
+          },
+          "response": []
+        },
+        {
+          "name": "screen/readList — telas do device",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "http://10.200.1.52:8000/open/api/screen/readList",
+              "protocol": "http",
+              "host": [
+                "10",
+                "200",
+                "1",
+                "52"
+              ],
+              "port": "8000",
+              "path": [
+                "open",
+                "api",
+                "screen",
+                "readList"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"body\": {\n    \"deviceId\": 0\n  },\n  \"sign\": \"{{sign}}\",\n  \"pId\": \"YzFk\",\n  \"timeStamp\": \"{{ts}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "telas do device"
+          },
+          "response": []
+        },
+        {
+          "name": "screen/readDetail — Ftb, brilho, layout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "http://10.200.1.52:8000/open/api/screen/readDetail",
+              "protocol": "http",
+              "host": [
+                "10",
+                "200",
+                "1",
+                "52"
+              ],
+              "port": "8000",
+              "path": [
+                "open",
+                "api",
+                "screen",
+                "readDetail"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"body\": {\n    \"deviceId\": 0,\n    \"screenId\": 0\n  },\n  \"sign\": \"{{sign}}\",\n  \"pId\": \"YzFk\",\n  \"timeStamp\": \"{{ts}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Ftb, brilho, layout"
+          },
+          "response": []
+        },
+        {
+          "name": "layer/detailList — layers ativas",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "http://10.200.1.52:8000/open/api/layer/detailList",
+              "protocol": "http",
+              "host": [
+                "10",
+                "200",
+                "1",
+                "52"
+              ],
+              "port": "8000",
+              "path": [
+                "open",
+                "api",
+                "layer",
+                "detailList"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"body\": {\n    \"deviceId\": 0,\n    \"screenId\": 0\n  },\n  \"sign\": \"{{sign}}\",\n  \"pId\": \"YzFk\",\n  \"timeStamp\": \"{{ts}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "layers ativas"
+          },
+          "response": []
+        },
+        {
+          "name": "ipc/IPCSourceList — fontes IPC",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "http://10.200.1.52:8000/open/api/ipc/IPCSourceList",
+              "protocol": "http",
+              "host": [
+                "10",
+                "200",
+                "1",
+                "52"
+              ],
+              "port": "8000",
+              "path": [
+                "open",
+                "api",
+                "ipc",
+                "IPCSourceList"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"body\": {\n    \"deviceId\": 0,\n    \"slotId\": 0,\n    \"seqPageIndex\": 1,\n    \"seqPageSize\": 100\n  },\n  \"sign\": \"{{sign}}\",\n  \"pId\": \"YzFk\",\n  \"timeStamp\": \"{{ts}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "fontes IPC"
+          },
+          "response": []
+        },
+        {
+          "name": "layer/create — projetar Est6_izq fullscreen",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "http://10.200.1.52:8000/open/api/layer/create",
+              "protocol": "http",
+              "host": [
+                "10",
+                "200",
+                "1",
+                "52"
+              ],
+              "port": "8000",
+              "path": [
+                "open",
+                "api",
+                "layer",
+                "create"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"body\": {\n    \"deviceId\": 0,\n    \"screenId\": 0,\n    \"general\": {\n      \"name\": \"teste\",\n      \"isBackground\": false,\n      \"isFreeze\": false,\n      \"flipType\": 0\n    },\n    \"source\": {\n      \"slotId\": 255,\n      \"interfaceType\": 13,\n      \"sourceType\": 3,\n      \"inputId\": 255,\n      \"cropId\": 255,\n      \"sourceId\": 9,\n      \"channelId\": 1,\n      \"streamId\": 9,\n      \"streamIndex\": 0,\n      \"name\": \"Est6_izq\"\n    },\n    \"window\": {\n      \"x\": 2290,\n      \"y\": 1075,\n      \"width\": 4992,\n      \"height\": 2808\n    }\n  },\n  \"sign\": \"{{sign}}\",\n  \"pId\": \"YzFk\",\n  \"timeStamp\": \"{{ts}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "projetar Est6_izq fullscreen"
+          },
+          "response": []
+        },
+        {
+          "name": "layer/delete — remove layer 0",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "http://10.200.1.52:8000/open/api/layer/delete",
+              "protocol": "http",
+              "host": [
+                "10",
+                "200",
+                "1",
+                "52"
+              ],
+              "port": "8000",
+              "path": [
+                "open",
+                "api",
+                "layer",
+                "delete"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"body\": {\n    \"deviceId\": 0,\n    \"screenId\": 0,\n    \"layerId\": 0\n  },\n  \"sign\": \"{{sign}}\",\n  \"pId\": \"YzFk\",\n  \"timeStamp\": \"{{ts}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "remove layer 0"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "2 — Par fixo 16:07",
+      "item": [
+        {
+          "name": "main/initStatus — versao/SN do device — o teste mais inofensivo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "http://10.200.1.52:8000/open/api/main/initStatus",
+              "protocol": "http",
+              "host": [
+                "10",
+                "200",
+                "1",
+                "52"
+              ],
+              "port": "8000",
+              "path": [
+                "open",
+                "api",
+                "main",
+                "initStatus"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"body\": {\n    \"deviceId\": 0\n  },\n  \"sign\": \"YjNlZmEwOGM2MzI3Zjk3Nzg1YmIwZTVkYzYyOTQ3ODA=\",\n  \"pId\": \"YzFk\",\n  \"timeStamp\": \"1792004878516\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "versao/SN do device — o teste mais inofensivo"
+          },
+          "response": []
+        },
+        {
+          "name": "screen/readList — telas do device",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "http://10.200.1.52:8000/open/api/screen/readList",
+              "protocol": "http",
+              "host": [
+                "10",
+                "200",
+                "1",
+                "52"
+              ],
+              "port": "8000",
+              "path": [
+                "open",
+                "api",
+                "screen",
+                "readList"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"body\": {\n    \"deviceId\": 0\n  },\n  \"sign\": \"YjNlZmEwOGM2MzI3Zjk3Nzg1YmIwZTVkYzYyOTQ3ODA=\",\n  \"pId\": \"YzFk\",\n  \"timeStamp\": \"1792004878516\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "telas do device"
+          },
+          "response": []
+        },
+        {
+          "name": "screen/readDetail — Ftb, brilho, layout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "http://10.200.1.52:8000/open/api/screen/readDetail",
+              "protocol": "http",
+              "host": [
+                "10",
+                "200",
+                "1",
+                "52"
+              ],
+              "port": "8000",
+              "path": [
+                "open",
+                "api",
+                "screen",
+                "readDetail"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"body\": {\n    \"deviceId\": 0,\n    \"screenId\": 0\n  },\n  \"sign\": \"YjNlZmEwOGM2MzI3Zjk3Nzg1YmIwZTVkYzYyOTQ3ODA=\",\n  \"pId\": \"YzFk\",\n  \"timeStamp\": \"1792004878516\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Ftb, brilho, layout"
+          },
+          "response": []
+        },
+        {
+          "name": "layer/detailList — layers ativas",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "http://10.200.1.52:8000/open/api/layer/detailList",
+              "protocol": "http",
+              "host": [
+                "10",
+                "200",
+                "1",
+                "52"
+              ],
+              "port": "8000",
+              "path": [
+                "open",
+                "api",
+                "layer",
+                "detailList"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"body\": {\n    \"deviceId\": 0,\n    \"screenId\": 0\n  },\n  \"sign\": \"YjNlZmEwOGM2MzI3Zjk3Nzg1YmIwZTVkYzYyOTQ3ODA=\",\n  \"pId\": \"YzFk\",\n  \"timeStamp\": \"1792004878516\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "layers ativas"
+          },
+          "response": []
+        },
+        {
+          "name": "ipc/IPCSourceList — fontes IPC",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "http://10.200.1.52:8000/open/api/ipc/IPCSourceList",
+              "protocol": "http",
+              "host": [
+                "10",
+                "200",
+                "1",
+                "52"
+              ],
+              "port": "8000",
+              "path": [
+                "open",
+                "api",
+                "ipc",
+                "IPCSourceList"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"body\": {\n    \"deviceId\": 0,\n    \"slotId\": 0,\n    \"seqPageIndex\": 1,\n    \"seqPageSize\": 100\n  },\n  \"sign\": \"YjNlZmEwOGM2MzI3Zjk3Nzg1YmIwZTVkYzYyOTQ3ODA=\",\n  \"pId\": \"YzFk\",\n  \"timeStamp\": \"1792004878516\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "fontes IPC"
+          },
+          "response": []
+        },
+        {
+          "name": "layer/create — projetar Est6_izq fullscreen",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "http://10.200.1.52:8000/open/api/layer/create",
+              "protocol": "http",
+              "host": [
+                "10",
+                "200",
+                "1",
+                "52"
+              ],
+              "port": "8000",
+              "path": [
+                "open",
+                "api",
+                "layer",
+                "create"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"body\": {\n    \"deviceId\": 0,\n    \"screenId\": 0,\n    \"general\": {\n      \"name\": \"teste\",\n      \"isBackground\": false,\n      \"isFreeze\": false,\n      \"flipType\": 0\n    },\n    \"source\": {\n      \"slotId\": 255,\n      \"interfaceType\": 13,\n      \"sourceType\": 3,\n      \"inputId\": 255,\n      \"cropId\": 255,\n      \"sourceId\": 9,\n      \"channelId\": 1,\n      \"streamId\": 9,\n      \"streamIndex\": 0,\n      \"name\": \"Est6_izq\"\n    },\n    \"window\": {\n      \"x\": 2290,\n      \"y\": 1075,\n      \"width\": 4992,\n      \"height\": 2808\n    }\n  },\n  \"sign\": \"YjNlZmEwOGM2MzI3Zjk3Nzg1YmIwZTVkYzYyOTQ3ODA=\",\n  \"pId\": \"YzFk\",\n  \"timeStamp\": \"1792004878516\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "projetar Est6_izq fullscreen"
+          },
+          "response": []
+        },
+        {
+          "name": "layer/delete — remove layer 0",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "http://10.200.1.52:8000/open/api/layer/delete",
+              "protocol": "http",
+              "host": [
+                "10",
+                "200",
+                "1",
+                "52"
+              ],
+              "port": "8000",
+              "path": [
+                "open",
+                "api",
+                "layer",
+                "delete"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"body\": {\n    \"deviceId\": 0,\n    \"screenId\": 0,\n    \"layerId\": 0\n  },\n  \"sign\": \"YjNlZmEwOGM2MzI3Zjk3Nzg1YmIwZTVkYzYyOTQ3ODA=\",\n  \"pId\": \"YzFk\",\n  \"timeStamp\": \"1792004878516\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "remove layer 0"
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

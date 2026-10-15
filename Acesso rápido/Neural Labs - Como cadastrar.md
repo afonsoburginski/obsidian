@@ -7,11 +7,11 @@ tags:
 aliases:
   - "Neural Labs - Como cadastrar"
   - "Como cadastrar o analítico da Neural Labs"
+  - "Analítico - Neural Labs - Explicação - Como cadastrar a Neural Labs"
 atualizado: 2026-10-07
 ---
 
-# Analítico - Neural Labs - Explicação - Como cadastrar a Neural Labs
-
+# Neural Labs - Como cadastrar
 Volta para [[Analítico - Neural Labs]].
 
 ## Resumo
@@ -78,4 +78,4 @@ nome, o IP, o fuso e o vínculo automático aparecem na página só para leitura
 fuso errado, ou para desligar a instância, peça ao time técnico.
 
 Detalhes técnicos em [[Analítico - Neural Labs - Arquitetura e estratégias]], e o vínculo das câmeras em
-[[Analítico - Neural Labs - Explicação - Como cada leitura chega na câmera certa]].
+[[Neural Labs - Leitura na câmera certa]].

@@ -14,7 +14,7 @@ atualizado: 2026-10-08
 
 # Câmeras - Streaming - Runbook - TURN coturn em Quito
 
-Volta para [[Câmeras - Streaming - Explicação - TURN]]
+Volta para [[Streaming - TURN]]
 
 ## Resumo
 

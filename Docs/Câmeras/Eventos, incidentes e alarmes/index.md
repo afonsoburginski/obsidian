@@ -35,7 +35,7 @@ tratamento do operador. O código fica em `apps/ms-cameras/src/events/`, e a reg
 
 ## Explicações para usuário
 
-Não há explicação para usuário deste subdomínio na raiz do vault.
+Não há explicação para usuário deste subdomínio na pasta `Acesso rápido`.
 
 ## Diagramas
 

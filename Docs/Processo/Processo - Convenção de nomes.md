@@ -19,7 +19,7 @@ Volta para [[Processo]].
 | --- | --- | --- |
 | Nota de documentação | `Docs/<Domínio>/<Subdomínio>/<Domínio> - <Subdomínio> - <Faceta>.md` | `Câmeras - Streaming - Fluxos` |
 | Porta de entrada da pasta | `index.md`, com título e primeiro alias iguais ao caminho | `Câmeras - Streaming` |
-| Explicação para usuário | raiz do vault, `<Domínio> - <Subdomínio> - Explicação - <pergunta>.md` | `Câmeras - Cadastro - Explicação - Estados de cadastro` |
+| Explicação para usuário | pasta `Acesso rápido`, na raiz do vault, `<Subdomínio> - <assunto curto>.md` | `Cadastro - Estados` |
 | Task de sprint | `Sprint/<NN>/<ID> - <Domínio> - <Frente> - <Assunto>.md` | `S34-03 - Câmeras - Streaming - Um ingest por câmera, com a qualidade resolvida` |
 | Report diário | `Reports/AAAA-MM-DD.md` | `Reports/2026-10-01.md` |
 
@@ -77,7 +77,7 @@ Lista fechada, com esta grafia, e nesta ordem dentro do `index.md` da pasta:
 | Runbook | comandos para operar e diagnosticar |
 | Diagrama | desenho do Excalidraw (`.excalidraw.md`) |
 | Tema | assunto que não cabe nas anteriores, com nome próprio: `Banda e bitrate`, `Catálogo e criticidade`, `Guia de degradação` |
-| Explicação | texto para usuário final, na raiz do vault (ver Casos especiais) |
+| Explicação | texto para usuário final, na pasta `Acesso rápido` (ver Casos especiais) |
 
 **Qualificador.** Quando a pasta tem mais de uma nota da mesma faceta, ou quando a faceta cobre só uma parte
 do domínio, entra um segmento a mais depois da faceta: `Câmeras - Streaming - Diagrama - Pipeline HLS`,
@@ -88,9 +88,11 @@ do domínio, entra um segmento a mais depois da faceta: `Câmeras - Streaming - 
 - **`index.md`.** Um por pasta, com esse nome de arquivo, porque o Obsidian e o app `.brain` o tratam como a
   nota da pasta. Quem carrega o domínio é o título e o primeiro alias, os dois iguais ao caminho:
   `# Câmeras - Streaming`. Link para o domínio usa esse alias: `[[Câmeras - Streaming]]`.
-- **Explicação para usuário final.** Fica na raiz do vault, com nome
-  `<Domínio> - <Subdomínio> - Explicação - <pergunta respondida>`, e o `index.md` do domínio linka para ela.
-  Como todo nome começa pelo domínio, a raiz fica agrupada por domínio na ordem alfabética.
+- **Explicação para usuário final.** Fica na pasta `Acesso rápido`, na raiz do vault, uma só para todos os
+  domínios (nunca uma pasta de acesso rápido por domínio). O nome é curto: `<Subdomínio> - <assunto>`, como
+  `Cadastro - Estados` e `Streaming - TURN`, e o `index.md` do domínio linka para ela. A mesma pasta guarda as
+  folhas de consulta rápida, como `Infraestrutura - IPs e SSH`, `Videowall - Credenciais H9` e
+  `Videowall - Endpoints H9`. Como todo nome começa pelo subdomínio, a pasta fica agrupada por assunto.
 - **Anexo** (PDF, imagem). Mesmo padrão, com a extensão do arquivo. PDF exportado de uma nota leva o nome
   da nota: `Câmeras - Saúde e monitoramento - Guia de degradação.pdf`.
 - **`Sprint/` e `Reports/`.** Registro do período, organizado por tempo: `Sprint/NN/index.md` e

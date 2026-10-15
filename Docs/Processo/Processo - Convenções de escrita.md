@@ -43,8 +43,8 @@ comentário de review, documento de público misto e as próprias notas deste va
 - **Um fato, uma nota.** As outras linkam para ela.
 - **O código da `develop` vence a nota.** Nota que discorda do código é bug da nota.
 - `Sprint/` e `Reports/` são registro do período e ficam como foram escritos.
-- **Explicação para usuário fica na raiz do vault**, com nome
-  `<Domínio> - <Subdomínio> - Explicação - <pergunta respondida>`, e o `index.md` do domínio linka para ela.
+- **Explicação para usuário fica na pasta `Acesso rápido`**, na raiz do vault, com nome curto
+  `<Subdomínio> - <assunto>`, e o `index.md` do domínio linka para ela.
   Não repete a arquitetura: explica com exemplo o que a faceta descreve.
 - **Nome e lugar de cada nota** seguem [[Processo - Convenção de nomes]].
 - Data e hora no horário de Brasília. Merge do GitHub vem em UTC e cai no dia seguinte se não for convertido.

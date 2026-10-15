@@ -7,7 +7,7 @@ aliases:
   - "Infraestrutura"
   - "Server e CI"
   - "Server e CI - índice"
-atualizado: 2026-10-14
+atualizado: 2026-10-15
 banner: "assets/banners/servers.jpg"
 banner_y: 0.3
 ---
@@ -25,6 +25,7 @@ O dev não usa deploy por Docker Compose; o Compose serve ao ambiente local.
 
 | Nota | Abra quando |
 | --- | --- |
+| [[Infraestrutura - IPs e SSH]] | precisa do IP, do comando de SSH ou da VPN agora, numa página só |
 | [[Infraestrutura - Servidores e rede]] | quer saber que máquinas existem, o que roda em cada uma, os endereços e como a rede e a tailnet funcionam |
 | [[Infraestrutura - Acessos SSH]] | precisa entrar no hub, no sumo ou na VM do CI, ou saber onde está uma credencial |
 | [[Infraestrutura - Ambientes]] | quer entender como o dev é montado, o caminho de uma requisição, o ambiente local da Dell, ou por que um serviço não sobe |

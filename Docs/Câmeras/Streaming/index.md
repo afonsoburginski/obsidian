@@ -42,7 +42,7 @@ de imagem das câmeras também moram aqui.
 
 | Explicação | Abra quando |
 | --- | --- |
-| [[Câmeras - Streaming - Explicação - Como liberar o WebRTC num servidor novo]] | vai preparar um servidor novo para o vídeo ao vivo: firewall, MediaMTX, nginx e `ms-cameras` |
+| [[Streaming - WebRTC em servidor novo]] | vai preparar um servidor novo para o vídeo ao vivo: firewall, MediaMTX, nginx e `ms-cameras` |
 
 ## Diagramas
 

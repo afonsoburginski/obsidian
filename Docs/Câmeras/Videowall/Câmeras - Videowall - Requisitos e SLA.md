@@ -116,7 +116,7 @@ português é a prosa dos requisitos em `docs/modules/cameras.md`.
 > - RF-VW-14: o deslocado por plano não recebe aviso, e o encerramento de projeção não entra no livro de
 >   encerramentos.
 > - RF-VW-09: no H9 de Quito a camada abre com a câmera, mas o vídeo não chega ao painel
->   ([[Câmeras - Videowall - Explicação - Vídeo não chega ao painel H9]]).
+>   ([[Videowall - Vídeo não chega ao H9]]).
 > - RF-VW-16: `screen/writeBrightness` responde 500 no firmware 1.9.7.1, então o brilho só funciona no painel
 >   emulado.
 

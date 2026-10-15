@@ -48,10 +48,10 @@ subdomínios está em [[Câmeras - Arquitetura e estratégias]].
 
 | Explicação | Abra quando |
 | --- | --- |
-| [[Câmeras - Cadastro - Explicação - Estados de cadastro]] | alguém pergunta o que significam Em estoque, Em testes, Em campo e Operativa |
-| [[Câmeras - Dashboard - Explicação - Como cada número é calculado]] | alguém pergunta de onde vem um número dos cards de banda ou de conectividade |
-| [[Câmeras - Streaming - Explicação - Como liberar o WebRTC num servidor novo]] | um servidor novo não entrega vídeo por WebRTC |
-| [[Câmeras - Videowall - Explicação - Vídeo não chega ao painel H9]] | o painel NovaStar H9 fica sem vídeo |
+| [[Cadastro - Estados]] | alguém pergunta o que significam Em estoque, Em testes, Em campo e Operativa |
+| [[Dashboard - Números]] | alguém pergunta de onde vem um número dos cards de banda ou de conectividade |
+| [[Streaming - WebRTC em servidor novo]] | um servidor novo não entrega vídeo por WebRTC |
+| [[Videowall - Vídeo não chega ao H9]] | o painel NovaStar H9 fica sem vídeo |
 
 ## Diagramas
 

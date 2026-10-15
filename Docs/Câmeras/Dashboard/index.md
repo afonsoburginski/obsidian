@@ -33,7 +33,7 @@ agregação na hora da leitura sobre tabelas de outros subdomínios, sem tabela 
 
 | Explicação | Abra quando |
 | --- | --- |
-| [[Câmeras - Dashboard - Explicação - Como cada número é calculado]] | alguém pergunta de onde vem um número dos cards de banda ou de conectividade |
+| [[Dashboard - Números]] | alguém pergunta de onde vem um número dos cards de banda ou de conectividade |
 
 ## Diagramas
 

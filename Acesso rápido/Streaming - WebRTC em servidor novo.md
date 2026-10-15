@@ -5,13 +5,13 @@ tags:
   - streaming
   - explicacao
 aliases:
-  - "Câmeras - Streaming - Explicação - Como liberar o WebRTC num servidor novo"
+  - "Streaming - WebRTC em servidor novo"
   - "Portas e configuração do WebRTC"
+  - "Câmeras - Streaming - Explicação - Como liberar o WebRTC num servidor novo"
 atualizado: 2026-10-07
 ---
 
-# Câmeras - Streaming - Explicação - Como liberar o WebRTC num servidor novo
-
+# Streaming - WebRTC em servidor novo
 Volta para [[Câmeras - Streaming]].
 
 ## Resumo

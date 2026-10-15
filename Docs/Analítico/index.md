@@ -44,5 +44,5 @@ de placas da Neural Labs; o Attlas configura, recebe, guarda e mostra. A regra d
 
 | Nota | Abra quando |
 | --- | --- |
-| [[Analítico - Neural Labs - Explicação - Como cadastrar a Neural Labs]] | Precisa explicar onde e quando aparece o cadastro da Neural Labs, o que preencher e como saber que funcionou |
-| [[Analítico - Neural Labs - Explicação - Como cada leitura chega na câmera certa]] | Precisa explicar, com exemplo, como uma leitura de placa encontra a câmera do Attlas |
+| [[Neural Labs - Como cadastrar]] | Precisa explicar onde e quando aparece o cadastro da Neural Labs, o que preencher e como saber que funcionou |
+| [[Neural Labs - Leitura na câmera certa]] | Precisa explicar, com exemplo, como uma leitura de placa encontra a câmera do Attlas |

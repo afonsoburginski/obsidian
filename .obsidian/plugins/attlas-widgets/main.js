@@ -64,7 +64,6 @@ class WidgetView extends MarkdownRenderChild {
     const iframe = wrapper.createEl('iframe', { cls: 'attlas-widget__frame' });
     this.iframe = iframe;
 
-    iframe.setAttribute('loading', 'lazy');
     iframe.setAttribute('title', this.file.basename || 'widget');
     iframe.style.height = `${this.clamp(this.options.height || DEFAULT_HEIGHT)}px`;
 

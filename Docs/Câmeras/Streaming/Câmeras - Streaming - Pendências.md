@@ -33,7 +33,7 @@ Sete itens faltam no vídeo ao vivo: o TURN para acesso fora da rede do cliente 
 
 ## Problemas com muitas câmeras
 
-Encontrados no teste de carga do VMS e nos logs do dev e de Quito. Resultado do teste em [[Câmeras - Streaming - Explicação - VMS com muitas câmeras e banda]].
+Encontrados no teste de carga do VMS e nos logs do dev e de Quito. Resultado do teste em [[Streaming - VMS e banda]].
 
 | Problema | Sintoma | Marcas e modelos | Situação |
 | --- | --- | --- | --- |

@@ -17,14 +17,14 @@
   --background-modifier-error: rgba(220, 60, 60, 0.15);
 
   /* ── Texto ── */
-  --text-normal: #c8cfe0;
-  --text-muted: #8494b0;
-  --text-faint: #566a88;
+  --text-normal: #d2d8e8;
+  --text-muted: #8c9cba;
+  --text-faint: #7f90b2;
   --text-on-accent: #ffffff;
   --text-accent: #5b8def;
   --text-accent-hover: #7aa4ff;
-  --font-text-size: 15px;
-  --line-height: 1.6;
+  --font-text-size: 16px;
+  --line-height: 1.65;
 
   /* ── Interativo — azul royal ── */
   --interactive-normal: #151a2c;
@@ -48,25 +48,25 @@
   --tag-padding-y: 2px;
   --tag-size: 0.8em;
 
-  /* ── Headings — branco limpo, escala de peso ── */
-  --h1-color: #e8ecf4;
-  --h2-color: #d0d8e8;
-  --h3-color: #a0b0c8;
-  --h4-color: #8098b8;
-  --h5-color: #6b80a0;
-  --h6-color: #586888;
-  --h1-size: 1.5em;
-  --h2-size: 1.28em;
-  --h3-size: 1.1em;
-  --h4-size: 1.0em;
-  --h5-size: 0.95em;
-  --h6-size: 0.9em;
+  /* ── Headings — alto contraste em todos os níveis, hierarquia por tamanho/peso (estilo VS Code) ── */
+  --h1-color: #f3f6fc;
+  --h2-color: #e8edf8;
+  --h3-color: #dbe2f2;
+  --h4-color: #cdd6ec;
+  --h5-color: #c0cbe5;
+  --h6-color: #b3c0de;
+  --h1-size: 1.6em;
+  --h2-size: 1.32em;
+  --h3-size: 1.15em;
+  --h4-size: 1.05em;
+  --h5-size: 1.0em;
+  --h6-size: 0.95em;
   --h1-weight: 700;
   --h2-weight: 600;
   --h3-weight: 600;
-  --h4-weight: 500;
+  --h4-weight: 600;
   --h5-weight: 500;
-  --h6-weight: 400;
+  --h6-weight: 500;
 
   /* ── Inline title ── */
   --inline-title-color: #e8ecf4;
@@ -136,7 +136,7 @@
 /* ═══ COMPACT FORMATTING ═══ */
 
 .markdown-rendered p { margin: 0.35em 0; }
-.markdown-rendered h1 { margin: 1.4em 0 0.35em; }
+.markdown-rendered h1 { margin: 1.4em 0 0.35em; border-bottom: 1px solid rgba(255,255,255,0.14); padding-bottom: 0.3em; }
 .markdown-rendered h2 { margin: 1.3em 0 0.3em; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 0.25em; }
 .markdown-rendered h3 { margin: 1.0em 0 0.2em; }
 .markdown-rendered h4, .markdown-rendered h5, .markdown-rendered h6 { margin: 0.8em 0 0.15em; }

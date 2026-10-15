@@ -2,14 +2,14 @@
   margin: 0.75em 0;
   border-radius: 14px;
   overflow: hidden;
-  background: transparent;
+  background: var(--background-primary);
 }
 
 .attlas-widget__frame {
   display: block;
   width: 100%;
   border: 0;
-  background: transparent;
+  background: var(--background-primary);
   color-scheme: normal;
   transition: height 0.18s ease;
 }

@@ -129,7 +129,7 @@ Leitura: o prefixo de cada base precisa ter um `location` no nginx do host que l
 (LL-HLS). No dev.v2 as bases são `https://dev.v2.attlas.atmansystems.com/whep` e `.../mtx-hls`, atendidas por
 `location /whep/` e `location /mtx-hls/`; o padrão do repositório é `/live` e `/live-hls`. Base sem rota no nginx
 cai no `location /` do SPA, e o WHEP nunca negocia. A configuração completa está em
-[[Câmeras - Streaming - Explicação - Como liberar o WebRTC num servidor novo]].
+[[Streaming - WebRTC em servidor novo]].
 
 ## Como sei se a rede do host até as câmeras está de pé
 

@@ -44,4 +44,4 @@ As três mergeadas.
 ## Relacionado
 
 - [[Analítico - Neural Labs - Vínculo de câmeras]]
-- [[Analítico - Neural Labs - Explicação - Como cada leitura chega na câmera certa]]
+- [[Neural Labs - Leitura na câmera certa|Analítico - Neural Labs - Explicação - Como cada leitura chega na câmera certa]]

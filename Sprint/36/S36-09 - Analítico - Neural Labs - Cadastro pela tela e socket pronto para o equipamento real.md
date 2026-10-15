@@ -39,5 +39,5 @@ Mergeada em 06/10.
 
 ## Relacionado
 
-- [[Analítico - Neural Labs - Explicação - Como cadastrar a Neural Labs]]
+- [[Neural Labs - Como cadastrar|Analítico - Neural Labs - Explicação - Como cadastrar a Neural Labs]]
 - [[Analítico - Neural Labs - Runbook]]

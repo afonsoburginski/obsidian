@@ -34,7 +34,7 @@ outros serviços. O backend está em `apps/ms-cameras/src/cameras/`, a tela em
 
 | Explicação | Abra quando |
 | --- | --- |
-| [[Câmeras - Cadastro - Explicação - Estados de cadastro]] | alguém pergunta o que significam Em estoque, Em testes, Em campo e Operativa |
+| [[Cadastro - Estados]] | alguém pergunta o que significam Em estoque, Em testes, Em campo e Operativa |
 
 ## Diagramas
 

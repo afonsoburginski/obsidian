@@ -9,7 +9,7 @@ aliases:
   - "Câmeras - Videowall - Como o videowall funciona de ponta a ponta"
   - "Videowall - Funcionamento ponta a ponta"
   - "Videowall - Validação IPC e mosaico"
-atualizado: 2026-10-08
+atualizado: 2026-10-14
 banner: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1200"
 ---
 
@@ -166,7 +166,8 @@ compara com o que quer e só escreve o que falta ou mudou.
 
 ## Pendências de validação contra o H9 real
 
-A VPN para o H9 de Quito (10.200.0.51) não estava ativa durante esta validação.
+O H9 de Quito (`10.200.1.52`) responde aos comandos da Open API, mas a placa de vídeo ainda não puxa o RTSP:
+[[Videowall - Vídeo não chega ao H9]].
 
 | O que foi usado | Confiança |
 | --- | --- |
@@ -174,30 +175,10 @@ A VPN para o H9 de Quito (10.200.0.51) não estava ativa durante esta validaçã
 | Open API do fabricante (openapi.novastar.tech) | Alta |
 | Teste contra o H9 em 01/10/2026 (PR #5584) | Alta |
 | Especificação do chassi | Média |
-| APIs de Mosaic Template | Baixa — nunca chamadas |
+| APIs de Mosaic Template | Baixa, nunca chamadas |
 
-> [!warning] Pendente para quando o H9 estiver acessível
+> [!warning] Pendente de validar no H9 real
 > - Quantas fontes IPC simultâneas o card `H_2xRJ45 IP` aguenta antes de recusar.
-> - O H9 de Quito tem 1 ou mais screens (`screen/readList`).
 > - O que acontece com as camadas do Attlas quando alguém aplica um preset pela interface nativa.
-> - Smoke test: ativar cena 2×2 com `target: VIDEOWALL` e confirmar no painel.
-
-## Validação por testes (08/10/2026)
-
-VPN para o H9 de Quito indisponível. Testes executados contra o servidor falso do H9
-(`fake-novastar-h9-server.ts`), que reproduz o comportamento da Open API.
-
-| Suite | Resultado | O que prova |
-| --- | --- | --- |
-| `novastar-capability-catalog.spec` | 20/20 | As 17 capacidades estão no catálogo com path e status `CONFIRMED` |
-| `novastar-open-api.client.spec` | 14/15 | Cliente monta envelope, assina, despacha, mapeia erros. 1 falha: shape de exceção do portão desatualizada |
-| `novastar-request-codec.spec` | 16/16 | Assinatura MD5+Base64 e envelope compatíveis com a referência do fabricante |
-| `novastar-signature.spec` | 6/6 | Assinatura idêntica ao exemplo da doc do fabricante |
-| `novastar-body-cipher.spec` | 8/8 | Cifra DES do corpo compatível com o modo `CIPHERED` |
-| `novastar-capability-gate.spec` | 5/7 | Portão recusa `PRESUMED` e libera `CONFIRMED`. 2 falhas: shape de `NotImplementedException` desatualizada |
-| Testes de integração (todos) | Não compilam | Erro de schema Prisma na branch (`offlineSince` ausente em `CameraOperationalSnapshot`); não é do videowall |
-| Unit specs de mirror/projection port | Não compilam | Assinatura do construtor mudou; specs desatualizados |
-
-**Conclusão dos testes.** 64/65 unit tests passam. As 3 falhas são de shape de exceção e assinatura de
-construtor, não de lógica do videowall. Os testes de integração estão bloqueados por um erro de schema
-Prisma desta branch que não tem relação com o videowall.
+> - Smoke test: ativar cena 2x2 com `target: VIDEOWALL` e confirmar no painel, depois que a placa alcançar o
+>   servidor.

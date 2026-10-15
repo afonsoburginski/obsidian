@@ -52,5 +52,5 @@ do vínculo para gestão, produto, operação e engenharia.
 
 | Explicação | Responde |
 | --- | --- |
-| [[Analítico - Neural Labs - Explicação - Como cadastrar a Neural Labs]] | onde e quando aparece o cadastro, o que preencher, o que configurar no equipamento e como saber que funcionou |
-| [[Analítico - Neural Labs - Explicação - Como cada leitura chega na câmera certa]] | como uma leitura acha a câmera do Attlas, com exemplo, e o único ponto que pode dar errado |
+| [[Neural Labs - Como cadastrar]] | onde e quando aparece o cadastro, o que preencher, o que configurar no equipamento e como saber que funcionou |
+| [[Neural Labs - Leitura na câmera certa]] | como uma leitura acha a câmera do Attlas, com exemplo, e o único ponto que pode dar errado |

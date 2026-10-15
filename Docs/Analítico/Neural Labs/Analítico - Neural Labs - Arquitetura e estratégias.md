@@ -241,7 +241,7 @@ Do `ms-video-analytics`, na ordem em que um operador liga o domínio. A explica�
   quem disca é o NEURAL SERVER, então ele nunca aparece nela. O cadastro é a caixa "Cadastrar servidor
   Neural Labs" do painel "Adicionar analítico", visível só quando a leitura da Neural Labs responde
   `neuralAvailable = true`. A explicação para usuário está em
-  [[Analítico - Neural Labs - Explicação - Como cadastrar a Neural Labs]].
+  [[Neural Labs - Como cadastrar]].
 - **Sem exclusão.** Não há rota de excluir instância. Desligar é `enabled = false`, só pela rota interna;
   na tela a linha da Neural Labs só tem a ação "ver", e o `PATCH` público só muda o vínculo automático.
 - O tempo de viagem está em [[Analítico - Neural Labs - Tempo de viagem]].

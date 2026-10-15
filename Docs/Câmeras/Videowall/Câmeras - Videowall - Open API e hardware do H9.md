@@ -9,7 +9,7 @@ aliases:
   - "Câmeras - Videowall - Open API e hardware do H9"
   - "Videowall - Referência técnica H9"
   - "H9 Open API reference"
-atualizado: 2026-10-08
+atualizado: 2026-10-15
 banner: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1200"
 ---
 
@@ -99,7 +99,7 @@ O card decodifica um throughput total fixo. As combinações são mutuamente exc
 > [!warning] O card NDI chegou depois do H9 de Quito
 > `H_1xNDI` entrou na linha em setembro de 2024. O H9 de Quito foi entregue em julho de 2024.
 
-## Open API — Endpoints usados pelo Attlas
+## Open API - Endpoints usados pelo Attlas
 
 Referência completa: [openapi.novastar.tech/en/h/](https://openapi.novastar.tech/en/h/)
 
@@ -169,7 +169,7 @@ na interface, e o contrário também.
 
 ## Comportamento observado (01/10/2026, PR #5584)
 
-Testado contra o H9 de Quito (10.200.0.51, firmware V1.9.7.1, via WireGuard do dev.v2):
+Testado contra o H9 de Quito (firmware V1.9.7.1):
 
 | Teste | Resultado |
 | --- | --- |
@@ -180,3 +180,30 @@ Testado contra o H9 de Quito (10.200.0.51, firmware V1.9.7.1, via WireGuard do d
 | `layer/writeStreamRule` após `writeSource` | Respondeu 500 |
 | `screen/writeBrightness` | Respondeu 500 no firmware 1.9.7.1 |
 | `ipc/IPCSlotList` | Respondeu `slotId: 2`, card `H_2xRJ45 IP` |
+
+## Status da fonte IPC
+
+A interface web mostra o estado de cada fonte em Programming, Status da fonte. São dois campos com a mesma
+tabela de códigos: Connection Status (a conexão RTSP) e Decoding Status (o decodificador). A tabela vem do
+próprio bundle da interface (`layout.Edit.Decoding*`).
+
+Pela Open API, `ipc/IPCChannelList` devolve o Decoding Status em `decodeStatus`, em cada item de `streamList`,
+com os mesmos códigos, ao lado do `rtspUrl` que a fonte usa.
+
+| Código | Texto | Quando aparece |
+| --- | --- | --- |
+| 0 | `Connected` / `Decoded` | Conexão aberta / vídeo decodificando |
+| 10 | `Request timed out (invalid IP address)` | Sem resposta do endereço |
+| 11 | `Request error` | Pedido RTSP recusado |
+| 12 | `Service authentication failed` | Usuário ou senha errados, depois de conectar |
+| 13 | `Service denied` | Acesso negado pelo servidor |
+| 14 | `Service not found` | Caminho inexistente no servidor |
+| 15 e 41 | `Other error` | Falha fora das anteriores; no H9 de Quito, a placa sem rota para fora da rede local |
+| 16 | `Server error` | Erro no servidor RTSP |
+| 20 | `Decoder uninitialized` | Nenhum dado chegou ao decodificador |
+| 22 a 26 | Parâmetros, codificação, resolução ou taxa de quadros não suportados | Vídeo chegou num formato que a placa não decodifica |
+| 27, 28 e 30 | Limite de canais ou recurso de decodificação esgotado | Placa sem decodificador livre |
+| 254 e 255 | `Disconnected` / `Undecoded` | Fonte sem uso |
+
+A aba Streaming Media do mesmo Status mostra o endereço, a porta e o transporte (UDP, TCP ou RAW) que a placa
+está usando. Diagnóstico do H9 de Quito em [[Videowall - Vídeo não chega ao H9]].

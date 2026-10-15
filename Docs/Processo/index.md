@@ -26,7 +26,7 @@ verdade de requisito; o código da `develop` é a fonte de verdade de como o sis
 
 ## Explicações para usuário
 
-O domínio não tem explicação para usuário final na raiz do vault.
+O domínio não tem explicação para usuário final na pasta `Acesso rápido`.
 
 ## Diagramas
 

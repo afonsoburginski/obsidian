@@ -33,7 +33,7 @@ VAPIX ([[Câmeras - Integração com dispositivo]]). O código fica em `apps/ms-
 
 ## Explicações para usuário
 
-Não há explicação para usuário deste subdomínio na raiz do vault.
+Não há explicação para usuário deste subdomínio na pasta `Acesso rápido`.
 
 ## Diagramas
 

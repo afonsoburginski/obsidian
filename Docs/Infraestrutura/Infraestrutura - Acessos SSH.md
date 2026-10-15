@@ -7,12 +7,12 @@ tags:
 aliases:
   - "Acessos SSH - Infra Attlas"
   - "Infraestrutura - Acessos SSH"
-atualizado: 2026-10-14
+atualizado: 2026-10-15
 ---
 
 # Infraestrutura - Acessos SSH
 
-Volta para [[Infraestrutura]].
+Volta para [[Infraestrutura]]. Página de consulta rápida, com IPs e comandos: [[Infraestrutura - IPs e SSH]].
 
 ## Resumo
 
@@ -35,6 +35,14 @@ ssh ec2-attlas 'export PATH=$HOME/bin:$PATH; kubectl --context kind-attlas -n at
 ```
 
 O `ec2-attlas` entra pela tailnet. O `aws-attlas-26` usa o IP público e a chave `~/.ssh/id_ed25519_aws_attlas`; depois de 5 ou mais handshakes em poucos segundos, a porta 22 pública fica bloqueada para aquele IP de origem por cerca de 2 min. Nesse caso entrar pela tailnet, com `-o ControlMaster=no` se houver conexão multiplexada presa. `kubectl`, `kind` e `helm` ficam em `~/bin` do hub, fora do `PATH` padrão.
+
+## Relay RTSP
+
+O `aws-attlas-develop` é o relay do videowall de Quito: `192.168.10.11` no túnel e `100.95.150.89` na tailnet.
+
+```bash
+ssh -i ~/.ssh/id_ed25519_aws_attlas ubuntu@100.95.150.89
+```
 
 ## Sumo
 
@@ -77,7 +85,7 @@ Nenhuma senha ou token fica no vault: a tabela diz onde cada um está guardado. 
 
 | Credencial | Usada em | Onde está guardada |
 | --- | --- | --- |
-| Chave `~/.ssh/id_ed25519_aws_attlas` | SSH no hub dev pelo IP público | na Dell; o alias `aws-attlas-26` já aponta para ela |
+| Chave `~/.ssh/id_ed25519_aws_attlas` | SSH no hub dev pelo IP público e no relay RTSP | na Dell; o alias `aws-attlas-26` já aponta para ela |
 | Chave `sumo@attlas` | SSH do sumo para a VM do CI | `~/.ssh/id_ed25519` do `develop` no sumo |
 | Senha do usuário `develop` no sumo | `sudo` no sumo e SSH sem chave | memória local `reference_rancher_sumo.md` |
 | Token do GitHub (Orbit e scale sets do CI) | leitura de runs e releases, registro de runners | `/secrets/github-token` do Orbit e `/etc/ci-scaleset/token` na VM, legível só por root; o Orbit grava os dois pela tela. Cópia em `~/.config/attlas-ci/scaleset-token` na Dell |

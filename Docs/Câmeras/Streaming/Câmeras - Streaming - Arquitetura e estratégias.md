@@ -323,7 +323,7 @@ injeta o `Authorization` do usuário leitor do espelho, e o navegador nunca rece
 
 A mídia WebRTC não passa por proxy: vai por UDP 8189 direto ao candidato anunciado. O Kong só vê a chamada REST.
 O roteiro para um servidor novo está em
-[[Câmeras - Streaming - Explicação - Como liberar o WebRTC num servidor novo]].
+[[Streaming - WebRTC em servidor novo]].
 
 > [!warning] A imagem de produção do front não tem rota de vídeo
 > `apps/web-attlas/nginx.conf` só tem `/`, `/index.html` e os estáticos. Num servidor, a rota de vídeo precisa

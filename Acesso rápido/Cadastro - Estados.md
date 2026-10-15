@@ -4,12 +4,13 @@ tags:
   - cameras
   - explicação
 aliases:
+  - "Cadastro - Estados"
   - "Câmeras - Estados de cadastro"
+  - "Câmeras - Cadastro - Explicação - Estados de cadastro"
 atualizado: 2026-10-07
 ---
 
-# Câmeras - Cadastro - Explicação - Estados de cadastro
-
+# Cadastro - Estados
 Volta para [[Câmeras - Cadastro]].
 
 ## Resumo

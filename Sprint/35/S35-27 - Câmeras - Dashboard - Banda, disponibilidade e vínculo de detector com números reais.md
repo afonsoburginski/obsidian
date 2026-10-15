@@ -41,4 +41,4 @@ Mergeada em 01/10.
 
 ## Relacionado
 
-- [[Câmeras - Dashboard - Explicação - Como cada número é calculado]]
+- [[Dashboard - Números|Câmeras - Dashboard - Explicação - Como cada número é calculado]]

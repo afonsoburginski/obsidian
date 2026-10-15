@@ -7,14 +7,14 @@ tags:
   - turn
   - explicacao
 aliases:
-  - "Câmeras - Streaming - Explicação - TURN"
+  - "Streaming - TURN"
   - "O que é TURN"
   - "coturn"
+  - "Câmeras - Streaming - Explicação - TURN"
 atualizado: 2026-10-14
 ---
 
-# Câmeras - Streaming - Explicação - TURN
-
+# Streaming - TURN
 Volta para [[Câmeras - Streaming - Arquitetura e estratégias]]
 
 ## Resposta curta

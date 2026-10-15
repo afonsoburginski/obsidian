@@ -1,6 +1,6 @@
 {
   "spellcheck": false,
-  "propertiesInDocument": "visible",
+  "propertiesInDocument": "hidden",
   "alwaysUpdateLinks": true,
   "attachmentFolderPath": "./",
   "newFileLocation": "current",
@@ -8,10 +8,10 @@
   "showLineNumber": false,
   "livePreview": true,
   "defaultViewMode": "preview",
-  "showFrontmatter": true,
+  "showFrontmatter": false,
   "foldHeading": true,
-  "readableLineLength": true,
+  "readableLineLength": false,
   "strictLineBreaks": false,
-  "showInlineTitle": true,
+  "showInlineTitle": false,
   "promptDelete": false
 }

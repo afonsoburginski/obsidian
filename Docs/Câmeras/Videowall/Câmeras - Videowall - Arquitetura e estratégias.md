@@ -10,7 +10,7 @@ aliases:
   - "Pesquisa - transporte do espelhamento de tela"
   - "Transporte do espelhamento de tela"
   - "Videowall - Arquitetura e estratégias"
-atualizado: 2026-10-07
+atualizado: 2026-10-14
 banner: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1200"
 ---
 
@@ -22,7 +22,7 @@ Volta para [[Câmeras - Videowall]].
 
 | Modo | Quando | Fonte que o equipamento puxa |
 | --- | --- | --- |
-| Espelho (`MIRROR`) | Operador na consola | A captura da aba do Attlas, publicada por WHIP no MediaMTX e lida por RTSP na porta 8554 em `videowall-mirror-*` |
+| Espelho (`MIRROR`) | Operador na consola | A captura da aba do Attlas, publicada por WHIP no MediaMTX e lida por RTSP na porta 554 em `videowall-mirror-*` |
 | Projeção nativa (`NATIVE_SCENE`) | Cena salva enviada pelo operador, plano de resposta sem operador ou grupo salvo com câmeras | Uma fonte por câmera da cena, path `videowall-projection-*` no MediaMTX, puxado sob demanda da câmera |
 
 O equipamento nunca recebe URL nem credencial de câmera: recebe `rtsp://<servidor de mídia>/<caminho>`, e a
@@ -323,14 +323,14 @@ Cena projetada por plano não deixa linha. O único aviso do domínio é `camera
 | --- | --- |
 | Modelo | H9 Video Wall Splicer (NovaStar Série H), pelo rótulo do chassi |
 | Firmware | V1.9.7.1, lido do equipamento |
-| Controlador | `10.200.0.51`, Open API na porta `8000`, interface web na `80` |
+| Controlador | `10.200.1.52`, Open API na porta `8000`, interface web na `80` |
 | Credencial da Open API | `pId` `YzFk`, criada em Settings, OpenAPI Management, sem cifra |
 | Login da interface web | Usuário `attlas`; não serve como credencial da Open API |
 | Tela | screen 0, 4992x2808, na posição (2290, 1075) do canvas do processador |
 | Placa de vídeo IP | Slot 6, `H_2xRJ45 IP` |
 | Patrimônio | `N10P 45815`, código `00048815` |
 | Acta de entrega | EPMMOP Quito, `VD-12407-80-10`, 2024-07-09, "PROCESADOR DE VIDEO WALL H9", fornecedor SMARTCOGROUP CIA LTDA |
-| Cadastro no Attlas | Sistema DMQ, processador `10.200.0.51:8000` com o `pId` acima |
+| Cadastro no Attlas | Processador **H9 Quito**, `10.200.1.52:8000` com o `pId` acima |
 
 | Porta da placa IP | IP | Gateway | Uso |
 | --- | --- | --- | --- |
@@ -350,19 +350,23 @@ A saída padrão da placa (`wanId`) está em 255, sem porta escolhida. Gravar ga
 
 ### Rede até o H9
 
-O `ms-cameras` do dev.v2 fala com o H9 por um túnel WireGuard até a rede de Quito.
+O `ms-cameras` do dev.v2 fala com o H9 pela Tailscale até o `aws-attlas-develop`, que anuncia as redes de
+Quito na tailnet e as alcança pelo túnel WireGuard do concentrador. O vídeo faz o caminho inverso e para na
+placa IP: diagnóstico em [[Videowall - Vídeo não chega ao H9]].
 
-| Ponta | IP no túnel | `AllowedIPs` no concentrador |
+| Ponta | Endereço | Papel |
 | --- | --- | --- |
-| Concentrador | `18.216.165.106:51820`, chave pública `/HHq9akJprOvstVC2XTH+0D/YEMeL9Lj3VNRhY6F8kc=` | Não se aplica |
-| Servidor do Attlas (dev.v2) | `192.168.10.16` | `192.168.10.16/32` |
-| PC do Afonso | `192.168.10.29`, chave pública `2QYdpY7H3EiHpF/zwo3j8OYvXVSKG06kYbaAteza3Uc=`, configuração em `~/.config/wireguard/wg-quito.conf` | `192.168.10.29/32` |
-| Quito | `192.168.10.10`; roteador MikroTik em `10.200.0.1` | `192.168.10.10/32, 10.200.0.0/24, 192.168.8.0/24` |
+| Concentrador | `18.216.165.106:51820`, chave pública `/HHq9akJprOvstVC2XTH+0D/YEMeL9Lj3VNRhY6F8kc=` | Hub do túnel |
+| `aws-attlas-develop` | `192.168.10.11` no túnel, `100.95.150.89` na tailnet | Rota do túnel para `192.168.10.0/24` e `10.200.1.0/24` a `10.200.4.0/24`, as quatro anunciadas na tailnet; relay RTSP `192.168.10.11:554` para `100.101.165.32:8554` |
+| Servidor do Attlas (dev.v2) | `192.168.10.16` no túnel | Endereço RTSP padrão do videowall. O túnel aceita só origens `192.168.10.0/24`, `10.200.0.0/24` e `192.168.8.0/24`, e o dev.v2 alcança `10.200.1.0/24` pela tailnet, então a placa do H9 (`10.200.1.53`) só chega com masquerade no roteador de Quito |
+| PC do Afonso | `192.168.10.29`, chave pública `2QYdpY7H3EiHpF/zwo3j8OYvXVSKG06kYbaAteza3Uc=`, configuração em `~/.config/wireguard/wg-quito.conf` | Acesso manual |
+| Quito | `192.168.10.10`; roteador MikroTik em `10.200.0.1` | Ponta do túnel em Quito |
 
 | Configuração do dev.v2 | Valor |
 | --- | --- |
-| `VIDEOWALL_RTSP_BASE_URL` em `/home/ubuntu/.env` | `rtsp://3.15.199.101:8554`, o IP público do dev.v2 |
-| Porta `8554` | Aberta no Security Group da AWS; responde de fora com o vídeo H.264 |
+| `MEDIAMTX_RTSP_URL` no `ms-cameras` (kind, namespace `attlas-dev`) | `rtsp://192.168.10.16:8554`, o IP do dev.v2 no túnel de Quito |
+| Porta `554` do host | DNAT do host para o MediaMTX (Service `mediamtx` NodePort `30554`) em qualquer endereço do próprio host: `192.168.10.16` pelo túnel e o IP público |
+| **Streaming RTSP** do processador **H9 Quito** | Host padrão, porta `554`: o H9 recebe `rtsp://192.168.10.16:554` |
 | MediaMTX | Entrega RTSP só por TCP |
 | Playground | Desligado |
 | `VIDEOWALL_NOVASTAR_IPC_SLOT_ID` e `VIDEOWALL_NOVASTAR_SCREEN_ID` | `6` e `0` |
@@ -373,7 +377,7 @@ Ambientes e acessos em geral: [[Infraestrutura - Ambientes]].
 
 - **O vídeo ainda não chega ao painel de Quito.** Comando, fonte e camada funcionam no H9 real, mas a placa IP
   não abre a conexão RTSP até o MediaMTX. Diagnóstico e próximos passos em
-  [[Câmeras - Videowall - Explicação - Vídeo não chega ao painel H9]].
+  [[Videowall - Vídeo não chega ao H9]].
 - **No WireGuard, cada faixa de `AllowedIPs` vale para um peer só.** Colocar `10.200.0.0/24` também no peer
   do Attlas faz o concentrador devolver ao dev.v2 o tráfego destinado a Quito, e os pings para `10.200.0.51`
   voltam do próprio dev.v2 em menos de 1 ms. A faixa fica só no peer de Quito.
