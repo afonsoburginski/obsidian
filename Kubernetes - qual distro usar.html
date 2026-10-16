@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Qual Kubernetes usar — melhor custo-benefício</title>
+<style>
+:root{--bg:#0a0e14;--panel:#111722;--panel2:#161e2c;--line:#222c3d;--text:#e6ecf5;--mut:#8b9ab0;--blue:#3186ff;--sky:#9dd2ff;--ok:#3fb67a;--warn:#e5a63a;--bad:#e5596b}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:1060px;margin:0 auto;padding:32px 20px 80px}
+h1{font-size:34px;line-height:1.2;margin:0 0 10px}
+h2{font-size:22px;margin:0 0 6px}
+h3{margin:0 0 6px}
+p{margin:0 0 12px}
+code{background:#0d1320;border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-size:.9em}
+.mut{color:var(--mut)}
+section{margin-top:44px;opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
+section.in{opacity:1;transform:none}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:20px}
+.answer{border-left:4px solid var(--blue);background:var(--panel2);padding:18px 22px;border-radius:0 10px 10px 0;font-size:19px}
+.answer b{color:var(--sky)}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}
+.tab{background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:9px 14px;font:inherit;cursor:pointer}
+.tab:hover{border-color:var(--blue)}
+.tab[aria-selected=true]{background:var(--blue);border-color:var(--blue);color:#fff}
+.tab:focus-visible,input:focus-visible{outline:2px solid var(--sky);outline-offset:2px}
+.pick{font-size:26px;font-weight:700;color:var(--sky);margin:4px 0 8px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.tag{display:inline-block;font-size:13px;padding:2px 9px;border-radius:99px;border:1px solid var(--line);color:var(--mut);margin-right:6px}
+.tag.ok{color:var(--ok);border-color:var(--ok)}.tag.bad{color:var(--bad);border-color:var(--bad)}.tag.warn{color:var(--warn);border-color:var(--warn)}
+ul{margin:6px 0 0;padding-left:20px}li{margin:5px 0}
+.bar{position:relative;height:14px;background:#0d1320;border:1px solid var(--line);border-radius:7px;overflow:visible;margin:6px 0 2px}
+.bar>i{position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(90deg,var(--blue),var(--sky));border-radius:6px;transition:width 1.1s cubic-bezier(.2,.8,.2,1)}
+.bar>i.warn{background:var(--warn)}.bar>i.bad{background:var(--bad)}.bar>i.ok{background:var(--ok)}
+.bar>em{position:absolute;top:-5px;bottom:-5px;width:2px;background:var(--text);opacity:.8}
+.bar>em::after{content:attr(data-l);position:absolute;top:-19px;left:50%;transform:translateX(-50%);font-size:11px;font-style:normal;color:var(--mut);white-space:nowrap}
+.row{display:flex;justify-content:space-between;gap:12px;font-size:14px}
+.row b{color:var(--text)}
+.meas{margin:20px 0 6px}
+.dist{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin-top:14px}
+.dist .card{padding:16px;transition:transform .25s ease,border-color .25s}
+.dist .card:hover{border-color:var(--blue);transform:translateY(-2px)}
+.rank{float:right;font-size:26px;font-weight:700;color:var(--sky)}
+.sl{display:grid;grid-template-columns:260px 1fr 30px;gap:10px;align-items:center;font-size:14px;margin:6px 0}
+input[type=range]{width:100%;accent-color:var(--blue)}
+.big{font-size:40px;font-weight:700;color:var(--sky);line-height:1.1}
+.note{font-size:13.5px;color:var(--mut)}
+.src a{color:var(--sky)}
+.src li{font-size:14px}
+.flag{background:#1a2234;border:1px dashed var(--warn);border-radius:8px;padding:12px 14px;font-size:14.5px}
+.cmp{display:grid;grid-template-columns:150px 1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden;font-size:14.5px}
+.cmp>div{background:var(--panel);padding:10px 12px}
+.cmp .h{background:var(--panel2);font-weight:600;color:var(--sky)}
+hr{border:0;border-top:1px solid var(--line);margin:20px 0}
+@media(max-width:760px){.grid2{grid-template-columns:1fr}.sl{grid-template-columns:1fr 1fr 28px}.cmp{grid-template-columns:100px 1fr 1fr}h1{font-size:26px}}
+@media(prefers-reduced-motion:reduce){section{opacity:1;transform:none;transition:none}.bar>i{transition:none}.dist .card{transition:none}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<main>
+
+<header>
+  <p class="mut">Pesquisa de 16/10/2026 · números do EC2 e do sumo medidos hoje · o resto tem fonte no fim · sem partir de nenhum template do Orbit</p>
+  <h1>Qual Kubernetes usar?</h1>
+  <div class="answer">
+    <b>O mesmo nos dois: k3s.</b> Dev e produção iguais.
+    Na mesma máquina e no mesmo teste, o k3s gastou <b>3 vezes menos memória</b> que o RKE2.
+    O RKE2 só ganha se o cliente exigir segurança certificada (CIS ou FIPS).
+    E o aperto do EC2 <b>não vem do Kubernetes</b>: vem do processador da máquina.
+  </div>
+</header>
+
+<section id="s-prova">
+  <h2>1. k3s x RKE2: o número que decide</h2>
+  <p class="mut">Os dois são da mesma empresa (SUSE), testados no mesmo tipo de máquina (AWS c6id.xlarge, 4 núcleos, 8 GB), um servidor com uma carga simples.</p>
+  <div class="card">
+    <div class="meas">
+      <div class="row"><span>Memória do servidor: RKE2</span><b>4,98 GB</b></div>
+      <div class="bar"><i data-w="100" class="bad"></i></div>
+      <div class="row"><span>Memória do servidor: k3s</span><b>1,60 GB</b></div>
+      <div class="bar"><i data-w="32"></i></div>
+    </div>
+    <div class="meas">
+      <div class="row"><span>Processador do servidor: RKE2</span><b>17% de um núcleo</b></div>
+      <div class="bar"><i data-w="100" class="bad"></i></div>
+      <div class="row"><span>Processador do servidor: k3s</span><b>6% de um núcleo</b></div>
+      <div class="bar"><i data-w="35"></i></div>
+    </div>
+    <p class="note">Cuidado: o teste do RKE2 foi na versão 1.27 com todos os componentes ligados; o do k3s tem outra carga. Não é igual a igual e as versões são antigas. Serve para a ordem de grandeza. Eu não repeti o teste.</p>
+    <hr>
+    <div class="grid2">
+      <div>
+        <h3>O que o k3s entrega</h3>
+        <ul>
+          <li>Kubernetes certificado, igual para quem usa Helm e Argo CD.</li>
+          <li>Pronto para produção e com alta disponibilidade (3 servidores).</li>
+          <li>Servidor com 2 núcleos e 4 GB aguenta até 350 máquinas (tabela do fabricante).</li>
+          <li>Versão atual existe: 1.37.1 (a mesma linha do nosso kind) e a "estável" é 1.36.5.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>O que o RKE2 tem a mais</h3>
+        <ul>
+          <li>Passa o teste de segurança CIS quase sem configurar e tem modo FIPS.</li>
+          <li>Veio do uso em governo dos EUA. Só pesa a favor se o cliente exigir isso.</li>
+          <li>O próprio fabricante diz: use RKE2 se precisar de segurança reforçada ou FIPS.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="s-hoje">
+  <h2>2. Para onde vai o hardware do EC2</h2>
+  <p class="mut">Medido hoje: <code>t3a.2xlarge</code> (8 núcleos, 31 GB), um único nó kind com 94 pods. O Kubernetes enxerga 12,95 GB e 4,57 núcleos em uso.</p>
+  <div class="card">
+    <div class="meas">
+      <div class="row"><span>Memória: Attlas dev (os serviços)</span><b>9,3 GB</b></div>
+      <div class="bar"><i data-w="72"></i></div>
+      <div class="row"><span>Memória: Kubernetes (cérebro do cluster)</span><b>1,1 GB</b></div>
+      <div class="bar"><i data-w="8.4" class="warn"></i></div>
+      <div class="row"><span>Memória: Argo CD (faz os deploys)</span><b>0,4 GB</b></div>
+      <div class="bar"><i data-w="3.1" class="warn"></i></div>
+      <div class="note">Do total do EC2 (31,8 GB), o Kubernetes + Argo CD ocupam 4,7%. Sobram 15 GB livres: memória não é o problema.</div>
+    </div>
+    <div class="meas">
+      <div class="row"><span>Processador: Attlas dev</span><b>3,4 núcleos</b></div>
+      <div class="bar"><i data-w="73.5"></i></div>
+      <div class="row"><span>Processador: Kubernetes + Argo CD</span><b>0,4 núcleo</b></div>
+      <div class="bar"><i data-w="8.8" class="warn"></i></div>
+      <div class="note">Mesmo contando o Kubernetes inteiro, ele usa menos de 10% do processador em uso.</div>
+    </div>
+    <hr>
+    <div class="meas">
+      <div class="row"><span>Carga do processador (média de 15 min)</span><b>15,8 — limite saudável é 8</b></div>
+      <div class="bar"><i data-w="100" class="bad"></i><em style="left:50.6%" data-l="8 = limite"></em></div>
+      <div class="note">Quase o dobro do que a máquina aguenta. Nos 10 s que medi: 36% usuário, 24% sistema, 10% rede, 3% "roubado" pela AWS (chegou a 15% em outra leitura) e 27% parado.</div>
+    </div>
+    <div class="meas">
+      <div class="row"><span>Fora do Kubernetes, nos mesmos 10 s</span><b>mediamtx 1,1 núcleo · tailscaled 0,7 núcleo</b></div>
+      <div class="bar"><i data-w="35" class="bad"></i></div>
+      <div class="note">Só esses dois processos usaram quase 2 núcleos, bem mais que todo o Kubernetes. Não mexi em nada: a tailnet é do Augusto.</div>
+    </div>
+    <div class="flag">
+      <b>Sobre o tipo da máquina:</b> <code>t3a</code> é uma instância "com crédito de CPU" (tem um piso e ganha rajadas). O "roubo" de 3 a 15% é sinal disso ou de vizinho ocupado. Sem acesso à conta AWS eu não vejo o saldo de crédito. Quem tem acesso deve olhar <code>CPUCreditBalance</code> e se está em modo Unlimited. Uma família sem crédito (m6a ou m7a) tira a dúvida, mas é decisão de custo de quem paga a conta.
+    </div>
+    <hr>
+    <h3>Simulador: e se o Kubernetes ficasse mais leve?</h3>
+    <div class="sl"><span>Redução do Kubernetes (sem o Argo)</span><input type="range" id="red" min="0" max="60" value="30" aria-label="Redução do Kubernetes"><b id="redv">30%</b></div>
+    <p style="margin-top:10px"><span class="big" id="redG">—</span><br><span class="mut" id="redT"></span></p>
+  </div>
+</section>
+
+<section id="s-caso">
+  <h2>3. O que usar em cada lugar</h2>
+  <p class="mut">Clique em cada caso.</p>
+  <div class="tabs" role="tablist" id="tabs"></div>
+  <div class="card" id="caso" aria-live="polite"></div>
+</section>
+
+<section id="s-uma">
+  <h2>4. Por que o mesmo nos dois: kind x k3s</h2>
+  <p class="mut">Todos seguem a API padrão do Kubernetes, então Helm, Argo CD e HPA funcionam igual. A diferença está em volta.</p>
+  <div class="cmp">
+    <div class="h">Ponto</div><div class="h">Dev hoje (kind)</div><div class="h">k3s</div>
+    <div>Onde roda</div><div>Dentro de um container Docker (um nível a mais)</div><div>Direto na máquina</div>
+    <div>Mais máquinas</div><div>Não aceita nó depois de criado</div><div>Aceita (agente entra com um token)</div>
+    <div>Se uma máquina cair</div><div>Para tudo (1 nó)</div><div>Segue, com 3 servidores</div>
+    <div>Atualizar</div><div>Recriar o cluster</div><div>Atualização no lugar</div>
+    <div>Para que foi feito</div><div>Testar o próprio Kubernetes e CI</div><div>Produção, borda e dev</div>
+  </div>
+  <p class="note" style="margin-top:10px">Dev diferente de produção gera o bug "funciona no dev e quebra em produção". Com o mesmo k3s nos dois, rede, armazenamento e atualização são os mesmos.</p>
+</section>
+
+<section id="s-rank">
+  <h2>5. Monte o seu ranking</h2>
+  <p class="mut">Mexa nos pesos. A nota de 0 a 5 é avaliação minha, baseada nas fontes. Peso alto = importa mais. Comecei com o peso de segurança certificada em 1, porque ninguém nos exigiu isso.</p>
+  <div class="card" id="pesos"></div>
+  <p class="note" id="dica" style="margin-top:10px"></p>
+  <div class="dist" id="dist"></div>
+  <p class="note" style="margin-top:12px">Fora da lista: EKS (Kubernetes gerenciado da AWS), porque não temos acesso à conta AWS.</p>
+</section>
+
+<section id="s-risco">
+  <h2>6. Trocar o kind do EC2 por k3s: ganho e risco</h2>
+  <div class="grid2">
+    <div class="card">
+      <h3>Ganho esperado</h3>
+      <ul>
+        <li>Memória: pouco, uns <b>0,3 a 0,5 GB</b> (estimativa minha, não medida). O peso do nosso cluster vem do tamanho dele (94 pods), e isso não muda.</li>
+        <li>Processador: perto de nada. O Kubernetes usa 0,3 núcleo.</li>
+        <li>Ganho de verdade: <b>dev igual à produção</b>, aceitar mais nós e atualizar sem recriar.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Risco de instabilidade (levantado no EC2 hoje)</h3>
+      <ul>
+        <li><b>dev.v2 parado</b> durante a troca: não cabem dois clusters (carga 15).</li>
+        <li><b>Rede:</b> hoje as regras ficam dentro do container do kind; com k3s ficam na máquina, junto com Docker, Tailscale, WireGuard e o bloqueio de IPs. Sem teste não dá para garantir.</li>
+        <li><b>Disco</b> 67% usado: mover as pastas dos bancos (26 GB) não gasta espaço, copiar aperta. O kind desliga a limpeza de disco; o k3s não.</li>
+        <li><b>94 pods subindo juntos</b> já levaram a carga a ~100: subir em ondas.</li>
+        <li><b>O Orbit depende do kind</b> (rede Docker com IP fixo, nome do container, contexto). Se o Orbit cair, para o deploy de todos.</li>
+        <li>Já há instabilidade: <code>argocd-repo-server</code> com 18 reinícios.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="flag" style="margin-top:14px">
+    <b>Regra:</b> nada no EC2 antes de provar a rede (Docker + k3s no mesmo Linux) em outra máquina. Onde fazer esse teste ainda não está decidido: o sumo foi recusado. Mexer no dev só junto com a troca de máquina do EC2.
+  </div>
+</section>
+
+<section id="s-prod">
+  <h2>7. Produção: quanta máquina?</h2>
+  <p class="mut">Carga do Attlas: regime ~23 vCPU / 21 GB e pico ~32 vCPU (da página de dimensionamento, medida no teste de capacidade e no Attlas 25). Custo em vCPU / GB:</p>
+  <div class="card">
+    <div class="row"><span>A. Uma máquina só (sem alta disponibilidade)</span><b>32 vCPU · 64 GB</b></div>
+    <div class="bar"><i data-w="53" class="ok"></i></div>
+    <div class="row"><span>B. 3 máquinas iguais, cada uma faz tudo (k3s)</span><b>48 vCPU · 96 GB</b></div>
+    <div class="bar"><i data-w="80" class="ok"></i></div>
+    <div class="row"><span>C. 3 de controle pequenas + 3 de trabalho (k3s: 2 vCPU / 4 GB cada controle)</span><b>54 vCPU · 108 GB</b></div>
+    <div class="bar"><i data-w="90"></i></div>
+    <div class="row"><span>D. 3 de controle 4/8 + 3 de trabalho (o desenho do template nunca usado)</span><b>60 vCPU · 120 GB</b></div>
+    <div class="bar"><i data-w="100" class="warn"></i></div>
+    <div class="flag" style="margin-top:14px">
+      <b>Minha sugestão:</b> <b>B</b> se o cliente exige que continue funcionando com uma máquina caída (duas máquinas restantes cobrem o regime e chegam ao pico no limite); <b>A com backup</b> se não exige. B custa 20% menos que D. Risco de B: o banco do cluster (etcd) divide processador com a aplicação, então precisa de disco SSD e de um teste de carga antes. Conta aritmética com os números acima; não testei.
+    </div>
+  </div>
+</section>
+
+<section id="s-alerta">
+  <h2>8. Alerta: a porta de entrada mudou</h2>
+  <div class="card">
+    <p>O <code>ingress-nginx</code> foi aposentado em março de 2026. O RKE2 1.36 em diante vem com <b>Traefik</b> em cluster novo, e o k3s já traz Traefik de fábrica.</p>
+    <p>Nosso chart de infraestrutura (<code>atman-infra/templates/ingress.yaml</code>) usa anotações do nginx: <b>limite de 50 MB</b> e <b>24 h</b> de conexão aberta. Com Traefik essas anotações podem não valer, e conexão longa (vídeo, WebSocket) pode cair. Vale para qualquer escolha acima. Opções: usar a compatibilidade do Traefik com anotações do nginx (cobre só parte) ou trocar as anotações pelas do Traefik.</p>
+    <p class="note">Não testei no cluster. É leitura da documentação e do nosso chart. No dev, o tráfego entra pelo gateway (porta 30081), então isso afeta só ambientes com Ingress.</p>
+  </div>
+</section>
+
+<section id="s-sumo">
+  <h2>9. VM do runner do CI no sumo</h2>
+  <p class="mut">Não usa Kubernetes, então esta escolha não muda nada nela. Medido hoje, últimos 7 dias. <b>É uma proposta. Nada foi alterado.</b></p>
+  <div class="card">
+    <div class="meas">
+      <div class="row"><span>Processador: maior uso em 7 dias (média de 10 min)</span><b>48 de 96 vCPU (50%)</b></div>
+      <div class="bar"><i data-w="50"></i><em style="left:66.7%" data-l="limite atual: 64"></em></div>
+    </div>
+    <div class="meas">
+      <div class="row"><span>Memória: maior uso real em 7 dias</span><b>60 GiB de 76 GiB</b></div>
+      <div class="bar"><i data-w="79" class="warn"></i><em style="left:79%" data-l="pico + 16 de folga = 76"></em></div>
+      <div class="note">Os 16 GiB de folga são de propósito: o CI só aceita novo job se sobrarem 16 GiB. Em 09/10 faltou memória e o sistema matou 12 processos. Por isso a memória não diminui.</div>
+    </div>
+    <hr>
+    <div class="sl"><span>Núcleos liberados à VM</span><input type="range" id="quota" min="40" max="96" value="56" aria-label="Núcleos liberados"><b id="qv">56</b></div>
+    <p id="qtxt" style="margin-top:10px"></p>
+    <div class="flag">
+      <b>Proposta:</b> limite de processador de 64 para <b>56 núcleos</b> (pico medido 48, sobra 14%). Memória fica em 76 GiB. Sem reiniciar a VM e sem derrubar job. O pico é média de 10 min, então picos curtos podem passar de 48. Diminuir o número de vCPU (96) exige reiniciar a VM e matar os jobs: só em horário parado.
+    </div>
+  </div>
+</section>
+
+<section id="s-fontes" class="src">
+  <h2>Fontes e o que NÃO foi medido</h2>
+  <div class="flag" style="margin-bottom:14px">Não instalei k3s, RKE2 nem outro no EC2: ele é o dev do time e já está com carga 15. Os números de k3s e RKE2 vêm da documentação de cada um, testados pelo mesmo fabricante na mesma máquina, mas com versões e cargas diferentes. Confirmar com um teste nosso, em outra máquina, é o próximo passo.</div>
+  <ul>
+    <li>Medido por mim hoje no EC2: <code>kubectl top</code>, <code>ps</code>, <code>vmstat</code>, amostra de 10 s em <code>/proc</code>, rede e <code>iptables</code>, disco, configuração do kubelet do kind, tipo da instância pelo serviço de metadados da AWS.</li>
+    <li>Medido hoje no sumo: <code>sar</code>, <code>virsh</code> (VM <code>ci-runner</code>).</li>
+    <li>k3s, servidor com carga simples ~1,6 GB e 6% de um núcleo; agente ~275 MB — <a href="https://docs.k3s.io/reference/resource-profiling">docs.k3s.io, resource profiling</a>. Tabela de tamanho do servidor: <a href="https://docs.k3s.io/installation/requirements">requisitos</a>. Alta disponibilidade: <a href="https://docs.k3s.io/datastore/ha-embedded">etcd embutido</a>. Versões: canal <code>update.k3s.io</code> (latest 1.37.1, stable 1.36.5, consultado hoje).</li>
+    <li>RKE2, servidor com carga ~4,98 GB e 17% de um núcleo (v1.27.12, canal) — <a href="https://docs.rke2.io/reference/resource_profiling">docs.rke2.io, resource profiling</a>. Mínimo 4 GB / 2 CPU — <a href="https://docs.rke2.io/install/requirements">requirements</a>.</li>
+    <li>Quando usar cada um — <a href="https://www.suse.com/c/rancher_blog/when-to-use-k3s-and-rke2">SUSE, When to use K3s and RKE2</a>; foco em CIS e FIPS do RKE2 — <a href="https://docs.rke2.io/">docs.rke2.io</a>.</li>
+    <li>Traefik como padrão no RKE2 1.36 — <a href="https://docs.rke2.io/release-notes/v1.36.X">release notes</a>.</li>
+    <li>k0s: mínimo 1 GB / 1 vCPU — <a href="https://docs.k0sproject.io/stable/system-requirements/">docs.k0sproject.io</a>. MicroK8s: 540 MB — <a href="https://microk8s.io/docs/getting-started">microk8s.io</a>. Talos: controle 2 GiB, sem SSH — <a href="https://docs.siderolabs.com/talos/v1.14/getting-started/system-requirements">docs.siderolabs.com</a>.</li>
+    <li>minikube x kind, cluster parado com Docker: 680 MiB x 581 MiB e partida de 29 s x 20 s — <a href="https://www.blueshoe.io/blog/minikube-vs-k3d-vs-kind-vs-getdeck-beiboot/">Blueshoe</a>; 536 MiB x 463 MiB — <a href="https://www.besthub.dev/articles/which-local-kubernetes-tool-is-fastest-minikube-vs-kind-vs-k3d-performance-comparison-3a4e32497f50">BestHub</a>. Driver <code>none</code>: <a href="https://minikube.sigs.k8s.io/docs/drivers/none/">docs do minikube</a>.</li>
+    <li>Custo de adotar no Orbit (detecta k3s e adiciona nó, instala só RKE2) e o dev em kind: README, <code>local/up.sh</code>, <code>console/server.mjs</code> e páginas <code>adicionar-servidor</code> e <code>stack</code> do repositório. É só custo de código, não motivo de escolha.</li>
+    <li>Notas de 0 a 5, a estimativa de 0,3 a 0,5 GB e as contas da seção 7: julgamento e aritmética minha.</li>
+  </ul>
+</section>
+
+</main>
+
+<script>
+(function(){
+  var secs=document.querySelectorAll('section');
+  var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function fill(s){s.querySelectorAll('.bar>i[data-w]').forEach(function(b){b.style.width=b.dataset.w+'%'})}
+  if(reduce||!('IntersectionObserver' in window)){secs.forEach(function(s){s.classList.add('in');fill(s)})}
+  else{
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');fill(e.target);io.unobserve(e.target)}})},{threshold:.12});
+    secs.forEach(function(s){io.observe(s)});
+  }
+
+  var red=document.getElementById('red');
+  function rcalc(){
+    var p=+red.value;document.getElementById('redv').textContent=p+'%';
+    var gb=1.09*p/100,cores=0.28*p/100;
+    document.getElementById('redG').textContent=gb.toFixed(2).replace('.',',')+' GB';
+    document.getElementById('redT').textContent=
+      'e '+cores.toFixed(2).replace('.',',')+' núcleo liberados. Isso é '+(gb/31.8*100).toFixed(1).replace('.',',')+'% da memória e '+(cores/8*100).toFixed(1).replace('.',',')+'% do processador do EC2. A carga está em 15,8 para 8 núcleos: não muda nada.';
+  }
+  red.oninput=rcalc;rcalc();
+
+  var casos=[
+   {n:'Dev e produção',pick:'k3s nos dois',tags:[['ok','mesma ferramenta'],['ok','3x mais leve que RKE2']],
+    p:'Mesmo Kubernetes em teste e produção: mesma rede, mesmo armazenamento, mesma forma de atualizar. Na documentação do fabricante, o servidor k3s gasta 1,6 GB e o RKE2 gasta 5 GB.',
+    li:['Alta disponibilidade com 3 servidores (etcd embutido). Servidor de 2 núcleos e 4 GB aguenta até 350 máquinas.','Troque por RKE2 só se o cliente exigir segurança certificada (CIS ou FIPS). Nesse caso a produção dele usa RKE2 e o dev continua k3s: a diferença é pequena porque os dois vêm da mesma base.','Antes de fechar, confirmar o 3x com um teste nosso, em outra máquina.']},
+   {n:'EC2 do dev (agora)',pick:'Manter o kind até a migração',tags:[['ok','não migrar por hardware'],['warn','risco de instabilidade']],
+    p:'Kubernetes + Argo CD gastam 1,5 GB e 0,4 núcleo. O Attlas dev gasta 9,3 GB e 3,4 núcleos. Trocar kind por k3s libera no máximo uns 0,5 GB (estimativa minha).',
+    li:['O aperto é de processador: carga 15,8 para 8 núcleos e "roubo" de 3 a 15% pela AWS.','A máquina é <code>t3a.2xlarge</code> (com crédito de CPU). Alguém com acesso à AWS precisa olhar o saldo de crédito.','Fora do cluster, <code>mediamtx</code> (1,1 núcleo) e <code>tailscaled</code> (0,7 núcleo) pesam mais que o Kubernetes todo.','Trocar o kind exige parar o dev.v2 e mexer no Orbit (seção 6). Só junto com a troca de máquina.']},
+   {n:'Produção nova',pick:'k3s, 3 máquinas iguais (ou 1 com backup)',tags:[['ok','menos máquina'],['warn','testar carga']],
+    p:'Sem partir do template: o menor custo com alta disponibilidade é 3 máquinas que fazem tudo (48 vCPU / 96 GB). Sem exigência de alta disponibilidade, uma máquina com backup.',
+    li:['Servidor de controle dedicado só vale com muitas máquinas de trabalho.','Usar disco SSD: o banco do cluster é sensível a disco lento.','Atenção à porta de entrada (seção 8).']},
+   {n:'Cluster descartável (CI, PC do dev)',pick:'kind',tags:[['ok','é para isso que ele serve']],
+    p:'Sobe em cerca de 20 s e some. Bom para teste de chart e de CI. Não serve como ambiente fixo do time. minikube não compensa: usa mais memória e parte mais devagar.',
+    li:['Nada de cluster fixo no PC do Afonso: ele trava com processo pesado.','Teste pesado fica no CI, não na máquina local.']}
+  ];
+  var tabs=document.getElementById('tabs'),box=document.getElementById('caso');
+  function showCaso(i){
+    [].forEach.call(tabs.children,function(b,j){b.setAttribute('aria-selected',j===i)});
+    var c=casos[i];
+    box.innerHTML='<div class="pick">'+c.pick+'</div>'+
+      c.tags.map(function(t){return '<span class="tag '+t[0]+'">'+t[1]+'</span>'}).join('')+
+      '<p style="margin-top:12px">'+c.p+'</p><ul>'+c.li.map(function(x){return '<li>'+x+'</li>'}).join('')+'</ul>';
+  }
+  casos.forEach(function(c,i){var b=document.createElement('button');b.className='tab';b.setAttribute('role','tab');b.textContent=c.n;b.onclick=function(){showCaso(i)};tabs.appendChild(b)});
+  showCaso(0);
+
+  var D=[
+   {n:'k3s',s:{leve:5,prod:4,op:5,adota:4,seg:2},d:'Um programa só, certificado, com alta disponibilidade. Servidor ~1,6 GB com carga. Mesma base do RKE2, sem o modo de segurança reforçada pronto.'},
+   {n:'RKE2',s:{leve:2,prod:5,op:4,adota:5,seg:5},d:'Seguro por padrão (CIS, FIPS). Servidor ~5 GB com carga, 3x o k3s. Já é o que o instalador do Orbit coloca.'},
+   {n:'Talos',s:{leve:5,prod:4,op:2,adota:0,seg:5},d:'Sistema só para Kubernetes, sem SSH nem shell. Leve e seguro, mas muda toda a forma de operar e o Orbit não entra.'},
+   {n:'k0s',s:{leve:5,prod:3,op:3,adota:1,seg:2},d:'Muito leve (1 GB / 1 CPU). Comunidade menor. O Orbit não conhece.'},
+   {n:'MicroK8s',s:{leve:4,prod:3,op:3,adota:1,seg:2},d:'Leve (540 MB), ligado ao Ubuntu e ao snap. O Orbit não conhece.'},
+   {n:'kind (atual no dev)',s:{leve:3,prod:0,op:3,adota:5,seg:1},d:'Feito para testar o Kubernetes e CI. Roda dentro do Docker, não aceita nó novo e sem alta disponibilidade. Já está no dev.'},
+   {n:'kubeadm (Kubernetes puro)',s:{leve:2,prod:4,op:2,adota:1,seg:2},d:'Máxima liberdade e máxima manutenção. Peso parecido com o kind. O Orbit não conhece.'},
+   {n:'minikube',s:{leve:2,prod:0,op:2,adota:1,seg:1},d:'Para aprender. Com Docker é como o kind, com ~17% mais memória e partida mais lenta. Sem Docker (driver none) abre portas e não limita recurso.'}
+  ];
+  var K=[['leve','Gasta pouco hardware',5],['prod','Aguenta produção (alta disponibilidade)',4],['op','Fácil de atualizar e manter',4],['adota','Barato de adotar (código e migração)',2],['seg','Segurança certificada pronta (CIS/FIPS)',1]];
+  var W={};K.forEach(function(k){W[k[0]]=k[2]});
+  var pesos=document.getElementById('pesos');
+  K.forEach(function(k){
+    var r=document.createElement('div');r.className='sl';
+    r.innerHTML='<span>'+k[1]+'</span><input type="range" min="0" max="5" value="'+k[2]+'" aria-label="Peso: '+k[1]+'"><b>'+k[2]+'</b>';
+    var inp=r.querySelector('input'),out=r.querySelector('b');
+    inp.oninput=function(){W[k[0]]=+inp.value;out.textContent=inp.value;draw()};
+    pesos.appendChild(r);
+  });
+  var dist=document.getElementById('dist');
+  function draw(){
+    var tot=0;for(var k in W)tot+=W[k];
+    var rows=D.map(function(x){var sc=0;for(var k in W)sc+=W[k]*x.s[k];return {x:x,p:tot?Math.round(sc/(tot*5)*100):0}});
+    rows.sort(function(a,b){return b.p-a.p});
+    dist.innerHTML=rows.map(function(r,i){
+      return '<div class="card"><span class="rank">'+r.p+'</span><h3>'+(i+1)+'. '+r.x.n+'</h3>'+
+        '<div class="bar"><i style="width:'+r.p+'%"></i></div>'+
+        '<p style="margin:8px 0 0;font-size:14.5px">'+r.x.d+'</p></div>';
+    }).join('');
+    var first=rows[0].x.n;
+    document.getElementById('dica').textContent=
+      first==='k3s'?'Com esses pesos o k3s ganha. Suba o peso de "Segurança certificada" para ver o RKE2 passar (caso o cliente exija CIS ou FIPS).'
+      :first==='RKE2'?'Com esses pesos o RKE2 ganha: a segurança certificada está pesando. Se ninguém exige isso, baixe esse peso.'
+      :'Com esses pesos o primeiro é '+first+'.';
+  }
+  draw();
+
+  var q=document.getElementById('quota'),qv=document.getElementById('qv'),qt=document.getElementById('qtxt');
+  function qcalc(){
+    var n=+q.value;qv.textContent=n;
+    var m=((n-48)/n*100);
+    var cls=m<10?'bad':m<17?'warn':'ok';
+    var tag='<span class="tag '+cls+'">'+(cls==='bad'?'apertado':cls==='warn'?'razoável':'folgado')+'</span>';
+    qt.innerHTML=tag+'Com '+n+' núcleos, o pico medido (48) usa '+Math.round(48/n*100)+'% do limite e sobra '+Math.max(0,Math.round(m))+'%.'+
+      (n<48?' Abaixo do pico: jobs ficariam mais lentos.':'');
+  }
+  q.oninput=qcalc;qcalc();
+})();
+</script>
+</body>
+</html>

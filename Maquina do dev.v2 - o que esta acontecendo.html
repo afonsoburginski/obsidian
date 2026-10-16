@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Máquina do dev.v2: o que está acontecendo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root { --bg:#0d1117; --card:#161b22; --line:#262d38; --txt:#e6edf3; --dim:#8b96a5; --blue:#3186ff; --sky:#9dd2ff; --ok:#3fb950; --warn:#e3b341; --bad:#f85149; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--txt); font:16px/1.55 system-ui,sans-serif; }
+  main { max-width:900px; margin:0 auto; padding:32px 20px 80px; }
+  h1 { font-size:28px; margin:0 0 6px; }
+  .sub { color:var(--dim); margin:0 0 28px; }
+  section { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:22px; margin:0 0 20px;
+            opacity:0; transform:translateY(14px); animation:in .6s ease forwards; }
+  section:nth-of-type(1){animation-delay:.1s} section:nth-of-type(2){animation-delay:.3s}
+  section:nth-of-type(3){animation-delay:.5s} section:nth-of-type(4){animation-delay:.7s} section:nth-of-type(5){animation-delay:.9s}
+  @keyframes in { to { opacity:1; transform:none; } }
+  h2 { font-size:19px; margin:0 0 4px; color:var(--sky); }
+  .lead { margin:0 0 16px; color:var(--dim); }
+  .big { font-size:18px; }
+  b.bad{color:var(--bad)} b.warn{color:var(--warn)} b.ok{color:var(--ok)}
+
+  /* 1. núcleos e fila */
+  .cpu { display:flex; gap:10px; flex-wrap:wrap; margin:10px 0; }
+  .core { width:84px; height:64px; border:1px solid var(--blue); border-radius:10px; position:relative; overflow:hidden; background:#0b1a33; }
+  .core span { position:absolute; top:4px; left:8px; font-size:11px; color:var(--sky); }
+  .core i { position:absolute; bottom:0; left:0; height:100%; width:100%; background:linear-gradient(90deg,transparent,var(--blue),transparent);
+            transform:translateX(-100%); animation:run 1.4s linear infinite; opacity:.8; }
+  @keyframes run { to { transform:translateX(100%); } }
+  .queue { display:flex; gap:5px; flex-wrap:wrap; margin-top:8px; min-height:26px; }
+  .task { width:16px; height:16px; border-radius:4px; background:var(--warn); animation:wait 1.2s ease-in-out infinite; }
+  @keyframes wait { 50% { opacity:.25; transform:scale(.8); } }
+  .tag { font-size:13px; color:var(--dim); margin-top:2px; }
+
+  /* barras */
+  .bars { display:grid; gap:14px; margin-top:6px; }
+  .row .head { display:flex; justify-content:space-between; font-size:14px; margin-bottom:5px; }
+  .track { height:14px; background:#0f141b; border:1px solid var(--line); border-radius:8px; overflow:hidden; position:relative; }
+  .fill { height:100%; width:0; border-radius:8px; animation:grow 1.6s cubic-bezier(.2,.8,.2,1) forwards; animation-delay:1s; }
+  .mark { position:absolute; top:-2px; bottom:-2px; width:2px; background:var(--txt); opacity:.7; }
+  @keyframes grow { to { width:var(--w); } }
+  .note { font-size:13px; color:var(--dim); margin-top:4px; }
+
+  /* quem consome */
+  .who { display:grid; gap:9px; }
+  .who .l { display:grid; grid-template-columns:150px 1fr 70px; align-items:center; gap:10px; font-size:14px; }
+  .who .t { height:12px; background:#0f141b; border-radius:7px; overflow:hidden; border:1px solid var(--line); }
+  .who .f { height:100%; width:0; background:var(--blue); border-radius:7px; animation:grow 1.4s ease forwards; animation-delay:1.2s; }
+  .who .f.top { background:var(--sky); }
+
+  /* opções */
+  .opts { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  @media (max-width:640px){ .opts{grid-template-columns:1fr} .who .l{grid-template-columns:110px 1fr 60px} }
+  .opt { border:1px solid var(--line); border-radius:12px; padding:16px; background:#11161d; }
+  .opt.rec { border-color:var(--blue); box-shadow:0 0 0 1px var(--blue) inset; animation:glow 2.6s ease-in-out infinite; }
+  @keyframes glow { 50% { box-shadow:0 0 0 1px var(--blue) inset, 0 0 22px rgba(49,134,255,.35); } }
+  .opt h3 { margin:0 0 6px; font-size:16px; }
+  .badge { display:inline-block; font-size:12px; padding:2px 9px; border-radius:99px; background:var(--blue); color:#fff; margin-left:6px; }
+  ul { margin:8px 0 0; padding-left:18px; color:var(--dim); font-size:14px; }
+  li { margin:3px 0; }
+  .no { border-left:3px solid var(--bad); padding:8px 12px; background:#1a1315; border-radius:0 8px 8px 0; margin-top:10px; font-size:14px; }
+  @media (prefers-reduced-motion: reduce){ *{animation-duration:.01s!important; animation-delay:0s!important} }
+</style>
+</head>
+<body>
+<main>
+  <h1>O que está acontecendo na máquina do dev.v2</h1>
+  <p class="sub">Medido no EC2 em 16/10, depois de migrar os simuladores e do Orbit mostrar a pressão real.</p>
+
+  <section>
+    <h2>1. A máquina está cheia, mesmo com a média "boa"</h2>
+    <p class="lead">O Orbit mostrava só a média de CPU dos pods (cerca de 50%). Parece que sobra metade. Mas CPU funciona como fila de caixa de mercado.</p>
+    <div class="cpu" id="cpu"></div>
+    <div class="queue" id="queue"></div>
+    <div class="tag">8 núcleos trabalhando (azul) · tarefas esperando um núcleo livre (amarelo, piscando)</div>
+    <p class="big" style="margin-top:14px">Carga <b class="bad">13,7</b> para 8 núcleos. Em <b class="bad">44%</b> do tempo, alguma tarefa ficou parada esperando CPU. A média esconde isso porque o uso vem em picos: num instante todos os núcleos ocupados e fila, no seguinte sobra.</p>
+  </section>
+
+  <section>
+    <h2>2. Os números que importam</h2>
+    <p class="lead">A linha branca marca o limite saudável.</p>
+    <div class="bars">
+      <div class="row"><div class="head"><span>Carga por núcleo (14 de 8)</span><b class="bad">1,7×</b></div>
+        <div class="track"><div class="fill" style="--w:85%;background:var(--bad)"></div><div class="mark" style="left:50%"></div></div>
+        <div class="note">Acima de 1× já tem fila. Aqui são quase 2.</div></div>
+      <div class="row"><div class="head"><span>Tempo esperando CPU</span><b class="bad">44%</b></div>
+        <div class="track"><div class="fill" style="--w:44%;background:var(--bad)"></div><div class="mark" style="left:10%"></div></div>
+        <div class="note">Saudável fica abaixo de 10%.</div></div>
+      <div class="row"><div class="head"><span>Swap em uso (memória que foi para o disco)</span><b class="warn">3,7 GB</b></div>
+        <div class="track"><div class="fill" style="--w:46%;background:var(--warn)"></div></div>
+        <div class="note">De 8 GB de swap. Disco é muito mais lento que RAM: tudo que cai lá fica lento.</div></div>
+      <div class="row"><div class="head"><span>CPU que os pods pediram</span><b class="ok">64%</b></div>
+        <div class="track"><div class="fill" style="--w:64%;background:var(--ok)"></div></div>
+        <div class="note">Reserva ainda cabe. Por isso o Kubernetes não reclama.</div></div>
+      <div class="row"><div class="head"><span>Soma dos tetos de CPU dos pods</span><b class="warn">206%</b></div>
+        <div class="track"><div class="fill" style="--w:100%;background:var(--warn)"></div><div class="mark" style="left:48.5%"></div></div>
+        <div class="note">Se todos pedissem o teto ao mesmo tempo, faltaria o dobro. Memória: 107%.</div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>3. Quem usa a CPU</h2>
+    <p class="lead">Uso real agora (milésimos de CPU). Não existe um vilão pequeno para cortar.</p>
+    <div class="who">
+      <div class="l"><span>mediamtx (vídeo)</span><div class="t"><div class="f top" style="--w:100%"></div></div><span>1103 m</span></div>
+      <div class="l"><span>kafka</span><div class="t"><div class="f" style="--w:15%"></div></div><span>163 m</span></div>
+      <div class="l"><span>ms-controllers</span><div class="t"><div class="f" style="--w:11%"></div></div><span>122 m</span></div>
+      <div class="l"><span>ms-cameras</span><div class="t"><div class="f" style="--w:11%"></div></div><span>121 m</span></div>
+      <div class="l"><span>ms-detector-history</span><div class="t"><div class="f" style="--w:10%"></div></div><span>109 m</span></div>
+      <div class="l"><span>outros 67 pods</span><div class="t"><div class="f" style="--w:55%"></div></div><span>~600 m</span></div>
+    </div>
+    <p class="note" style="margin-top:12px">Fora dos pods: kubelet, containerd e o próprio Kubernetes ocupam mais um pedaço. A soma dos 72 pods mais o sistema enche as 8 CPUs nos picos.</p>
+    <p class="note">Os simuladores que eu migrei usam 12 MB e ~120 m. Não pesam.</p>
+  </section>
+
+  <section>
+    <h2>4. Por que não cortei o mediamtx</h2>
+    <p class="lead">Ele reserva 1,5 CPU e usa 1,1 CPU de verdade, com WebRTC ativo.</p>
+    <div class="no">Baixar a reserva dele não reduz o consumo. Só tira prioridade dele quando a máquina está cheia, e o vídeo travaria primeiro. Cortar os tetos de 1 CPU dos outros serviços também não ajuda: eles usam 75 a 120 m.</div>
+  </section>
+
+  <section>
+    <h2>5. Minha sugestão</h2>
+    <p class="lead">O problema é falta de máquina para 72 pods, não configuração errada.</p>
+    <div class="opts">
+      <div class="opt rec">
+        <h3>Máquina maior <span class="badge">recomendo</span></h3>
+        <ul>
+          <li>Hoje: 8 CPUs e cerca de 32 GB.</li>
+          <li>Passar para 16 CPUs (mesma RAM ou mais) resolve a fila e o swap.</li>
+          <li>É a única solução que não tira nada do ar.</li>
+          <li>Precisa de uma janela: parar e trocar o tamanho da instância EC2. Eu preparo o passo a passo e o backup.</li>
+        </ul>
+      </div>
+      <div class="opt">
+        <h3>Desligar o que ninguém usa</h3>
+        <ul>
+          <li>Alivia, mas pouco: serviços usam 75 a 120 m cada.</li>
+          <li>Para os serviços do Attlas ainda não existe botão de réplicas. Só infraestrutura e simuladores.</li>
+          <li>Eu levanto quais estão sem uso e te mostro a lista antes de desligar qualquer um.</li>
+        </ul>
+      </div>
+    </div>
+    <p class="big" style="margin-top:16px">Se você concordar, começo pela lista dos serviços sem uso (não derruba nada) e preparo a troca de tamanho da máquina.</p>
+  </section>
+</main>
+<script>
+  const cpu = document.getElementById('cpu'), q = document.getElementById('queue');
+  for (let i = 1; i <= 8; i++) { const c = document.createElement('div'); c.className = 'core'; c.innerHTML = '<span>núcleo ' + i + '</span><i style="animation-delay:-' + (i * 0.17) + 's"></i>'; cpu.appendChild(c); }
+  for (let i = 0; i < 6; i++) { const t = document.createElement('div'); t.className = 'task'; t.style.animationDelay = '-' + (i * 0.2) + 's'; q.appendChild(t); }
+</script>
+</body>
+</html>
