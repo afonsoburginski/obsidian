@@ -5,7 +5,7 @@ tags:
   - runbook
 aliases:
   - "Runbook - analítico embarcado"
-atualizado: 2026-10-07
+atualizado: 2026-10-20
 ---
 
 # Analítico - Runbook - Embarcado
@@ -24,8 +24,11 @@ aqui.
 | Que equipamentos de bancada existem? | [[#Que equipamentos de bancada existem]] |
 | Qual app está rodando na câmera? | [[#Como sei qual app está rodando na câmera]] |
 | O producer está ligado? | [[#Como sei se o producer está ligado]] |
+| O broker/bridge está duplicando mensagens? | [[#Como diagnostico loop no bridge Kafka]] |
 | O app está processando e com quais regiões? | [[#Como sei se o app está processando]] |
 | O `source_id` do aparelho bate com o do Attlas? | [[#Como confiro a identidade e o destino do app]] |
+| "Testar" respondeu, mas não consigo cadastrar? | [[#Como diferencio câmera alcançável de publisher Kafka cadastrável]] |
+| O vínculo deu 422, 409 ou "não respondeu"? | [[#Como o vínculo escolhe o tipo e por que falha]] |
 | Onde está o log do app? | [[#Como leio o log do app]] |
 | Como reprovisiono depois de atualizar firmware ou app? | [[#Como reprovisiono depois de atualizar firmware ou app]] |
 | Como acho a mídia de um incidente no equipamento? | [[#Como acho a mídia de um incidente no equipamento]] |
@@ -40,13 +43,16 @@ A credencial da câmera vai em `$CAM_USER` e `$CAM_PASS`.
 
 | Equipamento | Endereço | O que roda |
 | --- | --- | --- |
-| ATMN - DEMO | 10.1.1.78, ARTPEC 7 | `atman_traffic_edge_sdct`, só ele, com a API na 2002. Laço sem caixa e sem incidente |
-| ATMN - EMBEDDED 080 | 10.1.1.80 | `atman_traffic_edge_atspm` 0.10.2 e `atman_virtual_loop_analytic` ao mesmo tempo |
+| ATMN - DEMO | 10.1.1.78, M1135 Mk II, `hardwareId` 950.1 = ARTPEC 7 | `atman_traffic_analytics` (API em `/local/atman_traffic_analytics/api`). Antes rodava só o `atman_traffic_edge_sdct` na 2002 |
+| ATMN - EMBEDDED 080 | 10.1.1.80, ARTPEC 8/9 | `atman_traffic_analytics` (API em `/local/atman_traffic_analytics/api`) e `atman_virtual_loop_analytic` |
+| ATMN - VIX Analytic | 10.11.20.101, ARTPEC 8/9 | `atman_traffic_edge_atspm` (API em `/local/atman_traffic_edge_atspm/api`) |
 | ATMN - PTZ | 10.1.1.79 | Só o app de laço por TCP |
 | Placa ACOM | 10.1.1.146 | Firmware `A12B31`, gestão na 81, sinal na 82 |
 
 No dev.v2 o mesmo equipamento pode estar cadastrado como câmeras de Sistemas diferentes, e cada Sistema ganha as
-próprias linhas de incidente.
+próprias linhas de incidente. Em 2026-10-20, 10.1.1.78 e 10.1.1.80 estavam cadastradas nos Sistemas atman,
+Orquestração, Visão e Vídeo e DMQ (a 78 também como "Atman Externa"). Só um deles pode receber os quadros: o
+aparelho publica com um `source_id` só, então vincular num Sistema é tomar o equipamento dos outros.
 
 ## Como sei qual app está rodando na câmera
 
@@ -99,6 +105,69 @@ curl --digest -u "$CAM_USER:$CAM_PASS" "http://<ip>/axis-cgi/systemlog.cgi"
 
 O log do sistema da câmera traz as linhas do app, inclusive erro de publicação no broker. Root por SSH é recusado,
 então esta é a forma de ler o log.
+
+## Como diagnostico loop no bridge Kafka
+
+Em 2026-10-20, a investigação do incidente de Quito identificou um loop no serviço legado
+`attlas-analytics-kafka-bridge`: ele consumia `traffic-motion-detection.detections` e republicava no mesmo tópico e
+broker (`atlas.epmmop.gob.ec:9094`). Cada republicação virava nova entrada do próprio consumer, causando crescimento
+exponencial. O processo não é um serviço oficial do Attlas; era um resíduo do ambiente de desenvolvimento AWS. O guia
+de deploy já alertava para removê-lo quando o destino não deveria consumir o broker de origem.
+
+O broker de publicação das câmeras e o broker de consumo do serviço são papéis diferentes. Configure
+`ANALYTICS_DEVICE_PUBLISH_BROKER` com o DNS alcançável pelas câmeras em cada implantação (por exemplo, dev AWS ou
+Quito) e `ANALYTICS_STREAM_BROKERS` com o broker que o Attlas deve consumir. DNS é configuração do deployment, não um
+valor global inferido pelo backend. Nunca configure um bridge para republicar no mesmo tópico do mesmo broker.
+
+Na investigação, confira o `kafka_broker_ip` e `kafka_broker_port` retornados por `/config`, os brokers/tópicos de
+origem e destino do bridge e os logs/volume do consumer. Se origem e destino coincidirem, pare o bridge legado antes
+de retomar a publicação. Em sistemas compartilhados, não faça takeover nem reinicie a câmera sem confirmação explícita
+do operador responsável.
+
+O PR #8286 (merge commit `f08e39d`, 2026-10-20) adiciona reparo explícito do vínculo do device e estados transitórios
+na tabela; não é um solucionador universal de DNS ou infraestrutura. Correções de DNS, disponibilidade de Kafka e
+bridges continuam dependendo da configuração e operação do ambiente. Validações locais finais passaram; o CI remoto
+estava na fila de runners no momento do merge.
+
+## Como diferencio câmera alcançável de publisher Kafka cadastrável
+
+O botão **Testar** confirma que a rota de descoberta responde naquele momento. Isso não valida que o processo esteja
+publicando no Kafka consumido pelo Attlas, nem cria vínculo de instância. São sinais diferentes: reachability HTTP,
+identidade `source_id`/broker e chegada recente de eventos precisam ser verificados separadamente.
+
+Só a geração Horus/standalone de verdade (API de status/regiões sem identidade Kafka) é não cadastrável:
+`422 DEVICE_ANALYTIC_NOT_CONFIGURABLE`. `502 DEVICE_ANALYTIC_UNREACHABLE` fica para o aparelho sem resposta. Antes de
+concluir que o app é Horus, confira se o serviço está sondando o caminho certo (seção abaixo): em 2026-10-20 o 422 da
+78 e da 80 era isso, não o app.
+
+## Como o vínculo escolhe o tipo e por que falha
+
+Estado depois da PR #8450 (merge `05dda00`, no dev.v2 desde 2026-10-20 18:24 UTC).
+
+- **Caminhos sondados.** O serviço testa cada caminho de `ATMAN_ANALYTIC_API_PATHS`, em ordem. O padrão do código é
+  `/local/atman_traffic_analytics/api,/local/atman_traffic_edge_atspm/api`. No dev.v2 a variável vem do secret
+  `ms-video-analytics-env`, aplicado à mão com `kubectl` e fora do GitOps; estava só com o caminho antigo e fazia a
+  78 e a 80 (app novo) caírem num caminho de relatório, com 422. Corrigido em 2026-10-20, com backup em
+  `~/backups/ms-video-analytics-env.secret.bak-20261020-172407.yaml` no host. Para conferir:
+  `docker exec attlas-control-plane kubectl -n attlas-dev exec deploy/ms-video-analytics -- printenv ATMAN_ANALYTIC_API_PATHS`.
+- **Tipo gravado.** É o primeiro tipo que o build sondado serve e que a arquitetura da câmera aceita. O app
+  `atman_traffic_analytics` serve ATSPM e laço: em ARTPEC 8/9 grava ATSPM; em ARTPEC 7, que não aceita ATSPM
+  embarcado, grava laço virtual. Só recusa (409 de compatibilidade) se nenhum tipo servido couber.
+- **Arquitetura ausente.** Se o espelho da câmera não tem `artpecArchitecture`, o vínculo usa a tabela por
+  `hardwareId` (`@attlas/contracts`, a mesma do `ms-cameras`), sem gravar de volta. Câmera fora da tabela continua
+  recusada até o `ms-cameras` reprovisionar; não existe endpoint de reidentificação.
+- **ARTPEC 8/9 com laço legado.** ATSPM e laço embarcados não coexistem (BR-CAV-003). O vínculo promove a linha do
+  laço para ATSPM no lugar (mesmo id, regiões e vínculos de faixa/detector preservados) ou desativa a sobra quando já
+  havia duas; tudo numa transação com trava por câmera.
+- **Reinício do app.** O vínculo só reinicia o app da câmera quando a API não responde. Antes da #8450, qualquer erro
+  de leitura (inclusive o 422) mandava `control.cgi?action=restart` e o card ficava em "O analítico embarcado desta
+  câmera não respondeu" durante o reinício. Hoje, app parado numa câmera que responde volta 422 e precisa ser iniciado
+  na câmera.
+- **409 de tomada.** Se o aparelho publica com o `source_id` de outro Sistema, o vínculo pede confirmação; confirmar
+  tira os quadros do outro Sistema.
+
+Em 2026-10-20, no Sistema atman, a 10.11.20.101 já estava vinculada (ATSPM, `atspm-http`); a 78 e a 80 ficaram para
+vincular pela tela depois do deploy.
 
 ## Como reprovisiono depois de atualizar firmware ou app
 

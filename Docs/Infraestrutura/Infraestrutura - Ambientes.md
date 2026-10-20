@@ -10,7 +10,7 @@ aliases:
   - "Registro - deriva do env do dev.v2 e deploy quebrado em 26 de setembro"
   - "Deriva do env do dev.v2"
   - "Deploy do dev.v2 quebrado por env"
-atualizado: 2026-10-14
+atualizado: 2026-10-20
 ---
 
 # Infraestrutura - Ambientes
@@ -95,6 +95,8 @@ Linha só à esquerda é chave que só o ambiente tem; linha só à direita é c
 | `infra-dev` parado em `Progressing` no Argo CD | o kind não preenche o status do Ingress | o health customizado de Ingress em `local/argocd-values.yaml` o marca como saudável; aplicar com o `up.sh` |
 | vídeo não abre depois de reboot do hub | o DNAT de `8189/udp` e `8554` sumiu | `bash ~/orbit/local/ingress/media-dnat.sh`; o cron `@reboot` já faz isso |
 | Secret ou ConfigMap alterado sem efeito | o pod não reinicia sozinho | `kubectl -n attlas-dev rollout restart deploy/<serviço>` |
+| release no catálogo do Orbit e dev ainda na versão anterior | o CD automático espera 15 min entre rollouts, ou o serviço ficou retido por mudar só biblioteca ([[Infraestrutura - Orbit#Entrega e autocorreção]]) | esperar o horário agendado (`~/orbit-state/secrets/cd-rollouts.json`, campo `nextAt`) ou commit `deploy(dev): <svc> vX (era vY)` em `apps/dev/<svc>.yaml` no `~/gitops-edit` |
+| vínculo de analítico embarcado com 422 "não expõe configuração" em câmera com app novo | `ATMAN_ANALYTIC_API_PATHS` antigo no Secret `ms-video-analytics-env` sobrepõe o padrão do código | deixar `/local/atman_traffic_analytics/api,/local/atman_traffic_edge_atspm/api` (corrigido em 2026-10-20); detalhe em [[Analítico - Runbook - Embarcado#Como o vínculo escolhe o tipo e por que falha]] |
 
 ## Glossário
 
