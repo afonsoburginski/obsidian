@@ -19,6 +19,8 @@ Importante para a QA: **nada foi testado localmente** (sem teste, lint ou build 
 
 ## Feitas em parte (a issue continua aberta)
 
+(#8230, #8229 e #8223 foram fechadas depois, pela #8632.)
+
 - [x] **#8230** Coluna Acionamentos "1 acionamentos". PR #8632. Plural correto.
 - [x] **#8229** Detalhe do evento "ACCC8E4B2E10 - undefined". PR #8632. Sem "undefined" quando falta o endereço (vale também para o diálogo "Reportar ocorrência").
 - [x] **#8223** Mensagem técnica em inglês "timeout of 5000ms exceeded". PR #8632. Mensagem em português.
@@ -41,6 +43,13 @@ Importante para a QA: **nada foi testado localmente** (sem teste, lint ou build 
   - [x] Vínculo faixa/detector aparece na hora, sem esperar o Salvar.
   - [x] Desativar a métrica de desempenho de uma região funciona (mostra erro se a leitura não traz o analítico).
   - [ ] "Puxa detectores de entrada e saída": a lista de faixas mistura as duas mãos de via de propósito (regra de 28/09, UF-722). Depende de decisão de produto e do traffic-model.
+
+## Em draft (PR aberta, ainda não revisada nem mergeada)
+
+- [ ] **#8670** WebSocket Axis sem backoff para câmera inalcançável. PR #8751 (draft). Depois de 5 falhas seguidas o teto de reconexão sobe de 60 s para 300 s; sem status "inalcançável" novo.
+- [ ] **#8629** Falha transitória do lookup do Sistema fragmenta incidentes. PR #8752 (draft). Falha transitória reentrega a mensagem; Sistema não resolvido continua abrindo TENTATIVE.
+- [ ] **#8672** Rotas do Kong para serviços inexistentes (5xx no dev.v2). PR #8753 (draft, só documentação): a causa são os 6 serviços esqueleto; **a correção real é no GitOps do dev.v2**, ainda não feita.
+- [ ] **#8671** kafka-exporter com CPU alta. PR #8754 (draft, só documentação) com os valores recomendados; **não aplicado no GitOps**, e o prefixo dos grupos e os nomes das flags precisam de conferência.
 
 ## Sem issue (pedidos diretos)
 
