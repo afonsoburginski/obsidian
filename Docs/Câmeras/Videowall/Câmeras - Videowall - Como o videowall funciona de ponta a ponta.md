@@ -9,7 +9,7 @@ aliases:
   - "Câmeras - Videowall - Como o videowall funciona de ponta a ponta"
   - "Videowall - Funcionamento ponta a ponta"
   - "Videowall - Validação IPC e mosaico"
-atualizado: 2026-10-14
+atualizado: 2026-10-22
 banner: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1200"
 ---
 
@@ -25,6 +25,7 @@ Volta para [[Câmeras - Videowall]].
 | Dá pra criar mais de uma "conexão digital"? | Sim. O H9 aceita N fontes IPC e N camadas no mesmo slot. O limite é o throughput de decodificação do card IP |
 | 4 computadores enviando ao mesmo H9, quem ganha? | O último a escrever. A Open API não tem sessão nem dono. O Attlas se protege com write-lock Redis e ocupação exclusiva, mas não controla clientes externos |
 | 4 mosaicos lado a lado no painel | Viável por espelho ampliado (4 fontes, 4 camadas). Inviável por projeção nativa de 160 câmeras (ultrapassa o card) |
+| Sequência da abertura da camada (espelhamento)? | A camada só abre depois que o navegador publica. Leitor que chega antes recebe 404 e o H9 não tenta de novo. No PR #8767 a correção abre a camada pelo aviso de publicação do navegador (1,5 s depois) e tem vigia de reaplicação; ainda não validada no H9 real |
 
 Arquitetura e rotas: [[Câmeras - Videowall - Arquitetura e estratégias]]. Fluxos passo a passo:
 [[Câmeras - Videowall - Fluxos]]. Requisitos contratuais: [[Câmeras - Videowall - Requisitos e SLA]].
@@ -164,6 +165,10 @@ cena do VMS), RF-VW-13 está fora do escopo por desenho, e a API nunca foi chama
 O modelo atual (camada por camada) é mais verboso mas reconciliável: o Attlas lê `layer/detailList`,
 compara com o que quer e só escreve o que falta ou mudou.
 
+## Codec do navegador
+
+No PR #8767 foi fixado no H.264 Baseline nível até 4.1, 30 fps máx, 4 Mbit/s. O navegador no Windows com Media Foundation pode gerar nível 4.2; isso era descartado. Validado em Chrome 156 Linux com OpenH264 (software) e VAAPI Intel (hardware) = nível 3.1 a 4.0. O Windows com aceleração ainda precisa ser testado contra o H9 real de Quito.
+
 ## Pendências de validação contra o H9 real
 
 O H9 de Quito (`10.200.1.52`) responde aos comandos da Open API, mas a placa de vídeo ainda não puxa o RTSP:
@@ -182,3 +187,4 @@ O H9 de Quito (`10.200.1.52`) responde aos comandos da Open API, mas a placa de 
 > - O que acontece com as camadas do Attlas quando alguém aplica um preset pela interface nativa.
 > - Smoke test: ativar cena 2x2 com `target: VIDEOWALL` e confirmar no painel, depois que a placa alcançar o
 >   servidor.
+> - Navegador no Windows com aceleração ligada codificando o espelho — o H9 recusa níveis maiores que 4.1.

@@ -3,10 +3,10 @@ tags:
   - doc
   - cameras
   - videowall
-aliases:
+  - aliases:
   - "Câmeras - Videowall - Fluxos"
   - "Videowall - Fluxos"
-atualizado: 2026-10-07
+atualizado: 2026-10-22
 banner: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1200"
 ---
 
@@ -66,8 +66,7 @@ lugar do `pId` grava sem erro e deixa o processador inalcançável.
 4. O front publica por WHIP em `<MEDIAMTX_WEBRTC_BASE_URL>/videowall-mirror-<caminho>/whip` e avisa
    `POST /api/vms/videowall/mirror/publishing` quando a conexão sobe.
 5. O codec enforcer derruba publicação fora de H.264 em até 5 s.
-6. O backend cria no H9 uma fonte IPC e uma camada por tela publicada; o equipamento puxa
-   `<MEDIAMTX_RTSP_URL>/videowall-mirror-<caminho>` com a credencial de leitor do espelho.
+6. O backend cria no H9 uma fonte IPC e uma camada só depois que o caminho já está publicando, com 1,5 s de estabilização. Se o aviso se perder, um vigia de leitura reabre a camada faltante. Ainda não validado no H9 real de Quito.
 7. Sem sessão prévia, a divisão escolhida é gravada logo depois do envio (`PUT /mirror/arrangement`).
 8. Cada passo empurra `videowall:occupancy:updated` às outras telas do sistema.
 

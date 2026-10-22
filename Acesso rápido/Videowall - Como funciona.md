@@ -10,7 +10,7 @@ aliases:
   - "Videowall - Como funciona"
   - "Como o videowall funciona"
   - "Câmeras - Videowall - Explicação - Como o videowall funciona"
-atualizado: 2026-10-14
+atualizado: 2026-10-22
 ---
 
 # Videowall - Como funciona
@@ -77,6 +77,10 @@ Nos dois modos, endereço e senha da câmera nunca vão ao H9. O H9 só conhece 
 
 O Attlas só mexe no que ele criou: camadas e fontes com nome começando em `attlas-`. O que alguém criar pela
 interface do H9 fica intocado.
+
+## Espelhamento: sequência certa da abertura da camada
+
+A camada só abre depois que o navegador começa a publicar. Leitor que chega antes do publicador recebe 404 do servidor de vídeo e o H9 não tenta de novo. No PR #8767: o ms-cameras agora cria a fonte IPC e a camada só quando o caminho já está publicando, usando um aviso do navegador (`POST vms/videowall/mirror/publishing`) com 1,5 s de estabilização. Se o aviso se perder, um vigia de leitura reaplica a camada. Ainda não validado no H9 real de Quito.
 
 ## Situação em Quito
 

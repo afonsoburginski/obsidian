@@ -12,7 +12,7 @@ aliases:
   - "Videowall H9 - vídeo não chega ao painel"
   - "Videowall H9 Quito - Diagnóstico"
   - "Câmeras - Videowall - Explicação - Vídeo não chega ao painel H9"
-atualizado: 2026-10-15
+atualizado: 2026-10-22
 ---
 
 # Videowall - Vídeo não chega ao H9
@@ -134,3 +134,7 @@ Problemas achados no caminho, para uma PR única:
    espelho no `web-attlas`.
 5. Perda de pacotes na entrada do espelho (`invalid FU-A packet`). Fica no envio do navegador ao servidor de
    vídeo.
+
+## Adendum: correção do espelhamento (PR #8767, 22/10/2026)
+
+A corrida entre navegador e H9 foi eliminada. O ms-cameras agora cria fonte e camada só quando o caminho já está publicando. O navegador avisa com um POST (`publishing`) um frame depois de começar a publicar, e há 1,5 s de estabilização. Se o aviso se perder, um vigia reaplica a camada. Codec limitado a H.264 Baseline nível até 4.1, 30 fps, 4 Mbit/s. Testado em software (OpenH264) e hardware Intel VAAPI. Falta testar o H9 real com Windows e aceleração ligada.

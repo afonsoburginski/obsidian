@@ -8,7 +8,7 @@ tags:
 aliases:
   - "Câmeras - Videowall - Runbook - Testar se o H9 tenta buscar o vídeo"
   - "Videowall H9 Quito - Teste ao vivo"
-atualizado: 2026-10-15
+atualizado: 2026-10-22
 ---
 
 # Câmeras - Videowall - Runbook - Testar se o H9 tenta buscar o vídeo
@@ -156,7 +156,7 @@ Fechar a janela do `ffplay` antes de seguir.
 decodificador. É o mesmo que o Postman do passo 3, sem precisar achar o `sourceId`.
 
 ```bash
-H9=http://10.200.1.52:8000/open/api; A='"sign":"NmE0YjVkNTFlYTczNDIyZjE5ZGEwZGNlN2ZiOTkxOTI=","pId":"YzFk","timeStamp":"1792004952244"'; for id in $(curl -s -X POST $H9/ipc/IPCSourceList -H 'Content-Type: application/json' -d "{\"body\":{\"deviceId\":0,\"slotId\":0,\"seqPageIndex\":1,\"seqPageSize\":100},$A}" | python3 -c "import sys,json; [print(s['sourceId']) for s in json.load(sys.stdin)['body']['sourceList'] if s['sourceName'].startswith('attlas-')]"); do curl -s -X POST $H9/ipc/IPCChannelList -H 'Content-Type: application/json' -d "{\"body\":{\"deviceId\":0,\"sourceId\":$id},$A}" | python3 -c "import sys,json; c=json.load(sys.stdin)['body']['channelList'][0]; s=c['streamList'][0]; r=s['resolution']; print(c['sourceName'], s['protocol']['rtsp']['rtspUrl'], 'decodeStatus:', s['decodeStatus'], 'video:', r['width'], 'x', r['height'])"; done
+H9=http://10.200.1.52:8000/open/api; A='\"sign\":\"NmE0YjVkNTFlYTczNDIyZjE5ZGEwZGNlN2ZiOTkxOTI=\",\"pId\":\"YzFk\",\"timeStamp\":\"1792004952244\"'; for id in $(curl -s -X POST $H9/ipc/IPCSourceList -H 'Content-Type: application/json' -d "{\\\"body\\\":{\\\"deviceId\\\":0,\\\"slotId\\\":0,\\\"seqPageIndex\\\":1,\\\"seqPageSize\\\":100},$A}" | python3 -c "import sys,json; [print(s['sourceId']) for s in json.load(sys.stdin)['body']['sourceList'] if s['sourceName'].startswith('attlas-')]"); do curl -s -X POST $H9/ipc/IPCChannelList -H 'Content-Type: application/json' -d "{\\\"body\\\":{\\\"deviceId\\\":0,\\\"sourceId\\\":$id},$A}" | python3 -c "import sys,json; c=json.load(sys.stdin)['body']['channelList'][0]; s=c['streamList'][0]; r=s['resolution']; print(c['sourceName'], s['protocol']['rtsp']['rtspUrl'], 'decodeStatus:', s['decodeStatus'], 'video:', r['width'], 'x', r['height'])"; done
 ```
 
 Resposta com a cena no painel: `attlas-cam-c8738c8b1b14 rtsp://192.168.10.16:554/videowall-projection-... decodeStatus: 20 video: 0 x 0`.
